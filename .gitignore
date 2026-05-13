@@ -1,10 +1,5 @@
-# Full eMMC image - too large for git
 *.img
-# Working directories
 assets/
 release/
-# Zip goes as GitHub release asset, not committed
 *.zip
-# Misc
 deep_dive.txt
-*.txt.bak
