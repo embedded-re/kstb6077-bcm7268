@@ -1,0 +1,6 @@
+load -loader=raw -addr=0x07700000 usbdisk0:dtb.dtb
+load -loader=zimg -addr=0x02208000 usbdisk0:zImage
+setenv DT_ADDRESS 0x07700000
+dt on
+dt bolt
+go 0x02208800

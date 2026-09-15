@@ -1,0 +1,8 @@
+zImage
+*.img
+*.bin
+*.ko
+*.o
+*.elf
+!assembly/bootstrap.bin
+!assembly/bootstrap.elf
