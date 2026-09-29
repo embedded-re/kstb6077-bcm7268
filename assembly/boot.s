@@ -97,15 +97,18 @@ process_line:
 @ =============================================================================
 
 @ --- print_string: prints bytes starting at r4 until a 0 byte ---
-@ Clobbers: r0, r4.
+@ Clobbers: r0, r4. Saves lr itself -- the bl uart_putc inside would
+@ otherwise overwrite it and the final return would loop forever.
 print_string:
+    push    {lr}
+.Lps_loop:
     ldrb    r0, [r4], #1
     cmp     r0, #0
-    beq     print_string_done
+    beq     .Lps_done
     bl      uart_putc
-    b       print_string
-print_string_done:
-    bx      lr
+    b       .Lps_loop
+.Lps_done:
+    pop     {pc}
 
 @ --- uart_getc: blocking read of one byte. Returns it in r0. ---
 uart_getc:
