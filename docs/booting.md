@@ -20,6 +20,36 @@ assembly/build.sh      →  assembly/bootstrap.bin (raw), bootstrap.elf (symbols
 
 It's linked at `0x01000000`, so it must be loaded to exactly that address.
 
+## Development loop: upload over the serial console (recommended)
+
+No network, no TFTP server, no USB stick. `tools/kstb-run` writes the binary
+into RAM through BOLT's `e -w` command (32 words = 128 bytes per command),
+checks every write, compares BOLT's `crc` with the file's CRC32, and then
+runs it:
+
+```
+tools/build-a64 prog.s                   # AArch64: prog.s -> prog.elf + prog.bin (clang + ld.lld)
+tools/kstb-run --a64 prog.bin            # upload, verify, go -64, print output for 10 s
+tools/kstb-run --a64 --watchdog 20 --wait-bolt prog.bin
+                                         # ...arm the watchdog first, wait until back at BOLT>
+tools/kstb-run --no-go prog.bin          # upload + verify only
+tools/kstb-run prog.bin                  # 32-bit: plain go
+```
+
+Measured: 849 bytes in 0.6 s, 16 KB in 11.9 s (about 1.4 KB/s), with the CRC
+matching every time. A full cycle (upload, run, watchdog reboot, back at
+`BOLT>`) takes about 27 s, mostly the reboot.
+
+Requirements and limits:
+- The board must be at `BOLT>`.
+- It needs the local `kstb-bridge` service, which owns the serial port and
+  exposes `/tmp/kstb.sock` (override with `KSTB_SOCK`). It isn't part of this
+  repo.
+- It supports `go` and `go -64` only. EL3 (`boot -64 -el3`) needs BOLT to
+  load the file itself, from TFTP or USB.
+- After `go`, the tool prints output for `--listen` seconds and exits. Use
+  `kstb -i` to interact with a running program.
+
 ## Loading from a USB stick (FAT32)
 
 Copy `bootstrap.bin` to the stick as `boot.bin`. `boot/sysinit.txt` on the
@@ -64,8 +94,25 @@ is untested.
 
 The DTB address is `0x07613000` in all modes. `go`/`boot` close the network
 first (`-noclose` keeps it open). `-nopsci` boots without PSCI (untested). A
-32-bit program inherits BOLT's page table (`hardware/memory-map.md`). An
-AArch64 test program reached the UART at its physical address.
+32-bit program inherits BOLT's page table (`hardware/memory-map.md`).
+
+### State of a 64-bit program at entry (read by a probe on core 0)
+
+| Register | `go -64` (EL2) | `boot -64 -el3` (EL3) |
+|---|---|---|
+| SCTLR | `SCTLR_EL2 = 30c50830`: **MMU off, D-cache and I-cache off** (reset value) | `SCTLR_EL3 = 00c52838`: **MMU off, caches off** |
+| VBAR | `VBAR_EL2 = fff7feffb2f7ffe0`: **garbage**, no vector table | `VBAR_EL3 = 06400000`: still points at BOLT's PSCI monitor (`smm64`) |
+| other | `HCR_EL2 = 80000002` (RW = 1: EL1 would be AArch64) | `SCR_EL3 = 131` (NS = 1, RW = 0) |
+| MPIDR_EL1 | `80000000`: core 0 | same |
+
+Consequences:
+- All addresses are physical, and every data access is uncached Device
+  memory until you enable the MMU. Peripherals, including the GIC, are
+  reachable directly.
+- **Install your own vector table (`VBAR_ELn`) before anything can fault.**
+  At EL2 any exception jumps to a garbage address. At EL3 it would enter
+  BOLT's PSCI monitor code.
+- There is no stack yet: set `sp` before calling code that pushes.
 
 ## Safety net for experiments
 

@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+"""Upload a raw binary to the KSTB6077 over the BOLT serial console and run it.
+
+Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK)
+and the board sitting at the BOLT> prompt.
+
+    kstb-run prog.bin                    upload to 0x01000000, CRC-check, go (32-bit)
+    kstb-run --a64 prog.bin              ... go -64 (AArch64, EL2)
+    kstb-run --a64 --watchdog 20 prog.bin   arm the watchdog first (auto-reboot)
+    kstb-run --no-go prog.bin            upload + verify only
+    kstb-run --listen 30 ...             print board output for 30 s after go (default 10)
+    kstb-run --wait-bolt ...             after go, wait until the board is back at BOLT>
+
+Upload uses BOLT's `e -w addr w1 ... w32` (32 words = 128 bytes per command),
+then `crc` to compare with the file's CRC32. Nothing touches flash or NVRAM.
+"""
+import argparse, os, re, socket, sys, time, zlib
+
+SOCK = os.environ.get("KSTB_SOCK", "/tmp/kstb.sock")
+PROMPT = re.compile(rb"BOLT> ?$")
+WORDS_PER_CMD = 32
+TICKS_PER_S = 27_000_000
+
+
+class Board:
+    def __init__(self, path):
+        self.s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.s.connect(path)
+        self.s.settimeout(0.05)
+
+    def _read_until(self, pattern, timeout):
+        buf, end = b"", time.time() + timeout
+        while time.time() < end:
+            try:
+                chunk = self.s.recv(4096)
+                if not chunk:
+                    raise SystemExit("bridge closed the connection")
+                buf += chunk
+                if pattern.search(buf.rstrip(b"\r\n ") + b" ") or pattern.search(buf):
+                    return buf
+            except socket.timeout:
+                pass
+        raise TimeoutError(f"no match for {pattern.pattern!r} within {timeout}s; got:\n"
+                           + buf.decode("latin1")[-500:])
+
+    def drain(self):
+        try:
+            while self.s.recv(4096):
+                pass
+        except socket.timeout:
+            pass
+
+    def cmd(self, line, timeout=10):
+        """Send one BOLT command, return its output (up to the next prompt)."""
+        self.drain()
+        self.s.sendall(line.encode() + b"\r")
+        out = self._read_until(PROMPT, timeout).decode("latin1")
+        m = re.search(r"\*\*\* command status = (-?\d+)", out)
+        return out, (int(m.group(1)) if m else None)
+
+    def send_raw(self, line):
+        self.drain()
+        self.s.sendall(line.encode() + b"\r")
+
+    def stream(self, seconds, stop=None):
+        end, buf = time.time() + seconds, b""
+        while time.time() < end:
+            try:
+                chunk = self.s.recv(4096)
+                if not chunk:
+                    return buf
+                sys.stdout.write(chunk.decode("latin1")); sys.stdout.flush()
+                buf += chunk
+                if stop and stop.search(buf):
+                    return buf
+            except socket.timeout:
+                pass
+        return buf
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("binary")
+    ap.add_argument("--addr", default="0x01000000", help="load/run address (default 0x01000000)")
+    ap.add_argument("--a64", action="store_true", help="run with go -64 (AArch64 EL2)")
+    ap.add_argument("--no-go", action="store_true", help="upload and verify only")
+    ap.add_argument("--watchdog", type=int, metavar="S", help="arm the watchdog for S seconds before go")
+    ap.add_argument("--listen", type=float, default=10, help="seconds to print output after go")
+    ap.add_argument("--wait-bolt", action="store_true", help="after go, wait for the BOLT> prompt (reboot)")
+    a = ap.parse_args()
+
+    data = open(a.binary, "rb").read()
+    size = len(data)
+    padded = data + b"\0" * (-size % 4)
+    words = [int.from_bytes(padded[i:i + 4], "little") for i in range(0, len(padded), 4)]
+    addr = int(a.addr, 16)
+    if addr % 4:
+        raise SystemExit("address must be 4-byte aligned")
+
+    b = Board(SOCK)
+    try:
+        b.cmd("", timeout=3)
+    except TimeoutError:
+        raise SystemExit("board is not at the BOLT> prompt")
+
+    t0 = time.time()
+    for i in range(0, len(words), WORDS_PER_CMD):
+        chunk = words[i:i + WORDS_PER_CMD]
+        line = f"e -w 0x{addr + i * 4:08x} " + " ".join(f"{w:08x}" for w in chunk)
+        out, st = b.cmd(line)
+        if st != 0:
+            raise SystemExit(f"write failed at 0x{addr + i * 4:08x} (status {st}):\n{out}")
+        done = min(i + WORDS_PER_CMD, len(words)) * 4
+        print(f"\ruploading {min(done, size)}/{size} bytes", end="", flush=True)
+    print(f"  ({time.time() - t0:.1f} s)")
+
+    want = zlib.crc32(data)
+    out, _ = b.cmd(f"crc -offset=0x{addr:x} -size=0x{size:x}")
+    m = re.search(r"=\s+0x([0-9a-fA-F]+)", out)
+    got = int(m.group(1), 16) if m else None
+    if got != want:
+        raise SystemExit(f"CRC MISMATCH: board {got and hex(got)} file {hex(want)}\n{out}")
+    print(f"CRC OK 0x{want:08x}")
+
+    if a.no_go:
+        return
+
+    if a.watchdog:
+        ticks = a.watchdog * TICKS_PER_S
+        if ticks > 0xffffffff:
+            raise SystemExit("watchdog too long (max 159 s)")
+        for line in (f"e -w 0xf040a6a8 {ticks:08x}", "e -w 0xf040a6ac 0000ff00", "e -w 0xf040a6ac 000000ff"):
+            _, st = b.cmd(line)
+            if st != 0:
+                raise SystemExit(f"watchdog arm failed: {line}")
+        print(f"watchdog armed: {a.watchdog} s")
+
+    go = f"go {'-64 ' if a.a64 else ''}0x{addr:08x}"
+    print(f"--- {go} ---")
+    b.send_raw(go)
+    if a.wait_bolt:
+        b.stream(max(a.listen, (a.watchdog or 0) + 40), stop=re.compile(rb"BOLT> ?$", re.M))
+        print("\n--- back at BOLT> ---")
+    else:
+        b.stream(a.listen)
+        print()
+
+
+if __name__ == "__main__":
+    main()

@@ -38,15 +38,20 @@ an Android TV set-top box built on the Broadcom BCM7268 SoC.
 | Watchdog | `0xf040a6a8`, 27 MHz ticks | `docs/hardware/system-blocks.md` |
 | Software reset | SUN_TOP_CTRL `0xf0404304` / `0xf0404308` | `docs/hardware/system-blocks.md` |
 | Reset-surviving memory | 1 KB AON SRAM at `0xf0410200` | `docs/hardware/system-blocks.md` |
-| Interrupt controller | ARM GICv2 at `0xffd01000`, fed by Broadcom L2 controllers | `docs/hardware/interrupts.md` |
+| Interrupt controller | ARM GIC-400 (GICv2) at `0xffd01000`, 256 interrupt IDs, 4 CPU interfaces, fed by Broadcom L2 controllers; all SPIs are non-secure (group 1) | `docs/hardware/interrupts.md` |
+| CPU timer | ARM generic timer, 27 MHz | `docs/hardware/system-blocks.md` |
 
 ## CPU modes
 
-- BOLT runs in 32-bit mode (AArch32, SVC) with its MMU and caches on.
-- `go` starts a program in AArch32. `go -64` starts it in **AArch64 at EL2**,
-  and `boot -64 -el3` starts it in **AArch64 at EL3**, as the secure monitor.
-- Under BOLT's MMU, peripherals are reachable only in `0xf0000000–0xf12fffff`.
-  The GIC (`0xffd…`) is unmapped there, and accessing it hangs the board.
+- BOLT runs in 32-bit mode (AArch32 SVC, non-secure) with its MMU and caches
+  on. The EL3 secure monitor (`smm64`, PSCI v0.2) lives at `0x06400000`.
+- `go` starts a program in AArch32 under BOLT's MMU. Peripherals are then
+  reachable only in `0xf0000000–0xf12fffff`; the GIC (`0xffd…`) is unmapped,
+  and accessing it hangs the board.
+- `go -64` starts a program in **AArch64 at EL2**, and `boot -64 -el3` starts
+  it in **AArch64 at EL3**, as the secure monitor. Both enter with the MMU
+  and caches off and no vector table, so all peripherals, including the GIC,
+  are reachable at their physical addresses.
 
 Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 
@@ -54,7 +59,9 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 
 | Path | Contents |
 |---|---|
-| `assembly/` | bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin`/`.elf` |
+| `assembly/` | 32-bit bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin`/`.elf` |
+| `tools/build-a64` | builds an AArch64 program (`.s` → `.elf` + `.bin`, clang + ld.lld) |
+| `tools/kstb-run` | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
 | `boot/original_dtb.dts` | the original vendor device tree |
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |
 | `boot/sysinit.txt` | BOLT autoboot script for the USB stick |
@@ -68,9 +75,14 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 
 ## Quick start
 
+With the board at `BOLT>` and the serial bridge running:
+
 ```
+tools/build-a64 prog.s
+tools/kstb-run --a64 --watchdog 20 --wait-bolt prog.bin    # AArch64 at EL2
+
 assembly/build.sh
-# copy assembly/bootstrap.bin to a FAT32 USB stick as boot.bin, then at BOLT>:
-load -loader=raw -addr=0x01000000 usbdisk0:boot.bin
-go 0x01000000
+tools/kstb-run assembly/bootstrap.bin                      # 32-bit monitor
 ```
+
+USB-stick and TFTP loading: `docs/booting.md`.

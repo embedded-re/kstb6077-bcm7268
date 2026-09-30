@@ -181,6 +181,11 @@ PSCI calls (`smc`) go up to it. ✅ Confirmed that EL3 exists in AArch64
 and that BOLT will hand it to your code: `boot -64 -el3` printed
 `PSCI: Secure monitor entry @ 0000000001000000` (§9).
 
+✅ Read from EL3 (§10): `VBAR_EL3 = 0x06400000`, so the EL3 exception vectors
+are in the `PSCI` region: **`smm64` at `0x06400000` is the EL3 monitor that
+handles PSCI calls.** `SCR_EL3 = 0x131` (NS = 1, RW = 0): BOLT's world is
+**non-secure AArch32**.
+
 ---
 
 ## 8. Other hardware facts reported by BOLT
@@ -294,3 +299,30 @@ _start:
 msg:  .asciz "\r\nA64 OK, EL"
 tail: .asciz "\r\n"
 ```
+
+---
+
+## 10. CPU and GIC state probe (AArch64, EL2 and EL3)
+
+An AArch64 probe printed CPU system registers and GIC registers, run once
+with `go -64` (EL2) and twice with `boot -64 -el3` (EL3), watchdog armed.
+The source is in `raw/gic64b_probe.s` and the full output in
+`raw/gic_probe_el2_el3.txt`. No access aborted.
+
+| | EL2 | EL3 |
+|---|---|---|
+| CurrentEL | 2 | 3 |
+| MIDR_EL1 | `420f1000`: implementer `0x42` (Broadcom), part `0x100` (Brahma-B53). BOLT's banner `B53 [420f1000]` is MIDR | same |
+| MPIDR_EL1 | `80000000`: core 0 | same |
+| CNTFRQ_EL0 | `019bfcc0`: **27 MHz** generic timer | same |
+| SCTLR | `SCTLR_EL2 = 30c50830`: MMU/caches off | `SCTLR_EL3 = 00c52838`: MMU/caches off |
+| VBAR | `VBAR_EL2 = fff7feffb2f7ffe0` (garbage) | `VBAR_EL3 = 06400000` (smm64) |
+| HCR_EL2 / SCR_EL3 | `80000002` | `131` |
+| GICD_CTLR / GICC_CTLR | `1` / `1` (non-secure view) | `3` / `3` (secure view) |
+| GICD_TYPER | `fc67`: 256 IDs, 4 CPUs, security extensions | same |
+| GICD_IIDR / GICC_IIDR | `0200143b` / `0202143b`: **GIC-400** | same |
+| IGROUPR0 / IGROUPR1–7 | RAZ from non-secure | `fe00ffff` / **`ffffffff`**: all SPIs are group 1 (non-secure) |
+| ISENABLER0 / 1–7 | | `0000ffff` / `0`: no SPI enabled |
+
+Decoded in `../hardware/interrupts.md` ("GIC state at handoff") and
+`../booting.md` ("State of a 64-bit program at entry").

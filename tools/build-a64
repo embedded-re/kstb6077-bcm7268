@@ -1,0 +1,19 @@
+#!/bin/sh
+# Build an AArch64 bare-metal program: prog.s -> prog.elf (symbols) + prog.bin (raw).
+#
+#   tools/build-a64 path/to/prog.s [load address, default 0x01000000]
+#
+# Uses clang + ld.lld (no GNU aarch64 toolchain needed).
+set -e
+
+src=$1
+addr=${2:-0x01000000}
+[ -n "$src" ] || { echo "usage: $0 prog.s [addr]" >&2; exit 1; }
+
+base=${src%.s}
+clang --target=aarch64-none-elf -c "$src" -o "$base.o"
+ld.lld -Ttext="$addr" "$base.o" -o "$base.elf"
+llvm-objcopy -O binary "$base.elf" "$base.bin"
+rm -f "$base.o"
+
+echo "$base.bin: $(wc -c < "$base.bin") bytes, linked at $addr"

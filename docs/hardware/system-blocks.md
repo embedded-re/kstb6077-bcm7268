@@ -98,6 +98,8 @@ end of the region.
 
 ## ARM generic timer
 
-Read with CP15 instructions (`CNTFRQ`, `CNTPCT`); it has no MMIO address.
-The DTB describes it as `arm,armv8-timer`. Its frequency has not been read
-yet (27 MHz is expected).
+Read with system-register instructions (32-bit: `mrc p15` `CNTFRQ`/`CNTPCT`;
+64-bit: `mrs CNTFRQ_EL0`/`CNTPCT_EL0`); it has no MMIO address. The DTB
+describes it as `arm,armv8-timer`. **CNTFRQ_EL0 = `019bfcc0` = 27,000,000:
+27 MHz**, the same clock as the wake timer and watchdog (read from AArch64
+EL2 and EL3).

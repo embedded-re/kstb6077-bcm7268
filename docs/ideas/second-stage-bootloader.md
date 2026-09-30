@@ -53,6 +53,19 @@ The simpler alternative is `go -64` (EL2, BOLT's PSCI stays in charge). A
 64-bit Linux kernel could then be tried directly, but the GIC group question
 stays unanswered from below EL3.
 
+## Update (2026-09-30): the GIC security-group theory is ruled out ❌
+
+Read from EL3 (secure view): **IGROUPR1–7 = `ffffffff`, so every SPI (IDs
+32–255) is already in group 1 (non-secure)**. Only PPI slots 16–24 are
+secure. The GIC distributor and CPU interface are enabled for both groups.
+A non-secure Linux kernel can see and configure every peripheral interrupt,
+so point 1 above was **not** the cause of the old Linux IRQ problem.
+Details: `../hardware/interrupts.md` ("GIC state at handoff").
+
+What remains plausible: point 2 (clocks, power or pin mux that Linux has no
+driver for) and DTB errors. For those a shim doesn't need EL3: `go -64` (EL2)
+or a 32-bit shim is enough.
+
 ## Useful side effect
 
 Turning the MMU off for the handoff also makes the GIC reachable
