@@ -3,6 +3,14 @@
 Reverse-engineering notes and bare-metal ARM code for the KaonMedia KSTB6077,
 an Android TV set-top box built on the Broadcom BCM7268 SoC.
 
+<p align="center">
+  <img src="docs/images/kstb6077-telekom.png" alt="KSTB6077 with Telekom branding" height="260">
+  <img src="docs/images/kstb6077-cosmote.png" alt="KSTB6077 with COSMOTE TV branding" height="260">
+</p>
+
+The KSTB6077 is supplied to several TV operators, so the logo on the lid
+varies by provider (Telekom and COSMOTE TV shown).
+
 ## Board
 
 | | |
@@ -71,7 +79,7 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt` |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |
 | `docs/history/linux-port.md` | the earlier Alpine / Linux 6.6 port |
-| `docs/images/` | PCB photo, Android recovery screenshot |
+| `docs/images/` | product photos, PCB photo, Android recovery screenshot |
 
 ## Quick start
 
