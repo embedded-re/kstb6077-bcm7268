@@ -34,8 +34,8 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf0408000` / `0xf0409000` | PWM blocks | |
 | `0xf040a500` | main GPIO (4 banks) | `gpio.md` |
 | `0xf040a6a8` | watchdog | `system-blocks.md` |
-| `0xf040c000` | **UART0: console**, 16550, 115200 8N1 | |
-| `0xf040d000` / `0xf040e000` | UART1 / UART2, 16550 | |
+| `0xf040c000` | **UART0: console**, 16550, 115200 8N1 | `uart.md` |
+| `0xf040d000` / `0xf040e000` | UART1 / UART2, 16550 | `uart.md` |
 | `0xf0410000` | AON control; AON SRAM `0xf0410200–0xf04105ff` | `system-blocks.md` |
 | `0xf0410700` | AON pin mux | `gpio.md` |
 | `0xf0418000` | MSPI (SPI controller) | |
@@ -45,6 +45,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf0460000` | PCIe (Wi-Fi BCM4335) | |
 | `0xf0480000` | GENET v5 Ethernet; MDIO at `0xf0480800` | |
 | `0xf04d1500` | AVS temperature sensor | `system-blocks.md` |
+| `0xf04e0488`, `0xf04e051c–0524` | UART clock gate and clock muxes | `uart.md` |
 | `0xf0b00200…` | USB PHY, EHCI/OHCI/xHCI/BDC | |
 | `0xffd01000` / `0xffd02000` | GIC distributor / CPU interface | `interrupts.md` |
 | `0xffe00000` | boot SRAM (128 KB) | |

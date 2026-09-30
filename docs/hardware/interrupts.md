@@ -16,6 +16,8 @@ GIC numbering: DTB `<0x0 N ...>` = SPI *N* = GIC interrupt ID *N* + 32.
 |---|---|---|
 | AON L2 (`upg_main_aon`, includes AON GPIO) | SPI `0x42` = 66 | 98 |
 | UART0 | SPI `0x46` = 70 | 102 |
+| UART1 | SPI `0x47` = 71 | 103 |
+| UART2 | SPI `0x48` = 72 | 104 |
 
 ## AON L2 controller (`0xf0419c00`)
 

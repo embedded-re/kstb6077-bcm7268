@@ -20,7 +20,7 @@ an Android TV set-top box built on the Broadcom BCM7268 SoC.
 | Function | Hardware | Where |
 |---|---|---|
 | Serial console | UART0, 16550-compatible, 115200 8N1, at `0xf040c000`; 5-pin header on the PCB | `docs/booting.md` |
-| More UARTs | UART1 `0xf040d000`, UART2 `0xf040e000` | `docs/hardware/memory-map.md` |
+| More UARTs | UART1 `0xf040d000`, UART2 `0xf040e000`: 16550, 81 MHz clock, working (loopback-tested), unused by BOLT; pins unknown | `docs/hardware/uart.md` |
 | Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s | `docs/bolt/bolt.md` |
 | Wi-Fi | Broadcom BCM4335 on PCIe (`14e4:aa31`); power switched by AON GPIO 21 and 26 | `docs/hardware/gpio.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
@@ -66,7 +66,7 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |
 | `boot/sysinit.txt` | BOLT autoboot script for the USB stick |
 | `docs/booting.md` | how to load and run code: USB stick, TFTP, 32/64-bit, watchdog safety net |
-| `docs/hardware/` | memory map, GPIO, interrupts, system blocks, device-tree provenance |
+| `docs/hardware/` | memory map, GPIO, UARTs, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
 | `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt` |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |
