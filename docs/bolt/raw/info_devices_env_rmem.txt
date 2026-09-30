@@ -1,0 +1,137 @@
+===== info
+info
+========================================================================
+     CPU speed: 1656MHz
+DDR0 Frequency: 1856MHz, 16Gx32 phy:32	80000000 @ 00000000
+DDR0 Actual frequency: 1856MHz, ratio 1.000
+  Total memory: 2048MB
+   Boot Device: EMMC
+SDIO:
+ controller 0, TYPE: SD
+ controller 1, TYPE: EMMC
+
+BSP version: '4.2.5'
+SHMOO version: 5.6.1.0 [0x05060100]
+Total memory used by BOLT: 0x06FFC000 - 0x09200000 (35667968)
+FSBL info area:            0x06FFC000 - 0x06FFC04C (76)
+Page table base:           0x07000000
+Text (code) segment:       0x070080F0 - 0x0703F000 (225040)
+Initialized Data:          0x0703F000 - 0x07069208 (172552)
+BSS Area:                  0x07069208 - 0x0706B248 (8256)
+Local Heap:                0x07100000 - 0x09100000 (33554432)
+Stack Area:                0x09100000 - 0x09200000 (1048576)
+
+BOLT driver build information:
+LDR:     ELF   1; RAW   1; SREC  1; ZIMG  1
+UI:      LEVEL 3; MIN   0
+FS:      FAT   1; FAT32 1
+NET:     STACK 1; ENET  1; TCP   1
+USB:     STACK 1; ETH   1; DISK  1; SERIAL   1; HID 1
+FLASH:   NAND
+SPLASH:  524288; flash0.splash
+
+AVS: STB: V=0.962V, T=+44.790C, PV=0.854V, MV=0.963V, FW=[1.1.0.0]
+AVS: CPU: V=0.945V, T=+44.790C, PV=0.834V, MV=0.946V
+========================================================================
+*** command status = 0
+BOLT> ===== boards
+boards
+a)	AVS   KM_SH368AT * 
+ FSBL info version 3, 1 boards.
+ AVS is using board defaults, load/run status: 1
+ Overtemp park check enabled
+*** command status = 0
+BOLT> ===== show devices
+show devices
+Device Name          Description
+-------------------  ---------------------------------------------------------
+              uart0  16550 DUART at 0xf040c000 channel 0
+               mem0  Memory
+             flash0  EMMC flash Data : 0x000000000-0x1D21D0000 (7458MB)
+      flash0.macadr  EMMC flash Data : 0x000004400-0x000004600 (512B)
+       flash0.nvram  EMMC flash Data : 0x000004600-0x000014600 (64KB)
+         flash0.bsu  EMMC flash Data : 0x000014600-0x0000FFE00 (942KB)
+        flash0.misc  EMMC flash Data : 0x000100000-0x000200000 (1024KB)
+       flash0.hwcfg  EMMC flash Data : 0x000200000-0x000300000 (1024KB)
+         flash0.KRN  EMMC flash Data : 0x000300000-0x004300000 (64MB)
+         flash0.DTB  EMMC flash Data : 0x004300000-0x004700000 (4MB)
+        flash0.SWAP  EMMC flash Data : 0x004700000-0x084700000 (2048MB)
+        flash0.ROOT  EMMC flash Data : 0x084700000-0x1D21CF600 (5339MB)
+             flash1  EMMC flash Boot1: 0x000000000-0x000400000 (4MB)
+             flash2  EMMC flash Boot2: 0x000000000-0x000400000 (4MB)
+             flash3  EMMC flash RPMB : 0x000000000-0x000400000 (4MB)
+               eth0  GENET Internal Ethernet at 0xf0480000
+              mdio0  GENET MDIO at 0xf0480800
+*** command status = 0
+BOLT> ===== show heap
+show heap
+
+Total bytes:       33554432
+Free bytes:        28007652
+Free nodes:        2
+Allocated bytes:   5540588
+Allocated nodes:   256
+Largest free node: 28007232
+Heap status:       CONSISTENT
+
+*** command status = 0
+BOLT> ===== show usb
+show usb
+Bus 0 Device 1   Class 9 Vendor 0000 Product 0000  [HUB]
+Bus 1 Device 1   Class 9 Vendor 0000 Product 0000  [HUB]
+Bus 2 Device 1   Class 9 Vendor 0000 Product 0000  [HUB]
+Bus 2 Device 2   Class 255 Vendor 0A5C Product 2045  [DEVICE]
+Bus 3 Device 1   Class 9 Vendor 0000 Product 0000  [HUB]
+Bus 4 Device 1   Class 9 Vendor 0000 Product 0000  [HUB]
+*** command status = 0
+BOLT> ===== printenv
+printenv
+Variable Name        Value
+-------------------- --------------------------------------------------
+        BOOT_CONSOLE uart0
+              SPLASH ENABLE
+        BOARD_SERIAL BS1006373C001535
+         BOARD_BTMAC 90:F8:91:E7:00:0C
+      FB_DEVICE_TYPE flash0
+    ANDROID_BOOT_IMG flash0.boot
+ANDROID_RECOVERY_IMG flash0.recovery
+             OEM_KEY ATV00000019ST_TMCZ
+        EMMC_DEVNAME f0200200.sdhci
+         ETH0_HWADDR 90:F8:91:E7:00:0A
+             VERSION 1.34
+            BUILDTAG v1.34
+      CHIP_FAMILY_ID 72680010
+           BOARDNAME KM_SH368AT
+            NODENAME KM_SH368AT-BS1006373C001535
+            ETH0_PHY INT
+      ETH0_MDIO_MODE 1
+          ETH0_SPEED 100
+        ETH0_PHYADDR 1
+          MEMORYSIZE 2048
+          DT_ADDRESS 7613000
+             DT_SIZE a53e
+          DRAM0_SIZE 2048
+*** command status = 0
+BOLT> ===== rmem
+rmem
+Reserved memory areas in bytes:
+  0 007e000000 02000000 80000d01 "SRR"
+  0 007df00000 00100000 00000401 "BL31"
+  0 0006400000 00010000 00000301 "PSCI"
+Available memory areas in bytes:
+  0 0000000000 06400000
+  0 0006410000 77af0000
+*** command status = 0
+BOLT> ===== gisb
+gisb
+GISB timeout: 162000
+*** command status = 0
+BOLT> ===== rts
+rts
+BOX MODE: 1
+*** command status = 0
+BOLT> ===== tz dt show -nodes
+tz dt show -nodes
+TZ not initialized
+*** command status = -2
+BOLT> 

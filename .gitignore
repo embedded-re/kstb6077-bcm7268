@@ -6,3 +6,5 @@ zImage
 *.elf
 !assembly/bootstrap.bin
 !assembly/bootstrap.elf
+# personal study material
+docs/learning/
