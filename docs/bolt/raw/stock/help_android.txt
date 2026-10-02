@@ -1,0 +1,68 @@
+===== android boot
+help android boot
+
+  SUMMARY
+
+     Load an Android boot image into memory and boot it
+
+  USAGE
+
+     android boot [options] [arg]
+     
+     This command loads and boots and Android image. The
+     optional arg can be used to override any builtin
+     kernel command line arguments.
+     
+     The file or partition to use for booting can be
+     specified with environment variable or explicitly
+     in the command with -i option.
+     The format can be:
+        dev:filename (e.g. usbdisk0:boot.img)
+        dev (e.g. flash1.partition)
+     If -rawfs option is enabled, then it must be:
+        usbdisk0:partition  (e.g. usbdisk0:boot)
+     
+     The following environment variables can be used:
+       ANDROID_BOOT_IMG - for normal boot image
+       ANDROID_RECOVERY_IMG - for recovery boot image
+
+  OPTIONS
+
+     -rawfs ........... Load the file from an unformatted file system
+     -tee ............. Android trusted boot with BL31/Trusty OS
+     -32 .............. Trusty is a 32-bit binary (default is 64-bit)
+
+*** command status = 0
+BOLT> ===== android fastboot
+help android fastboot
+
+  SUMMARY
+
+     Put target platform in Android fastboot mode
+
+  USAGE
+
+     android fastboot [options]
+     
+     This command puts target platform in fastboot mode
+     for updating the system images on target platform
+     using Android fastboot protocol.
+     In fastboot mode, the target platform processes
+     fastboot command from the host.
+     
+     The fastboot command can be sent to target via either
+     TCP or USB depending on the 'transport' option.
+     The device to store the system image can either be
+     USB drive or eMMC flash device depending on the
+     'device' parameter. The 'device' parameter must be
+     a valid BOLT flash or disk device.
+     E.g. for USB drive: -device=usbdisk0
+          for eMMC flash: -device=emmcflash0 or -device=flash0
+
+  OPTIONS
+
+     -transport=* ..... Use tcp or usb (default)
+     -device=* ........ Use BOLT device full name
+
+*** command status = 0
+BOLT> 

@@ -85,6 +85,9 @@ The register it's read from is not identified:
   `+0x310 = 0x5c` includes bit 6 but is inconclusive. The next test is to
   re-dump after a software reset.
 - Early boot may clear the history before BOLT runs.
+- BOLT itself knows the value: in the DTB it hands to Linux, the `/bolt`
+  node has `reset-history = <0x200>` and `reset-list = "software_master"`
+  (stock box, after a software reset; `../stock-firmware.md`).
 
 AON control `0xf0410000–0x1f` after a software reset:
 `00000000 00000000 03300200 00000002 00000010 0000007f 002932e0 00107ac0`.

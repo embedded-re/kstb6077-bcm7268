@@ -28,7 +28,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 
 | Base | Block | Doc |
 |---|---|---|
-| `0xf0200100` / `0xf0200300` | SDHCI 0 (SD slot) / SDHCI 1 (eMMC) | |
+| `0xf0200000` / `0xf0200200` | SDHCI 0 (SD slot) / SDHCI 1 (eMMC) host registers; config blocks at `+0x100` | |
 | `0xf0403000` | system L2 interrupt controller | `interrupts.md` |
 | `0xf0404000` | SUN_TOP_CTRL: chip ID, straps, software reset, pin mux | `system-blocks.md` |
 | `0xf0408000` / `0xf0409000` | PWM blocks | |
@@ -36,7 +36,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf040a6a8` | watchdog | `system-blocks.md` |
 | `0xf040c000` | **UART0: console**, 16550, 115200 8N1 | `uart.md` |
 | `0xf040d000` / `0xf040e000` | UART1 / UART2, 16550 | `uart.md` |
-| `0xf0410000` | AON control; AON SRAM `0xf0410200–0xf04105ff` | `system-blocks.md` |
+| `0xf0410000` | AON control (`0x00–0x27` readable; **`0x2c` gives an external abort**); AON SRAM `0xf0410200–0xf04105ff` | `system-blocks.md` |
 | `0xf0410700` | AON pin mux | `gpio.md` |
 | `0xf0418000` | MSPI (SPI controller) | |
 | `0xf0419c00` | AON L2 interrupt controller (`upg_main_aon`) | `interrupts.md` |

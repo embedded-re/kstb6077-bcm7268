@@ -30,7 +30,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Serial console | UART0, 16550-compatible, 115200 8N1, at `0xf040c000`; 5-pin header on the PCB | `docs/booting.md` |
 | More UARTs | UART1 `0xf040d000`, UART2 `0xf040e000`: 16550, 81 MHz clock, working (loopback-tested), unused by BOLT; pins unknown | `docs/hardware/uart.md` |
 | Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s | `docs/bolt/bolt.md` |
-| Wi-Fi | Broadcom BCM4335 on PCIe (`14e4:aa31`); power switched by AON GPIO 21 and 26 | `docs/hardware/gpio.md` |
+| Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | `docs/stock-firmware.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host buses (xHCI, EHCI, OHCI); one USB-A port | |
 | Video | HDMI, driven by the Broadcom display pipeline (no open driver) | |
@@ -38,7 +38,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | `docs/hardware/gpio.md` |
 | Blue LED (LED3) | AON GPIO 16, active-low | `docs/hardware/gpio.md` |
 | Standby button (SW1) | AON GPIO 14, active-low | `docs/hardware/gpio.md` |
-| Recovery button (SW4) | AON GPIO 7, active-low | `docs/hardware/gpio.md` |
+| Recovery / BT-pairing button (SW4) | AON GPIO 7, active-low; held at power-on → recovery; in Android → Bluetooth remote pairing | `docs/hardware/gpio.md` |
 | Power switch (SW2) | hard power switch | |
 | IR receiver (IR1) | receiver only; the SoC's IR block is not enabled by BOLT | `docs/hardware/gpio.md` |
 | Temperature sensor | AVS TMON at `0xf04d1500`, °C = (410040 − code × 487) / 1000 | `docs/hardware/system-blocks.md` |
@@ -70,13 +70,15 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `assembly/` | 32-bit bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin`/`.elf` |
 | `tools/build-a64` | builds an AArch64 program (`.s` → `.elf` + `.bin`, clang + ld.lld) |
 | `tools/kstb-run` | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
-| `boot/original_dtb.dts` | the original vendor device tree |
+| `boot/original_dtb.dts` | BOLT's base vendor device tree |
+| `boot/stock_dtb.dts` | the device tree a stock box hands to Linux (after BOLT and BSU fix-ups) |
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |
 | `boot/sysinit.txt` | BOLT autoboot script for the USB stick |
 | `docs/booting.md` | how to load and run code: USB stick, TFTP, 32/64-bit, watchdog safety net |
+| `docs/stock-firmware.md` | the untouched stock firmware: boot chain, boot reasons, how to reach BOLT, stock DTB, stock kernel facts |
 | `docs/hardware/` | memory map, GPIO, UARTs, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
-| `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt` |
+| `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |
 | `docs/history/linux-port.md` | the earlier Alpine / Linux 6.6 port |
 | `docs/images/` | product photos, PCB photo, Android recovery screenshot |

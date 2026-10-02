@@ -88,9 +88,16 @@ is untested.
 
 | Command | CPU state at entry | BOLT prints |
 |---|---|---|
-| `go <addr>` | AArch32 SVC, BOLT's MMU and caches on, IRQ/FIQ masked | `32 bit PSCI boot...` |
+| `go <addr>` | AArch32; ⚠️ mode unverified (see note below) | `32 bit PSCI boot...` |
 | `go -64 <addr>` | **AArch64 EL2** | `64 bit PSCI boot...` |
 | `boot -64 -el3 -raw -addr=<addr> <file>` | **AArch64 EL3**: your code is the secure monitor | `64 bit PSCI (@ EL3) boot...` / `Secure monitor entry @ …` |
+
+⚠️ **32-bit `go` may enter in HYP mode with the MMU off.** The stock kernel is
+started through the same `32 bit PSCI boot` path and reports `CPU: All CPU(s)
+started in HYP mode` (`stock-firmware.md`). If `go` behaves the same, a 32-bit
+program starts in HYP mode with its MMU off, not in SVC under BOLT's page
+table. Not yet checked: print `cpsr` and HSCTLR from a 32-bit program. BOLT's
+own commands (`d`, `e`) do run under BOLT's MMU (`hardware/memory-map.md`).
 
 The DTB address is `0x07613000` in all modes. `go`/`boot` close the network
 first (`-noclose` keeps it open). `-nopsci` boots without PSCI (untested). A

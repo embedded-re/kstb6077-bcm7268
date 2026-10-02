@@ -32,7 +32,7 @@ Compatible `brcm,brcmstb-gpio`. The register layout matches Linux
 | LED1 red | AON bank 0 bit 17 | open-drain, active-low; output after BOLT. Green + red = orange |
 | LED3 blue | AON bank 0 bit 16 | active-low; **input after BOLT**. To use: set ODEN, set DATA (off), then clear IODIR |
 | SW1 (front standby button) | AON bank 0 bit 14 | input, active-low (reads 1 at rest) |
-| SW4 (reset / recovery button) | AON bank 0 bit 7 | input, active-low (0 = pressed) |
+| SW4 (recovery / Bluetooth-pairing button) | AON bank 0 bit 7 | input, active-low (0 = pressed). Held at power-on, the stock BSU boots recovery. The stock DTB maps it as `gpio_keys_polled` `BT_PAIR` (key `0x18f`), and BOLT's env has `BT_PAIR upg_gio_aon 7` |
 | Wi-Fi power (`vreg-wifi-pwr`) | AON bank 0 bit 21 | from the DTB; input after BOLT |
 | WLAN power (`vreg-wlan-pwr`) | AON bank 0 bit 26 | from the DTB; input after BOLT |
 

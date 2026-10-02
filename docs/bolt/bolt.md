@@ -122,7 +122,7 @@ These partition names reflect the current (post-Android) layout, matching
 ### Safe: read-only (used for this map)
 `help`, `info`, `boards`, `show devices`, `show heap`, `show usb`,
 `printenv`, `rmem` (no args), `gisb` (no args), `rts` (no args),
-`d` (**only on mapped addresses**, see §3), `u` (disassemble), `crc`, `sha`,
+`d` (**only on mapped addresses**, see §3; even mapped blocks can have offsets that external-abort, e.g. AON control `0xf041002c`, so dump new blocks in small pieces), `u` (disassemble), `crc`, `sha`,
 `dir`, `mii read`, `psci -r0=0x84000000` (version), `time`, `testenv`, `t`
 (compare memory), `dt show`, `dt sane`.
 

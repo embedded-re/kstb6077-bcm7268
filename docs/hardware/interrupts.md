@@ -19,6 +19,10 @@ GIC numbering: DTB `<0x0 N ...>` = SPI *N* = GIC interrupt ID *N* + 32.
 | UART1 | SPI `0x47` = 71 | 103 |
 | UART2 | SPI `0x48` = 72 | 104 |
 
+The stock kernel prints the same numbers (UART 102/103/104), plus xHCI 124,
+EHCI 122/126, OHCI 123/127 and PCIe 78, and it registers 10 Broadcom L2
+controllers without errors (`../stock-firmware.md`).
+
 ## AON L2 controller (`0xf0419c00`)
 
 Level variant; the layout matches Linux `drivers/irqchip/irq-brcmstb-l2.c`:

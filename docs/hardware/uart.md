@@ -85,6 +85,12 @@ e -w 0xf040d010 00000000     loopback off
 UART1 returned `55` and `a3`; UART2 returned `55`. Both blocks are clocked
 and functional.
 
+## Stock kernel
+
+The stock Linux kernel registers all three: `ttyS0` (IRQ 102), `ttyS1`
+(IRQ 103) and `ttyS2` (IRQ 104), each with `base_baud = 5062500` = 81 MHz / 16.
+That confirms the clock (`../stock-firmware.md`).
+
 ## Pins: unknown
 
 Which package pins UART1/UART2 are routed to, if any, is unknown.
