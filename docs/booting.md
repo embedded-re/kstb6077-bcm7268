@@ -12,6 +12,23 @@ boot ROM → secure first-stage loaders (BFW v4.2.5, BBL v3.1.1; AVS and DDR set
 BOLT's environment changes (`setenv`) are lost on reboot unless saved with
 `-p`, which writes NVRAM.
 
+## Getting to `BOLT>` (Ctrl-C)
+
+BOLT cancels its autostart when it receives Ctrl-C right after its banner:
+`Automatic startup canceled via Ctrl-C`. This works on any box, including a
+stock one with `STARTUP` set:
+
+```
+tools/kstb-bolt              # then power-cycle the board: lands at BOLT>
+tools/kstb-bolt --reset      # board already at BOLT>: software reset, back at BOLT>
+```
+
+The tool sends Ctrl-C continuously, so timing doesn't matter. Tested on the
+stock box: from a power-cycle (`RR:00000003`) and with `--reset`
+(`RR:00000200`, about 5.5 s back to `BOLT>`). On this path
+BOLT skips its splash; bring HDMI up with `load -splash` if you need it
+(`hardware/display.md`).
+
 ## Building the monitor
 
 ```
@@ -136,4 +153,5 @@ go ...
 ## Serial console
 
 UART0, 115200 8N1, on the 5-pin "UART shell" header (see
-`images/PCB.png`). BOLT stops at `BOLT>` when autoboot finds no USB stick.
+`images/PCB.png`). The modified box stops at `BOLT>` when autoboot finds no
+USB stick (its `STARTUP` is unset); otherwise use Ctrl-C (above).

@@ -156,6 +156,10 @@ These partition names reflect the current (post-Android) layout, matching
   memory before a `go`.
 - **Scripting**: `loop "cmd" -count=N`, `t` (compare memory with `-eq/-gt/-lt/-and`),
   `testenv`, `time "cmd"`, and `batch` files (like `sysinit.txt`).
+- **`load -raw -splash -tftp <pc>:<file>.bmp`** brings up HDMI with a 1920 × 1080
+  BMP and leaves a live RGB565 framebuffer ✅ (`../hardware/display.md`).
+- **Ctrl-C during boot** cancels autostart (`Automatic startup canceled via
+  Ctrl-C`) ✅; `../../tools/kstb-bolt` automates it.
 - **`uncache -nommu`** turns BOLT's MMU off. ⚠️ Might make the GIC readable
   from `d`. Risky: BOLT itself may misbehave without caches or its
   mappings. Untested.

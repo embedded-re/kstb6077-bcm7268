@@ -33,7 +33,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | `docs/stock-firmware.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host buses (xHCI, EHCI, OHCI); one USB-A port | |
-| Video | HDMI, driven by the Broadcom display pipeline (no open driver) | |
+| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's `load -splash` brings it up with a BMP and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64` | `docs/hardware/display.md` |
 | TV tuner | DVB-T tuner with RF input | |
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | `docs/hardware/gpio.md` |
 | Blue LED (LED3) | AON GPIO 16, active-low | `docs/hardware/gpio.md` |
@@ -70,13 +70,14 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `assembly/` | 32-bit bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin`/`.elf` |
 | `tools/build-a64` | builds an AArch64 program (`.s` → `.elf` + `.bin`, clang + ld.lld) |
 | `tools/kstb-run` | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
+| `tools/kstb-bolt` | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
 | `boot/original_dtb.dts` | BOLT's base vendor device tree |
 | `boot/stock_dtb.dts` | the device tree a stock box hands to Linux (after BOLT and BSU fix-ups) |
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |
 | `boot/sysinit.txt` | BOLT autoboot script for the USB stick |
 | `docs/booting.md` | how to load and run code: USB stick, TFTP, 32/64-bit, watchdog safety net |
 | `docs/stock-firmware.md` | the untouched stock firmware: boot chain, boot reasons, how to reach BOLT, stock DTB, stock kernel facts |
-| `docs/hardware/` | memory map, GPIO, UARTs, interrupts, system blocks, device-tree provenance |
+| `docs/hardware/` | memory map, GPIO, UARTs, display, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
 | `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |

@@ -16,6 +16,7 @@ entry.
 | `0x06ffc000–0x09200000` | **BOLT**: FSBL info `0x06ffc000`, page table `0x07000000`, code `0x070080f0`, data, bss, heap `0x07100000–0x09100000`, stack `0x09100000–0x09200000` |
 | `0x07613000` | DTB that BOLT passes on `go` (`DT_ADDRESS`, size `0xa53e`) |
 | `0x07700000` | DTB load address used by `boot/sysinit.txt` |
+| `0x7db08000–0x7defffff` | `splash0` (stock BOLT `rmem`): display lists `0x7db08000–0x7db0b6ff`, **framebuffer from `0x7db0b700`** (`display.md`) |
 | `0x7df00000–0x7dffffff` | **BL31** (ARM Trusted Firmware, EL3), reserved, secure |
 | `0x7e000000–0x7fffffff` | **SRR**, 32 MB reserved, secure |
 
@@ -42,10 +43,12 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf0419c00` | AON L2 interrupt controller (`upg_main_aon`) | `interrupts.md` |
 | `0xf0419c80` | AON GPIO (2 banks) | `gpio.md` |
 | `0xf041a080` | wake timer (seconds counter, 27 MHz) | `system-blocks.md` |
-| `0xf0460000` | PCIe (Wi-Fi BCM4335) | |
+| `0xf0460000` | PCIe (Wi-Fi BCM43570) | |
 | `0xf0480000` | GENET v5 Ethernet; MDIO at `0xf0480800` | |
 | `0xf04d1500` | AVS temperature sensor | `system-blocks.md` |
 | `0xf04e0488`, `0xf04e051c–0524` | UART clock gate and clock muxes | `uart.md` |
+| `0xf0604000` | display RDC (register DMA) list pointers | `display.md` |
+| `0xf0641000` | display graphics feeder (GFD): width `+0x44`, **surface address `+0x48`**; `+0x5c` aborts | `display.md` |
 | `0xf0b00200…` | USB PHY, EHCI/OHCI/xHCI/BDC | |
 | `0xffd01000` / `0xffd02000` | GIC distributor / CPU interface | `interrupts.md` |
 | `0xffe00000` | boot SRAM (128 KB) | |

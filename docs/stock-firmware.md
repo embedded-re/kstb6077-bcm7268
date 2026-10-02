@@ -42,8 +42,16 @@ The modified box stops at `BOLT>` because its `STARTUP` variable is unset.
 | `recovery` | **SW4 held at power-on** (BSU checks the "front panel button state") | `flash0.recovery`, the Android recovery menu |
 | `bootloader` | Linux `reboot bootloader` (recovery menu → "Reboot to bootloader") | the BSU tries fastboot, then **"stays in BOLT"** → `BOLT>` |
 
-To get a `BOLT>` prompt on a stock box: hold SW4 while powering on, then in
-the recovery menu choose "Reboot to bootloader".
+**Easiest way to a `BOLT>` prompt (any box): Ctrl-C.** BOLT cancels its
+autostart when it receives Ctrl-C on the console, right after its banner
+(`Automatic startup canceled via Ctrl-C`). `tools/kstb-bolt` sends Ctrl-C
+continuously during a power-on or a software reset, which always hits the
+window (tested from both, `bolt/raw/stock/ctrlc_cancel_after_reset.txt`).
+This path skips BOLT's splash, so HDMI stays off until `load -splash`
+(`hardware/display.md`).
+
+Without serial access: hold SW4 while powering on, then in the recovery menu
+choose "Reboot to bootloader".
 
 How the reboot reason travels:
 
@@ -175,8 +183,8 @@ Apr 14 2020.
 
 ## HDMI splash
 
-With a valid `splash` partition, BOLT itself drives HDMI:
+With a valid `splash` partition, BOLT itself drives HDMI during a normal boot:
 `SPLASH BMEM init @ 7defffff`, `Loaded BMP: W=1920 H=1080`. The modified box
 prints `bad file 'flash0.splash'` because that partition was repurposed.
-⚠️ Untested idea: restoring a splash image might leave a BOLT-initialised
-framebuffer for bare-metal code (`splash0` reservation at `0x7db08000`).
+The same display can be brought up by hand from the prompt with any BMP, and
+it keeps running after `go -64`. See `hardware/display.md`.
