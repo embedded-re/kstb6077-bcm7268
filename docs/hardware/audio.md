@@ -24,13 +24,15 @@ else is inferred from BOLT's code (`../bolt/bolt.md` §11).
    `SPLASH: failed starting audio -1` (tested). The audio DMA is now looping
    over the buffer. The TV was silent on a first boot like this (tested), but
    see "Stopping it" below.
-3. Set HDMI N/CTS for 1080p (148.5 MHz) from `BOLT>`:
+3. Set HDMI N/CTS for 1080p at 59.94 Hz (148.35 MHz) from `BOLT>`:
    ```
-   e -w 0xf06fa0c8 0x04001800      N   = 6144
-   e -w 0xf06fa0cc 0x00024414      CTS = 148500
-   e -w 0xf06fa0d0 0x00024414      CTS = 148500
+   e -w 0xf06fa0c8 0x040016c0      N   = 5824
+   e -w 0xf06fa0cc 0x00022551      CTS = 140625
+   e -w 0xf06fa0d0 0x00022551      CTS = 140625
    ```
-   The sound starts immediately on the TV (tested).
+   The sound starts immediately on the TV and plays clean (tested). The
+   1080p60 values (N 6144 = `0x04001800`, CTS 148500 = `0x00024414`) also
+   give sound, but with a periodic "blop" (see "The blop" below).
 
 **Stopping it:** `e -w 0xf0ca00c0 0` stops the DMA; the read pointer stands
 still. Setting N back to 0 is **not** a reliable mute. Once the TV has had
@@ -61,9 +63,64 @@ Probe output after `go -64` (read pointer every 0.25 s):
 7dadf600  7daf6e00  fdadf800  fdaf7000  7dadfa00  7daf7200 ...
 ```
 
-**Not yet explained:** about every 4th beep (≈ every 2 s) sounds different
-(a "blop"). The buffer has no 2-second pattern, so the cause lies elsewhere:
-the TV, the HDMI audio packets, or the hardware.
+The loop length can be changed while running (tested): stop the DMA, write a
+new end address and reset the read pointer, then start again.
+```
+e -w 0xf0ca00c0 0                 stop
+e -w 0xf0ca080c 0x7daf17ff        end = start + 96000 - 1   (0.25 s)
+e -w 0xf0ca0800 0x7dada100        read pointer = start
+e -w 0xf0ca00c0 1                 start
+```
+The read pointer then stays below the new end, and the wrap bit keeps
+flipping. Lengths tried: 0.5 s, 0.3 s, 0.25 s and 12,800 bytes (10 cycles of
+a 300 Hz tone, played as a seamless hum).
+
+## The blop: wrong CTS for this video clock
+
+With N 6144 / CTS 148500, about every 4th beep of the 0.5 s test buffer
+sounds different (a "blop"). With **N 5824 / CTS 140625 it goes away**.
+All tests used the soft 300 Hz beep, were done by ear, and ran on 2026-10-02.
+
+| Test | Setup | Heard |
+|---|---|---|
+| A | fresh audio boot, 6144/148500, 0.5 s loop | blop, ~every 4th beep |
+| B | then 5824/140625 | **blop gone** |
+| F1 | 2nd fresh boot, 6144/148500 | blop ~every 4th beep; its position **drifts slowly along the beep** |
+| F2 | DMA stopped and restarted only | blop still there |
+| F3 | 5824/140625 | **blop gone** |
+| F4 | back to 6144/148500, same boot | blop **not** back (30–60 s) |
+| H | 3rd fresh boot, 6144/148500, 0.25 s loop (4 beeps/s) | blop, about every 4th beep, drifting |
+| H2 | 5824/140625 | **blop gone** |
+
+What this shows (tested):
+- The 59.94 Hz values remove the blop. This held three times out of three, on
+  three boots and with two loop lengths.
+- Once the 59.94 values have been written, the old values do not bring the
+  blop back until the next reboot (F4; also tests C, D and E in the first
+  session, which were all done after B). Something latches: the TV's audio
+  clock recovery, or the HDMI block.
+- Restarting the DMA has no effect (F2).
+
+What it suggests (inferred):
+- The TMDS clock is **148.5/1.001 MHz (1080p at 59.94 Hz)**, not 148.5 MHz,
+  so format code 22 is 1080p59.94. 5824/140625 are the standard HDMI values
+  for that clock. They also follow BOLT's own pattern: code 21 (74.176 MHz)
+  uses CTS 140625 too. The TV's info screen says "1920x1080@60hz", but TVs
+  usually round 59.94 to 60.
+- With CTS 148500, the TV rebuilds a 0.1 % slow audio clock, about 48 samples
+  per second short. Its audio buffer then has to drop data now and then.
+  The slow drift of the blop's position fits an event that isn't tied to the
+  buffer.
+
+Not explained:
+- The blop period counted by ear was **about 4 beeps both at 2 beeps/s and at
+  4 beeps/s**, so it looked tied to buffer laps rather than to a fixed time.
+  A plain clock slip at a fixed rate would have given every 8th beep at
+  4 beeps/s. Counting a drifting blop by ear is hard, so this may be a
+  counting effect. A recording would settle it.
+- A steady 300 Hz hum with the old values sounded clean after the latch (D)
+  and gave "not sure" on a fresh boot (G). A slip may be hard to hear in a
+  soft steady tone.
 
 ## How BOLT's audio code works (reverse-engineered)
 
@@ -166,18 +223,90 @@ BOLT> d -w 0x07056f58 0x20
 ```
 `SplashData+20` points to `0x07056f58`, and nothing else in BOLT refers to
 it, so 22 is compiled in. Writing the 1080p60 values (N = 6144, CTS = 148500)
-by hand gives working sound (tested). Which exact mode code 22 is (1080p60,
-or 1080p at 59.94 Hz, where the standard values are N = 5824, CTS = 140625)
-isn't known.
+by hand gives sound with a periodic blop. The 1080p59.94 values (N = 5824,
+CTS = 140625) give clean sound (tested), so code 22 is most likely 1080p at
+59.94 Hz (inferred; see "The blop").
 
 `0xf06fa0c8` keeps BOLT's upper bits: BOLT writes `(old & 0xf7f00000) | N`.
 After boot it reads `0x0c000000`, so the value to write is `0x04001800`.
 
+## S/PDIF (optical output)
+
+The box has an **optical (TOSLINK)** S/PDIF jack. No S/PDIF receiver was
+available, so nothing here is checked by listening.
+
+### Not fused off (tested)
+
+BOLT's startup banner (`0x07024924`, the function that prints
+`BOLT v1.34 …`, `Board:`, `strap=`, `bond option:`) walks a table of chip
+fuse bits at `0x070472a8`. Each entry is 12 bytes, **{register, mask, name}**,
+and the register is stored as `0x204040xx` (BOLT ORs in `0xd0000000` →
+`0xf04040xx`). For each register whose value is not 0, it prints
+`otp @ <reg> = <value>:` and the name of every entry with any mask bit set.
+
+The S/PDIF entry: **`audio_spdif_disable` = bit 8 (`0x100`) of `0xf0404030`**.
+Other entries in the same register: `av_output_disable` `0x800000`, `en_cr`
+`0x60`, `en_testport` `0x80`, `hdcp22_disable` `0x2000000`, `hdmi_rx_disable`
+`0x4000000`, `hvd0/1_disable` `0x1000`/`0x2000`, `usb_p0/p1_disable`
+`0x8000000`/`0x200000`. More at `0xf0404034` (`sata_disable` `0x400000`,
+`pcie_disable` `0x8`, `hdcp_disable` `0x2`, …) and `0xf0404520` (Wi-Fi radio,
+HDR).
+
+On the modified box (boot banner, and read back with `d -w 0xf0404030 8`):
+```
+otp @ 0xf0404030 = 0x00000040: en_cr(0x00000060)
+otp @ 0xf0404034 = 0x00a02000: macrovision_disable(0x00800000) mtsif_enc_ctl_disable(0x00002000) rv9_disable(0x00200000)
+```
+Bit 8 of `0xf0404030` is 0, so **S/PDIF is not disabled in the fuses**. (`en_cr`
+is printed because its mask `0x60` covers the set bit 6.) Reading these two
+registers is safe, since BOLT reads them on every boot. Never write them.
+
+### BOLT's audio start lights the optical jack (tested, by eye)
+
+| Boot | Optical jack |
+|---|---|
+| with `pcm0`, audio started by BOLT, beeps playing | **red light** |
+| without `pcm0` (`SPLASH: audio not present`) | **dark** |
+
+So something in `0x070109cc` drives the S/PDIF transmitter's input pin
+(that probably includes its pin mux, inferred). Whether the line carries an S/PDIF
+stream with our samples, or the pin is just driven high, can't be told
+without a receiver (inferred: likely a stream).
+
+### The three output ports in `0xf0cb…`
+
+Step 9 of `0x070109cc` sets up three registers with the same layout. Read
+back after an audio boot (tested):
+
+| Register | BOLT writes | Read back | Bit 31 cleared (tested) |
+|---|---|---|---|
+| `0xf0cb0200` | `(old & 0xff0ffc00) \| 0x90000100` | `0x81084100` | TV sound and optical light unchanged |
+| `0xf0cb0300` | `(old & ~0x3ff) \| 0x80f00102` | `0x81f84102` | **TV goes silent**, optical light stays on |
+| `0xf0cb0c00` | `(old & 0xff0ffc00) \| 0x80400108`, then `\| 0x400108` | `0x81484108` | TV sound and optical light unchanged |
+
+- **`0xf0cb0300` is the HDMI output port** (tested). Setting bit 31 again
+  brings the sound back.
+- All three read back with the extra bits `0x01084000`. These are kept from
+  the old value, or set by the hardware (inferred). Bit 28 of BOLT's
+  `0x90000100` reads back as 0 (self-clearing? inferred).
+- No port's bit 31 turns the optical light off. So either the S/PDIF encoder
+  keeps sending frames (silence still toggles the line), or the light comes
+  from another step of the audio start (the clock set-up at `0xf04e28xx`, the
+  reset bit `0xf11005c0`, `0xf0cb0240 |= 3`). Which port, if any, feeds
+  S/PDIF is not known.
+- Other step-9 writes, read back after an audio boot: `0xf0cb0220` and
+  `0xf0cb0320` = `0x01060088` (BOLT: `|= 0x40008`), `0xf0cb0324` = `0x02000000`,
+  `0xf0cb0240` = `0x0000000b` (BOLT: `|= 3`).
+
+Next step: a receiver (a soundbar, or a USB S/PDIF input to record), then
+the same port test while listening to the optical output.
+
 ## Open questions
 
-- What the "blop" every ~2 s is.
-- Whether S/PDIF can be fed the same way (BOLT's code doesn't touch it, as
-  far as is known; the only related string is `audio_spdif_disable`).
+- Why the blop count by ear looked tied to buffer laps (see "The blop").
+- What latches after the 59.94 values are written (TV or box).
+- Whether the optical output carries the samples, and which port feeds it.
+  Needs a receiver.
 - Setting up the audio block from scratch without BOLT's splash (the register
   list above is the starting point), e.g. to choose the buffer address.
 - The meaning of the step 13 registers, and whether HDMI audio infoframes
@@ -186,7 +315,7 @@ After boot it reads `0x0c000000`, so the value to write is `0x04001800`.
 ## State after testing
 
 The modified box's `flash0.splash` was restored to the test pattern without
-`pcm0` (same 12 KB container as before the tests, CRC-checked read-back).
-The boot log shows `SPLASH: audio not present` again, and the audio block is
-not started. To repeat the tests, build a container with
+`pcm0` (same 12 KB container as before the tests, CRC `0x985d62dc`, checked
+on read-back). The boot log shows `SPLASH: audio not present` again, and the
+audio block is not started. To repeat the tests, build a container with
 `tools/make-splash --pcm`, as in the recipe above.

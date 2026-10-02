@@ -385,6 +385,7 @@ arm-none-linux-gnueabihf-objdump -D -M force-thumb bolt.elf > bolt_thumb.dis
 | `0x070115f4` | return surface *i* from the array at `0x0706ae20` (0 if not set up) |
 | `0x07030740` | `load` command: after loading, `-splash` → calls `0x070108e4` |
 | `0x07010994`, `0x07025358` | "splash-feedback": draw media *n* from the container |
+| `0x07024924` | startup banner (`BOLT v%d.%02d`, `Board:`, `strap=`, `otp @ …` from the fuse table at `0x070472a8`, `bond option:`), see `../hardware/audio.md` (S/PDIF) |
 
 Helper routines seen along the way: `0x070216f0` (getenv), `0x0701c318`
 (printf), `0x0701b89c` / `0x0701b804` (heap alloc / free), `0x0701e03c` /
