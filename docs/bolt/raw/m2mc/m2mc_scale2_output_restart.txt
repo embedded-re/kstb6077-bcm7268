@@ -1,0 +1,34 @@
+m2mc scale probe 2
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000001 
+  poll ok after us: 000006c8 last 01000000 
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000100 
+  W f09b0060 82409024 
+  W f09b0064 00000024 
+  W f09b006c 00100000 
+  W f09b0068 00000111 
+  W f09b0014 010011a0 
+  W f09b000c 00000006 
+  poll ok after us: 000006c8 last 010011a0 
+  poll ok after us: 000006c9 last 00000002 
+  poll ok after us: 000006c9 last 00000000 
+
+  W f09b0014 010013a0 
+  W f09b000c 00000006 
+  poll TIMEOUT after us: 00018e7b last 010011a0 
+  poll ok after us: 000006c9 last 00000002 
+  poll ok after us: 000006c8 last 00000000 
+
+  W f09b0014 010015a0 
+  W f09b000c 00000006 
+  poll TIMEOUT after us: 00018e7a last 010011a0 
+  poll ok after us: 000006c9 last 00000002 
+  poll ok after us: 000006c8 last 00000000 
+
+  changed words outside the image, per area: 00000000 
+  changed words outside the image, per area: 00000000 
+  changed words outside the image, per area: 00000000 
+probe done

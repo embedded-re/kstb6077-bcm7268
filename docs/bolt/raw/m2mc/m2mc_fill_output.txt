@@ -1,0 +1,48 @@
+m2mc fill probe
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000001 
+  poll ok after us: 000006c8 last 01000000 
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000100 
+  W f09b0060 82409024 
+  W f09b0064 00000024 
+  W f09b006c 00100000 
+  W f09b0068 00000111 
+ after reset:
+  f09b000c 00000000 
+  f09b0010 00000000 
+  f09b0014 00000000 
+  f09b0018 00000000 
+  f09b001c 00000000 
+  f09b0060 82409024 
+  f09b0064 00000024 
+  f09b0068 00000111 
+  f09b006c 00100000 
+  f09b00b0 00000002 
+  f09b02f0 00000100 
+  f09b1808 00000000 
+  W f09b0014 01001160 
+  W f09b000c 00000006 
+  poll ok after us: 000006c8 last 00000002 
+ after the list:
+  f09b000c 00000006 
+  f09b0010 00000002 
+  f09b0014 01001160 
+  f09b0018 01001160 
+  f09b001c 00000000 
+  f09b0060 82409024 
+  f09b0064 00000024 
+  f09b0068 00000111 
+  f09b006c 00100000 
+  f09b00b0 00000002 
+  f09b02f0 00000100 
+  f09b1808 00000000 
+  packet at 01001160 
+  0xf800 in rect / other changed in rect / changed outside rect / changed words after 4 KB: 00000080 00000000 00000000 00000000 
+  row 00000003 : deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef 
+  row 00000004 : deadbeef deadbeef deadbeef deadbeef f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 deadbeef deadbeef deadbeef deadbeef 
+  row 0000000b : deadbeef deadbeef deadbeef deadbeef f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 f800f800 deadbeef deadbeef deadbeef deadbeef 
+  row 0000000c : deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef deadbeef 
+probe done
