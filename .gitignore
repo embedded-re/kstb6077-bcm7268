@@ -8,3 +8,4 @@ zImage
 !assembly/bootstrap.elf
 # personal study material
 docs/learning/
+!docs/bolt/raw/gpt/*.bin

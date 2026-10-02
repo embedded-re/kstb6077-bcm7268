@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""Build a flash0.splash container for BOLT's boot splash from an image.
+
+    make-splash image.png splash.bin         any format Pillow reads; converted to 24-bit BMP
+
+Output: 'GZBR' header (u32 uncompressed size, u32 compressed size, u32 CRC32 of the
+payload) + zlib.compress(payload), where payload = 'BRCM' table with one 'bmp0'
+entry {size, offset 0x3c} + the BMP. BOLT reads only the first 512 KB of the
+partition, so the compressed result must fit in 524288 bytes. BOLT draws the
+image unscaled and centred, so use 1920x1080 for a full screen.
+Write it with BOLT: upload to RAM (tools/kstb-run --no-go --addr 0x02500000 splash.bin),
+then  flash -noerase -mem=0x02500000 -memsize=<size, hex> mem0 flash0.splash
+(see docs/hardware/display.md). Needs Pillow.
+"""
+import io, struct, sys, zlib
+from PIL import Image
+
+if len(sys.argv) != 3:
+    sys.exit(__doc__)
+im = Image.open(sys.argv[1]).convert("RGB")
+if im.size != (1920, 1080):
+    print(f"note: image is {im.size[0]}x{im.size[1]}; BOLT will draw it centred, unscaled", file=sys.stderr)
+b = io.BytesIO()
+im.save(b, "BMP")
+bmp = b.getvalue()
+
+payload = bytearray(0x3C)
+payload[0:4] = b"BRCM"
+struct.pack_into("<I", payload, 4, 0x10000)
+payload[12:16] = b"bmp0"
+struct.pack_into("<II", payload, 16, len(bmp), 0x3C)   # {tag, size, offset}
+payload = bytes(payload) + bmp
+
+comp = zlib.compress(payload, 9)
+out = b"GZBR" + struct.pack("<III", len(payload), len(comp), zlib.crc32(payload)) + comp
+out += b"\0" * (-len(out) % 4)
+if len(out) > 0x80000:
+    sys.exit(f"too big: {len(out)} bytes compressed (limit 524288); use a simpler image")
+open(sys.argv[2], "wb").write(out)
+print(f"{sys.argv[2]}: {len(out)} bytes (flash with -memsize=0x{len(out):x}); "
+      f"payload {len(payload)} bytes, {im.size[0]}x{im.size[1]}")

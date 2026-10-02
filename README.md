@@ -33,7 +33,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | `docs/stock-firmware.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host buses (xHCI, EHCI, OHCI); one USB-A port | |
-| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (needs a valid `flash0.splash`) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP | `docs/hardware/display.md` |
+| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP | `docs/hardware/display.md` |
 | TV tuner | DVB-T tuner with RF input | |
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | `docs/hardware/gpio.md` |
 | Blue LED (LED3) | AON GPIO 16, active-low | `docs/hardware/gpio.md` |
@@ -72,6 +72,7 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `tools/kstb-run` | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
 | `tools/kstb-bolt` | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
 | `tools/kstb-dump` | dumps board memory to a file over the BOLT console (read-only) |
+| `tools/make-splash` | builds a `flash0.splash` boot-splash container (GZBR/zlib) from an image |
 | `boot/original_dtb.dts` | BOLT's base vendor device tree |
 | `boot/stock_dtb.dts` | the device tree a stock box hands to Linux (after BOLT and BSU fix-ups) |
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |

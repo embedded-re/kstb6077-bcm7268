@@ -106,7 +106,8 @@ Notes:
 | `flash0.KRN` | kernel slot | 64 MB |
 | `flash0.DTB` | DTB slot | 4 MB |
 | `flash0.SWAP` | swap | 2048 MB |
-| `flash0.ROOT` | root filesystem | 5339 MB |
+| `flash0.ROOT` | root filesystem | 5322 MB (shrunk 2026-10-02 to make room for `splash`) |
+| `flash0.splash` | boot-splash container (added 2026-10-02, `../hardware/display.md`) | 17 MB |
 | `flash1` / `flash2` | eMMC boot partitions 1/2 (BOLT lives here) | 4 MB each |
 | `flash3` | eMMC RPMB | 4 MB |
 | `eth0` | GENET internal Ethernet | `0xf0480000` |
@@ -138,7 +139,7 @@ These partition names reflect the current (post-Android) layout, matching
 | `rpmb program-key` | **one-time programmable**: burns the eMMC RPMB key forever |
 | `setenv -p` / `-ro`, `unsetenv`, `incenv` | write the NVRAM partition (`-ro` can never be undone) |
 | `setsn`, `macprog` | rewrite serial/MAC storage |
-| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions |
+| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset` is signed 32-bit: raw `flash0` offsets of 2 GB or more fail or wrap |
 | `tz mon`, `tz boot` | load and run code in the secure world |
 
 ---
