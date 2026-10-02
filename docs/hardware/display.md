@@ -122,6 +122,113 @@ Not yet known: whether the display survives a 32-bit `go`, whether the
 resolution can be changed, and the meaning of the rest of the display
 pipeline's registers.
 
+## Video speed: how fast the CPU can redraw the screen
+
+Measured on the modified box (2026-10-02) at EL2 after `go -64`, with the
+generic timer (27 MHz). The area is 1600 × 1000 (a 320 × 200 game scaled ×5),
+centred at (160, 40). Probes: `../bolt/raw/display/video_probe.s` (MMU off,
+as entered) and `../bolt/raw/display/video_probe_mmu.s` (MMU on, see below).
+`../bolt/raw/display/video_demo_mmu.s` runs the same drawing as a demo to
+watch (35 fps paced, then full speed).
+
+| Test | MMU off | MMU on |
+|---|---|---|
+| A: solid fill, 16-byte stores (`stp`) | 87.2 ms/frame, 11.4 fps | **4.5 ms, 221 fps** |
+| B: solid fill, 2-byte stores (`strh`) | 697.8 ms, 1.4 fps | **4.5 ms, 221 fps** |
+| C: copy a 3.2 MB image from RAM (`ldp`/`stp`) | 130.1 ms, 7.6 fps | **5.3 ms, 189 fps** |
+| D: scrolling bars (build one row, copy it to 1000 lines) | 130.4 ms, 7.6 fps | **4.5 ms, 221 fps** |
+| E: 320 × 200 8-bit image → 256-colour palette → ×5 → screen | — | **4.7 ms, 214 fps** |
+
+All numbers are tested. The MMU-off probe ran twice and the runs agreed to
+0.01 %; the MMU-on probe ran once.
+
+- **MMU off**, every access is uncached Device memory: writes reach about
+  37 MB/s, and every store is a separate bus transaction, so 2-byte stores are
+  8× slower than 16-byte ones. The image updates on screen as it is drawn.
+  The scrolling bars moved visibly but roughly, with no visible tearing at
+  that speed (tested, by eye).
+- **MMU on**: about 700 MB/s to the screen. The framebuffer is mapped
+  Normal non-cacheable, so writes go to DRAM without cache maintenance but are
+  merged on the way, and 2-byte stores cost the same as 16-byte ones. Source
+  data in cached RAM reads fast.
+- So a 320 × 200 game at 35 fps (28.6 ms per frame) spends **under 5 ms**
+  per frame on drawing at ×5, but only with the MMU on. Compiled C also needs
+  the MMU on for a second reason: unaligned accesses fault on Device memory.
+- Drawing straight into the visible buffer **tears**. At 35 fps and at full
+  speed, moving bar edges showed as "stairs" (tested, by eye). The display
+  scans the buffer out while it is being redrawn. Fix: double buffering
+  synced to the frame counter, below.
+
+## Vsync and double buffering (tested)
+
+BOLT's display lists don't write a fixed surface address. Every frame, the
+RDC loads it from its own register and writes it to the graphics feeder:
+
+```
+03000002 f0603488             RDC: load the value of 0xf0603488
+0b000082 0d001082 130020c2    (arithmetic on RDC variables)
+02002000 f0641048             RDC: write the result to the GFD surface address
+```
+
+The same sequence appears four times, with `0xf0603484/88/8c/98`. Read
+from `BOLT>` with the watchdog armed (one word each, no abort):
+
+| Register | Value | Meaning |
+|---|---|---|
+| `0xf0603484` | `5000xxxx`, low bits count up | **frame counter**: one step every 16,683 µs = **59.94 Hz** (timed over 60 steps by `vsync_probe.s`) |
+| `0xf0603488` | `7db0b700` | surface address the RDC copies into `0xf0641048` |
+| `0xf060348c` | `7db0b700` | same value; written together with `+0x488` |
+| `0xf0603498` | `60845e89` | didn't change between reads; unknown |
+
+**Writing a buffer address to `0xf0603488` and `0xf060348c` flips the
+screen at the next frame boundary.** `0xf0641048` then reads the new address,
+and the picture switches whole, with no half-drawn frame (tested). A second
+buffer at `0x7d600000` (`0x3f4800` bytes, free `rmem` below `splash0`) is
+displayed fine. It has the same layout as BOLT's: pitch 3840, RGB565.
+
+Double-buffered loop (`../bolt/raw/display/vsync_probe.s`):
+```
+draw the frame into the back buffer
+write the back buffer's address to 0xf0603488 and 0xf060348c
+wait until 0xf0603484 changes (n times: 1 = 60 fps, 2 = 30 fps)
+swap front and back
+```
+
+| Phase | Measured | Seen on the TV |
+|---|---|---|
+| 8 flips A ↔ B, 0.5 s apart (B = copy of A plus a magenta box) | | clean blinks |
+| scrolling bars, 1 frame per tick | 16,683 µs/frame, 59.9 fps | **smooth, no stairs** |
+| Doom path (320 × 200 → palette → ×5), 2 ticks per frame | 33,366 µs/frame, 29.9 fps | motion clean; the picture itself shows 5 × 5 pixel blocks, as any ×5 scaling does |
+
+- The mode is **1080p at 59.94 Hz**, not 60 Hz (tested by the counter). This
+  matches the HDMI audio finding in `audio.md`.
+- A game at 35 fps on a 59.94 Hz display gets an uneven mix of 1- and 2-tick
+  frames. Locking to 30 fps (2 ticks) or 60 fps keeps motion even.
+- Writing only `0xf0603488`, or only `+0x48c`, wasn't tried. The probe always
+  writes both.
+- At the end the probe flips back to BOLT's buffer `0x7db0b700`. Nothing in
+  the display lists is written.
+
+### The minimal MMU set-up used (EL2, tested)
+
+Identity map, 4 KB granule, `TCR_EL2 = 0x80800020` (T0SZ 32 = 4 GB, table
+walks non-cacheable), `MAIR_EL2 = 0x0444ff00` (attr 0 Device-nGnRnE,
+1 Normal write-back, 2 Normal non-cacheable, 3 Device-nGnRE). Level 1 table:
+
+| Range | Mapping |
+|---|---|
+| `0x00000000–0x3fffffff` | 1 GB block, Normal write-back (`0x705`) |
+| `0x40000000–0x7fffffff` | level 2 table of 2 MB blocks: write-back, except `0x7da00000–0x7dffffff` (splash0) **non-cacheable** (`0x709`) |
+| `0x80000000–0xbfffffff` | unmapped |
+| `0xc0000000–0xffffffff` | 1 GB block, Device-nGnRE, execute-never (UART, GFD, GIC) |
+
+Then `tlbi alle2`, `ic iallu`, and set M, C and I in `SCTLR_EL2`. A vector
+table at `VBAR_EL2` prints `ESR`/`ELR`/`FAR` on any exception (none
+happened). The 2 MB block at `0x7de00000` also covers BL31 (`0x7df00000`,
+secure); it is mapped because the framebuffer's last lines are in it, but
+nothing touches BL31. Page tables at `0x10600000`, test data at
+`0x10000000–0x1042ffff` (free `rmem`).
+
 ## How BOLT's splash works (reverse-engineered)
 
 From BOLT's own code, dumped from RAM and disassembled (`../bolt/bolt.md` §11).

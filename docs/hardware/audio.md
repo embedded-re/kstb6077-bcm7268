@@ -103,7 +103,9 @@ What this shows (tested):
 
 What it suggests (inferred):
 - The TMDS clock is **148.5/1.001 MHz (1080p at 59.94 Hz)**, not 148.5 MHz,
-  so format code 22 is 1080p59.94. 5824/140625 are the standard HDMI values
+  so format code 22 is 1080p59.94. (Later confirmed: the display's frame
+  counter ticks every 16,683 µs = 59.94 Hz, see `display.md`, "Vsync and
+  double buffering".) 5824/140625 are the standard HDMI values
   for that clock. They also follow BOLT's own pattern: code 21 (74.176 MHz)
   uses CTS 140625 too. The TV's info screen says "1920x1080@60hz", but TVs
   usually round 59.94 to 60.
