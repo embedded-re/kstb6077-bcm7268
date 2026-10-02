@@ -6,6 +6,9 @@ zImage
 *.elf
 !assembly/bootstrap.bin
 !assembly/bootstrap.elf
+# local agent notes: CLAUDE.md and session handoffs (handoff-*.md)
+CLAUDE.md
+handoff-*.md
 # personal study material
 docs/learning/
 !docs/bolt/raw/gpt/*.bin
