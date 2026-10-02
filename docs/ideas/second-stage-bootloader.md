@@ -39,7 +39,7 @@ earlier `IRQ_TYPE_NONE` → `LEVEL_HIGH` fix.
    cleaned and off, IRQ/FIQ masked, `r0 = 0`, `r1 = 0xffffffff`,
    `r2 = DTB address`, SVC (or HYP) mode.
 
-## Update (2026-09-30): BOLT can start the shim at EL3 ✅
+## Update (2026-09-30): BOLT can start the shim at EL3
 
 `boot -64 -el3 …` launched a test program **as the secure monitor at EL3**
 (AArch64), and `go -64` launches at EL2 (details in `../bolt/bolt.md` §9). That
@@ -53,7 +53,7 @@ The simpler alternative is `go -64` (EL2, BOLT's PSCI stays in charge). A
 64-bit Linux kernel could then be tried directly, but the GIC group question
 stays unanswered from below EL3.
 
-## Update (2026-09-30): the GIC security-group theory is ruled out ❌
+## Update (2026-09-30): the GIC security-group theory is ruled out
 
 Read from EL3 (secure view): **IGROUPR1–7 = `ffffffff`, so every SPI (IDs
 32–255) is already in group 1 (non-secure)**. Only PPI slots 16–24 are

@@ -179,7 +179,7 @@ Apr 14 2020.
 |---|---|
 | `00000003` | power-on |
 | `00000200` | software master reset (Linux `reboot bootloader`) |
-| `00000000` | resets that interrupted BOLT during AUTOBOOT, before anything loaded. ⚠️ Probably quick power-cycles while timing the button; cause unconfirmed |
+| `00000000` | resets that interrupted BOLT during AUTOBOOT, before anything loaded. Probably quick power-cycles while timing the button; cause unconfirmed |
 
 ## HDMI splash
 

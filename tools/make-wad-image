@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Wrap a file (a Doom WAD) with a one-sector header, to store it in flash0.splash.
+
+    make-wad-image doom1.wad wad.img
+
+Output: a 512-byte header, then the file, padded with zeros to a whole sector:
+
+    +0x00  'KWAD'          magic
+    +0x04  u32  1          version
+    +0x08  u32  size       file size in bytes
+    +0x0c  u32  crc32      standard zlib crc32 of the file (= BOLT's `crc`)
+    +0x10  u32  0x200      offset of the file from the start of the header
+    +0x14  char name[32]   file name, NUL-padded
+    +0x200 the file
+
+BOLT's boot splash reads only the first 512 KB of flash0.splash, so the image
+goes at partition offset 0x100000 (1 MB), past the splash container.
+Write it from RAM (upload address must not overlap BOLT's flash staging
+buffer at 0x00040000 + size):
+    flash -noerase -offset=0x100000 -mem=0x10000000 -memsize=<img size> mem0 flash0.splash
+Load it before `go`:
+    load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=<img size> flash0.splash
+See docs/hardware/storage.md.
+"""
+import os, struct, sys, zlib
+
+if len(sys.argv) != 3:
+    sys.exit(__doc__)
+data = open(sys.argv[1], "rb").read()
+name = os.path.basename(sys.argv[1]).encode()[:31]
+hdr = bytearray(0x200)
+struct.pack_into("<4sIIII32s", hdr, 0, b"KWAD", 1, len(data), zlib.crc32(data), 0x200, name)
+out = bytes(hdr) + data
+out += b"\0" * (-len(out) % 512)
+open(sys.argv[2], "wb").write(out)
+print(f"{sys.argv[2]}: {len(out):#x} bytes, file {len(data):#x} bytes, "
+      f"file crc {zlib.crc32(data):#010x}, image crc {zlib.crc32(out):#010x}")

@@ -11,6 +11,7 @@ entry.
 |---|---|
 | `0x00000000–0x00000fff` | reserved, no DMA (DTB `reserved-nodma`). Unmapped in BOLT's MMU (NULL guard) |
 | `0x01000000–~0x01005200` | bare-metal monitor: code, data, bss, 16 KB stack (`assembly/`) |
+| `0x00040000–0x0103ffff` | BOLT's `flash` staging buffer (used only while `flash` runs; `storage.md`) |
 | `0x02208000` | zImage load address used by `boot/sysinit.txt` |
 | `0x06400000–0x0640ffff` | **PSCI** secure monitor (`smm64`), reserved |
 | `0x06ffc000–0x09200000` | **BOLT**: FSBL info `0x06ffc000`, page table `0x07000000`, code `0x070080f0`, data, bss, heap `0x07100000–0x09100000`, stack `0x09100000–0x09200000` |
@@ -23,7 +24,49 @@ entry.
 Available to programs (BOLT `rmem`): `0x00000000–0x06400000` and
 `0x06410000–0x7df00000`, minus BOLT's own region while BOLT is alive.
 
+## RAM for a bare-metal program after `go -64` (tested 2026-10-02)
+
+Probes and outputs: `../bolt/raw/ram/`. All at EL2 on the modified box.
+
+| Range | Size | After `go -64` |
+|---|---|---|
+| `0x00000000–0x00000fff` | 4 KB | leave alone: DTB `reserved-nodma` |
+| `0x00001000–0x000fffff` | 1 MB | **free**, tested (`ram_gaps_probe.s`) |
+| `0x00100000–0x00ffffff` | 15 MB | **free**, tested |
+| `0x01000000–0x011fffff` | 2 MB | your program (loaded at `0x01000000` by `kstb-run`) |
+| `0x01200000–0x063fffff` | 82 MB | **free**, tested |
+| `0x06400000–0x0640ffff` | 64 KB | **PSCI monitor: keep** (needed for `smc`, e.g. starting other cores) |
+| `0x06500000–0x06efffff` | 10 MB | **free**, tested |
+| `0x06f00000–0x091fffff` | 35 MB | BOLT, **free after `go`**: overwritten completely (page table, code, heap, stack, the DTB at `0x07613000`) and PSCI still answered |
+| `0x09200000–0x7d9fffff` | 1,864 MB | **free**, tested (includes the second framebuffer `0x7d600000`) |
+| `0x7da00000–0x7db07fff` | 1 MB | **free** without `pcm0`, tested (picture unchanged). With `pcm0`, BOLT puts the audio buffer at `0x7dada100–0x7db08eff` |
+| `0x7db08000–0x7db0b6ff` | 14 KB | display lists: **never write** |
+| `0x7db0b700–0x7defffff` | 4 MB | the framebuffer |
+| `0x7df00000–0x7fffffff` | 33 MB | BL31 + SRR, secure: never read or write |
+
+About **2,008 MB is usable**, all tested: 1,971 MB (`ram_test.s`) + BOLT's 35 MB (`bolt_reuse_probe.s`) + 2 MB (`ram_gaps_probe.s`).
+
+- **RAM test** (`ram_test.s`): every free word above (1,971 MB) written with
+  `address ^ 0x5a5a5a5aa5a5a5a5`, checked, then the same inverted.
+  **0 errors.** Non-cacheable speed: write 670 MB/s (2.9 s per pass), read
+  70 MB/s (28.0 s). Reads need the cache to be fast (`display.md`, "Video speed").
+- **Nothing writes RAM by itself after `go -64`** (`ram_scan.s`): two
+  read-only passes over all 2 GB, 10 s apart. The only changed 1 MB block was
+  the probe's own (`0x01100000`). The display was running (it only reads);
+  audio wasn't started (no `pcm0`). With `pcm0`, the audio DMA reads its
+  ring buffer; it doesn't write RAM (inferred: it's an output).
+- **RAM is not cleared at boot.** After a power-on, almost every 1 MB block
+  had no zero word at all: random contents. The low 16 MB (`0x00001000`…)
+  hold random words, nothing structured. Clear what you use (`.bss`, buffers).
+- **PSCI** (`bolt_reuse_probe.s`): `smc #0` with `x0 = 0x84000000` returns
+  `2` = PSCI v0.2, before and after BOLT's RAM was overwritten.
+  `PSCI_FEATURES` returns `-1`: it only exists from PSCI 1.0, so that says
+  nothing about `CPU_ON` (not tested yet).
+
 ## Peripherals
+
+Register by register: `registers.md`. Every known block, with its ID/first
+word read from the board: `peripherals.md`.
 
 All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 
@@ -49,7 +92,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf04e0488`, `0xf04e051c–0524` | UART clock gate and clock muxes | `uart.md` |
 | `0xf0604000` | display RDC (register DMA) list pointers | `display.md` |
 | `0xf0641000` | display graphics feeder (GFD): width `+0x44`, **surface address `+0x48`**; `+0x5c` aborts | `display.md` |
-| `0xf0b00200…` | USB PHY, EHCI/OHCI/xHCI/BDC | |
+| `0xf0b00200…` | USB control/PHY `0x200`, EHCI0 `0x300`, OHCI0 `0x400`, EHCI1 `0x500`, OHCI1 `0x600`, xHCI `0x1000`, BDC `0x2000` | `usb.md` |
 | `0xffd01000` / `0xffd02000` | GIC distributor / CPU interface | `interrupts.md` |
 | `0xffe00000` | boot SRAM (128 KB) | |
 

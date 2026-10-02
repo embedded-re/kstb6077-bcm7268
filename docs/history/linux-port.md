@@ -2,7 +2,7 @@
 
 **Author:** embedded-re  
 **Repo:** github.com/embedded-re/KAON-KSTB6077  
-**Status:** 🔧 In Progress — Linux 6.6.0 running, migrating from Alpine to Debian 12 armhf  
+**Status:** in progress — Linux 6.6.0 running, migrating from Alpine to Debian 12 armhf  
 **Last updated:** 2026-06-07
 
 ---
@@ -11,7 +11,7 @@
 
 This document covers the full reverse engineering and OS replacement of a KaonMedia KSTB6077 Android TV set-top box — from initial hardware analysis through Android userspace enumeration, BOLT bootloader exploitation, Alpine Linux deployment, and an ongoing port to mainline Linux 6.6 with Debian 12 as the target userspace.
 
-**Original goal:** Headless Alpine Linux on internal eMMC. ✅ Achieved April 2026.  
+**Original goal:** Headless Alpine Linux on internal eMMC. Achieved April 2026.  
 **Current goal:** Mainline Linux 6.6 kernel with Debian 12 armhf — full SBC with future GUI capability via USB display adapter.
 
 ---
@@ -189,7 +189,7 @@ Alpine Linux 3.23 ships apk-tools 3.x which crashes on armv7 with illegal instru
 **Source:** Linux 6.6 LTS  
 **Architecture:** ARM 32-bit (`multi_v7_defconfig` base)  
 **Cross-compiler:** arm-linux-gnueabihf-gcc 13.3.1 (Arm GNU Toolchain)  
-**Output:** `arch/arm/boot/zImage`, ~13 MB, magic `0x016f2818` ✅
+**Output:** `arch/arm/boot/zImage`, ~13 MB, magic `0x016f2818`
 
 **Key config additions over multi_v7_defconfig:**
 ```
@@ -278,21 +278,21 @@ BOLT v1.34 (mmcblk0boot0, immutable)
 
 | Component | Status | Notes |
 |---|---|---|
-| Linux 6.6.0 | ✅ Running | armv7l, SMP 4 cores |
-| All 4 CPUs | ✅ | PSCI v0.2 |
-| eMMC (mmcblk0p9) | ✅ | ext4 r/w, ADMA |
-| GENET Ethernet | ✅ | 100Mbps/Full |
-| Serial console | ✅ | ttyS0 115200 |
-| SSH | ✅ | |
-| Thermal | ✅ | AVS TMON |
-| Watchdog | ✅ | BCM7038 |
-| AVS CPUfreq | ✅ | |
-| PCIe | ✅ | BCM4335 detected |
-| TUN/WireGuard | ✅ | Kernel support present |
-| USB host | ⚠️ | Deferred probe — PHY clock issue under investigation |
-| WiFi (BCM4335) | ⚠️ | Driver present, firmware not installed |
-| Bluetooth | ⚠️ | btusb present, firmware needed |
-| HDMI | ❌ | Proprietary NEXUS pipeline only, no mainline driver |
+| Linux 6.6.0 | Running | armv7l, SMP 4 cores |
+| All 4 CPUs | works | PSCI v0.2 |
+| eMMC (mmcblk0p9) | works | ext4 r/w, ADMA |
+| GENET Ethernet | works | 100Mbps/Full |
+| Serial console | works | ttyS0 115200 |
+| SSH | works | |
+| Thermal | works | AVS TMON |
+| Watchdog | works | BCM7038 |
+| AVS CPUfreq | works | |
+| PCIe | works | BCM4335 detected |
+| TUN/WireGuard | works | Kernel support present |
+| USB host | partial | Deferred probe — PHY clock issue under investigation |
+| WiFi (BCM4335) | partial | Driver present, firmware not installed |
+| Bluetooth | partial | btusb present, firmware needed |
+| HDMI | no | Proprietary NEXUS pipeline only, no mainline driver |
 
 ### 7.8 Known Issues
 

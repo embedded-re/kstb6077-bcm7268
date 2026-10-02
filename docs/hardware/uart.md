@@ -97,7 +97,7 @@ Which package pins UART1/UART2 are routed to, if any, is unknown.
 
 - With loopback off, UART1's LSR showed `e0` (RX FIFO error). That is
   typical of an RX input that isn't connected to anything, a hint that
-  UART1 isn't muxed to a pin (⚠️ not proven).
+  UART1 isn't muxed to a pin (not proven).
 - UART2 showed no errors and never received data.
 - `tz console on uart1` (BOLT's secure-console setup) is refused with
   `TZ not initialized`. It would need `tz init` first, which was not run.

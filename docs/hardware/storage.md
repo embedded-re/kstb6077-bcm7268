@@ -1,0 +1,143 @@
+# Storage: data files on the eMMC for bare-metal programs
+
+A bare-metal program can't read the eMMC itself (no driver yet), but BOLT can
+copy any part of a partition into RAM before `go`. The modified box's
+`flash0.splash` partition is 16.8 MB, and BOLT's splash uses only the first
+512 KB of it. The rest holds a large data file (meant for a Doom WAD), loaded
+in a quarter of a second. Over serial the same 4 MB takes ~50 minutes.
+
+All of this was tested on the modified box on 2026-10-02: first with a
+random 4,196,020-byte test file (the size of the shareware `doom1.wad`), then
+with the user's WAD (below), which is what the partition holds now.
+
+## Layout of `flash0.splash` (modified box)
+
+`flash0.splash` = LBA 15239168–15273594 = 34,427 sectors = 17,626,624 bytes
+(`display.md`, "Adding a splash partition").
+
+| Partition offset | Contents |
+|---|---|
+| `0x000000–0x07ffff` | splash container (`GZBR`…). BOLT reads exactly these 512 KB at boot. The current container uses `0x2f2e` bytes, and the first 12 KB have CRC `0x985d62dc` |
+| `0x080000–0x0fffff` | unused (zeros) |
+| `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: 16,578,048 bytes. Now: the user's `doom1.wad` (below), image `0xdc7000` bytes |
+
+**Nothing else reads past 512 KB (tested: from BOLT's code).** The container
+reader `0x07011304` opens `flash0.splash` once, allocates `0x80000` bytes,
+reads exactly `0x80000` (anything else → `SPLASH: file read failed`), and
+closes it. The only other code that names `flash0.splash` (`0x070107e0`)
+prints `SPLASH:  %u; %s` with 524288 and the name. The "splash-feedback"
+media routines (`0x07010994`, `0x07025358`) look items up in the payload
+already in RAM (`0x07011430`). After writing the data image and
+rebooting, the boot log still shows `Loaded BMP: W=1920 H=1080`.
+
+## What is stored now
+
+The user's `doom1.wad` (14,445,628 bytes, md5 `88ce96442d269ef515b39fe34f08a9b7`).
+Despite the name it is not the shareware file (4,196,020 bytes, episode 1
+only). Its header says `PWAD`, not `IWAD`, and its 2,305 lumps hold all four
+episodes (`E1M1`–`E4M9`, the Ultimate Doom set). Many lumps appear twice
+(episode 1 music `D_E1M1`…, sounds `DSPISTOL`…), so it looks like the
+shareware WAD and the full one merged into one file. Doom engines use the
+last copy of a duplicate lump. Inferred, to check when porting: the engine
+must accept a `PWAD` as its main file, and the game mode it picks (shareware
+from the name `doom1.wad`, or registered/Ultimate from the maps it finds)
+decides whether episodes 2–4 can be played.
+
+| | Value |
+|---|---|
+| `KWAD` image | `0xdc7000` bytes, CRC `0x81c4660f` |
+| file in it | `0xdc6c3c` bytes at `+0x200`, CRC `0x0874d1c3` |
+| `flash` | 603 ms |
+| `load` | 979 ms (~14.8 MB/s) |
+| in RAM after `load -addr=0x10000000` | `0x10000000–0x10dc6fff` |
+
+Read back after zeroing the RAM (CRC `0x3a2a6a0f` before the load): image
+`0x81c4660f`, file `0x0874d1c3`, header `KWAD`, name `doom1.wad`. The splash
+container is unchanged (`0x985d62dc`).
+
+## The `KWAD` image header
+
+Built by `tools/make-wad-image file img`. One sector, then the file, padded
+with zeros to a whole sector:
+
+```
++0x00  'KWAD'          magic                       (4b 57 41 44)
++0x04  u32  1          version
++0x08  u32  size       file size in bytes
++0x0c  u32  crc32      standard zlib crc32 of the file (same as BOLT `crc`)
++0x10  u32  0x200      offset of the file from the header
++0x14  char name[32]   file name, NUL-padded
++0x200 the file
+```
+
+The program checks the magic and size before using the data. The CRC lets
+it (or BOLT's `crc -offset=<addr+0x200> -size=<size>`) confirm that the right
+file was loaded.
+
+## Recipe
+
+**Write once** (from the BOLT prompt, file over TFTP; see `../bolt/bolt.md` §9):
+
+```
+ifconfig eth0 -auto
+load -tftp -raw -addr=0x10000000 -max=0x500000 192.168.1.38:wadtest.img
+crc -offset=0x10000000 -size=0x400a00             ← must equal the PC's image CRC
+flash -noerase -offset=0x100000 -mem=0x10000000 -memsize=0x400a00 mem0 flash0.splash
+```
+
+(These are the test file's numbers; for the WAD now stored, use
+`-memsize`/`-max` `0xdc7000`.) Measured: TFTP 4 MB in a few seconds; `flash` 217 ms
+(`Programming...done. 4196864 bytes written`); CRC `0x37b79960` on the PC,
+after TFTP, and after read-back.
+
+**Load before each `go`:**
+
+```
+load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0x400a00 flash0.splash
+```
+
+Measured: 4,196,864 bytes in 267–280 ms (~15 MB/s). Tested after a
+software reset, with the target RAM zeroed first (`f -b 0x10000000 0x400a00 0`,
+CRC then `0x55de8ba8`); after the load the CRC was `0x37b79960` again and
+`d -w 0x10000000` showed the `KWAD` header.
+
+Not yet tested: that the loaded data is intact inside a `go -64` program
+(inferred yes: `go` doesn't clear RAM, and probes already use `0x10000000+`).
+
+## `flash` and `load` options (from BOLT's code and `help`)
+
+The `flash` command is at `0x0702fa6c`:
+
+- **`-offset=N` is the destination offset** in the target device. The final
+  call is `write(dev, buf, N, len)`, after a check that `N + len` fits in the
+  device (`ERROR: File larger than flash device…`). `-offset` is parsed into
+  a 64-bit value, but large raw-`flash0` offsets were seen to fail or wrap
+  (`display.md`), so stay in partition devices.
+- **`-noerase`** skips the erase step. Without it, eMMC targets get an erase
+  of `[N, N + len)` first.
+- **From `mem0`, BOLT first copies the data to its staging buffer at
+  `0x00040000`** (16 MB), and writes from there. Keep the source
+  (`-mem=`) outside `0x00040000 … 0x00040000 + memsize`, or the copy
+  overlaps itself.
+- An image of exactly 16 MB (`0x1000000`) is refused unless `-forcewrite` is
+  given (the check is for a file that filled the staging buffer).
+
+`load -offset=N` is the **source** offset in the file or device ("Begin
+loading at this offset in the file or device", `help load`; the read-back
+above starts at the header, not at the splash container).
+
+## RAM to use
+
+Free for a program's data: `0x10000000…` (BOLT `rmem`, `memory-map.md`).
+Avoid BOLT `0x06ffc000–0x09200000`, PSCI `0x06400000`, `splash0`
+`0x7db08000–0x7df00000`, the second framebuffer `0x7d600000–0x7d9f47ff`,
+and BOLT's flash staging buffer `0x00040000+` while running `flash`.
+
+## Rollback
+
+The data image doesn't touch the first 512 KB, so the splash keeps working.
+To remove it, overwrite `0x100000…` with zeros the same way. Before any
+write, check the container: `load -raw -rawfs -addr=0x02000000 -max=0x3000
+flash0.splash`, then `crc -offset=0x02000000 -size=0x3000` = `0x985d62dc`
+(it was the same before and after this write). If it is ever damaged,
+rebuild it with `tools/make-splash`.

@@ -1,0 +1,7 @@
+RAM test (EL2, non-cacheable, free RAM only)
+pass write/check=0 00000b74 
+pass write/check=1 00006d67 
+pass write/check=0 00000b73 
+pass write/check=1 00006d67 
+errors: 0000000000000000 
+RAM test done

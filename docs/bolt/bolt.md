@@ -6,7 +6,8 @@ only (`help`, `info`, `show *`, `printenv`, `rmem`, `gisb`, `rts`, `d`,
 memory, the environment or flash. §9 adds the network, TFTP and 64-bit tests
 (RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw captures are in `raw/`.
 
-✅ = observed on this board. ⚠️ = inference or general knowledge.
+Unmarked facts were observed on
+this board; (inferred) marks an inference or general knowledge.
 
 ---
 
@@ -14,13 +15,13 @@ memory, the environment or flash. §9 adds the network, TFTP and 64-bit tests
 
 | Field | Value | Source |
 |---|---|---|
-| Version | BOLT v1.34, "LOCAL BUILD" 2018-11-29, `arm-linux-gcc (Broadcom stbgcc-4.8-1.6) 4.8.5` | ✅ boot banner |
-| BSP (security firmware) | `4.2.5` (boot log `BFW v4.2.5`) | ✅ `info` |
-| SHMOO (DDR tuning) | `5.6.1.0` | ✅ `info` |
-| Board | `KM_SH368AT` (one board in the FSBL table, AVS board defaults) | ✅ `boards` |
-| UI level | `LEVEL 3; MIN 0` | ✅ `info` |
-| RTS | `BOX MODE: 1` | ✅ `rts` (meaning unknown ⚠️) |
-| GISB bus timeout | `162000` | ✅ `gisb` |
+| Version | BOLT v1.34, "LOCAL BUILD" 2018-11-29, `arm-linux-gcc (Broadcom stbgcc-4.8-1.6) 4.8.5` | boot banner |
+| BSP (security firmware) | `4.2.5` (boot log `BFW v4.2.5`) | `info` |
+| SHMOO (DDR tuning) | `5.6.1.0` | `info` |
+| Board | `KM_SH368AT` (one board in the FSBL table, AVS board defaults) | `boards` |
+| UI level | `LEVEL 3; MIN 0` | `info` |
+| RTS | `BOX MODE: 1` | `rts` (meaning unknown) |
+| GISB bus timeout | `162000` | `gisb` |
 
 Compiled-in drivers (`info`): loaders ELF, RAW, SREC, ZIMG; FAT/FAT32; a
 network stack (Ethernet, TCP); USB (disk, Ethernet, serial, HID); NAND flash
@@ -28,7 +29,7 @@ support; splash 512 KB from `flash0.splash`.
 
 ---
 
-## 2. Memory: BOLT's own layout (✅ `info`)
+## 2. Memory: BOLT's own layout (tested: `info`)
 
 | Region | Range | Size |
 |---|---|---|
@@ -41,13 +42,13 @@ support; splash 512 KB from `flash0.splash`.
 | Heap | `0x07100000–0x09100000` | 32 MB (5.5 MB used) |
 | Stack | `0x09100000–0x09200000` | 1 MB |
 
-### Reserved memory (✅ `rmem`)
+### Reserved memory (tested: `rmem`)
 
 | Name | Base | Size | Notes |
 |---|---|---|---|
 | `PSCI` | `0x06400000` | 64 KB | the `smm64` PSCI monitor (boot log `INSTALL smm64@06400000`) |
-| `BL31` | `0x7DF00000` | 1 MB | ARM Trusted Firmware EL3 runtime (⚠️ by name; secure memory, **don't read or write it**) |
-| `SRR` | `0x7E000000` | 32 MB | secure reserved region (⚠️ by name) |
+| `BL31` | `0x7DF00000` | 1 MB | ARM Trusted Firmware EL3 runtime (by name; secure memory, **don't read or write it**) |
+| `SRR` | `0x7E000000` | 32 MB | secure reserved region (by name) |
 
 Available to programs: `0x00000000–0x06400000` and `0x06410000` + `0x77af0000`
 (up to `0x7DF00000`). BOLT's own 34 MB sits inside the second range, so
@@ -55,11 +56,11 @@ treat `0x06FFC000–0x09200000` as occupied while BOLT is alive.
 
 ---
 
-## 3. The MMU page table (✅ read from `0x07000000`)
+## 3. The MMU page table (tested: read from `0x07000000`)
 
 BOLT uses the **ARMv7 short-descriptor format**: 4096 × 4-byte L1 entries,
 each covering 1 MB. The entry for address `A` is at `0x07000000 + (A >> 20) * 4`.
-The entry layouts below match that format exactly (⚠️ TTBCR itself not yet
+The entry layouts below match that format exactly (TTBCR itself not yet
 read).
 
 | Megabytes | Entry example | Decoded |
@@ -73,25 +74,25 @@ read).
 | `0xF13–0xFFC` | `00000000` | unmapped |
 | **`0xFFD` (GIC)** | **`00000000`** | **unmapped**: exactly why `d -w 0xffd01000` aborted |
 | `0xFFE` (boot SRAM) | `07004401` | L2 table at `0x07004400`, pages `ffe0x45f` |
-| `0xFFF` | `00000000` | unmapped (so high vectors at `0xffff0000` are not mapped ⚠️) |
+| `0xFFF` | `00000000` | unmapped (so high vectors at `0xffff0000` are not mapped (inferred)) |
 
 Notes:
 - RAM entries have **XN=1** (execute-never), yet your monitor executes from
   `0x01000000`. That means domain 0 is set to *Manager* in DACR, which
-  ignores permission bits (⚠️ inferred; confirm by reading DACR with
+  ignores permission bits (inferred; confirm by reading DACR with
   `mrc p15, 0, r0, c3, c0, 0` from a 32-bit program).
 - Any peripheral **outside `0xF0000000–0xF12FFFFF`** is unreachable under
   BOLT's MMU. Before probing a new DTB address with `d`, check that it falls
   in this window.
 - To reach the GIC: write a device section entry at `0x07003FF4`
   (MB `0xFFD`), for example `ffd10416` (same attributes as the peripheral
-  window: `f0010416` = base `0xf00`, Device, shareable, XN), then invalidate the TLB, **from your own code**. ⚠️ Untested;
+  window: `f0010416` = base `0xf00`, Device, shareable, XN), then invalidate the TLB, **from your own code**. Untested;
   writing BOLT's page table from BOLT's `e` command is also possible, but
   the TLB may still hold the old entry.
 
 ---
 
-## 4. Devices BOLT knows about (✅ `show devices`)
+## 4. Devices BOLT knows about (tested: `show devices`)
 
 | BOLT device | What | Range / address |
 |---|---|---|
@@ -133,24 +134,24 @@ These partition names reflect the current (post-Android) layout, matching
 (write RAM patterns: don't run them over BOLT, PSCI or BL31),
 `uncache` (changes MMU and caches; `-nommu` turns the MMU off).
 
-### ⚠️ Persistent or irreversible: don't run without a plan
+### Persistent or irreversible: don't run without a plan
 | Command | Why |
 |---|---|
 | `rpmb program-key` | **one-time programmable**: burns the eMMC RPMB key forever |
 | `setenv -p` / `-ro`, `unsetenv`, `incenv` | write the NVRAM partition (`-ro` can never be undone) |
 | `setsn`, `macprog` | rewrite serial/MAC storage |
-| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset` is signed 32-bit: raw `flash0` offsets of 2 GB or more fail or wrap |
+| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset=N` is the destination offset (`../hardware/storage.md`); raw `flash0` offsets of 2 GB or more fail or wrap. From `mem0`, the data is first copied to a staging buffer at `0x00040000` |
 | `tz mon`, `tz boot` | load and run code in the secure world |
 
 ---
 
 ## 6. Useful capabilities discovered
 
-- **64-bit boot works** ✅ (tested 2026-09-30, §9). `go -64` starts an
+- **64-bit boot works** (tested 2026-09-30, §9). `go -64` starts an
   AArch64 program at **EL2**. `boot -64 -el3` starts it at **EL3**, as the
   secure monitor (the highest privilege level). The default without flags is
   32-bit (AArch32).
-- **TFTP loading works** ✅ (§9) after `ifconfig eth0 -auto`, with one
+- **TFTP loading works** (§9) after `ifconfig eth0 -auto`, with one
   caveat: with dnsmasq as the server, a new request can get the **previous
   transfer's file** back. Always verify with `crc`.
 - **`u addr [len]`**: a built-in disassembler, handy to check what's in
@@ -158,10 +159,10 @@ These partition names reflect the current (post-Android) layout, matching
 - **Scripting**: `loop "cmd" -count=N`, `t` (compare memory with `-eq/-gt/-lt/-and`),
   `testenv`, `time "cmd"`, and `batch` files (like `sysinit.txt`).
 - **`load -raw -splash -tftp <pc>:<file>.bmp`** brings up HDMI with a 1920 × 1080
-  BMP and leaves a live RGB565 framebuffer ✅ (`../hardware/display.md`).
+  BMP and leaves a live RGB565 framebuffer (`../hardware/display.md`).
 - **Ctrl-C during boot** cancels autostart (`Automatic startup canceled via
-  Ctrl-C`) ✅; `../../tools/kstb-bolt` automates it.
-- **`uncache -nommu`** turns BOLT's MMU off. ⚠️ Might make the GIC readable
+  Ctrl-C`); `../../tools/kstb-bolt` automates it.
+- **`uncache -nommu`** turns BOLT's MMU off. Might make the GIC readable
   from `d`. Risky: BOLT itself may misbehave without caches or its
   mappings. Untested.
 - **`tz console on uart1|uart2`**: confirms UART1 (`0xf040d000`) and UART2
@@ -175,18 +176,19 @@ These partition names reflect the current (post-Android) layout, matching
 
 | Probe | Result |
 |---|---|
-| `psci -r0=0x84000000` (PSCI_VERSION) | `0x2` → **PSCI v0.2** ✅ |
-| `psci -r0=0x8400000a` (PSCI_FEATURES) | `0xffffffff` = NOT_SUPPORTED. Expected: FEATURES was only added in PSCI 1.0 ✅ |
-| `tz dt show` | `TZ not initialized`. No TrustZone OS is loaded under BOLT ✅ |
-| `rmem` | `BL31` (1 MB @ `0x7DF00000`) and `SRR` (32 MB @ `0x7E000000`) reserved ✅ |
+| `psci -r0=0x84000000` (PSCI_VERSION) | `0x2` → **PSCI v0.2** |
+| `psci -r0=0x8400000a` (PSCI_FEATURES) | `0xffffffff` = NOT_SUPPORTED. Expected: FEATURES was only added in PSCI 1.0 |
+| `smc` CPU_ON / AFFINITY_INFO from EL2 | cores 1–3 start at EL2 (`../hardware/cpu-cores.md`) |
+| `tz dt show` | `TZ not initialized`. No TrustZone OS is loaded under BOLT |
+| `rmem` | `BL31` (1 MB @ `0x7DF00000`) and `SRR` (32 MB @ `0x7E000000`) reserved |
 
-Picture (⚠️ inferred from names and the boot log): ARM Trusted Firmware BL31
+Picture (inferred from names and the boot log): ARM Trusted Firmware BL31
 runs at EL3 (AArch64, `smm64`); BOLT and your code run below it in AArch32;
-PSCI calls (`smc`) go up to it. ✅ Confirmed that EL3 exists in AArch64
+PSCI calls (`smc`) go up to it. Confirmed that EL3 exists in AArch64
 and that BOLT will hand it to your code: `boot -64 -el3` printed
 `PSCI: Secure monitor entry @ 0000000001000000` (§9).
 
-✅ Read from EL3 (§10): `VBAR_EL3 = 0x06400000`, so the EL3 exception vectors
+Read from EL3 (§10): `VBAR_EL3 = 0x06400000`, so the EL3 exception vectors
 are in the `PSCI` region: **`smm64` at `0x06400000` is the EL3 monitor that
 handles PSCI calls.** `SCR_EL3 = 0x131` (NS = 1, RW = 0): BOLT's world is
 **non-secure AArch32**.
@@ -197,19 +199,19 @@ handles PSCI calls.** `SCR_EL3 = 0x131` (NS = 1, RW = 0): BOLT's world is
 
 | Fact | Value | Source |
 |---|---|---|
-| DDR | `16Gx32 phy:32`, 1856 MHz, `80000000 @ 00000000` (2 GB at address 0) | ✅ `info` |
-| SDIO | controller 0 = SD slot, controller 1 = eMMC | ✅ `info` |
-| Ethernet PHY | ID `0xae02_5091` = **BCM7268 internal PHY rev 1** (Linux `brcmphy.h`: `PHY_ID_BCM7268 0xae025090`) | ✅ `mii read mdio0 1 2/3` + upstream header |
-| PHY state | no cable: BMSR `0x7809` (link down). With a cable: BMSR `0x7829` (autoneg complete), `100 Mbps Full-Duplex` | ✅ `mii`, `ifconfig` |
-| USB | 5 root hubs (buses 0–4); BT `0a5c:2045` on bus 2 | ✅ `show usb` |
-| eMMC RPMB | `RPMB response error. result: 0x7`. In the eMMC spec, result 7 = "authentication key not yet programmed" (⚠️ spec-based). So the RPMB key was **never programmed**; `rpmb program-key` would set it permanently. | ✅ `rpmb counter flash3` |
-| AVS | STB 0.962 V, CPU 0.945 V, 44.8 °C | ✅ `info` |
+| DDR | `16Gx32 phy:32`, 1856 MHz, `80000000 @ 00000000` (2 GB at address 0) | `info` |
+| SDIO | controller 0 = SD slot, controller 1 = eMMC | `info` |
+| Ethernet PHY | ID `0xae02_5091` = **BCM7268 internal PHY rev 1** (Linux `brcmphy.h`: `PHY_ID_BCM7268 0xae025090`) | `mii read mdio0 1 2/3` + upstream header |
+| PHY state | no cable: BMSR `0x7809` (link down). With a cable: BMSR `0x7829` (autoneg complete), `100 Mbps Full-Duplex` | `mii`, `ifconfig` |
+| USB | 5 root hubs (buses 0–4); BT `0a5c:2045` on bus 2 | `show usb` |
+| eMMC RPMB | `RPMB response error. result: 0x7`. In the eMMC spec, result 7 = "authentication key not yet programmed" (spec-based). So the RPMB key was **never programmed**; `rpmb program-key` would set it permanently. | `rpmb counter flash3` |
+| AVS | STB 0.962 V, CPU 0.945 V, 44.8 °C | `info` |
 
 ---
 
 ## 9. Network, TFTP and 64-bit tests (2026-09-30, Ethernet connected)
 
-### Network ✅
+### Network
 ```
 ifconfig eth0 -auto
 100 Mbps Full-Duplex
@@ -220,7 +222,7 @@ Ping works both ways (board ↔ PC `192.168.1.38`). Network settings are lost
 on reboot, so re-run `ifconfig eth0 -auto` after each boot. `go`/`boot`
 print `Closing network 'eth0'` before jumping (use `-noclose` to keep it).
 
-### TFTP ✅, with a caveat
+### TFTP, with a caveat
 PC side (needs root for UDP port 69), serving one folder:
 ```
 sudo dnsmasq --no-daemon --port=0 --enable-tftp --user=arch \
@@ -232,21 +234,21 @@ load -tftp -raw -addr=0x01000000 <PC IP>:bootstrap.bin
 crc -offset=0x1000000 -size=<file size>     ← compare with the PC's CRC32
 ```
 - The first load was byte-perfect: 264 bytes, CRC `0xa5961154` on both sides.
-- ❌ **Stale-file problem.** Later loads returned the **previous transfer's
+- **Stale-file problem.** Later loads returned the **previous transfer's
   file**, whatever name was asked for. It survived `ifconfig -off/-auto` and
   even a board reboot: the first request after a reboot got the file from
   before the reboot. curl on the PC received the correct files from the same
-  dnsmasq, so the problem is in the BOLT ↔ dnsmasq exchange. ⚠️ Likely
+  dnsmasq, so the problem is in the BOLT ↔ dnsmasq exchange. Likely
   cause: BOLT sends every request from the same UDP source port, and dnsmasq
   treats the new request as a retransmit of its still-open old transfer.
   After a few minutes' pause, a load worked again.
-- **Workarounds** (⚠️ untested): use a TFTP server that handles each request
+- **Workarounds** (untested): use a TFTP server that handles each request
   separately (e.g. tftp-hpa's `in.tftpd`), or pause between loads. **Always
   check `crc`** before `go`.
 - The "bytes read" count BOLT prints is the size of the file actually
   received, which makes a stale file easy to spot.
 
-### 64-bit (AArch64) ✅
+### 64-bit (AArch64)
 A 24-instruction AArch64 probe (prints `A64 OK, EL<n>` from `CurrentEL`, then
 spins; built with `clang --target=aarch64-none-elf` + `ld.lld -Ttext=0x01000000`)
 was loaded by TFTP. The watchdog was armed for 20 s first
@@ -267,9 +269,9 @@ What this means:
   everything, including the GIC's secure/non-secure interrupt groups (see
   `../ideas/second-stage-bootloader.md`). Note that BOLT's own PSCI and BL31
   services are then not in charge: your code replaces them, so later calls
-  like CPU_ON would have to be handled by you (⚠️ inferred).
+  like CPU_ON would have to be handled by you (inferred).
 - The probe ran with no MMU setup of its own and reached the UART at its
-  physical address (⚠️ the MMU is presumably off on entry to a fresh
+  physical address (the MMU is presumably off on entry to a fresh
   exception level).
 
 Probe source (not part of the monitor):
@@ -383,6 +385,9 @@ arm-none-linux-gnueabihf-objdump -D -M force-thumb bolt.elf > bolt_thumb.dis
 | `0x07011608` | run the display script and draw (`Loaded BMP: W=%d H=%d`) |
 | `0x070108e4` | draw a BMP into every set-up surface (centred, background fill, cache flush) |
 | `0x070115f4` | return surface *i* from the array at `0x0706ae20` (0 if not set up) |
+| `0x0702fa6c` | `flash` command (`-offset` = destination, `mem0` staging copy at `0x00040000`, `../hardware/storage.md`) |
+| `0x0703a4c2` | `usb init`: DTB → controller table `0x0706b010`, env `XHCIOFF`/`EHCIOFF`/`OHCIOFF`/`BDCOFF`/`USBDBG` (`../hardware/usb.md`) |
+| `0x0703a7a0` | stop every USB controller; called by `usb exit` and before `go`/`boot` (via `0x07011d5e`) |
 | `0x07030740` | `load` command: after loading, `-splash` → calls `0x070108e4` |
 | `0x07010994`, `0x07025358` | "splash-feedback": draw media *n* from the container |
 | `0x07024924` | startup banner (`BOLT v%d.%02d`, `Board:`, `strap=`, `otp @ …` from the fuse table at `0x070472a8`, `bond option:`), see `../hardware/audio.md` (S/PDIF) |

@@ -13,3 +13,7 @@ handoff-*.md
 docs/learning/
 !docs/bolt/raw/gpt/*.bin
 __pycache__/
+# stock firmware files from the GitHub release (tools/fetch-stock): Broadcom/Kaon binaries, kept local
+/stock/
+# local to-do list
+docs/todo.md

@@ -31,7 +31,7 @@ load -raw -splash -tftp <PC IP>:test1080.bmp
 - `-raw` is required: without it the default zImage loader rejects the file
   (`Bad executable format`).
 - From a USB stick, `load -raw -splash usbdisk0:<file>.bmp` should work the
-  same way (⚠️ untested).
+  same way (untested).
 - `load -splash -rawfs flash0.splash` does **not** work: the splash partition
   uses BOLT's own container format (`Invalid boot block on disk`). BOLT reads
   that partition itself during every boot, before the prompt and before
@@ -92,9 +92,9 @@ recognisable:
 ```
 01000000 f0641058 00000f00      write 1 register: pitch = 3840
 01000000 f0641174 00000438      height = 1080
-06000011 f06e4140 …             write a block of registers (⚠️ count presumably in the low bits)
+06000011 f06e4140 …             write a block of registers (count presumably in the low bits)
 01000000 f0604000 7db09c60      RDC: pointer to the next list
-04000000 … / 04000001 …         ⚠️ other opcodes, probably mask / read-modify-write operations
+04000000 … / 04000001 …         other opcodes, probably mask / read-modify-write operations
 ```
 
 Only the `01000000 <register> <value>` form is understood with confidence: it
@@ -325,6 +325,9 @@ Method (all from BOLT, over the serial console):
    Read it back and compare CRCs.
 4. Reboot: `show devices` lists `flash0.splash`, so BOLT uses the primary GPT.
 5. Write the container: `flash -noerase -mem=<addr> -memsize=<size> mem0 flash0.splash`.
+
+BOLT uses only the first 512 KB of the partition. The rest now holds a data
+file for bare-metal programs at offset 1 MB (`storage.md`).
 
 The before/after images of sectors 0–5 are in `../bolt/raw/gpt/`. Writing the
 "before" image back with the same `flash` command restores the original table.

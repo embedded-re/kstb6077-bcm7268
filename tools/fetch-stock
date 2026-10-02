@@ -1,0 +1,14 @@
+#!/bin/sh
+# Download the stock-eMMC asset archive from this repository's GitHub release
+# and extract it to stock/ (gitignored: Broadcom/Kaon binaries stay local).
+#
+#   tools/fetch-stock            -> stock/release/... (README.txt, modules/, libs/, hal/, ...)
+#
+# Needs the GitHub CLI (gh). See docs/stock-drivers.md for what is inside.
+set -e
+cd "$(dirname "$0")/.."
+mkdir -p stock
+gh release download v1.0 -R embedded-re/KAON-KSTB6077 -p KSTB6077_assets.zip -D stock --clobber
+unzip -o -q stock/KSTB6077_assets.zip -d stock
+rm stock/KSTB6077_assets.zip
+echo "extracted to stock/release/ ($(find stock/release -type f | wc -l) files)"

@@ -96,7 +96,7 @@ view) and `boot -64 -el3` (EL3, secure view). No read aborted.
   all of them.
 - IDs 0–15 (SGIs) and 25–31 (PPIs, including the ARM generic timers
   26/27/29/30) are group 1. **IDs 16–24 are group 0 (secure).** On GIC-400
-  these PPI slots are not wired to Cortex-A53 timers (⚠️ general GIC-400
+  these PPI slots are not wired to Cortex-A53 timers (general GIC-400
   knowledge).
 
 ### Enables and routing
@@ -116,5 +116,5 @@ The OS (or bare-metal code) enables and routes each interrupt it uses.
 BOLT runs in AArch32 SVC mode with IRQ and FIQ masked (`cpsr 800001d3`). On
 entry to our EL3 code, `SCR_EL3` = `0x131`: NS = 1 (the lower exception
 levels are non-secure) and RW = 0 (the level below EL3 runs AArch32). That
-matches BOLT's world being **non-secure AArch32** (⚠️ inferred: this is the
+matches BOLT's world being **non-secure AArch32** (inferred: this is the
 SCR state left by the EL3 monitor).
