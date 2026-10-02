@@ -9,3 +9,4 @@ zImage
 # personal study material
 docs/learning/
 !docs/bolt/raw/gpt/*.bin
+__pycache__/

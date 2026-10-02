@@ -34,6 +34,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host buses (xHCI, EHCI, OHCI); one USB-A port | |
 | Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP | `docs/hardware/display.md` |
+| Audio | HDMI, 48 kHz 32-bit stereo from a looping DRAM buffer. BOLT's splash starts it from a `pcm0` in `flash0.splash` but skips the HDMI audio clock at 1080p; three register writes (N/CTS) make it audible. Keeps running after `go -64` | `docs/hardware/audio.md` |
 | TV tuner | DVB-T tuner with RF input | |
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | `docs/hardware/gpio.md` |
 | Blue LED (LED3) | AON GPIO 16, active-low | `docs/hardware/gpio.md` |
@@ -72,14 +73,15 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `tools/kstb-run` | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
 | `tools/kstb-bolt` | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
 | `tools/kstb-dump` | dumps board memory to a file over the BOLT console (read-only) |
-| `tools/make-splash` | builds a `flash0.splash` boot-splash container (GZBR/zlib) from an image |
+| `tools/make-splash` | builds a `flash0.splash` boot-splash container (GZBR/zlib) from an image, optionally with a raw `pcm0` sound (`--pcm`) |
+| `tools/re/` | helpers for analysing a BOLT RAM dump: `xref.py` (string → code), `ann.py` (annotated listing), `callers.py` |
 | `boot/original_dtb.dts` | BOLT's base vendor device tree |
 | `boot/stock_dtb.dts` | the device tree a stock box hands to Linux (after BOLT and BSU fix-ups) |
 | `boot/dtb.dtb`, `boot/Decompiled_dtb.dts` | patched device tree from the Linux port |
 | `boot/sysinit.txt` | BOLT autoboot script for the USB stick |
 | `docs/booting.md` | how to load and run code: USB stick, TFTP, 32/64-bit, watchdog safety net |
 | `docs/stock-firmware.md` | the untouched stock firmware: boot chain, boot reasons, how to reach BOLT, stock DTB, stock kernel facts |
-| `docs/hardware/` | memory map, GPIO, UARTs, display, interrupts, system blocks, device-tree provenance |
+| `docs/hardware/` | memory map, GPIO, UARTs, display, audio, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
 | `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |

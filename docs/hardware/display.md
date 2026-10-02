@@ -80,7 +80,11 @@ Bare-metal code should read `0xf0641048` instead of hard-coding the address
 ## What's in front of the pixels: display lists (do not touch)
 
 `0x7db08000–0x7db0b6ff` (the first `0x3700` bytes of `splash0`) holds **RDC
-lists**: register-write programs that the display hardware's register-DMA
+lists**. The first list entry is at `0x7db08fa0`; the bytes before it are
+random leftover RAM contents (they differ between boots). With a `pcm0` in the splash
+container, BOLT puts the audio buffer at `0x7dada100–0x7db08eff`, and the
+lists starting at `0x7db08fa0` stay intact (tested, see `audio.md`). The RDC
+lists are: register-write programs that the display hardware's register-DMA
 controller fetches from RAM by itself. The DTB's memory-client list names
 `bvn_rdc`, and the bus arbiter lists an `rdc_0` master. The list format is
 recognisable:
@@ -135,7 +139,7 @@ BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
    `SPLASH: bad file '…'` → `SPLASH: load failed` → the display is never set up.
 6. Run the display script and draw `bmp0` (`0x07011608`): fills the
    **surface array** (4 pointers at `0x0706ae20`) and prints `Loaded BMP: W=… H=…`.
-7. Optional audio (`pcm0`).
+7. Optional audio (`pcm0`), see `audio.md`.
 
 Other strings in the same code: `Splash screen disabled via Ctrl-S` (a
 boot-time key), and the default file name `splash.bmp`.
