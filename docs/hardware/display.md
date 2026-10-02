@@ -1,11 +1,15 @@
 # Display (HDMI framebuffer)
 
-BOLT can bring up HDMI itself (its splash-screen feature) and leaves a plain
-linear framebuffer behind. **The display keeps running after `go -64`**, so
-bare-metal code can draw on the TV by writing RAM. Everything below was tested
-on a stock box (`../stock-firmware.md`); the modified box runs the same BOLT
-and should behave the same (⚠️ not yet tested there). Raw captures are in
-`../bolt/raw/display/`.
+BOLT brings up HDMI itself during boot (its splash-screen feature) and leaves
+a plain linear framebuffer behind. **The display keeps running after
+`go -64`**, so bare-metal code can draw on the TV by writing RAM.
+
+**Requirement: a valid `flash0.splash` partition.** BOLT only sets up the
+display after it has read that partition at boot (see "How BOLT's splash
+works" below). On the stock box this works. On the modified box the partition
+was repurposed, so the boot splash stops at `SPLASH: bad file`, the display is
+never set up, and `load -splash` silently does nothing (tested). Raw captures
+are in `../bolt/raw/display/`.
 
 ## Bringing up HDMI from the BOLT prompt
 
@@ -16,18 +20,19 @@ load -raw -splash -tftp <PC IP>:test1080.bmp
 
 - The file must be a **1920 × 1080, 24-bit BMP**. `../bolt/raw/display/make_test_bmp.py`
   generates the test pattern used here.
-- BOLT converts it to RGB565, flips the BMP's bottom-up rows, writes it into
-  the framebuffer and turns HDMI on. It prints only `… bytes read`. The BMP
-  itself lands at the load address (`0x80000` by default).
+- BOLT converts it to RGB565, flips the BMP's bottom-up rows and draws it,
+  centred, into the framebuffer(s) the boot splash already set up. It prints
+  only `… bytes read`. It does **not** set up the display: with no boot-splash
+  surfaces it draws nothing and reports nothing. The BMP itself lands at the
+  load address (`0x80000` by default).
 - `-raw` is required: without it the default zImage loader rejects the file
   (`Bad executable format`).
 - From a USB stick, `load -raw -splash usbdisk0:<file>.bmp` should work the
   same way (⚠️ untested).
 - `load -splash -rawfs flash0.splash` does **not** work: the splash partition
   uses BOLT's own container format (`Invalid boot block on disk`). BOLT reads
-  that partition automatically during a normal boot, before AUTOBOOT. A boot
-  cancelled with Ctrl-C (`../booting.md`) skips it, so the display stays off
-  until `load -splash`.
+  that partition itself during every boot, before the prompt and before
+  AUTOBOOT. A Ctrl-C cancel (`../booting.md`) doesn't skip it.
 
 ## Framebuffer layout
 
@@ -96,7 +101,8 @@ accident). Full dump: `../bolt/raw/display/splash0_rdc_lists_0x7db08000.txt`.
 
 ## Drawing from bare-metal code: the confirmed recipe
 
-1. In BOLT: `load -raw -splash -tftp <PC>:image.bmp` (or USB).
+1. Boot with a valid `flash0.splash` (the boot splash sets up the display).
+   Optionally replace the picture: `load -raw -splash -tftp <PC>:image.bmp`.
 2. Load your program and `go -64 <addr>` (EL2, MMU off).
 3. Read the base from `0xf0641048`, then write RGB565 halfwords at
    `base + y × 3840 + x × 2`.
@@ -108,3 +114,72 @@ The display was still on and refreshing after `go`.
 Not yet known: whether the display survives a 32-bit `go`, whether the
 resolution can be changed, and the meaning of the rest of the display
 pipeline's registers.
+
+## How BOLT's splash works (reverse-engineered)
+
+From BOLT's own code, dumped from RAM and disassembled (`../bolt/bolt.md` §11).
+BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
+
+### Boot splash (`0x070107f4`, runs in `custom_early`, before the prompt)
+
+1. Skip if env `NO_SPLASH` is set, or if `SPLASH` isn't `ENABLE`.
+2. Print `SPLASH: starting`.
+3. Get **SplashData**: a fixed table compiled into BOLT (at `0x07056f30`),
+   holding the display set-up script (the register lists seen in front of the
+   pixels) and surface descriptions.
+4. Memory "glue" (`0x070112b8`): prints `SPLASH BMEM init @ 7defffff`.
+5. **Read the `flash0.splash` container** (`0x07011304`). On failure:
+   `SPLASH: bad file '…'` → `SPLASH: load failed` → the display is never set up.
+6. Run the display script and draw `bmp0` (`0x07011608`): fills the
+   **surface array** (4 pointers at `0x0706ae20`) and prints `Loaded BMP: W=… H=…`.
+7. Optional audio (`pcm0`).
+
+Other strings in the same code: `Splash screen disabled via Ctrl-S` (a
+boot-time key), and the default file name `splash.bmp`.
+
+### `load -splash`
+
+The `load` command loads the file, then (if `-splash` was given) calls the
+draw routine `0x070108e4` with the loaded image. That routine walks the
+SplashData surface list. For each surface present in the array at
+`0x0706ae20`, it parses the BMP, fills the background, draws the image
+centred and flushes the cache. Surfaces that were never set up are skipped
+**silently**. So `load -splash` can only redraw a display that step 6 of the
+boot splash created.
+
+### `flash0.splash` container format
+
+BOLT reads the first 512 KB (`0x80000` bytes) of the partition:
+
+```
++0x00  'G' 'Z' 'B' 'R'     magic
++0x04  u32  uncompressed size
++0x08  u32  compressed size
++0x0c  u32  ~CRC32 of the uncompressed data
++0x10  compressed data      (inflated, then CRC-checked)
+```
+
+If the magic isn't `GZBR`, BOLT uses the bytes as they are (uncompressed).
+The (decompressed) payload:
+
+```
++0x00  'B' 'R' 'C' 'M'
++0x04  u32  0x00010000       version
++0x0c  up to 4 entries of 12 bytes, to +0x3c:
+       { char tag[4]; u32 offset; u32 size; }   tags "bmp0".."bmp3", "pcm0".."pcm3"
+```
+
+An older format, a bare BMP starting with `BM`, is still accepted with the
+warning `SPLASH: Old format file in flash. Use splash_create_flash_file to
+create newer format.`
+
+Error strings tied to this format: `heap alloc failed`, `file read failed`,
+`bad compressed file`, `cannot alloc`, `uncompress failed`,
+`crc mismatch %x != %x`, `Invalid format, or unprogrammed`.
+
+### Consequence for the modified box
+
+Giving it a valid `flash0.splash` (for example a `BRCM` payload with a single
+`bmp0`, or possibly just a BMP in the old format) should let the boot splash
+set up the display. This hasn't been tried: it means recreating a `splash`
+partition on the eMMC.

@@ -47,8 +47,8 @@ autostart when it receives Ctrl-C on the console, right after its banner
 (`Automatic startup canceled via Ctrl-C`). `tools/kstb-bolt` sends Ctrl-C
 continuously during a power-on or a software reset, which always hits the
 window (tested from both, `bolt/raw/stock/ctrlc_cancel_after_reset.txt`).
-This path skips BOLT's splash, so HDMI stays off until `load -splash`
-(`hardware/display.md`).
+Ctrl-C cancels only the autoboot / `STARTUP` step; BOLT's boot splash still
+runs first, so HDMI comes up as usual (`hardware/display.md`).
 
 Without serial access: hold SW4 while powering on, then in the recovery menu
 choose "Reboot to bootloader".

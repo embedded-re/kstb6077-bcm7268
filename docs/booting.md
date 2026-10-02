@@ -25,9 +25,9 @@ tools/kstb-bolt --reset      # board already at BOLT>: software reset, back at B
 
 The tool sends Ctrl-C continuously, so timing doesn't matter. Tested on the
 stock box: from a power-cycle (`RR:00000003`) and with `--reset`
-(`RR:00000200`, about 5.5 s back to `BOLT>`). On this path
-BOLT skips its splash; bring HDMI up with `load -splash` if you need it
-(`hardware/display.md`).
+(`RR:00000200`, about 5.5 s back to `BOLT>`). Ctrl-C only cancels the
+autoboot / `STARTUP` step: BOLT's boot splash (and so HDMI) still runs before
+the prompt (`hardware/display.md`).
 
 ## Building the monitor
 

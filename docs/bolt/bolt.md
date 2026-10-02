@@ -330,3 +330,62 @@ The source is in `raw/gic64b_probe.s` and the full output in
 
 Decoded in `../hardware/interrupts.md` ("GIC state at handoff") and
 `../booting.md` ("State of a 64-bit program at entry").
+
+---
+
+## 11. Reverse engineering BOLT's code
+
+BOLT's running image was dumped from RAM on the modified box and
+disassembled. This is how the splash/display behaviour in
+`../hardware/display.md` was worked out.
+
+### Getting the image
+
+```
+tools/kstb-dump 0x07008000 0x0706c000 bolt_ram.bin     # code + data + bss, ~3 min
+```
+
+- The range comes from BOLT's own `info` (code `0x070080f0–0x0703f000`, data,
+  bss to `0x0706b248`). It is BOLT's memory, mapped and readable.
+- Check: `crc -offset=0x070080f0 -size=0x36f10` on the board must equal the
+  CRC32 of the same bytes in the file (it did: `0xd4e64a5f`). The data section
+  changes while BOLT runs, so only the code section can be compared.
+- The dump is not in this repository (it is Broadcom's code). Re-create it
+  with the command above.
+
+### Disassembling
+
+```
+# wrap the raw dump as an ELF linked at 0x07008000, strip mapping symbols
+printf '.section .text,"ax"\n.incbin "bolt_ram.bin"\n' > wrap.s
+arm-none-linux-gnueabihf-as wrap.s -o wrap.o
+arm-none-linux-gnueabihf-ld -Ttext=0x07008000 -e 0x07008000 wrap.o -o bolt.elf
+arm-none-linux-gnueabihf-strip bolt.elf
+arm-none-linux-gnueabihf-objdump -D -M force-thumb bolt.elf > bolt_thumb.dis
+```
+
+- **Almost all of BOLT is Thumb-2.** Only the entry stub at `0x070080f0` is
+  ARM (`ldr r1, [pc, #24]; str r0, [r1]; bl …`). Disassembled as ARM, the bulk
+  is nonsense, with only ~600 PC-relative loads in 56,000 lines.
+- Strings are found through literal pools. A `ldr rX, [pc, #n]` loads a 32-bit
+  pool word that holds a string's absolute address.
+
+### Functions identified
+
+| Address | Function |
+|---|---|
+| `0x070107f4` | boot splash main (`NO_SPLASH`/`SPLASH` env, "SPLASH: starting" … "load failed") |
+| `0x0701036c` | returns SplashData (built-in table at `0x07056f30`) |
+| `0x070112b8` | splash memory "glue" ("SPLASH BMEM init") |
+| `0x07011304` | read and decode the `flash0.splash` container (`GZBR`, 512 KB, inflate, CRC) |
+| `0x07011430` | look up `bmp0..3` / `pcm0..3` in the `BRCM` payload |
+| `0x07011608` | run the display script and draw (`Loaded BMP: W=%d H=%d`) |
+| `0x070108e4` | draw a BMP into every set-up surface (centred, background fill, cache flush) |
+| `0x070115f4` | return surface *i* from the array at `0x0706ae20` (0 if not set up) |
+| `0x07030740` | `load` command: after loading, `-splash` → calls `0x070108e4` |
+| `0x07010994`, `0x07025358` | "splash-feedback": draw media *n* from the container |
+
+Helper routines seen along the way: `0x070216f0` (getenv), `0x0701c318`
+(printf), `0x0701b89c` / `0x0701b804` (heap alloc / free), `0x0701e03c` /
+`0x0701e130` / `0x0701e0c4` (open / read / close a device), `0x0701c87c`
+(CRC32), `0x0701157c` (inflate).

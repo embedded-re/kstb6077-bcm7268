@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Dump board memory to a file over the BOLT console (read-only, via `d -w`).
+
+    kstb-dump START END out.bin       e.g. kstb-dump 0x07008000 0x0706c000 bolt_ram.bin
+
+Reads 1 KB per command (about 2.3 KB/s). Stops if BOLT reports a CPU exception.
+Only dump addresses known to be mapped and readable (docs/hardware/memory-map.md):
+some peripheral offsets abort even inside the mapped window.
+Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
+"""
+import os, re, socket, sys, time
+
+if len(sys.argv) != 4:
+    sys.exit(__doc__)
+start, end, out = int(sys.argv[1], 16), int(sys.argv[2], 16), sys.argv[3]
+CH = 0x400
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.connect(os.environ.get("KSTB_SOCK", "/tmp/kstb.sock"))
+s.settimeout(0.05)
+DONE = re.compile(rb"\*\*\* command status = -?\d+\r?\n?BOLT> ?$")
+CRASH = re.compile(rb"(^|\n)CPU exception: ")
+
+
+def cmd(line, timeout=20):
+    try:
+        while s.recv(65536):
+            pass
+    except socket.timeout:
+        pass
+    s.sendall(line.encode() + b"\r")
+    buf, t = b"", time.time() + timeout
+    while time.time() < t:
+        try:
+            d = s.recv(65536)
+            if d:
+                buf += d
+        except socket.timeout:
+            pass
+        if DONE.search(buf) or CRASH.search(buf):
+            break
+    return buf
+
+
+data, t0 = bytearray(), time.time()
+for a in range(start, end, CH):
+    n = min(CH, end - a)
+    raw = cmd(f"d -w 0x{a:08x} 0x{n:x}")
+    if CRASH.search(raw):
+        open(out, "wb").write(data)
+        sys.exit(f"\nCPU exception at 0x{a:08x}: wrote the {len(data)} bytes before it to {out}")
+    words = {}
+    for line in raw.decode("latin1").splitlines():
+        m = re.match(r"([0-9a-f]{8})  ((?:[0-9a-f]{8} ?){1,4})", line)
+        if m:
+            base = int(m.group(1), 16)
+            for i, w in enumerate(m.group(2).split()):
+                words[base + 4 * i] = int(w, 16)
+    for off in range(0, n, 4):
+        if a + off not in words:
+            open(out, "wb").write(data)
+            sys.exit(f"\nmissing word at 0x{a + off:08x}; wrote {len(data)} bytes to {out}")
+        data += words[a + off].to_bytes(4, "little")
+    print(f"\r0x{a:08x}  {len(data) // 1024} KB  {time.time() - t0:.0f} s", end="", flush=True)
+open(out, "wb").write(data)
+print(f"\nwrote {len(data)} bytes to {out}")
