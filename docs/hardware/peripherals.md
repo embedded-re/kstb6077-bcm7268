@@ -531,6 +531,41 @@ framebuffer showed a red square with a blue triangle pointing down.
 Reading the framebuffer back gave the same per-row spans
 (`v3d_tri_tv_output.txt`).
 
+### V3D GPU: our own first QPU program (tested 2026-10-03)
+
+The triangle job from the previous section, with a fragment shader written
+and encoded here instead of copied from libGLES
+(`../bolt/raw/v3d/v3d_grad_scr_probe.s`, output `v3d_grad_scr_output.txt`).
+The encoder/disassembler is `tools/re/qpu.py`. Its instruction layout
+follows Mesa's `qpu_pack.c`. libGLES's own tables match Mesa's V3D 3.3
+tables entry for entry: the signal table, the magic write-address names
+and the small immediates (see `gpu.md`).
+
+| Word | Instruction |
+|---|---|
+| `3c003180bb808000` | `fxcd r0` (pixel x as a float) |
+| `55e03001bbe0c022` | `fycd r1 ; fmul r0, r0, 2^-6` (small immediate) |
+| `55e03046bbe40022` | `fmul r1, r1, 2^-6` |
+| `3c00318835808000` | `vfpack tlbu, r0, r1`: R and G as half floats, first tile-buffer write, with the next uniform (`ffffffff`) as its config |
+| `030031c63c000000` | load immediate into `tlb`: `3c000000` = B 0.0, A 1.0 |
+| `3c203186bb800000` | thread switch (end of program) |
+| `3c003186bb800000` ×2 | `nop` (delay slots) |
+
+The plain `fmul` (21) and `vfpack` (53) opcode numbers were built from
+Mesa's pack rules; this run confirms them.
+
+Result: the tile was cleared to black. Exactly the 1152 triangle pixels got
+a colour, with red rising from left to right, green from top to bottom, and
+blue 0. All 1152 values equal this model: R = x/64 and G = y/64, with x
+and y the pixel's **integer** coordinates (no +0.5), each rounded to a half
+float, then **rounded** to 8 bits and on to RGB565. Truncating instead gives
+970 mismatches; using x + 0.5 gives 467.
+
+So `fxcd`/`fycd` give the integer pixel coordinates as floats. A shader can
+write the tile buffer with `tlbu` (config from the uniform stream) followed
+by `tlb`, and the load immediate works as a full 32-bit move into a magic
+register.
+
 ### M2MC 2D blitter: registers, reset and a solid fill (tested 2026-10-03)
 
 The stock `nexus.ko` (`BGRC_` module) drives the M2MC at bus `0x209b0000`,
