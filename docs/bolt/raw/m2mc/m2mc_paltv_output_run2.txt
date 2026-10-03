@@ -1,0 +1,43 @@
+m2mc palette tv probe
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000001 
+  poll ok after us: 000006c8 last 01000000 
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000100 
+  W f09b0060 82409024 
+  W f09b0064 00000024 
+  W f09b006c 00100000 
+  W f09b0068 00000111 
+  W f09b0014 01001160 
+  W f09b000c 00000006 
+  poll ok after us: 000006c8 last 01001160 
+  poll ok after us: 000006c9 last 00000002 
+  poll ok after us: 000006c8 last 00000000 
+  f09b000c 00000006 
+  f09b0010 00000002 
+  f09b0014 01001160 
+  f09b0018 01001160 
+  f09b001c 00000000 
+  scratch check: mismatching pixels / changed halfwords (want 0 / 00186a00): 00000000 00186a00 
+  check passed: clearing the screen, drawing onto it
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000001 
+  poll ok after us: 000006c8 last 01000000 
+  W f09b1808 00000001 
+  W f09b1808 00000000 
+  W f09b02f0 00000100 
+  W f09b0060 82409024 
+  W f09b0064 00000024 
+  W f09b006c 00100000 
+  W f09b0068 00000111 
+  timed list done, ticks (27 MHz): 0000ade1 
+  f09b000c 00000006 
+  f09b0010 00000002 
+  f09b0014 01001360 
+  f09b0018 01001360 
+  f09b001c 00000000 
+  drawn onto the screen
+probe done

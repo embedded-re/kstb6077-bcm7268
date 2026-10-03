@@ -306,8 +306,8 @@ to DRAM):
 Result:
 
 - `TFU_CS` went from `00002000` to `00012000`: `CVTCT` (conversions done)
-  counted to 1. The poll saw it within 1.7 ms, the shortest time the probe
-  measured.
+  counted to 1. The poll saw it at its first read. (The 1.7 ms the probe
+  printed is UART time, not job time: see "M2MC 2D blitter: palette-8".)
 - The hub's `INT_STS` `0xf1200050` read `00000002` (`TFUC`: TFU done). The
   CPU's IRQs were masked, so no interrupt was taken.
 - The job registers `IIA` … `COEF0` read `0` both before and after the job.
@@ -342,7 +342,7 @@ Render control list (90 bytes, at `0x01001200` inside the program):
 | `79 00 40 00 40 00 40 00 0e` | tile rendering mode config, common: 1 render target, 64×64, 32 bpp, early-Z off, store render target 0 only |
 | `79 02 08 1b f0 00 00 20 02` | colour config, render target 0: internal type 8-bit, output `rgba8` (27), memory format raster, address `0x02200000` |
 | `79 01 00 00 00 00 00 30 02` | Z/stencil config: 32-bit float, address `0x02300000` (not stored) |
-| `79 04 00 ff 00 ff 00 00 00` | clear colour, word 0 = `0xff00ff00` |
+| `79 04 00 ff 00 ff 00 00 00` | clear colour: bytes 2–5 = word 0 = `0xff00ff00` |
 | `79 06 00 00 40 00 00 00 00` | clear part 3: raster padded width 64 pixels |
 | `79 03 00 00 00 80 3f 00 00` | Z/stencil clear values: stencil 0, depth 1.0 |
 | `7c 00 00 00` | tile coordinates (0,0) |
@@ -373,14 +373,163 @@ Submission:
 Result:
 
 - Core `INT_STS` `0xf1208050` bit 0 (`FRDONE`, frame done) was set when the
-  poll first looked, within 1.7 ms. `CLE_RFC` `0xf1208138` counted from 0 to 1.
+  poll first looked (the printed 1.7 ms is UART time). `CLE_RFC` `0xf1208138`
+  counted from 0 to 1.
   `CT1CA` = `CT1EA` = `0100125a`: the list was read to its end. `CT1CS` read
   `0` (stopped at the end, no error).
 - The colour buffer held exactly 4096 words (64×64) of `ff00ff00`, in rows
   of 256 bytes. The 48 KB after it and the whole 64 KB depth buffer still
   read `deadbeef`: nothing else was written.
-- The stored word equals the clear word. This colour can't show which byte
-  is red, so the channel order of `rgba8` is still untested.
+- The stored word equals the clear word.
+
+**Byte order** (`v3d_order_probe.s`, output `v3d_order_output.txt`): the
+same job, with the clear packet `79 04 00 11 22 33 44 00 00`. The clear word
+is packet bytes 2–5, so the word was `0x33221100`. Every word of the tile
+read `33221100`: the clear word's lowest byte goes to the lowest address,
+with no reordering. Nothing outside the tile changed. Which byte is red was
+found with a 565 output (next section): byte 0.
+
+### V3D GPU: rendering straight into the framebuffer (tested 2026-10-03)
+
+The same clear-only render job can store its tile as RGB565 into a surface
+laid out like the framebuffer (1920×1080, pitch 3840). Three render control
+list changes from the job above:
+
+| Packet | Change |
+|---|---|
+| colour config `79 02 08 07 f0 <address>` | output format **7** (`bgr565`) instead of 27 (`rgba8`) |
+| clear part 3 `79 06 00 00 80 07 00 00 00` | bytes 4–5: raster row stride **1920** pixels (was 64) |
+| clear colour `79 04 <word> 00 00 00` | the clear word in bytes 2–5 |
+
+The packet layouts come from libGLES `v3d_cl_tile_rendering_mode_cfg_indirect`
+and `v3d_cl_rcfg_clear_colors`. libGLES's own tables
+(`v3d_pixel_format_to_rt_format`) give `bgr565` internal type 8-bit and
+32 bpp, the same as `rgba8`, so byte 2 of the colour config stays `08`. In
+libGLES's name table, format 7 is `bgr565` and format 27 is `rgba8`.
+
+**Scratch RAM first** (`../bolt/raw/v3d/v3d_fb_scr_probe.s`, outputs
+`v3d_fb_scr_output_<word>.txt`). The tile went to `0x031dcb40` inside a 4 MB
+area at `0x03000000` filled with `deadbeef`, at the place (928,508) has on
+screen. Every run changed exactly 4096 halfwords: 64 rows of 64 pixels, with
+3840 bytes from row to row. Pixel 64 of each row and the row below the tile
+were unchanged. The depth buffer was unchanged.
+
+| Clear word | Bytes 0–3 | Every pixel |
+|---|---|---|
+| `000000ff` | `ff 00 00 00` | `f800` |
+| `0000ff00` | `00 ff 00 00` | `07e0` |
+| `ff000000` | `00 00 00 ff` | `0000` |
+| `ffffffff` | `ff ff ff ff` | `ffff` |
+| `20408000` | `00 80 40 20` | `0408` |
+| `f8f80000` | `00 00 f8 f8` | `001e` |
+
+So the clear word is **byte 0 red, byte 1 green, byte 2 blue, byte 3
+alpha**. Format 7 stores ordinary RGB565 with red in the top bits, the same
+layout as the framebuffer. Alpha is dropped. The 8-bit values are rounded,
+not cut: `f8` became blue 30 (248 × 31 / 255 = 30.2), `80` became green 32.
+
+**Then the screen** (`v3d_fb_tv_probe.s`, output `v3d_fb_tv_output.txt`):
+the same job with the clear word `000000ff` and the tile address `0x7dce8240`
+= (928,508) in the framebuffer `0x7db0b700`. A 64×64 red square appeared in
+the middle of the splash screen. Reading back: the tile was `f800`. The
+pixels to its right and below it still held the splash background (`07e0`).
+
+### V3D GPU: first triangle (tested 2026-10-03)
+
+A binner job followed by a render job draws a flat-coloured triangle. There's
+no vertex shader: the vertices are given in screen pixels (an "NV" shader
+record). There's one fragment shader, copied from libGLES. Probe:
+`../bolt/raw/v3d/v3d_tri_scr_probe.s` (scratch RAM), then
+`v3d_tri_tv_probe.s` (screen).
+
+**Sources.** Packet names and which list may hold them come from libGLES
+`v3d_desc_cl_opcode`, `v3d_cl_instr_ok_in_bin` and
+`v3d_cl_instr_ok_in_render`. `vertex_array_prims` (`24`) is allowed only in
+the binning list, so the binner is needed. Packet layouts come from libGLES's
+`v3d_cl_pack_*` functions. The draw packets come from `glxx_draw_rect`, and
+the binning list start from `create_cls_and_flush`.
+
+**Binner job** (Nexus `BVC5_P_HardwareIssueBinnerJob` order; register names
+from Linux `v3d_regs.h`):
+
+| Write | Meaning |
+|---|---|
+| `0xf1208030` = `1`, `0xf1208024` = `0f0f0f0f`, `0xf1208058` = `7` | cache flushes, `INT_CLR`, as for the render job |
+| `0xf120830c` = `0` | `PTB_BPOS`: no overflow memory |
+| `0xf1208170` = `04000000` | `CT0QMA`: tile allocation memory |
+| `0xf1208174` = `00100000` | `CT0QMS`: its size, 1 MB |
+| `0xf1208160` = binning list start | `CT0QBA` |
+| `0xf1208168` = binning list end | `CT0QEA`: **starts the binner** |
+
+Done: core `INT_STS` bit 1 (`FLDONE`) was set when the poll first looked.
+`CT0CA` = `CT0EA` (the list was read to its end), `CLE_BFC` `0xf1208134` = 1,
+and `PTB_BPCA` `0xf1208300` = `04003000` (12 KB of tile memory used).
+
+**Binning control list:**
+
+| Bytes | Packet |
+|---|---|
+| `78 12 00 10 04 01 10 00 00` | tile binning mode config: tile state array `0x04100000` (4 KB, zeroed) with auto-init, initial block 64 bytes, block 128 bytes; **width 1, height 1 tiles**; 1 render target, 32 bpp |
+| `13`, `06` | clear VCD cache, start tile binning |
+| `0e 00`, `5c 00000000` | wait transform feedback 0, occlusion query counter off (as libGLES) |
+| `6b 0000 0000 4000 4000` | clip window (0,0) 64×64 |
+| `6d 00000000 0000803f` | clip Z 0.0 to 1.0 |
+| `60 03 70 00` | config bits: both faces, depth function "always" |
+| `57 00000000` | colour write masks: all on |
+| `6c` + 8 × `00` | viewport offset 0 |
+| `49 44` | VCM cache size |
+| `44` + record address \| 2 | `nv_shader`: the record below, 2 attribute arrays |
+| `24 04 03000000 00000000` | `vertex_array_prims`: triangles, 3 vertices, first 0 |
+| `04` | flush |
+
+The tile counts in the config are **counts, not minus one**: libGLES computes
+`((pixels - 1) >> shift) + 1`. A first run with `00 00 00` there read its
+whole list, but `FLDONE` never came, `PTB_BPCA` moved by `0xaa000` and no
+triangle was drawn (`v3d_tri_scr_output_run1_tiles0.txt`).
+
+**NV shader record** (60 bytes, 32-byte aligned; values from libGLES
+`v3d_create_nv_shader_record`, layout from `v3d_unpack_shadrec_gl_main` /
+`_gl_attr`):
+
+| Words | Value |
+|---|---|
+| 0–1 | `0`, `00010001` |
+| 2 | address of 32 bytes of default attribute values: vec4(0,0,0,0), vec4(0,0,0,1.0) |
+| 3, 4 | fragment shader code address, fragment shader uniforms address |
+| 5–8 | `0` (no vertex or coordinate shader) |
+| 9–11 | attribute 0: defaults address, `00000408`, `0` |
+| 12–14 | attribute 1: vertex data address, `0000440b`, stride 12 |
+
+Vertices are 12 bytes each: X and Y in pixels as fixed point (`<< 8`), then Z
+(`0`). The triangle is (8,8), (56,8), (32,56).
+
+**Fragment shader:** libGLES `v3d_clear_shader_color`, the path for 8-bit
+render targets. It's 6 instructions:
+`3c403186bb800000 3c003188b682d000 3c403186bb800000 3c203187b682d000`
+`3c003186bb800000 3c003186bb800000`. Decoded with the V3D QPU field layout
+(inferred), they are: load a uniform, write it to the tile buffer with the
+next uniform as the write config, load a uniform, write it and end the
+thread, two `nop`s. Uniforms: `R | G << 16` as half floats, `ffffffff`,
+`B | A << 16`. Blue: `0`, `ffffffff`, `3c003c00`.
+
+**Render job:** the RGB565 framebuffer-layout job from the previous section
+(tile cleared to red), plus:
+- `7b 00 00 00 04` in the render control list: tile list base, set 0,
+  `0x04000000` (the tile allocation memory).
+- `15 00` in the generic tile list after `7d`: branch to the binner's list
+  for this tile.
+
+**Result in scratch RAM:**
+- Exactly 4096 halfwords changed: 2944 red `f800` and 1152 blue `001f`.
+  1152 is the triangle's area (48 × 48 / 2).
+- Per row, the blue pixels run from x = 8–55 on row 8, narrowing by one
+  pixel on each side every two rows, down to 31–32 on row 54. Rows 0–7 and
+  55–63 have none (`v3d_tri_scr_output_spans.txt`).
+
+**On the screen:** the same jobs with the tile at (928,508) in the
+framebuffer showed a red square with a blue triangle pointing down.
+Reading the framebuffer back gave the same per-row spans
+(`v3d_tri_tv_output.txt`).
 
 ### M2MC 2D blitter: registers, reset and a solid fill (tested 2026-10-03)
 
@@ -406,7 +555,7 @@ Nexus's `BCHP_PWR` code and `BGRC_` functions:
 1. `+0x1808` = 1, then 0.
 2. `+0x2f0` = 1.
 3. Wait until `+0x1c` reads non-zero. It read `01000000` when the probe first
-   looked, within 1.7 ms.
+   looked (the printed 1.7 ms is UART time).
 4. `+0x1808` = 1, then 0.
 5. `+0x2f0` = `100`, `+0x60` = `82409024`, `+0x64` = `24`, `+0x6c` =
    `00100000`, `+0x68` = `111`. All read back as written; `+0x1c` read `0`
@@ -447,7 +596,7 @@ widths, channel positions, flags), from Nexus's
 `0x02400000`, pitch 128. The 64 KB around it was filled with `deadbeef`
 first.
 
-- The list finished when the probe first looked, within 1.7 ms: `+0x10` =
+- The list had finished when the probe first looked: `+0x10` =
   `2`, `+0x18` = the packet address, `+0x1c` = `0`.
 - Exactly the 128 pixels of the rectangle read `f800` (red). No other
   halfword in the surface or in the rest of the 64 KB changed.
@@ -556,11 +705,123 @@ with the output at (160,40) = `0x7db31040`. The picture showed on the TV,
 centred: the white border, the colour steps and the blue checkerboard, each
 source pixel as a sharp 5×5 block.
 
-Each list finished when the probe first looked, within 1.7 ms.
+Each list had finished when the probe first looked. The screen list's real
+time was measured later: 1.65 ms (next section).
 
 The test image's red channel is `(x >> 3) & 31`. It wraps to 0 at source
 column 256, which made a hard edge 320 pixels from the right of the picture.
 That edge is in the source image itself.
+
+### M2MC 2D blitter: palette-8 lookup and timing (tested 2026-10-03)
+
+The M2MC converts an 8-bit indexed image to RGB565 through a 256-entry
+palette, and can scale it in the same packet. Probes and outputs are in
+`../bolt/raw/m2mc/` (`m2mc_pal*`).
+
+**Palette-8 source format.** Nexus `BGRC_PACKET_P_ConvertPixelFormat` maps
+BPXL `0x12e40008` to BM2MC format **33**. Its table entry
+(`s_BGRC_PACKET_P_DevicePixelFormats`) is `00030008, 0, 00001c00`. The source
+feeder words 11–13 are then:
+
+| Word | Value |
+|---|---|
+| 11 | `00030008` |
+| 12 | `0` |
+| 13 | `00211c01` (table word 2, ORed with `00210000` and bit 0, as Nexus does) |
+
+**Palette.** Group bit 1 of the packet (mask `7ff2` instead of `7ff0`): 2
+words, the palette's address, then `0`. They come after the colour matrix
+group, at the end of the packet. Each palette entry is a 32-bit word
+**`AARRGGBB`**.
+
+**Test** (`m2mc_pal4_probe.s`):
+- Source: a 16×8 index image, index = y·16 + x.
+- Palette: entry i = `ff00a030 | i << 16`, so red = i.
+- Output: 16×8 RGB565.
+
+Every pixel came out as `(i >> 3) << 11 | 0506`: red = i, green = `a0`,
+blue = `30`. Nothing outside the image changed. The 8-bit to 5- or 6-bit
+step cuts off the low bits (index 7 gave red 0, index 8 gave red 1).
+
+**Where the palette goes.** After the list, the M2MC's registers
+`0xf09b0400`–`0xf09b05fc` held palette entries 0–127, in order
+(`m2mc_pal_probe.s` read `+0x000`–`+0x5fc` only). So the block copies the
+palette from RAM into its own registers. The same read-back shows that the
+packet's groups land in registers starting at `0xf09b0104`. The source feeder
+address is at `+0x10c`, the output feeder at `+0x180`, the blit group at
+`+0x1a8` and the blend group at `+0x230`. That is `0x104` plus Nexus's
+`s_BGRC_PACKET_P_DeviceRegisterOffsets`, and the palette group is at
+`0x104 + 0x2fc` = `+0x400`. Reads of `+0xb4`–`+0xfc`, `+0x1f8` and
+`+0x2f4`–`+0x3fc` aborted (synchronous external abort).
+
+**Format 27 is not palette-8.** BPXL `0x01390008` maps to format 27
+(`00058000, 0, 00000e00`). With it, the palette was still loaded, but the
+colour came from the source's constant colour (source feeder word 18). With
+the constant `ff123456`, every pixel was `11aa` (`m2mc_pal2_probe.s`). From
+its BPXL code, format 27 is probably A8 (alpha only); that is inferred, not
+tested.
+
+Word 13 changes (`m2mc_pal3_probe.s`, format 27, constant `ff123456`):
+
+| Word 13 | Output | R, G, B (8-bit) |
+|---|---|---|
+| `00210e01` (Nexus) | `11aa` | `12, 34, 56`: the constant |
+| `00200e01` (bit 16 cleared) | `81aa` | `80, 34, 56` |
+| `00010e01` (bit 21 cleared) | `1410` | `12, 80, 80` |
+| `00000e01` (both cleared) | `8410` | `80, 80, 80` |
+
+With `00210001` (bits 9–11 cleared) the output was `0000`. Read together
+with the format table, bits 9–12 of word 13 probably switch channels 0–3
+off: `0e00` leaves only the alpha channel, `1c00` (palette-8) only
+channel 0, which holds the index. This is inferred.
+
+**320×200 palette image → 1600×1000 on the TV** (`m2mc_paltv_probe.s`).
+These are the `m2mc_tv_probe.s` packets with the palette-8 source (pitch
+320) and a palette.
+- In scratch RAM, every output pixel equalled the CPU's own palette lookup of
+  source pixel (x/5, y/5). Exactly 1,600,000 halfwords changed.
+- On the screen, the picture showed centred.
+
+**Time.** The probe read `CNTPCT_EL0` (27 MHz) right before writing `6` to
+`+0x0c`, then polled until `+0x18` = the packet, `+0x10` = `2` and `+0x1c` =
+`0`, with no UART output in between. The whole lookup + 5× scale +
+framebuffer write took **44,494 and 44,513 ticks = 1.65 ms** (two runs:
+`m2mc_paltv_output.txt`, `m2mc_paltv_output_run2.txt`).
+That is about 0.97 billion output pixels per second.
+
+**The "1.7 ms" in earlier probe outputs is UART time.** The probes' `poll`
+prints `"  poll ok after us: "` before it reads the end time. These 20
+characters take 20 × 86.8 µs = 1,736 µs at 115,200 baud. That is exactly the
+`000006c8` every poll printed. Those polls only show that the job was
+already done at the first read.
+
+### M2MC 2D blitter: new lists without a reset (tested 2026-10-03)
+
+Nexus `BGRC_PACKET_P_ProcessSwPktFifo` gives the blitter new work while it
+keeps running. It writes the first new packet's address into word 0 of the
+last packet it sent before, then writes **`3`** to `+0x0c`. Only the very
+first batch uses `+0x14` and `6`.
+
+`../bolt/raw/m2mc/m2mc_cont_probe.s` (output `m2mc_cont_output.txt`), with
+one M2MC reset at the start and three packets. Each packet is the 16×8
+palette-8 → RGB565 packet from the palette section, with word 0 = `1` and
+bit 14 set in blit word 0.
+
+| Step | What the CPU does | Output |
+|---|---|---|
+| 1 | `+0x14` = A, `+0x0c` = `6`. A uses palette 1 (red = i) | `0506 … 7d06` at `0x02500000` |
+| 2 | A's word 0 = B in RAM, `dsb`, `+0x0c` = `3`. B uses palette 2 (blue = i) | `0000, 0001, … 000f` at `0x02510000` |
+| 3 | B's word 0 = C, `dsb`, `+0x0c` = `3`. C uses palette 1 | `0506 … 7d06` at `0x02520000` |
+
+- After each step, `+0x18` held that step's packet, `+0x10` read `2` and
+  `+0x1c` read `0`.
+- All three outputs were exact, and nothing outside them changed.
+- Each packet loaded its own palette.
+- `+0x0c` read `6` after the start and `2` after each `3`.
+- `+0x14` kept the first packet's address.
+
+So after one reset, each new frame's packet can be linked onto the previous
+one and started with `+0x0c` = `3`.
 
 ### `0xf0402800`: not a block (correction)
 
