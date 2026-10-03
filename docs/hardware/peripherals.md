@@ -57,6 +57,7 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xf0410700` / `0714` | AON pin mux / pad control | DTB | | `gpio.md` |
 | `0xf0418000` | MSPI (SPI master) | DTB | `0` | |
 | `0xf0419000`, `0xf0419c00`, `0xf0419c40` | AON UPG L2 interrupt controllers | DTB | `0` | `c00` = buttons/IR (`interrupts.md`) |
+| `0xf0419900`, `0xf0419980`, `0xf0419a00` | IR receiver (KBD) channels kbd1–3 | Nexus `BKIR_*` | `0` | kbd1 = the remote (`ir.md`) |
 | `0xf0419c80` | AON GPIO | DTB | | `gpio.md` |
 | `0xf041a080` | wake timer | DTB | | `system-blocks.md` |
 | `0xf0452000` | HIF continuation (CPU boot addresses) | DTB `brcmstb-hif-continuation` | `0` | PSCI writes each core's start address at `+0x8/+0x10/+0x18` (`cpu-cores.md`) |

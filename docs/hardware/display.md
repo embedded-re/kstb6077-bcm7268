@@ -66,13 +66,15 @@ The graphics feeder (GFD) block at `0xf0641000`:
 
 | Register | Value | Meaning |
 |---|---|---|
-| `0xf0641044` | `00000780` | width, 1920 |
+| `0xf0641044` | `00000780` | source width, 1920 (see "Graphics feeder" below) |
 | `0xf0641048` | `7db0b700` | **surface address: where the pixels are** |
 | `0xf0641058` | `00000f00` (written by the display lists) | pitch, 3840 bytes |
 | `0xf0641174` | `00000438` (written by the display lists) | height, 1080 |
 
-Reading `0xf0641040–0x4f` works. **Reading `0xf064105c` gives an external
-abort**, which hangs BOLT. Only the offsets above are known safe to read.
+**Reading `0xf064105c` gives an external abort**, which hangs BOLT. The 590
+registers that BOLT's display lists use all read without an abort (see
+"Display lists" below), so those are the known-safe set. Anything else in
+the display blocks may abort.
 
 Bare-metal code should read `0xf0641048` instead of hard-coding the address
 (`../bolt/raw/display/fbdraw_probe.s` does exactly that).
@@ -86,22 +88,9 @@ container, BOLT puts the audio buffer at `0x7dada100–0x7db08eff`, and the
 lists starting at `0x7db08fa0` stay intact (tested, see `audio.md`). The RDC
 lists are: register-write programs that the display hardware's register-DMA
 controller fetches from RAM by itself. The DTB's memory-client list names
-`bvn_rdc`, and the bus arbiter lists an `rdc_0` master. The list format is
-recognisable:
-
-```
-01000000 f0641058 00000f00      write 1 register: pitch = 3840
-01000000 f0641174 00000438      height = 1080
-06000011 f06e4140 …             write a block of registers (count presumably in the low bits)
-01000000 f0604000 7db09c60      RDC: pointer to the next list
-04000000 … / 04000001 …         other opcodes, probably mask / read-modify-write operations
-```
-
-Only the `01000000 <register> <value>` form is understood with confidence: it
-matches the width, pitch and height values found elsewhere.
-
-Registers named in the lists: `0xf0604000/40` (RDC), `0xf0641xxx` (GFD),
-`0xf06e4xxx`, `0xf06e6c00`, `0xf06fa0xx–0xf06fa8xx` (display pipeline).
+`bvn_rdc`, and the bus arbiter lists an `rdc_0` master. The format, how
+BOLT's lists run, and how to run a list of our own are in "Display lists
+(RDC)" below.
 
 **Overwriting this area blanks the screen** until the next reboot (tested by
 accident). Full dump: `../bolt/raw/display/splash0_rdc_lists_0x7db08000.txt`.
@@ -228,6 +217,196 @@ happened). The 2 MB block at `0x7de00000` also covers BL31 (`0x7df00000`,
 secure); it is mapped because the framebuffer's last lines are in it, but
 nothing touches BL31. Page tables at `0x10600000`, test data at
 `0x10000000–0x1042ffff` (free `rmem`).
+
+## Display lists (RDC)
+
+Tested on the modified box on 2026-10-03, from `go -64` (EL2, MMU off).
+Probes and outputs are in `../bolt/raw/display/`.
+
+### List format
+
+Taken from the stock Nexus driver (`stock/release/modules/nexus.ko`): the
+list builders `BRDC_AddrRul_*_isr` and the list dumper
+`BRDC_DBG_GetListEntry_isr`, which knows how many words follow each opcode.
+Every entry starts with one command word, opcode in bits 31–24. Register
+addresses in the lists are CPU addresses (`0xfxxxxxxx`). The RDC has 64
+variables (`v0`–`v63`).
+
+| Opcode | Name (from Nexus) | Words | Layout |
+|---|---|---|---|
+| `00` | NOP | 1 | |
+| `01` | IMM_TO_REG | 3 | `01000000, reg, value` |
+| `02` | VAR_TO_REG | 2 | `02000000 \| var << 12, reg` |
+| `03` | REG_TO_VAR | 2 | `03000000 \| var, reg` |
+| `04` | IMM_TO_VAR | 2 | `04000000 \| var, value` |
+| `05` | IMMS_TO_REG | 2 + n | `05000000 \| (n − 1), reg, n values` (one register) |
+| `06` | IMMS_TO_REGS | 2 + n | `06000000 \| (n − 1), reg, n values` (consecutive registers) |
+| `07` / `08` | REGS_TO_REGS / REG_TO_REGS | 3 | `op \| (n − 1), source reg, destination reg` |
+| `0b` / `0d` / `0f` / `13` | AND / OR / XOR / SUM | 1 | `op \| a << 12 \| b << 6 \| dest` |
+| `0c` / `0e` / `10` / `14` | AND / OR / XOR / SUM with a value | 2 | `op \| a << 12 \| dest, value` |
+| `11` | NOT | 1 | `11000000 \| a << 12 \| dest` |
+| `12` | shift | 1 | shift amount in bits 22–18 |
+
+Opcodes `15`–`17` exist in the dumper but don't appear in BOLT's lists.
+
+`tools/re/rdc.py DUMP [START]` decodes a hex dump with this table, skipping
+the leftover RAM between lists. The decoded lists:
+`../bolt/raw/display/splash0_rdc_lists_decoded.txt`.
+
+Example, the surface reload that runs every frame (see "Vsync and double
+buffering"):
+
+```
+03000000 f0603498        v0 = [0xf0603498]
+03000001 f060348c        v1 = [0xf060348c]
+0b000041                 v1 = v0 AND v1
+11000000                 v0 = NOT v0
+03000002 f0603488        v2 = [0xf0603488]
+0b000082                 v2 = v0 AND v2
+0d001082                 v2 = v1 OR v2
+130020c2                 v2 = v2 + v3
+02002000 f0641048        [0xf0641048] = v2       (GFD surface address)
+```
+
+### How BOLT's lists run
+
+The RDC has descriptors. Each one holds a list address and a word count:
+
+| Register | Descriptor 0 | Descriptor 1 |
+|---|---|---|
+| list address | `0xf0604000` | `0xf0604040` |
+| count (words − 1) | `0xf0604008` (and `+0x18`) | `0xf0604048` (and `+0x58`) |
+| config | `0xf0604010` = `06180000` | `0xf0604050` = `06190000` |
+
+BOLT's lists end with a "tail" that points a descriptor at the next list,
+bracketed by `0xf0605000`:
+
+```
+01000000 f0605000 00000000
+01000000 f0604000 7db09ae0      next list
+01000000 f0604010 06180000      config
+01000000 f0604008 00000048      count = 73 words − 1
+01000000 f0604018 00000048
+01000000 f0605000 00000001
+```
+
+From the decoded lists and the live values: descriptor 0 runs a 73-word list
+**every frame**. That list sets the compositor canvas and background, reloads
+the GFD surface address from `0xf0603488/8c`, and counts the frame counter
+`0xf0603484` up. BOLT keeps two identical copies of it, at `0x7db09ae0` and
+`0x7db09c60`. The copy at `0x7db09c60` has a tail, but a count of `0x48`
+stops just before it, so in the steady state the descriptor no longer
+changes. Descriptor 1 (config `06190000`) still points where its last tail
+left it (`0x7db09980`, count `0x55`) and doesn't seem to run at 1080p.
+Possibly its trigger is the second field of an interlaced mode; that is
+not tested.
+
+**The list address register reads back the previously written value**, not
+the current one. In three switches, `0xf0604000` read `7db09c60` while BOLT's
+`0x7db09ae0` was running, then `7db09ae0` while our list ran, then
+`02000000` after the switch back. So the list that is actually running at
+the prompt is the one at `0x7db09ae0`.
+
+### Reading the registers the lists use
+
+`bvn_read_probe.s` read every register that the decoded lists write or read:
+590 addresses, all through an abort-safe read. It left out the HDMI registers
+`0xf06fa828/884/888/898`.
+
+- All 590 read without an abort.
+- 572 hold exactly a value that the lists write.
+- `0xf06e07fc` and `0xf06e6288` hold the list value without its top byte
+  (`61389946` → `00389946`, `60a864df` → `00a864df`).
+- The rest are RDC variables, the descriptor address (see above), and HDMI
+  registers that the lists change by read-modify-write.
+
+Output: `../bolt/raw/display/bvn_read_probe_output.txt`.
+
+### What the lists write, block by block
+
+The block names come from which Nexus functions use the addresses
+(`tools/re/ko.py nexus.ko consts`, plus the `0xf06xxxxx` literals in the
+functions). Only the registers marked tested below have been changed.
+
+| Block | Address | Nexus functions | In BOLT's lists |
+|---|---|---|---|
+| RDC variables, frame counter | `0xf0603480–98` | `BRDC_*` | frame counter, surface address for the flip |
+| RDC descriptors | `0xf0604000–58`, `0xf0605000` | `BRDC_Slot_*` | list chaining |
+| GFD0, graphics feeder | `0xf0641000–0x1350` | `BVDC_P_GfxFeeder_BuildRul_isr`, `…BuildCfcRul_isr` | surface, size, format, scaler, colour conversion |
+| CMP0, compositor | `0xf0645800–0x5f2c`, `0xf065001c` | `BVDC_P_Compositor_BuildSyncSlipRul_isr` | canvas, background, graphics window |
+| display timing (VEC) | `0xf06e0000–0x7fc`, `0xf06e2400`, `0xf06e6000–0x6c00`, `0xf06e7000–0x7524` | `BVDC_P_Display_*`, `BVDC_P_Vec_*` | 256 words into `0xf06e0400–0x7fc`, probably timing microcode |
+| colour conversion for HDMI | `0xf06e4000–0x41xx` | `BVDC_P_Vec_Build_DVI_CSC` | 62 registers |
+| HDMI transmitter | `0xf06fa000–0xa8xx` | `BHDM_*`, `BVDC_P_Vec_Build_DVI_RM` | rate manager, read-modify-write of `+0x810/814/81c/820/854` |
+
+### Running our own list (tested)
+
+The RDC can run a list of our own from free RAM. `rdc_ownlist_probe.s`:
+
+1. Copy the 73 words at `0x7db09c60` to `0x02000000` and check the copy.
+   BOLT's lists are only read.
+2. Change words in the copy as needed.
+3. Switch descriptor 0, the way BOLT's tails do it:
+   `0xf0605000 = 0`, `0xf0604000 = 0x02000000`, `0xf0605000 = 1`. Config
+   and count stay, since the copy has the same length.
+4. To go back: the same three writes with `0x7db09ae0`.
+
+While our list ran, the frame counter kept counting at 60 per second, and the
+values from our copy appeared in the registers. Words in the copy can be
+changed while it runs: the RDC fetches it from RAM every frame (with the MMU
+off, no cache maintenance is needed). After the switch back, BOLT's values
+returned within a second.
+
+Why this matters: registers that the per-frame list writes can't be changed
+by a direct write. The list puts its own value back at the next frame (about
+16.7 ms). `0xf0645810` written directly read `0018b87b` again one second
+later, and nothing showed on the TV (`gfd_bg_probe.s`). Registers that only
+the set-up lists write keep a direct write (GFD `+0x01c`, `+0x044`, `+0x170`
+held their values for 10 s).
+
+## Compositor CMP0 (tested)
+
+All changed through our own list (`rdc_ownlist_visible_probe.s`,
+`cmp_window_probe.s`, `cmp_window_pos_probe.s`), and observed on the TV.
+
+| Register | BOLT | What it does (tested) |
+|---|---|---|
+| `0xf0645810` | `0018b87b` | **background colour**, `00 Y Cb Cr`. Visible wherever no window covers the canvas. `0018b87b` shows blue, `00515af0` shows red. Nexus: `BVDC_Compositor_SetBackgroundColor(r, g, b)` turns RGB into this through a colour matrix. |
+| `0xf0645988` | `07800438` | **graphics window size**, `width << 16 \| height`. `03c0021c` (960 × 540): only the top-left 960 × 540 of the picture shows, at 1:1, and the rest is background. |
+| `0xf064598c` | `00000000` | **graphics window position**, `x << 16 \| y`. With size 960 × 540, `01e0010e` placed the window in the centre of the screen (x 480, y 270), stable. |
+| `0xf0645980` | `07800438` | 960 × 540 here showed the top-left 960 × 540 of the picture in the top-left corner and **black** everywhere else, not background. It limits something after the background is drawn; the exact role is open. |
+
+Not understood (observed, no explanation yet):
+
+- Window size 960 × 540 with position `010e01e0` (x 270, y 480, if the
+  packing above is right) flickered between two positions a little apart
+  vertically, for the full 20 s.
+- A full-size window (1920 × 1080) at `01e0010e`, which doesn't fit on the
+  canvas, gave unstable flicker with mostly background showing.
+
+Other values that BOLT's per-frame list writes to the compositor every
+frame: `0xf064580c = 07800438` (canvas size, named by Nexus' builder),
+`0xf0645814 = 0002ff34`, `0xf0645818/1c = 000f0000`,
+`0xf0645984 = 0`, `0xf0645990 = 0`, `0xf0645994 = 1`,
+`0xf0645808 = 1` (written last). Their roles are not tested.
+
+## Graphics feeder GFD0: source width and scaler
+
+Register roles from `BVDC_P_GfxFeeder_BuildRul_isr`; effects tested on the
+TV (`gfd_hzoom_probe.s`, `gfd_bg_probe.s`).
+
+| Register | BOLT | From Nexus | Tested |
+|---|---|---|---|
+| `0xf0641044` | `00000780` | source width (pixels) | **960: the feeder sends only the left 960 pixels of each line**; the right half of the screen shows the compositor background. Keeps a direct write |
+| `0xf064101c` | `00100000` | horizontal step, `(step & 0x3ffff) << 3`, 1.0 = `00100000` | `00080000` (0.5) kept its value but **didn't scale** the picture |
+| `0xf064117c` | `00100000` | vertical step, same format | not changed |
+| `0xf0641170` | `00000031` | scaler control; Nexus sets bit 3 when the horizontal step is below 1.0 | `00000039` kept its value, no visible effect with the step above |
+| `0xf06410f0–fc` | `0, 10000000, 0, 0` | horizontal filter coefficients | not changed |
+| `0xf0641180/84` | `10000000, 0` | vertical filter coefficients | not changed |
+| `0xf064106c` | `07800438` | output size, `width << 16 \| height` | not changed |
+| `0xf0641014/18` | `00020565`, `000b0500` | pixel format (`0565` = RGB565, inferred) | not changed |
+
+How to make the scaler work is open: the step register keeps a direct write
+but the picture isn't stretched.
 
 ## How BOLT's splash works (reverse-engineered)
 

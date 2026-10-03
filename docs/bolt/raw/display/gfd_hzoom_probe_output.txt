@@ -1,0 +1,7 @@
+GFD 2x horizontal zoom probe. cols: step(+01c) ctrl(+170) width(+044)
+before:   00100000 00000031 00000780 
+ZOOM ON for 10 s
+after 1s: 00080000 00000039 000003c0 
+after 10s:00080000 00000039 000003c0 
+restored: 00100000 00000031 00000780 
+probe done

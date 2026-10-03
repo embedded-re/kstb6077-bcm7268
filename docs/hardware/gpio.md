@@ -66,10 +66,10 @@ fields can't be decoded without Broadcom documentation. Pins 0–15 are all
 `IR1` on the PCB is an IR **receiver**. The board has no IR transmitter,
 although the SoC contains an IR blaster block (`irb`).
 
-The receiver is not mapped. Remote-control presses change no GPIO DATA or
-STAT bit, and the AON L2 interrupt controller (`0xf0419c00`, IR receivers
-kbd1–3 = bits 0–2) stays at status `0`. BOLT doesn't enable the IR receiver
-block, and its registers are undocumented (Nexus).
+The receiver is not on a GPIO: remote-control presses change no GPIO DATA or
+STAT bit. It feeds the SoC's IR receiver block, channel kbd1 at
+`0xf0419900`, which decodes the remote's NEC codes once it is enabled. BOLT
+doesn't enable it. Details and the remote's key codes: `ir.md`.
 
 ## Not mapped
 

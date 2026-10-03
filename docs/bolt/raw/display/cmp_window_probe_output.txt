@@ -1,0 +1,10 @@
+CMP window probe. cols: framecount bg f0645980 984 988 98c
+copy of 73 words at 02000000 verified
+before:      5027f890 0018b87b 07800438 cbc6c2fc db28b1e3 41b0b509 
+own list, red bg: 5027f909 00515af0 07800438 cbc6c2fc db28b1e3 41b0b509 
+PHASE A f0645988=03c0021c: 5027f945 00515af0 07800438 cbc6c2fc db28b1e3 41b0b509 
+PHASE B f064598c=01e0010e: 5027faad 00515af0 07800438 cbc6c2fc db28b1e3 41b0b509 
+PHASE C f0645980=03c0021c: 5027fc15 00515af0 03c0021c cbc6c2fc db28b1e3 41b0b509 
+all undone:  5027fdb9 00515af0 07800438 cbc6c2fc db28b1e3 41b0b509 
+restored:    5027fdf5 0018b87b 07800438 cbc6c2fc db28b1e3 41b0b509 
+probe done

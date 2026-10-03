@@ -33,7 +33,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | `docs/stock-firmware.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 brought up from EL2, keyboard detected | `docs/hardware/usb.md` |
-| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP | `docs/hardware/display.md` |
+| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP. The display's register-DMA (RDC) runs a list of our own from RAM: background colour, window size and position tested | `docs/hardware/display.md` |
 | 3D GPU | Broadcom V3D 3.3 at `0xf1200000` (hub) / `0xf1208000` (core), 8 QPUs, behind power island `0xf041d020`; driven from EL2: TFU job, render jobs into the framebuffer, a binner job and a shaded triangle | `docs/hardware/gpu.md` |
 | 2D blitter | M2MC at `0xf09b0000`: fill, copy, scaling, 8-bit palette lookup; 320 × 200 → 1600 × 1000 onto the screen in 1.65 ms | `docs/hardware/peripherals.md` |
 | Audio | HDMI, 48 kHz 32-bit stereo from a looping DRAM buffer. BOLT's splash starts it from a `pcm0` in `flash0.splash` but skips the HDMI audio clock at 1080p; three register writes (N/CTS) make it audible. Keeps running after `go -64` | `docs/hardware/audio.md` |
@@ -44,7 +44,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Standby button (SW1) | AON GPIO 14, active-low | `docs/hardware/gpio.md` |
 | Recovery / BT-pairing button (SW4) | AON GPIO 7, active-low; held at power-on → recovery; in Android → Bluetooth remote pairing | `docs/hardware/gpio.md` |
 | Power switch (SW2) | hard power switch | |
-| IR receiver (IR1) | receiver only; the SoC's IR block is not enabled by BOLT | `docs/hardware/gpio.md` |
+| IR receiver (IR1) | IR receiver block channel kbd1 at `0xf0419900`; enabled as an NEC decoder from EL2, it receives all keys of the Kaon remote (custom code `0x0820`). BOLT leaves it off | `docs/hardware/ir.md` |
 | Temperature sensor | AVS TMON at `0xf04d1500`, °C = (410040 − code × 487) / 1000 | `docs/hardware/system-blocks.md` |
 | Seconds counter | wake timer at `0xf041a080`, 27 MHz clock | `docs/hardware/system-blocks.md` |
 | Watchdog | `0xf040a6a8`, 27 MHz ticks | `docs/hardware/system-blocks.md` |
@@ -89,7 +89,7 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `docs/hardware/peripherals.md` | every known hardware block (DTB + BOLT), what it is, and the first word read from it |
 | `docs/hardware/gpu.md` | **V3D GPU map**: blocks, reset values, control-list opcodes, what is tested and what isn't |
 | `docs/hardware/registers.md` | **register sheet**: every known address on one page, what it does, what not to touch |
-| `docs/hardware/` | memory map, GPIO, UARTs, display, audio, storage, USB, interrupts, system blocks, device-tree provenance |
+| `docs/hardware/` | memory map, GPIO, IR, UARTs, display, audio, storage, USB, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
 | `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |

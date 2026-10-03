@@ -1,0 +1,9 @@
+RDC own-list probe (visible). cols: desc0(f0604000) framecount(f0603484) bg(f0645810)
+copy of 73 words at 02000000 verified
+before:     7db09c60 5027a1b3 0018b87b 
+WIDTH 960 (blue right half) for 3 s
+OWN LIST ON for 10 s, after 1s and 10s:
+            7db09ae0 5027a2a3 00515af0 
+7db09ae0 5027a4bf 00515af0 
+restored:   02000000 5027a573 0018b87b 
+probe done

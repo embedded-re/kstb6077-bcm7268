@@ -1,0 +1,6 @@
+GFD width + CMP background probe. cols: width(f0641044) bg(f0645810)
+before:   00000780 0018b87b 
+WIDTH 960 (5 s), after 1s: 000003c0 0018b87b 
+BACKGROUND 00515af0 (5 s), after 1s: 000003c0 0018b87b 
+restored: 00000780 0018b87b 
+probe done

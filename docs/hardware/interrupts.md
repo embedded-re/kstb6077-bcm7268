@@ -38,7 +38,7 @@ There is no clear register: a bit stays set until its source is cleared.
 
 | Bit | Source |
 |---|---|
-| 0–2 | kbd1–3 (IR receivers) |
+| 0–2 | kbd1–3 (IR receivers). Bit 0 tested: set while kbd1 holds a received code (`ir.md`) |
 | 3 | gio (AON GPIO) |
 | 4 | ldk (LED/keypad controller) |
 | 5 | icap |

@@ -99,11 +99,22 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | `0xf041d020` | V3D power island control | write `1d00` → wait `(v & 0x74000000) == 0x34000000` (1.6 ms) = **on**; write `b00` → wait `(v & 0x72000000) == 0x42000000` = off. After BOLT: `424e0908` (off) |
 | `0xf120000c` | V3D hub IDENT1 | `000e1133` = V3D 3.3 (only while powered) |
 
+## IR receiver kbd1: `0xf0419900` (`ir.md`)
+
+kbd2 at `0xf0419980`, kbd3 at `0xf0419a00`, same layout. Names from Nexus `BKIR_*`.
+
+| Address | Name | What it does |
+|---|---|---|
+| `0xf0419900` | STATUS | bit 0 = code ready; clear by writing it back with bit 0 = 0. `55` first frame, `37` repeat |
+| `0xf0419910` | **DATA0** | received code, e.g. `ea150820` = OK |
+| `0xf0419914` | CMD | BOLT: `7`. bit 4 CIR on, bit 5 interrupt enable; NEC on = `37` |
+| `0xf0419918` / `1c` | CIR_ADDR / CIR_DATA | timing parameter index / value (27 written for NEC) |
+
 ## Interrupts (`interrupts.md`)
 
 | Address | Name | What it does |
 |---|---|---|
-| `0xf0419c00` | AON L2 STATUS | raw sources: bits 0–2 IR kbd1–3, **bit 3 AON GPIO**, 4 LED/keypad |
+| `0xf0419c00` | AON L2 STATUS | raw sources: **bit 0 IR kbd1**, bits 1–2 IR kbd2–3, **bit 3 AON GPIO**, 4 LED/keypad |
 | `0xf0419c04` | AON L2 MASK_STATUS | BOLT: `7f` (all masked) |
 | `0xf0419c08` / `0c` | AON L2 MASK_SET / MASK_CLEAR | from Linux, not written (not tested) |
 | `0xffd01000` | GIC-400 distributor | readable from AArch64 EL2/EL3 only. `GICD_CTLR` `+0x000`, `TYPER` `+0x004` |
@@ -118,12 +129,18 @@ OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127; generic timers 26/27/29/30.
 
 | Address | Name | What it does |
 |---|---|---|
-| `0xf0641044` | GFD width | `780` = 1920 (`0xf0641040–4f` safe to read) |
+| `0xf0641044` | GFD source width | `780` = 1920. 960 → only the left half is sent, the rest shows the background. Keeps a direct write |
 | `0xf0641048` | **GFD surface address** | where the visible picture is: `7db0b700` (read it, don't hard-code) |
 | `0xf0641058` | GFD pitch | `f00` = 3840 bytes (written by the display lists) |
 | `0xf0641174` | GFD height | `438` = 1080 (written by the display lists) |
 | `0xf0603484` | **frame counter** | counts up once per frame, 59.94 Hz |
 | `0xf0603488` + `0xf060348c` | **flip** | write a buffer address to both → it's shown from the next frame, tear-free |
+| `0xf0604000` | RDC descriptor 0 list address | runs BOLT's 73-word list `0x7db09ae0` every frame. Reads back the *previous* written value. Switch: `0xf0605000`=0, address, `0xf0605000`=1 |
+| `0xf0645810` | CMP0 background colour | `00 Y Cb Cr`, BOLT `0018b87b` (blue). Rewritten every frame: change it through an own list |
+| `0xf0645988` | CMP0 graphics window size | `w << 16 \| h`, BOLT `07800438`. Own list only |
+| `0xf064598c` | CMP0 graphics window position | `x << 16 \| y`, BOLT `0`. Own list only |
+
+The 590 registers the display lists use all read safely; see `display.md`, "Display lists (RDC)".
 
 ## Audio, HDMI (`audio.md`)
 
