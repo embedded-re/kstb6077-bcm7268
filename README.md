@@ -29,7 +29,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 |---|---|---|
 | Serial console | UART0, 16550-compatible, 115200 8N1, at `0xf040c000`; 5-pin header on the PCB | `docs/booting.md` |
 | More UARTs | UART1 `0xf040d000`, UART2 `0xf040e000`: 16550, 81 MHz clock, working (loopback-tested), unused by BOLT; pins unknown | `docs/hardware/uart.md` |
-| Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s | `docs/bolt/bolt.md` |
+| Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s full duplex (10/100 PHY). After BOLT the MAC is idle with no address | `docs/hardware/ethernet.md` |
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | `docs/stock-firmware.md` |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 brought up from EL2, keyboard detected | `docs/hardware/usb.md` |
@@ -45,6 +45,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Recovery / BT-pairing button (SW4) | AON GPIO 7, active-low; held at power-on → recovery; in Android → Bluetooth remote pairing | `docs/hardware/gpio.md` |
 | Power switch (SW2) | hard power switch | |
 | IR receiver (IR1) | IR receiver block channel kbd1 at `0xf0419900`; enabled as an NEC decoder from EL2, it receives all keys of the Kaon remote (custom code `0x0820`). BOLT leaves it off | `docs/hardware/ir.md` |
+| I2C | 5 BSC controllers (`0xf040a300`, `0xf0419a80/b00/b80`, `0xf040a400`); bus scan from EL2: ch0 = HDMI DDC (EDID `0x50`, HDCP `0x3a`), ch3 = device at `0x67` (Si2168C demodulator per Nexus) | `docs/hardware/i2c.md` |
 | Temperature sensor | AVS TMON at `0xf04d1500`, °C = (410040 − code × 487) / 1000 | `docs/hardware/system-blocks.md` |
 | Seconds counter | wake timer at `0xf041a080`, 27 MHz clock | `docs/hardware/system-blocks.md` |
 | Watchdog | `0xf040a6a8`, 27 MHz ticks | `docs/hardware/system-blocks.md` |

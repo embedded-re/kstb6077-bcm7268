@@ -1,0 +1,35 @@
+CRC OK 0x1a01e81c
+watchdog armed: 40 s
+--- go -64 0x01000000 ---
+go -64 0x01000000
+Starting program at 0x1000000 (DTB @ 0x7614000)
+
+64 bit PSCI boot...
+PSCI: DTB @ 0000000007614000, Linux entry @ 0000000001000000
+
+channel, base; ACKs as addr<<16|iic_en<<8|data:
+00000000 f040a300 
+00300300 003a0300 00500300 
+no-ACK, timeout counts: 0000006d 00000000 
+
+channel, base; ACKs as addr<<16|iic_en<<8|data:
+00000001 f0419a80 
+
+no-ACK, timeout counts: 00000000 00000070 
+
+channel, base; ACKs as addr<<16|iic_en<<8|data:
+00000002 f0419b00 
+
+no-ACK, timeout counts: 00000070 00000000 
+
+channel, base; ACKs as addr<<16|iic_en<<8|data:
+00000003 f0419b80 
+00670300 
+no-ACK, timeout counts: 0000006f 00000000 
+
+channel, base; ACKs as addr<<16|iic_en<<8|data:
+00000004 f040a400 
+
+no-ACK, timeout counts: 00000000 00000070 
+scan done
+

@@ -5,6 +5,47 @@ The box has one storage device: the eMMC on SDHCI 1 (`0xf0200200`; Linux
 **no SD card slot** on the case, although SDHCI 0 (`0xf0200000`) is enabled
 in the DTB and Linux registers it as `mmc0`.
 
+## The two SDHCI controllers (tested)
+
+Read on the stock box on 2026-10-04 at `BOLT>` after a power-on
+(`../bolt/raw/sdhci_genet/`). Each controller has a standard SD host block
+and a Broadcom config block (DTB `reg-names` "host", "cfg"). Register names
+are from the SD Host Controller spec; the values are tested. The buffer data
+port `+0x20` was not read (reading it pops the FIFO).
+
+| | SDHCI 0 | SDHCI 1 (eMMC) |
+|---|---|---|
+| host / cfg | `0xf0200000` / `0xf0200100` | `0xf0200200` / `0xf0200300` |
+| `+0xfc` version | `10020000`: spec **3.00**, vendor `0x10` | same |
+| `+0x40` capabilities | `05ea6432` | `45ee6432` |
+| slot type (cap bits 31:30) | **removable** | **embedded** |
+| 8-bit bus (cap bit 18) | no | yes |
+| base clock (cap bits 15:8) | 100 MHz | 100 MHz |
+| also in both | ADMA2, SDMA, high speed, 3.3 V and 1.8 V, max block 2048 | |
+| `+0x44` capabilities 2 | `0000a575` | `0000a525` |
+| `+0x24` present state | `01fa0000`: **no card** (bit 16 clear), card-detect level 0 | `1fff0000`: card present, CMD and DAT0–7 high, idle |
+| `+0x28` host control / power | `00800000`: power off | `00000f24`: **8-bit**, high speed, SDMA; power on at 3.3 V |
+| `+0x2c` clock | `0`: clock off | `000e0107`: clock on, divider 1 = base / 2 (50 MHz) |
+
+The eMMC controller still holds BOLT's last transfer: command `+0x0e` =
+`0x123a` (**CMD18**, read multiple blocks), transfer mode `0x37` (SDMA,
+multi-block, auto CMD12, read), block size 512 (`+0x04` = `00007200`),
+argument `0x9a00`, SDMA address `0x076a4018` (a buffer in BOLT's RAM), and
+response `0x900` (card status: ready for data, state "tran").
+
+SDHCI 0 is wired as a removable-card slot but no card is detected, and the
+case has no slot. Whether the board has an unpopulated slot footprint is not
+checked.
+
+The cfg blocks read alike (`+0x00` = `40003c03`, `+0xe4` = `03001170`) and
+mirror some host values (e.g. `+0x18` = the host's `+0x60` preset
+`00020080`). SDHCI 0's cfg block aborts at `+0x12c`, `+0x15c–0x1e3` and
+`+0x1e8–0x1fb`; SDHCI 1's answers everywhere. `0xf0200400` answers too
+(`+0x04` = `40`, `+0x08` = `00010100`, `+0x0c` and `+0x30–0x3b` abort). The
+cfg registers' names are unknown.
+
+## Reading the eMMC from bare metal
+
 A bare-metal program can't read the eMMC itself (no driver yet), but BOLT can
 copy any part of a partition into RAM before `go`. The modified box's
 `flash0.splash` partition is 16.8 MB, and BOLT's splash uses only the first

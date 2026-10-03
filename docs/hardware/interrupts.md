@@ -97,8 +97,8 @@ numbers in `/proc/interrupts` are the GIC IDs themselves.
 | | 26 | AVS CPU `sw_intr` (reads set) |
 | UPG main `0xf040a600` | 0, 1, 2 | main GPIO (`gio`), `irb`, spare |
 | UPG main AON `0xf0419c00` | 0–6 | see "AON L2 controller" below |
-| UPG BSC `0xf040a640` | 0, 1, 2 | I2C `iica`, `iice`, spare |
-| UPG BSC AON `0xf0419c40` | 0, 1, 2, 3 | I2C `iicb`, `iicc`, `iicd`, spare |
+| UPG BSC `0xf040a640` | 0, 1, 2 | I2C `iica` (ch0, HDMI DDC), `iice` (ch4), spare (`i2c.md`) |
+| UPG BSC AON `0xf0419c40` | 0, 1, 2, 3 | I2C `iicb` (ch1), `iicc` (ch2), `iicd` (ch3, device at `0x67`), spare (`i2c.md`) |
 | UPG SPI AON `0xf0419000` | 0, 1 | MSPI `spi` (`mspi_done`), spare |
 
 The stock kernel's `/proc/interrupts` attaches these L2 bits (tested, same

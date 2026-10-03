@@ -31,9 +31,9 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 
 | Address | Block | Source | First word | Notes |
 |---|---|---|---|---|
-| `0xf0200000` | SDHCI 0 host (SD card slot) | DTB `sdhci-brcmstb` | `00000000`; `+0xfc` = `10020000` | `+0xfe` = `1002`: SD host spec 3.00 (ID match) |
+| `0xf0200000` | SDHCI 0 host (removable-slot type; no card, no slot on the case; `storage.md`) | DTB `sdhci-brcmstb` | `00000000`; `+0xfc` = `10020000` | `+0xfe` = `1002`: SD host spec 3.00 (ID match) |
 | `0xf0200100` | SDHCI 0 config | DTB | `40003c03` | |
-| `0xf0200200` | SDHCI 1 host (**eMMC**) | DTB | `076a3018`; `+0xfc` = `10020000` | SD host spec 3.00 (ID match); BOLT reads `flash0` through it |
+| `0xf0200200` | SDHCI 1 host (**eMMC**) | DTB | `076a3018`; `+0xfc` = `10020000` | SD host spec 3.00 (ID match); BOLT reads `flash0` through it; 8-bit, 50 MHz (`storage.md`) |
 | `0xf0200300` | SDHCI 1 config | DTB | `40003c03` | |
 | `0xf0200154` / `354` / `400` | SDIO pin select / boot control (syscon) | DTB | `2` / `1` / `0` | |
 | `0xf0201000` | HIF L2 interrupt controller | DTB `brcm,l2-intc` | `03000000` | status bits 24–25 set |
@@ -48,6 +48,7 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xf0403000` | system L2 interrupt controller | DTB | `0` | `interrupts.md` |
 | `0xf0404000` | SUN_TOP_CTRL (chip ID, reset, pin mux) | DTB | `72680010` | `system-blocks.md` |
 | `0xf0408000` / `0xf0409000` | PWM 0 / 1 | DTB `bcm7038-pwm` | `00000022` | |
+| `0xf040a300` / `a400` | I2C (BSC) ch0 = HDMI DDC / ch4 | Nexus `BI2C_*` | `0` | `i2c.md` |
 | `0xf040a500` | main GPIO | DTB | | `gpio.md` |
 | `0xf040a600` / `a640` | UPG L2 interrupt controllers | DTB | `0` / `0` | |
 | `0xf040a6a8` | watchdog | DTB | | `system-blocks.md` |
@@ -58,11 +59,12 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xf0418000` | MSPI (SPI master) | DTB | `0` | |
 | `0xf0419000`, `0xf0419c00`, `0xf0419c40` | AON UPG L2 interrupt controllers | DTB | `0` | `c00` = buttons/IR (`interrupts.md`) |
 | `0xf0419900`, `0xf0419980`, `0xf0419a00` | IR receiver (KBD) channels kbd1–3 | Nexus `BKIR_*` | `0` | kbd1 = the remote (`ir.md`) |
+| `0xf0419a80`, `0xf0419b00`, `0xf0419b80` | I2C (BSC) ch1–3; ch3 has a device at `0x67` (Si2168C demodulator per Nexus) | Nexus `BI2C_*` | `0` | `i2c.md` |
 | `0xf0419c80` | AON GPIO | DTB | | `gpio.md` |
 | `0xf041a080` | wake timer | DTB | | `system-blocks.md` |
 | `0xf0452000` | HIF continuation (CPU boot addresses) | DTB `brcmstb-hif-continuation` | `0` | PSCI writes each core's start address at `+0x8/+0x10/+0x18` (`cpu-cores.md`) |
 | `0xf0460000` | **PCIe** (Wi-Fi BCM43570) | DTB `bcm7268-pcie` | **abort** | held in reset by `+0x9210` bit 1; released: `726814e4` (PCI ID 14e4:7268) |
-| `0xf0480000` | **GENET 0** Ethernet | DTB `genet-v5` | `06000000` | major 6 = GENET **v5** (ID match) (Linux numbering) |
+| `0xf0480000` | **GENET 0** Ethernet | DTB `genet-v5` | `06000000` | major 6 = GENET **v5** (ID match) (Linux numbering); `ethernet.md` |
 | `0xf04a0000` | GENET 1 (disabled) | DTB | `06000000` | clocked, unused |
 | `0xf04c4000` | AVS CPU data memory | DTB | `0` | |
 | `0xf04d1100` / `1200` | AVS L2 interrupt / L2 controller | DTB | `0` / `04000000` | |

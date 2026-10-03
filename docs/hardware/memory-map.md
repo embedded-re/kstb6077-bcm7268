@@ -99,7 +99,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf0419c80` | AON GPIO (2 banks) | `gpio.md` |
 | `0xf041a080` | wake timer (seconds counter, 27 MHz) | `system-blocks.md` |
 | `0xf0460000` | PCIe (Wi-Fi BCM43570) | |
-| `0xf0480000` | GENET v5 Ethernet; MDIO at `0xf0480800` | |
+| `0xf0480000` | GENET v5 Ethernet; UMAC `+0x800`, MDIO `+0xe14` | `ethernet.md` |
 | `0xf04d1500` | AVS temperature sensor | `system-blocks.md` |
 | `0xf04e0488`, `0xf04e051c–0524` | UART clock gate and clock muxes | `uart.md` |
 | `0xf0604000` | display RDC (register DMA) list pointers | `display.md` |

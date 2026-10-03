@@ -1,0 +1,22 @@
+mii read mdio0 1 0
+MII read, phy=1, reg=0, value=0x3000
+*** command status = 0
+BOLT> mii read mdio0 1 1
+MII read, phy=1, reg=1, value=0x7829
+*** command status = 0
+BOLT> mii read mdio0 1 1
+MII read, phy=1, reg=1, value=0x782d
+*** command status = 0
+BOLT> mii read mdio0 1 2
+MII read, phy=1, reg=2, value=0xae02
+*** command status = 0
+BOLT> mii read mdio0 1 3
+MII read, phy=1, reg=3, value=0x5091
+*** command status = 0
+BOLT> mii read mdio0 1 4
+MII read, phy=1, reg=4, value=0x01e1
+*** command status = 0
+BOLT> mii read mdio0 1 5
+MII read, phy=1, reg=5, value=0xc5e1
+*** command status = 0
+BOLT> 
