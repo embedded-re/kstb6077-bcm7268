@@ -191,6 +191,10 @@ swap front and back
 
 - The mode is **1080p at 59.94 Hz**, not 60 Hz (tested by the counter). This
   matches the HDMI audio finding in `audio.md`.
+- Stock Android 11 uses **1080p at 50 Hz** on the same TV (PHILIPS FTV):
+  the display-frame interrupt `VEC` (GIC ID 47) counted 502 in 10.05 s, and
+  `dumpsys display` reports `refreshRate=50.0`. So the 59.94 Hz is BOLT's
+  choice, not the TV's (`interrupts.md`).
 - A game at 35 fps on a 59.94 Hz display gets an uneven mix of 1- and 2-tick
   frames. Locking to 30 fps (2 ticks) or 60 fps keeps motion even.
 - Writing only `0xf0603488`, or only `+0x48c`, wasn't tried. The probe always

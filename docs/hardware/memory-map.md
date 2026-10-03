@@ -5,7 +5,19 @@ Physical address map of the KSTB6077 (BCM7268 B0). Sources: BOLT `info` and
 the boot log. See `../bolt/bolt.md` for BOLT's page table, decoded entry by
 entry.
 
-## RAM (2 GB DDR4 at address 0)
+## RAM (2 GB LPDDR4 at address 0)
+
+One chip: Samsung **K4F6E3S4HM-MGCJ** (marking read on the board), LPDDR4,
+16 Gbit, 32 bits wide. BOLT's `info` agrees:
+
+```
+DDR0 Frequency: 1856MHz, 16Gx32 phy:32	80000000 @ 00000000
+```
+
+`DDR0` is memory controller 0 (`DDR%d`), not the DDR generation. `16Gx32`
+= 16 Gbit devices, 32 bits wide; `phy:32` = PHY width; `80000000 @ 00000000`
+= 2 GB at address 0. BOLT prints this from a static board-table entry
+(`0x070123e0`), not from MEMC registers, and has no DDR-type string.
 
 | Range | Contents |
 |---|---|
@@ -94,7 +106,25 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 | `0xf0641000` | display graphics feeder (GFD): width `+0x44`, **surface address `+0x48`**; `+0x5c` aborts | `display.md` |
 | `0xf0b00200…` | USB control/PHY `0x200`, EHCI0 `0x300`, OHCI0 `0x400`, EHCI1 `0x500`, OHCI1 `0x600`, xHCI `0x1000`, BDC `0x2000` | `usb.md` |
 | `0xffd01000` / `0xffd02000` | GIC distributor / CPU interface | `interrupts.md` |
-| `0xffe00000` | boot SRAM (128 KB) | |
+| `0xffe00000` | boot SRAM (128 KB): see below | |
+
+## Boot SRAM `0xffe00000–0xffe1ffff` (tested 2026-10-03)
+
+All 128 KB read from EL2 at `go -64` without an abort
+(`../bolt/raw/sys/addrmap1_probe.s`). It's **all zero** except 10 words at
+`0xffe0ff24–0xffe0ff47`:
+
+```
+ffe0ff20 00000000 09200000 070ff45f 09200000 070ff45f 0706b228 09200000 07012c11
+ffe0ff40 00000000 07012f91
+```
+
+A leftover stack frame of BOLT's early start-up: `07012f91` is the Thumb
+return address after BOLT prints `GO!` (function `0x07012cb4`, which prints
+`CPU CLKSET … OK`), `07012c11` is inside its print-line helper, and
+`09200000` is the top of BOLT's DRAM stack. So BOLT starts with its stack
+in boot SRAM. No first-stage loader code or data is left. Writing it
+was not tested.
 
 ## What is reachable under BOLT's MMU
 

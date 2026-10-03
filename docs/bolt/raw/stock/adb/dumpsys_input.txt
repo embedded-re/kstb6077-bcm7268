@@ -1,0 +1,336 @@
+INPUT MANAGER (dumpsys input)
+
+Input Manager State:
+  Interactive: true
+  System UI Visibility: 0x8008
+  Pointer Speed: 0
+  Pointer Gestures Enabled: true
+  Show Touches: false
+  Pointer Capture Enabled: false
+
+Event Hub State:
+  BuiltInKeyboardId: -2
+  Devices:
+    -1: Virtual
+      Classes: 0x40000023
+      Path: <virtual>
+      Enabled: true
+      Descriptor: a718a782d34bc767f4689c232d64d527998ea7fd
+      Location: 
+      ControllerNumber: 0
+      UniqueId: <virtual>
+      Identifier: bus=0x0000, vendor=0x0000, product=0x0000, version=0x0000
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Virtual.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    1: NexusPower
+      Classes: 0x00000001
+      Path: /dev/input/event5
+      Enabled: true
+      Descriptor: e1926971c121a3bae74e162ad558505130613cfc
+      Location: 
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0019, vendor=0x0000, product=0x0000, version=0x0001
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    2: NexusIrHandlerTMCZ
+      Classes: 0x00000021
+      Path: /dev/input/event4
+      Enabled: true
+      Descriptor: f782f2f4d84d4920075befe37f445bd916512cbb
+      Location: 
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0019, vendor=0x0000, product=0x0000, version=0x0001
+      KeyLayoutFile: /vendor/usr/keylayout/NexusIrHandlerTMCZ.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    3: droid_pm
+      Classes: 0x00000081
+      Path: /dev/input/event3
+      Enabled: true
+      Descriptor: 07a1c5547cc7750cc4edae6e270c45a28288aa91
+      Location: 
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0006, vendor=0x0000, product=0x0000, version=0x0000
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    4: gpio_keys_polled
+      Classes: 0x00000001
+      Path: /dev/input/event0
+      Enabled: true
+      Descriptor: 485d69228e24f5e46da1598745890b214130dbc4
+      Location: gpio-keys-polled/input0
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0019, vendor=0x0001, product=0x0001, version=0x0100
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    7: virtual-search
+      Classes: 0x00000061
+      Path: /dev/input/event6
+      Enabled: true
+      Descriptor: d76b0dc9b6d844ab25ed6d04f6d43a45d3806d72
+      Location: android.os.BinderProxy@13d717c
+      ControllerNumber: 1
+      UniqueId: 
+      Identifier: bus=0x0006, vendor=0x18d1, product=0x0100, version=0x0001
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    8: NOVATEK USB Keyboard
+      Classes: 0x80000083
+      Path: /dev/input/event1
+      Enabled: true
+      Descriptor: ec21e9bdf99d20d72715033416d514ae7345e003
+      Location: usb-f0b00600.ohci_v2-1/input0
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0003, vendor=0x0461, product=0x0010, version=0x0110
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+    9: NOVATEK USB Keyboard
+      Classes: 0x80000001
+      Path: /dev/input/event2
+      Enabled: true
+      Descriptor: 0395421426ca64440043b8e90c0896353a905484
+      Location: usb-f0b00600.ohci_v2-1/input1
+      ControllerNumber: 0
+      UniqueId: 
+      Identifier: bus=0x0003, vendor=0x0461, product=0x0010, version=0x0110
+      KeyLayoutFile: /system/usr/keylayout/Generic.kl
+      KeyCharacterMapFile: /system/usr/keychars/Generic.kcm
+      ConfigurationFile: 
+      HaveKeyboardLayoutOverlay: false
+      VideoDevice: <none>
+  Unattached video devices:
+    <none>
+
+Input Reader State:
+  Device 10: NOVATEK USB Keyboard
+    Generation: 22
+    IsExternal: true
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000101
+    KeyboardType: 1
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 0
+  Device 9: NOVATEK USB Keyboard
+    Generation: 20
+    IsExternal: true
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x80000101
+    KeyboardType: 2
+    Switch Input Mapper:
+      SwitchValues: 0
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 2
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 0
+  Device 8: virtual-search
+    Generation: 16
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000701
+    KeyboardType: 1
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 0
+  Device 7: NexusPower
+    Generation: 14
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000101
+    KeyboardType: 1
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 702368788000
+  Device 6: NexusIrHandlerTMCZ
+    Generation: 12
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000301
+    KeyboardType: 1
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 557723629000
+  Device -1: Virtual
+    Generation: 2
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000301
+    KeyboardType: 2
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 2
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 0
+  Device 5: droid_pm
+    Generation: 10
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x80000101
+    KeyboardType: 1
+    Switch Input Mapper:
+      SwitchValues: 0
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 0
+  Device 4: gpio_keys_polled
+    Generation: 8
+    IsExternal: false
+    AssociatedDisplayPort: <none>
+    HasMic:     false
+    Sources: 0x00000101
+    KeyboardType: 1
+    Keyboard Input Mapper:
+      Parameters:
+        OrientationAware: false
+        HandlesKeyRepeat: false
+      KeyboardType: 1
+      Orientation: 0
+      KeyDowns: 0 keys currently down
+      MetaState: 0x0
+      DownTime: 631616032000
+  Configuration:
+    ExcludedDeviceNames: []
+    VirtualKeyQuietTime: 0.0ms
+    PointerVelocityControlParameters: scale=1.000, lowThreshold=500.000, highThreshold=3000.000, acceleration=3.000
+    WheelVelocityControlParameters: scale=1.000, lowThreshold=15.000, highThreshold=50.000, acceleration=4.000
+    PointerGesture:
+      Enabled: true
+      QuietInterval: 100.0ms
+      DragMinSwitchSpeed: 50.0px/s
+      TapInterval: 150.0ms
+      TapDragInterval: 300.0ms
+      TapSlop: 20.0px
+      MultitouchSettleInterval: 100.0ms
+      MultitouchMinDistance: 15.0px
+      SwipeTransitionAngleCosine: 0.3
+      SwipeMaxWidthRatio: 0.2
+      MovementSpeedRatio: 0.8
+      ZoomSpeedRatio: 0.3
+      Viewports:
+        Viewport INTERNAL: displayId=0, uniqueId=local:18309997811506688, port=0, orientation=0, logicalFrame=[0, 0, 1920, 1080], physicalFrame=[0, 0, 1920, 1080], deviceSize=[1920, 1080], isActive=[1]
+
+Input Classifier State:
+  Motion Classifier:
+    <nullptr>
+
+Input Dispatcher State:
+  DispatchEnabled: true
+  DispatchFrozen: false
+  InputFilterEnabled: false
+  FocusedDisplayId: 0
+  FocusedApplications:
+    displayId=0, name='ActivityRecord{34e51d8 u0 com.google.android.tvlauncher/.MainActivity t387}', dispatchingTimeout=5000ms
+  FocusedWindows:
+    displayId=0, name='Window{5d28421 u0 com.google.android.tvlauncher/com.google.android.tvlauncher.MainActivity}'
+  TouchStates: <no displays touched>
+  Display: 0
+    Windows:
+      0: name='Window{5d28421 u0 com.google.android.tvlauncher/com.google.android.tvlauncher.MainActivity}', displayId=0, portalToDisplayId=-1, paused=false, hasFocus=true, hasWallpaper=false, visible=true, canReceiveKeys=true, flags=0x81810120, type=0x00000001, frame=[0,0][1920,1080], globalScale=1.000000, windowScale=(1.000000,1.000000), touchableRegion=[0,0][1920,1080], inputFeatures=0x00000000, ownerPid=4385, ownerUid=10029, dispatchingTimeout=5000ms
+      1: name='49738bb ActivityRecordInputSink com.google.android.tvlauncher/.MainActivity', displayId=0, portalToDisplayId=-1, paused=false, hasFocus=false, hasWallpaper=false, visible=true, canReceiveKeys=false, flags=0x00000008, type=0x000007e6, frame=[-1,-1][0,0], globalScale=0.000000, windowScale=(1.000000,1.000000), touchableRegion=[0,0][1920,1080], inputFeatures=0x00000002, ownerPid=3452, ownerUid=1000, dispatchingTimeout=0ms
+      2: name='Window{d5b15a2 u0 com.android.systemui.ImageWallpaper}', displayId=0, portalToDisplayId=-1, paused=false, hasFocus=false, hasWallpaper=false, visible=false, canReceiveKeys=false, flags=0x00014318, type=0x000007dd, frame=[-96,-516][2016,1596], globalScale=1.000000, windowScale=(0.030303,0.030303), touchableRegion=[-96,-516][63264,62844], inputFeatures=0x00000000, ownerPid=3640, ownerUid=10028, dispatchingTimeout=5000ms
+  Global monitors in display 0:
+    0: 'PointerEventDispatcher0 (server)', 
+  RecentQueue: length=10
+    DeviceResetEvent(deviceId=3), policyFlags=0x00000000, age=65104ms
+    ConfigurationChangedEvent(), policyFlags=0x00000000, age=65104ms
+    FocusEvent(hasFocus=true), age=64043ms
+    DeviceResetEvent(deviceId=2), policyFlags=0x00000000, age=65072ms
+    ConfigurationChangedEvent(), policyFlags=0x00000000, age=65072ms
+    DeviceResetEvent(deviceId=9), policyFlags=0x00000000, age=55721ms
+    ConfigurationChangedEvent(), policyFlags=0x00000000, age=55721ms
+    FocusEvent(hasFocus=true), age=54963ms
+    DeviceResetEvent(deviceId=10), policyFlags=0x00000000, age=55704ms
+    ConfigurationChangedEvent(), policyFlags=0x00000000, age=55704ms
+  PendingEvent: <none>
+  InboundQueue: <empty>
+  ReplacedKeys: <empty>
+  Connections:
+    133: channelName='5d28421 com.google.android.tvlauncher/com.google.android.tvlauncher.MainActivity (server)', windowName='5d28421 com.google.android.tvlauncher/com.google.android.tvlauncher.MainActivity (server)', status=NORMAL, monitor=false, responsive=true
+      OutboundQueue: <empty>
+      WaitQueue: <empty>
+    277: channelName='d95c429 InputMethod (server)', windowName='d95c429 InputMethod (server)', status=NORMAL, monitor=false, responsive=true
+      OutboundQueue: <empty>
+      WaitQueue: <empty>
+    315: channelName='d5b15a2 com.android.systemui.ImageWallpaper (server)', windowName='d5b15a2 com.android.systemui.ImageWallpaper (server)', status=NORMAL, monitor=false, responsive=true
+      OutboundQueue: <empty>
+      WaitQueue: <empty>
+    114: channelName='PointerEventDispatcher0 (server)', windowName='PointerEventDispatcher0 (server)', status=NORMAL, monitor=true, responsive=true
+      OutboundQueue: <empty>
+      WaitQueue: <empty>
+  AppSwitch: not pending
+  Configuration:
+    KeyRepeatDelay: 50ms
+    KeyRepeatTimeout: 400ms
+
+

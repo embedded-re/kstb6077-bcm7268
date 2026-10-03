@@ -12,16 +12,182 @@
 
 GIC numbering: DTB `<0x0 N ...>` = SPI *N* = GIC interrupt ID *N* + 32.
 
-| Source | DTB | GIC ID |
-|---|---|---|
-| AON L2 (`upg_main_aon`, includes AON GPIO) | SPI `0x42` = 66 | 98 |
-| UART0 | SPI `0x46` = 70 | 102 |
-| UART1 | SPI `0x47` = 71 | 103 |
-| UART2 | SPI `0x48` = 72 | 104 |
+## Every interrupt the DTB names
 
-The stock kernel prints the same numbers (UART 102/103/104), plus xHCI 124,
-EHCI 122/126, OHCI 123/127 and PCIe 78, and it registers 10 Broadcom L2
-controllers without errors (`../stock-firmware.md`).
+From the original and stock DTBs (identical here, except that the stock DTB
+disables GENET 1 and has no SATA node), the stock kernel's boot log
+("kernel log", 2026-10-03), and the stock kernel's `/proc/interrupts`. The
+DTBs name no interrupt for the display, video decoder, audio, M2MC or V3D:
+Nexus (`nexus.ko`) registers those itself, and `/proc/interrupts` shows
+them.
+
+### Straight to the GIC
+
+Two sources. **Tested** = listed in `/proc/interrupts` of the stock Android
+kernel (4.9.322) on the stock box, read over `adb shell` on 2026-10-04
+(`../bolt/raw/stock/adb/proc_interrupts_1.txt`), with a count when the
+interrupt had fired. **DTB** = only in the DTB (not tested). The kernel's
+numbers in `/proc/interrupts` are the GIC IDs themselves.
+
+| GIC ID | Name (stock kernel) | What | Fired | Source |
+|---|---|---|---|---|
+| 26, 27, 29, 30 | `arch_timer` | ARM generic timers (PPI) | 30: yes | tested |
+| 32 | `BSP` | security processor (the DTB calls SPI 0 PCIe "bogus") | yes | tested |
+| 33 | `SCPU` | security CPU | yes | tested |
+| 36–39 | | CPU 0–3 performance monitors (PMU) | | DTB |
+| 45 | `AIO` | audio input/output (FMM) | yes | tested |
+| 46 | `GFX` | M2MC 2D graphics | yes | tested |
+| 47 | `VEC` | video encoder (display timing) | yes | tested |
+| 48, 55 | `BVNB_0`, `BVNB_1` | video network back-end | | tested |
+| 49–53 | `BVNF_0`, `_1`, `_5`, `_9`, `_16` | video network front-end | `BVNF_0` | tested |
+| 54 | `BVNM_0` | video network middle | | tested |
+| 56 | `CLKGEN` | clock generator | | tested |
+| 57 | | AVS L2 `0xf04d1200` | | kernel log |
+| 58 | `DVP_HR` | HDMI receive path | | tested |
+| 59 | `HDMI_TX` | **HDMI transmitter** (hot-plug, HDCP) | yes | tested |
+| 60 | `HDMI_RX_0` | HDMI receiver (not fitted) | | tested |
+| 63 | | HIF L2 `0xf0201000` | | kernel log |
+| 64 | | HIF SPI L2 `0xf0201a00` | | kernel log |
+| 69 | `mmc0` | SDHCI 0 (SD) | | tested |
+| 70 | `mmc1` | SDHCI 1 (**eMMC**) | yes | tested |
+| 78 | `PCIe PME, aerdrv, dhdpcie` | PCIe INTA: **Wi-Fi** (DTB `interrupt-map` INTA–INTD = 78–81, malformed, fixed by the kernel) | yes | tested |
+| 83 | `PCIe0_msi` | PCIe MSI | | tested |
+| 85 | `HVD0_0` | video decoder | yes | tested |
+| 86 / 87 | `RAAGA` / `RAAGA_FW` | audio DSP / its firmware | 87: yes | tested |
+| 88 | `MEMC0` | memory controller | | tested |
+| 89 | | SATA AHCI (original DTB only) | | DTB |
+| 91 | | sys L2 `0xf0403000` | | kernel log |
+| 92 | `SYS_AON` | | | tested |
+| 93 | | AON L2 `0xf0410640` (`sys_pm`, wake-up sources) | | kernel log |
+| 94 | `UPG_AUX_AON` | | | tested |
+| 95 | | UPG BSC L2 `0xf040a640` (I2C) | | kernel log |
+| 96 | | UPG BSC AON L2 `0xf0419c40` (I2C) | | kernel log |
+| 97 | | UPG main L2 `0xf040a600` | | kernel log |
+| 98 | | UPG main AON L2 `0xf0419c00` (buttons, IR) | | kernel log |
+| 99 | `UPG_SC` | smartcard | | tested |
+| 100 | | UPG SPI AON L2 `0xf0419000` | | kernel log |
+| 101 | `UPG_TMR` | UPG timers | yes | tested |
+| 102, 103, 104 | `serial` | UART0, 1, 2 (only 102 in use) | | tested / kernel log |
+| 109 / 110 | `V3D_INT` / `V3D_HUB_INT` | **V3D GPU** / its hub | yes | tested |
+| 111–118, 120, 121 | `XPT_FE_STATUS0`, `XPT_OVFL`, `XPT_MSG_STAT`, `XPT_MSG`, `XPT_PCRXPT_DPCR0`, `XPT_RAV`, `XPT_STATUS_BUS`, `XPT_MCPB`, `XPT_WMDMA`, `XPT_EXTCARD` | transport (TV stream) | | tested |
+| 122 / 123 | `ehci_hcd:usb3` / `ohci_hcd:usb5` | EHCI0 / OHCI0 (internal Bluetooth) | yes | tested |
+| 124 | `xhci-hcd:usb1` | xHCI | yes | tested |
+| 126 / 127 | `ehci_hcd:usb4` / `ohci_hcd:usb6` | EHCI1 / OHCI1 (USB-A port) | yes | tested |
+| 128 | | USB device controller BDC (disabled) | | DTB |
+| 129, 130 | `eth0` | GENET 0 Ethernet | 129: yes | tested |
+| 131, 132 | | GENET 1 (unused) | | DTB |
+| 138 | `MPM_TOP` | | | tested |
+| 140 | `SID0_0` | still-image decoder | | tested |
+
+### Through an L2 controller
+
+| L2 controller | Bit | Source (DTB name) |
+|---|---|---|
+| sys `0xf0403000` | 0 | GISB timeout |
+| | 2 | **GISB target error** (`gisb_tea`): tested, set by our own aborted reads |
+| HIF `0xf0201000` | 4, 24 | NAND `flash_dma_done`, `nand_ctlrdy` (no NAND fitted; bits 24–25 read set) |
+| HIF SPI `0xf0201a00` | 0–6 | QSPI (disabled): `spi_lr_*`, `mspi_done` (5), `mspi_halted` (6) |
+| AON `0xf0410640` (`sys_pm`) | 1, 2, 3 | wake-ups: `cec`, `irr`, `kpd` |
+| | 4 | wake timer |
+| | 6 | GPIO wake-up (`upg_gio_aon_wakeup`, main and AON GPIO) |
+| | 11 | `xpt_pmu` |
+| | 13 | USB |
+| | 18, 19 | Wake-on-LAN, GENET 0 / 1 |
+| AVS `0xf04d1200` | 6 | temperature monitor (`tmon`) |
+| | 26 | AVS CPU `sw_intr` (reads set) |
+| UPG main `0xf040a600` | 0, 1, 2 | main GPIO (`gio`), `irb`, spare |
+| UPG main AON `0xf0419c00` | 0–6 | see "AON L2 controller" below |
+| UPG BSC `0xf040a640` | 0, 1, 2 | I2C `iica`, `iice`, spare |
+| UPG BSC AON `0xf0419c40` | 0, 1, 2, 3 | I2C `iicb`, `iicc`, `iicd`, spare |
+| UPG SPI AON `0xf0419000` | 0, 1 | MSPI `spi` (`mspi_done`), spare |
+
+The stock kernel's `/proc/interrupts` attaches these L2 bits (tested, same
+read as above; "fired" = non-zero count after ~10 minutes of use):
+
+| L2 bit | Kernel handler | Fired |
+|---|---|---|
+| sys `0xf0403000` 0, 2 | `f0400000.gisb-arb` | |
+| AON `0xf0410640` 1, 2, 3, 11 | `droid_pm` (CEC, IR, keypad, XPT wake-ups) | |
+| AON `0xf0410640` 4 | `brcm-waketimer` | |
+| AON `0xf0410640` 6 | `brcmstb-gpio-wake` (main and AON GPIO) | |
+| AON `0xf0410640` 18 | `eth0` (Wake-on-LAN) | |
+| AVS `0xf04d1200` 6 / 26 | `brcmstb_thermal` / `sw_intr` | 26: yes |
+| UPG SPI AON `0xf0419000` 0 | `spi` | |
+| UPG main `0xf040a600` 1 | `irb` | |
+| UPG main AON `0xf0419c00` 0 | `kbd1`: **the remote** (`ir.md`) | yes (410) |
+| UPG main AON `0xf0419c00` 1, 2, 4, 5 | `kbd2`, `kbd3`, `ldk`, `icap` | |
+| UPG BSC `0xf040a640` 0, 1 | I2C `iica`, `iice` | |
+| UPG BSC AON `0xf0419c40` 0, 1 | I2C `iicb`, `iicc` | |
+| UPG BSC AON `0xf0419c40` 2 | I2C **`iicd`**: the busy bus | yes (8024) |
+| AON GPIO `0xf0419c80` pins 4, 5, 14 | `nexus gpio` (14 = SW1, `gpio.md`) | pin 4: yes (6) |
+
+The wake-timer bit (4 of `0xf0410640`) did not show in STATUS while masked
+(`system-blocks.md`).
+
+## What each action fires (tested 2026-10-04)
+
+Stock box, Android 11, `/proc/interrupts` read over `adb` once a second
+while one thing was done at a time. "Background" lines move on their own
+and were filtered out:
+
+| Background (idle) | Rate |
+|---|---|
+| `VEC` (47), `BVNF_0` (49) | 50 per second each (502 in 10.05 s): one per display frame at 1080p50 |
+| `iicd` (AON BSC `0xf0419c40` bit 2) | ~10 per second |
+| `arch_timer`, `UPG_TMR` (101), `BSP` (32), `SCPU` (33), `eth0` (129, cable in) | continuous |
+
+| Action | What moved |
+|---|---|
+| remote button | `kbd1` (AON L2 `0xf0419c00` bit 0): ~3 per press |
+| SW1 (front button) | AON GPIO 14 (`nexus gpio`): one per edge, 2 per press. The box goes to standby / wakes |
+| SW4 | **nothing**: Linux polls it (`gpio_keys_polled`) |
+| HDMI cable out | `HDMI_TX` (59) +1 |
+| HDMI cable in | `HDMI_TX` +53, then +1 |
+| standby → wake (HDMI output back on) | `HDMI_TX` +54, then +1 |
+| USB keyboard out (USB-A port) | OHCI1 (127) +4 |
+| USB keyboard in | EHCI1 (126) +2, then OHCI1 +4, then OHCI1 +47 (enumeration) |
+
+The HDMI hot-plug arrives on the HDMI transmitter's own interrupt; AON GPIO
+4 and 5 (also claimed by Nexus) did not move for any of these. The box has
+no SD card slot.
+
+## L2 controller registers (tested 2026-10-03)
+
+All ten read on the stock box at `BOLT>` with `../bolt/raw/sys/l2_probe.s`
+(output next to it), twice, 1 s apart. **Every word past the DTB's
+`reg` size aborts**, so the sizes below are exact.
+
+**`brcm,l2-intc`** (`0xf0403000` 0x48, `0xf0201000` 0x30, `0xf0201a00`
+0x30, `0xf0410640` 0x30, `0xf04d1200` 0x48): two or three copies of the same
+six registers, `0x18` apart. Names from Linux `irq-brcmstb-l2.c` (the first
+copy); the values are from the board:
+
+| Offset in a copy | Register | Read |
+|---|---|---|
+| `+0x00` | STATUS | the same bits in every copy |
+| `+0x04` / `+0x08` | SET / CLEAR | `0` |
+| `+0x0c` | MASK_STATUS | every source masked |
+| `+0x10` / `+0x14` | MASK_SET / MASK_CLEAR | `0` |
+
+**`brcm,bcm7271-l2-intc`** (`0xf040a600`, `0xf0419c00`, `0xf040a640`,
+`0xf0419c40`, `0xf0419000`, all 0x20): STATUS `+0x0`, MASK_STATUS `+0x4`,
+MASK_SET `+0x8`, MASK_CLEAR `+0xc`, and a second copy at `+0x10`. MASK reads
+`7`, `7f`, `7`, `f`, `3`: one bit per source, exactly as many as the DTB
+lists.
+
+State at `BOLT>` (stock box, display running):
+
+| Controller | STATUS | MASK |
+|---|---|---|
+| sys `0xf0403000` | `0`, then `4` (`gisb_tea`, after the probe's aborts) | `ffffffff` |
+| HIF `0xf0201000` | `03000000` (bits 24, 25) | `ffffffff` |
+| HIF SPI `0xf0201a00` | `0` | `7f` |
+| AON `0xf0410640` | `0` | `007fffff` |
+| AVS `0xf04d1200` | `04000000` (bit 26) | `07ffffff` |
+| the five UPG controllers | `0` | `7`, `7f`, `7`, `f`, `3` |
+
+GIC at the same moment: ISENABLER0 = `0000ffff` (SGIs only), ISPENDR and
+ISACTIVER all `0`.
 
 ## AON L2 controller (`0xf0419c00`)
 

@@ -88,7 +88,7 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xf1120000` | DDR PHY | DTB `ddr-phy-v72.0` | `00004800` | `0x48` = **72** (ID match) |
 | `0xf1200000–0xf120bfff` | **V3D GPU** (VideoCore 3D, v3.3): hub `0xf1200000`, bridge `0xf1204000`, GCA `0xf1204100`, core0 `0xf1208000` | DTB `bcm7268-v3d` (no `reg`) | **abort** everywhere | power island off; powered up via `0xf041d020`: hub IDENT1 `000e1133` = V3D 3.3 |
 | `0xffd01000` | GIC-400 | DTB | | `interrupts.md` |
-| `0xffe00000` | boot SRAM, 128 KB | DTB | `00000000` | |
+| `0xffe00000` | boot SRAM, 128 KB | DTB | `00000000` | all readable from EL2, almost all zero (`memory-map.md`) |
 
 ## The four switched-off blocks (investigated 2026-10-02)
 
@@ -875,7 +875,7 @@ fails, the arbiter records it. After the probe's four aborts:
 | Register | Value | Meaning |
 |---|---|---|
 | `0xf04007ec` | `f0402800` | **the address of the last failed access** |
-| `0xf04007f8` | `00000040` | probably the bus master that did it (the CPU) |
+| `0xf04007f8` | `00000040` | the bus master that did it, one bit per master: bit 6 = `cpu_0` (below) |
 | `0xf04007e4` | `00000000` | |
 | `0xf0400008` | `000278d0` | probably the GISB timeout |
 
@@ -883,6 +883,36 @@ BOLT prints these as `GISB Address`, `GISB Data`, `GISB Master` (its code at
 `0x07023354`). So after a crash, `d -w 0xf04007ec 4` in BOLT should show
 which address caused it, if the board can be brought back without power loss
 (not tried across a watchdog reset).
+
+### The whole block (tested 2026-10-03)
+
+Every word of `0xf0400000–0x7ff`, read by `../bolt/raw/sys/addrmap1_probe.s`
+(output next to it):
+
+| Range | Result |
+|---|---|
+| `+0x000–0x1e4` | readable. `+0x000` = `00000502` (revision), `+0x008` = `000278d0`, `+0x1d4` = `000000fb`, `+0x1d8` = `77983d77`, `+0x1dc` = `3fbcfffe`, `+0x1e0` = `0000003d`, `+0x1e4` = `018a02c1`; all others `0` |
+| `+0x1e8–0x7e0` | **abort** (every word) |
+| `+0x7e4–0x7fc` | readable: `0`, `0`, `f04007e0`, `0`, `0000083d`, `00000040`, `0` |
+
+The capture registers then held the probe's own last abort: `+0x7ec` =
+`f04007e0` (address), `+0x7f8` = `40` (master `cpu_0`), `+0x7f4` =
+`0000083d` (status after a failed read; bits not decoded).
+
+**Master numbers.** The DTB's `brcm,gisb-arb-master-mask = <0x18a0fc3>` has
+12 set bits for its 12 `brcm,gisb-arb-master-names`, in order. The CPU's
+aborts gave bit 6 = `cpu_0` (tested); the others are the DTB's (not tested):
+
+| Bit | Master | | Bit | Master |
+|---|---|---|---|---|
+| 0 | `bsp_0` | | 10 | `rdc_0` (display register DMA) |
+| 1 | `scpu_0` | | 11 | `hvd_0` (video decoder) |
+| 6 | `cpu_0` (tested) | | 17 | `raaga_0` (audio DSP) |
+| 7 | `webcpu_0` | | 19 | `pcie_0` |
+| 8 | `jtag_0` | | 23 | `bbsi_spi` |
+| 9 | `ssp_0` | | 24 | `avs_0` |
+
+The DTB lists no V3D master.
 
 ## Bus addresses ("RDB")
 

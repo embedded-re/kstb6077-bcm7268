@@ -1,5 +1,10 @@
 # Storage: data files on the eMMC for bare-metal programs
 
+The box has one storage device: the eMMC on SDHCI 1 (`0xf0200200`; Linux
+`mmc1`, card name `DG4008`, 7.28 GiB, "high speed MMC card"). There is
+**no SD card slot** on the case, although SDHCI 0 (`0xf0200000`) is enabled
+in the DTB and Linux registers it as `mmc0`.
+
 A bare-metal program can't read the eMMC itself (no driver yet), but BOLT can
 copy any part of a partition into RAM before `go`. The modified box's
 `flash0.splash` partition is 16.8 MB, and BOLT's splash uses only the first

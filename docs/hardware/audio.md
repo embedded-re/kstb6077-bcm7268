@@ -303,6 +303,14 @@ back after an audio boot (tested):
 Next step: a receiver (a soundbar, or a USB S/PDIF input to record), then
 the same port test while listening to the optical output.
 
+## What stock Android shows (2026-10-04)
+
+`dumpsys media.audio_policy` on the stock box lists HDMI, `Speaker`,
+Bluetooth A2DP and USB outputs, and no S/PDIF device; Nexus creates 9 audio
+outputs (`NEXUS_AudioOutput count:9` in the boot log) and drives S/PDIF
+itself. So the shell can't tell which block feeds the optical output
+(`../stock-firmware.md`).
+
 ## Open questions
 
 - Why the blop count by ear looked tied to buffer laps (see "The blop").

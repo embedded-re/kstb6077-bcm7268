@@ -39,7 +39,7 @@ The modified box stops at `BOLT>` because its `STARTUP` variable is unset.
 | Boot reason | Trigger | Result |
 |---|---|---|
 | `normal` | nothing | `boot -loader=img -rawfs flash0.boot` |
-| `recovery` | **SW4 held at power-on** (BSU checks the "front panel button state") | `flash0.recovery`, the Android recovery menu |
+| `recovery` | **SW4 held at power-on** (BSU checks the "front panel button state"), or Linux `reboot recovery` (`val=114`, tested 2026-10-03: `boot_path = legacy; boot_reason = 114` → `boot_cmd=boot -loader=img -rawfs flash0.recovery`) | `flash0.recovery`, the Android recovery menu |
 | `bootloader` | Linux `reboot bootloader` (recovery menu → "Reboot to bootloader") | the BSU tries fastboot, then **"stays in BOLT"** → `BOLT>` |
 
 **Easiest way to a `BOLT>` prompt (any box): Ctrl-C.** BOLT cancels its
@@ -58,7 +58,8 @@ How the reboot reason travels:
 - Linux logs `brcmstb_reboot: cmd='bootloader', val=98` and does a software
   master reset (the next boot prints `RR:00000200`).
 - The BSU then reports `boot_path = ab_bl_recovery; boot_reason = 98` → `boot reason = bootloader`.
-- The value 98 survives the reset in an unidentified register.
+- The value 98 (`'b'`; `'r'` = 114 for recovery, 0 for normal) survives the
+  reset in an unidentified register.
   AON control `0xf0410000–0x27` matches the modified box, and `0xf041002c`
   gives an external abort (`bolt/raw/stock/aon_read_abort.txt`).
 - The `misc` partition's BCB command was empty in an earlier capture. After
@@ -173,12 +174,63 @@ The recovery image carries its own kernel build: `4.1.45-1-15pre … #1 SMP
 Fri Feb 1 16:40:17 KST 2019`. The normal boot image's kernel is dated
 Apr 14 2020.
 
+## Stock Android 11 over `adb` (2026-10-04)
+
+On 2026-10-03 a "reboot to recovery" made the box install a pending
+over-the-air update by itself. Afterwards it runs **Android 11**
+(`KaonMedia/KSTB6077/KSTB6077:11/RTT4.220725.001/240716.1235`), kernel
+**4.9.322-1-27** (32-bit ARM, built Jul 16 2024). BOLT was **not** changed:
+the next boot printed the same `BOLT v1.34` banner (built 2018-11-29).
+
+**Getting a shell:** on the TV, Settings → Device Preferences → About,
+click Build 7 times; then turn on debugging in Developer options. From the
+PC: `adb connect 192.168.1.36:5555` (the box's DHCP address), accept the
+prompt on the TV, `adb shell`. The shell is user `shell` (uid 2000), **not
+root**.
+
+| Readable as `shell` | Not readable (root only) |
+|---|---|
+| `/proc/interrupts` (`bolt/raw/stock/adb/proc_interrupts_1.txt`, decoded in `hardware/interrupts.md`) | `/proc/iomem`, `dmesg`, `/sys/kernel/debug` |
+| `/proc/config.gz`: the kernel config (`bolt/raw/stock/adb/kernel_config.gz`) | `/proc/partitions`, `/sys/class/gpio/gpiochip*/label` |
+| `/proc/modules`, `/proc/meminfo`, `/proc/mounts`, `getprop` (saved next to it) | `/vendor/lib/modules/*.ko`, `/vendor/usr/keylayout/*.kl` |
+| the live device tree's **node names** (`/sys/firmware/devicetree/base`; every property file is root-only) | `/sys/firmware/fdt` |
+| `dumpsys` (e.g. `dumpsys input`, `dumpsys power`) | |
+
+Kernel modules: `nexus`, `brcmv3d` (the V3D GPU), `bcmdhd` (Wi-Fi),
+`droid_pm`; `/vendor/lib/modules` also has `ldvbon.ko`. Kernel config
+highlights: `CONFIG_ARCH_BRCMSTB`, `PCIE_BRCMSTB`, `BCMGENET`,
+`BCM7XXX_PHY`, `I2C_BRCMSTB`, `SPI_BCM_QSPI`, `MMC_SDHCI_BRCMSTB`,
+`BRCMSTB_HDMI_HPD`, `BRCMSTB_THERMAL`, `BCM7038_WDT`, `BRCMSTB_BMEM`,
+`BRCMSTB_CMA`.
+
+Input devices (`dumpsys input`): `NexusPower`, **`NexusIrHandlerTMCZ`** (the
+remote, key layout `/vendor/usr/keylayout/NexusIrHandlerTMCZ.kl`, not
+readable), `droid_pm`, `gpio_keys_polled` (SW4), `virtual-search`, and a USB
+keyboard as `usb-f0b00600.ohci_v2-1`.
+
+**Standby (SW1) is not a kernel suspend:** the
+console prints nothing, adb keeps answering, and `dumpsys power` shows
+`mWakefulness=Asleep`, `Display Power: state=OFF`. Waking turns HDMI back on
+(`hardware/interrupts.md`, "What each action fires").
+
+Live device tree vs `../boot/stock_dtb.dts` (node names only): the same
+nodes, plus `firmware/android` and `bcmbt_rfkill`, which are added for the
+Android boot.
+
+Audio as Android sees it (`dumpsys media.audio_policy`, saved next to the
+other outputs): only HDMI (`AUDIO_DEVICE_OUT_AUX_DIGITAL|HDMI`), a
+`Speaker`, Bluetooth A2DP and USB. No S/PDIF device: Nexus drives the
+optical output itself (the boot log shows `NEXUS_AudioOutput count:9`).
+
+HDMI-CEC is off in Android's settings (`persist.vendor.hdmi.cec_enabled=0`);
+the box is CEC device type 4 (playback).
+
 ## Reset codes seen on the stock box
 
 | RR | Situation |
 |---|---|
 | `00000003` | power-on |
-| `00000200` | software master reset (Linux `reboot bootloader`) |
+| `00000200` | software master reset (Linux `reboot bootloader`, `reboot recovery`, and the reboot after recovery) |
 | `00000000` | resets that interrupted BOLT during AUTOBOOT, before anything loaded. Probably quick power-cycles while timing the button; cause unconfirmed |
 
 ## HDMI splash

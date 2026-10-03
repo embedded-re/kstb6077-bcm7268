@@ -15,6 +15,7 @@ the register says otherwise. From BOLT: `d -w <addr> 4` reads one word,
 | Address | Why |
 |---|---|
 | `0xf041002c` | AON control: **external abort** on read (hangs the board) |
+| `0xf0404030`, `0xf0404034`, `0xf0404520` | OTP fuses: read only; never write |
 | `0xf064105c` | display GFD: **external abort** on read |
 | `0x7db08000–0x7db0b6ff` | display lists in RAM: overwriting them **blanks the screen** until reboot |
 | `0xf06fa828`, `0xf06fa884`, `0xf06fa888`, `0xf06fa898` | HDMI audio packet set-up: writing them **broke the picture** |
@@ -81,16 +82,31 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 |---|---|---|
 | `0xf0404000` | chip family ID | `72680010` = BCM7268 B0 |
 | `0xf0404004` | chip product ID | `72680010` |
+| `0xf040401c` / `20` | straps | `00000f1e` / `0`: bits 0–4 = boot device (`0x1e` = eMMC), bit 9 = SATA off / PCIe on |
+| `0xf0404030` / `34`, `0xf0404520` | **OTP fuses**: read only, never write | `40` / `00a02000` / `0`; field names in `system-blocks.md` |
+| `0xf041006c` | **reset history** (`RR:`) | bit 0 power-on, 6 watchdog, 9 software; BOLT clears it at boot |
+| `0x07069844` | BOLT's copy of the reset history (RAM) | `d -w 0x07069844 1` at `BOLT>` = last reset reason |
 | `0xf0404304` | reset source enable | write `1` first |
 | `0xf0404308` | **software reset** | write `1` → the board reboots at once (`RR:00000200`) |
 | `0xf040a6a8` | watchdog TIMEOUT | 27 MHz ticks: `0x30479e80` = 30 s, `0x202fbf00` = 20 s, `0x1017df80` = 10 s |
 | `0xf040a6ac` | watchdog CMD | start: `ff00` then `00ff`. Stop: `ee00` then `00ee`. Read: ticks left |
+| `0xf041a080` | wake timer EVENT | bit 0 = 1 when COUNTER reaches ALARM; write `1` to clear |
 | `0xf041a084` | wake timer COUNTER | seconds since power-on |
+| `0xf041a088` | wake timer ALARM | seconds value that sets EVENT |
 | `0xf041a08c` | wake timer PRESCALER | `019bfcc0` = 27 MHz |
 | `0xf041a090` | wake timer PRESCALER_VAL | sub-second countdown |
 | `0xf04d1500` | temperature | bit 11 = valid, bits 10:1 = code; m°C = `410040 − code × 487` |
 | `0xf0410000–0xf0410027` | AON control | readable (`0x2c` aborts) |
 | `0xf0410200–0xf04105ff` | **AON SRAM**, 1 KB | survives software and watchdog resets (use the end; Linux uses the start) |
+
+## GISB bus arbiter (`peripherals.md`)
+
+| Address | Name | What it does |
+|---|---|---|
+| `0xf04007ec` | error capture address | address of the last failed (aborted) access; survives at `BOLT>` |
+| `0xf04007f8` | error capture master | one bit per master: `40` = bit 6 = the CPU |
+| `0xf04007f4` | error capture status | `0000083d` after a failed read |
+| `0xf0400000–0x1e4`, `0xf04007e4–0x7fc` | readable | `0xf04001e8–0x7e0` abort |
 
 ## V3D GPU power (`peripherals.md`)
 

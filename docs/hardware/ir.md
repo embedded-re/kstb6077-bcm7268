@@ -141,6 +141,36 @@ TUNER, `b14e0820` PLAY, `b7480820` PREVIOUSSONG. Either this remote doesn't
 have those keys, or they weren't pressed. The key map also has codes with
 custom code `0x2016` and `0xff00`, which belong to other remotes.
 
+## The remote under stock Android 11 (tested 2026-10-04)
+
+Read with `getevent -lt /dev/input/event4` over `adb` (the input device
+`NexusIrHandlerTMCZ`; `../stock-firmware.md`). Nexus decodes the IR itself
+and sends only Linux key codes: **no raw scan code** (`MSC_SCAN`), so this
+run gives key names, not IR codes. Its key layout
+(`/vendor/usr/keylayout/NexusIrHandlerTMCZ.kl`) is not readable without root.
+
+Keys received (41): `KEY_0`–`KEY_9`, `UP`, `DOWN`, `LEFT`, `RIGHT`,
+`SELECT`, `MENU`, `BACK`, `HOMEPAGE`, `EPG`, `INFO`, `SOUND`, `SUBTITLE`,
+`TV`, `MUTE`, `VOLUMEUP`, `VOLUMEDOWN`, `CHANNELUP`, `CHANNELDOWN`,
+`RECORD`, `STOP`, `PLAY`, `FASTFORWARD`, `REWIND`, `PREVIOUSSONG`,
+`NEXTSONG`, `SLOW`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `POWER`.
+
+Compared with the key map names in the table above: `PLAY`,
+`PREVIOUSSONG` and `SLOW` appear here, while `PLAYPAUSE`, `SEARCH`, `SLEEP`
+and `LAST` did not. Which physical buttons these are wasn't recorded, so
+whether Android 11 names the same codes differently is open.
+
+Timing and behaviour:
+
+| What | Seen |
+|---|---|
+| events per press | one `DOWN` and one `UP`; no `REPEAT` events (Android repeats keys itself) |
+| quick tap (one IR frame) | `UP` 75 ms after `DOWN` |
+| normal press (one repeat frame) | `UP` 168 ms after `DOWN`; `kbd1` fired 2 times |
+| held 2.78 s | one `DOWN`, one `UP`; `kbd1` fired 26 times, one interrupt per IR frame, a repeat every ~108 ms |
+| `RED` | **always** sends `KEY_WAKEUP` (DOWN, UP 22–40 µs later) first, then `KEY_RED`, awake or in standby. No other key does |
+| `POWER` | standby, and wakes the box from standby |
+
 ## Not tested
 
 - kbd2 and kbd3: not enabled; it isn't known whether anything is wired to
@@ -150,4 +180,5 @@ custom code `0x2016` and `0xff00`, which belong to other remotes.
 - Other protocols (Nexus has timing tables for RC5, Sony, RC6 and others).
 - Whether reading CIR_DATA returns the parameter value: it was read only
   before the NEC values were written and after the restore, never in between.
-- Repeat timing (no timestamps were taken).
+- Repeat timing on bare metal (no timestamps were taken there; under
+  Android, see above).

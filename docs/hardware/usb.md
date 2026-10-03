@@ -35,6 +35,17 @@ GIC IDs = SPI + 32: EHCI0 122, OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127
 | **EHCI1 + OHCI1** | the **USB-A port** | with a low-speed USB keyboard (`0461:0010`) plugged in: OHCI1 port `00000303` (connected, enabled, low speed); EHCI1 handed it over (`00003000`) |
 | xHCI ports 1–2 | unknown | `000002a0` (powered, RxDetect, empty) with and without the keyboard. A SanDisk stick `0781:558a` on the USB-A port came up as `New high speed device connected to bus 1` (EHCI1), not on the xHCI. Caution: If that stick is USB 3 (not checked), the port's USB 3 lines don't reach the xHCI, or BOLT doesn't use them |
 
+Confirmed under stock Android (2026-10-04, `interrupts.md`): plugging the
+keyboard into the USB-A port fired EHCI1 (ID 126) first, then OHCI1 (ID
+127): EHCI1 sees the connection and hands the low-speed device to its
+companion OHCI1. Unplugging fired only OHCI1.
+
+xHCI root hubs under the stock 4.9 kernel: the USB 2 side reports **no
+ports** (`hub 1-0:1.0: config failed, hub doesn't have any ports!`), the
+USB 3 side **2 ports** (`hub 2-0:1.0: 2 ports detected`). So the xHCI only
+has USB 3 (SuperSpeed) ports; USB 2 traffic on any connector goes through
+EHCI/OHCI.
+
 Low- and full-speed devices (keyboards, mice, the BT adapter) are handled by
 the OHCI. High-speed devices (USB 2 sticks) are handled by the EHCI. EHCI's
 CONFIGFLAG decides who owns a port at first; after reset, it is 0 and every

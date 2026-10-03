@@ -1,0 +1,15 @@
+# sys_probe.s, modified box, 2026-10-03, go -64 (EL2), watchdog 20 s
+sys probe (EL2, aborts caught)
+f041006c 00000000 
+f040401c 00000f1e 
+f0404020 00000000 
+f0404030 00000040 
+f0404034 00a02000 
+f0404520 00000000 
+f0404084 00004000 
+f04040a4 00d9b7df 
+f04e6134 15a08203 
+probe done
+# then: watchdog reset -> banner RR:00000040, BOLT> d -w 0x07069844 = 00000040
+# software reset (kstb-bolt --reset) -> RR:00000200, 0x07069844 = 00000200
+# previous power-on boot -> RR:00000003, 0x07069844 = 00000003

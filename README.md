@@ -19,7 +19,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Board name | `KM_SH368AT` (PCB silkscreen: "DT-DVB-T Android TV rev1.0") |
 | SoC | Broadcom **BCM7268 B0**, chip ID `72680010` |
 | CPU | 4× Broadcom Brahma-B53 (Cortex-A53, **ARMv8-A**), 1656 MHz, 1 MB L2 |
-| RAM | 2 GB DDR4 at 1856 MHz, at physical address `0x00000000` |
+| RAM | 2 GB **LPDDR4** (one Samsung K4F6E3S4HM-MGCJ, 16 Gbit ×32) at 1856 MHz, at physical address `0x00000000` |
 | Storage | 7.28 GiB eMMC: user area, two 4 MB boot partitions, 4 MB RPMB |
 | Firmware | BOLT v1.34 bootloader, BSP 4.2.5, ARM Trusted Firmware BL31, PSCI v0.2 |
 

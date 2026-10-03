@@ -1,0 +1,88 @@
+           CPU0       CPU1       CPU2       CPU3       
+ 29:          0          0          0          0     GICv2  29 Level     arch_timer
+ 30:     468976     475583     485916     457736     GICv2  30 Level     arch_timer
+ 32:        353          0          0          0     GICv2  32 Level     BSP
+ 33:       1493          0          0          0     GICv2  33 Level     SCPU
+ 45:       6178          0          0          0     GICv2  45 Level     AIO
+ 46:      14299          0          0          0     GICv2  46 Level     GFX
+ 47:      22034          0          0          0     GICv2  47 Level     VEC
+ 48:          0          0          0          0     GICv2  48 Level     BVNB_0
+ 49:      22035          0          0          0     GICv2  49 Level     BVNF_0
+ 50:          0          0          0          0     GICv2  50 Level     BVNF_1
+ 51:          0          0          0          0     GICv2  51 Level     BVNF_5
+ 52:          0          0          0          0     GICv2  52 Level     BVNF_9
+ 53:          0          0          0          0     GICv2  53 Level     BVNF_16
+ 54:          0          0          0          0     GICv2  54 Level     BVNM_0
+ 55:          0          0          0          0     GICv2  55 Level     BVNB_1
+ 56:          0          0          0          0     GICv2  56 Level     CLKGEN
+ 58:          0          0          0          0     GICv2  58 Level     DVP_HR
+ 59:         95          0          0          0     GICv2  59 Level     HDMI_TX
+ 60:          0          0          0          0     GICv2  60 Level     HDMI_RX_0
+ 69:          0          0          0          0     GICv2  69 Edge      mmc0
+ 70:     598332          0          0          0     GICv2  70 Edge      mmc1
+ 78:        250          0          0          0     GICv2  78 Level     PCIe PME, aerdrv, dhdpcie:0000:01:00.0
+ 83:          0          0          0          0     GICv2  83 Edge      PCIe0_msi
+ 85:          2          0          0          0     GICv2  85 Level     HVD0_0
+ 86:          0          0          0          0     GICv2  86 Level     RAAGA
+ 87:          1          0          0          0     GICv2  87 Level     RAAGA_FW
+ 88:          0          0          0          0     GICv2  88 Level     MEMC0
+ 92:          0          0          0          0     GICv2  92 Level     SYS_AON
+ 94:          0          0          0          0     GICv2  94 Level     UPG_AUX_AON
+ 99:          0          0          0          0     GICv2  99 Level     UPG_SC
+101:        990          0          0          0     GICv2 101 Level     UPG_TMR
+102:          0          0          0          0     GICv2 102 Level     serial
+109:       9271          0          0          0     GICv2 109 Level     V3D_INT
+110:        891          0          0          0     GICv2 110 Level     V3D_HUB_INT
+111:          0          0          0          0     GICv2 111 Level     XPT_FE_STATUS0
+112:          0          0          0          0     GICv2 112 Level     XPT_OVFL
+113:          0          0          0          0     GICv2 113 Level     XPT_MSG_STAT
+114:          0          0          0          0     GICv2 114 Level     XPT_MSG
+115:          0          0          0          0     GICv2 115 Level     XPT_PCRXPT_DPCR0
+116:          0          0          0          0     GICv2 116 Level     XPT_RAV
+117:          0          0          0          0     GICv2 117 Level     XPT_STATUS_BUS
+118:          0          0          0          0     GICv2 118 Level     XPT_MCPB
+120:          0          0          0          0     GICv2 120 Level     XPT_WMDMA
+121:          0          0          0          0     GICv2 121 Level     XPT_EXTCARD
+122:          6          0          0          0     GICv2 122 Edge      ehci_hcd:usb3
+123:       1113          0          0          0     GICv2 123 Edge      ohci_hcd:usb5
+124:          3          0          0          0     GICv2 124 Edge      xhci-hcd:usb1
+126:          2          0          0          0     GICv2 126 Edge      ehci_hcd:usb4
+127:         60          0          0          0     GICv2 127 Edge      ohci_hcd:usb6
+129:      77500          0          0          0     GICv2 129 Edge      eth0
+130:          0          0          0          0     GICv2 130 Edge      eth0
+138:          0          0          0          0     GICv2 138 Level     MPM_TOP
+140:          0          0          0          0     GICv2 140 Level     SID0_0
+257:          0          0          0          0  /rdb/interrupt-controller@f0410640  18 Edge      eth0
+259:          0          0          0          0  /rdb/interrupt-controller@f0410640   6 Edge      brcmstb-gpio-wake, brcmstb-gpio-wake
+261:          0          0          0          0  /rdb/interrupt-controller@f0403000   0 Edge      f0400000.gisb-arb
+262:          0          0          0          0  /rdb/interrupt-controller@f0403000   2 Edge      f0400000.gisb-arb
+263:         36          0          0          0  /rdb/interrupt-controller@f04d1200  26 Edge      sw_intr
+264:          0          0          0          0  /rdb/interrupt-controller@f0410640   4 Edge      brcm-waketimer
+265:          0          0          0          0  /rdb/interrupt-controller@f04d1200   6 Edge      brcmstb_thermal
+266:          0          0          0          0  /rdb/interrupt-controller@f0419000   0 Edge      spi
+267:          0          0          0          0  /rdb/interrupt-controller@f0410640   1 Edge      droid_pm
+268:          0          0          0          0  /rdb/interrupt-controller@f0410640   2 Edge      droid_pm
+269:          0          0          0          0  /rdb/interrupt-controller@f0410640   3 Edge      droid_pm
+270:          0          0          0          0  /rdb/interrupt-controller@f0410640  11 Edge      droid_pm
+271:          0          0          0          0  /rdb/interrupt-controller@f040a640   0 Edge      iica
+272:          0          0          0          0  /rdb/interrupt-controller@f040a600   1 Edge      irb
+273:          0          0          0          0  /rdb/interrupt-controller@f0419c00   5 Edge      icap
+274:        410          0          0          0  /rdb/interrupt-controller@f0419c00   0 Edge      kbd1
+275:          0          0          0          0  /rdb/interrupt-controller@f0419c00   1 Edge      kbd2
+276:          0          0          0          0  /rdb/interrupt-controller@f0419c00   2 Edge      kbd3
+277:          0          0          0          0  /rdb/interrupt-controller@f0419c00   4 Edge      ldk
+278:          0          0          0          0  /rdb/interrupt-controller@f040a640   1 Edge      iice
+279:          0          0          0          0  /rdb/interrupt-controller@f0419c40   0 Edge      iicb
+280:          0          0          0          0  /rdb/interrupt-controller@f0419c40   1 Edge      iicc
+281:       8220          0          0          0  /rdb/interrupt-controller@f0419c40   2 Edge      iicd
+282:          6          0          0          0  f0419c80.gpio   4 Edge      nexus gpio
+283:          0          0          0          0  f0419c80.gpio   5 Edge      nexus gpio
+284:          0          0          0          0  f0419c80.gpio  14 Edge      nexus gpio
+IPI0:          0          0          0          0  CPU wakeup interrupts
+IPI1:          0          0          0          0  Timer broadcast interrupts
+IPI2:     245425     376516     343020     308485  Rescheduling interrupts
+IPI3:        537        333        201        122  Function call interrupts
+IPI4:          0          0          0          0  CPU stop interrupts
+IPI5:          0          0          0          0  IRQ work interrupts
+IPI6:          0          0          0          0  completion interrupts
+Err:          0

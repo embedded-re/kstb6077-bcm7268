@@ -31,8 +31,9 @@ Compatible `brcm,brcmstb-gpio`. The register layout matches Linux
 | LED1 green (power) | AON bank 0 bit 18 | open-drain, active-low; output after BOLT |
 | LED1 red | AON bank 0 bit 17 | open-drain, active-low; output after BOLT. Green + red = orange |
 | LED3 blue | AON bank 0 bit 16 | active-low; **input after BOLT**. To use: set ODEN, set DATA (off), then clear IODIR |
-| SW1 (front standby button) | AON bank 0 bit 14 | input, active-low (reads 1 at rest) |
-| SW4 (recovery / Bluetooth-pairing button) | AON bank 0 bit 7 | input, active-low (0 = pressed). Held at power-on, the stock BSU boots recovery. The stock DTB maps it as `gpio_keys_polled` `BT_PAIR` (key `0x18f`), and BOLT's env has `BT_PAIR upg_gio_aon 7` |
+| SW1 (front standby button) | AON bank 0 bit 14 | input, active-low (reads 1 at rest). Stock Android: an interrupt on both edges (`nexus gpio`), standby/wake (`interrupts.md`) |
+| SW4 (recovery / Bluetooth-pairing button) | AON bank 0 bit 7 | input, active-low (0 = pressed). Held at power-on, the stock BSU boots recovery. The stock DTB maps it as `gpio_keys_polled` `BT_PAIR` (key `0x18f`), and BOLT's env has `BT_PAIR upg_gio_aon 7`. Linux polls it: pressing it fires no interrupt (tested) |
+| unknown (claimed by Nexus) | AON bank 0 bits 4, 5 | stock `/proc/interrupts` lists them as `nexus gpio`; bit 4 fired 6 times around boot. Not HDMI hot-plug, USB or the buttons (tested) |
 | Wi-Fi power (`vreg-wifi-pwr`) | AON bank 0 bit 21 | from the DTB; input after BOLT |
 | WLAN power (`vreg-wlan-pwr`) | AON bank 0 bit 26 | from the DTB; input after BOLT |
 
