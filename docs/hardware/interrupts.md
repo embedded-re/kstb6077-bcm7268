@@ -1,5 +1,17 @@
 # Interrupts
 
+## Summary
+
+| | |
+|---|---|
+| Root controller | ARM **GIC-400** (GICv2): distributor `0xffd01000`, CPU interface `0xffd02000`; 256 IDs, 4 CPU interfaces |
+| Numbering | DTB SPI *N* = GIC ID *N* + 32 |
+| Second level | Broadcom L2 controllers (`brcm,l2-intc`, `brcm,bcm7271-l2-intc`) in front of the GIC |
+| State at handoff | GIC enabled, every SPI in group 1 (non-secure), **every SPI disabled and untargeted**; all L2 sources masked |
+| Reachable | from AArch64 (`go -64`, `boot -64 -el3`); **not** under BOLT's 32-bit MMU |
+| Tested | GIC state from EL2 and EL3; the SW1 chain up to the L2; the stock kernel's interrupt counts per action |
+| Not tested | taking an interrupt on the CPU from bare-metal code |
+
 ## Controllers (from the original DTB)
 
 | Device | Address | Notes |

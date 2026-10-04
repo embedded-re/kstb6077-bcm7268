@@ -1,5 +1,10 @@
 # Running code on the board
 
+How the board boots, how to stop it at the `BOLT>` prompt, and the ways to
+load and run your own program: over the serial console, from a USB stick or
+over TFTP. Ends with the CPU state your program starts in and a watchdog
+safety net.
+
 ## Boot chain
 
 ```
@@ -52,6 +57,11 @@ tools/kstb-run --a64 --watchdog 20 --wait-bolt prog.bin
 tools/kstb-run --no-go prog.bin          # upload + verify only
 tools/kstb-run prog.bin                  # 32-bit: plain go
 ```
+
+C instead of assembly: `tools/build-c prog.c` builds `prog.bin` the same way
+(clang + ld.lld, no C library). [`c/main.c`](../c/main.c) is a small example
+that prints the chip ID and temperature and cycles the LEDs; run it with
+`tools/kstb-run --a64 --watchdog 60 --listen 30 --wait-bolt c/main.bin`.
 
 Measured: 849 bytes in 0.6 s, 16 KB in 11.9 s (about 1.4 KB/s), with the CRC
 matching every time. A full cycle (upload, run, watchdog reboot, back at

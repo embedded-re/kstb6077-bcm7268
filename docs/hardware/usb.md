@@ -10,6 +10,17 @@ OHCI up to port enable; transfers are not tested yet.
 
 Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
 
+## Summary
+
+| | |
+|---|---|
+| Controllers | EHCI0 `0xf0b00300`, OHCI0 `0xf0b00400`, EHCI1 `0xf0b00500`, OHCI1 `0xf0b00600`, xHCI `0xf0b01000`; device controller (BDC) `0xf0b02000`, held in reset |
+| Control / PHY | `0xf0b00200`, set up by BOLT; survives `go` |
+| Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; xHCI ports unknown |
+| State after `go -64` | every controller reset and stopped, still clocked |
+| Tested | OHCI1 from bare metal up to an enabled port with a keyboard attached |
+| Not tested | transfers (control, interrupt, bulk) |
+
 ## Blocks (stock DTB `boot/stock_dtb.dts`, capability registers read)
 
 | Base | DTB node | Size | Capability registers | Meaning |
@@ -103,7 +114,7 @@ Steps, OHCI 1.0a spec, offsets from `0xf0b00600`:
 Nothing Broadcom-specific was needed (no PHY or `0xf0b00200` writes): the
 PHY and clocks from BOLT's start-up survive `go -64`.
 
-## Open
+## Open questions
 
 - Control transfers on OHCI1 (EDs/TDs in RAM, `GET_DESCRIPTOR`, `SET_ADDRESS`,
   `SET_CONFIGURATION`), then HID boot-protocol keyboard reports from an

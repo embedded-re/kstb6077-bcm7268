@@ -12,6 +12,17 @@ Sources:
   and `libGLES_nexus.so` (`v3d_*`, `glxx_*`).
 - Everything marked *tested* was done on the modified box from AArch64 EL2.
 
+## Summary
+
+| | |
+|---|---|
+| GPU | Broadcom V3D 3.3, 1 core, 2 slices × 4 QPUs = 8 QPUs, 1 TMU |
+| Address | hub `0xf1200000`, bridge `0xf1204000`, GCA `0xf1204100`, core `0xf1208000` |
+| State after BOLT | power island off: every access aborts. Power up through `0xf041d020` |
+| GPU MMU | off after reset; jobs use physical addresses |
+| Tested | power, reset, a TFU job, render jobs into the framebuffer, a binner + render job drawing a triangle, a fragment shader of our own |
+| Not tested | the GPU MMU, interrupts, textures, vertex shaders, frames larger than one tile |
+
 ## Configuration (tested, from the ID registers)
 
 | Register | Value | Meaning |
@@ -594,7 +605,7 @@ bin/render columns come from libGLES. "Used" means a tested probe sent it.
 | `7c` / `7d` | tile_coords / implicit_tile_coords | | y | yes |
 | `7e` | tile_list_initial_block_size | | y | yes |
 
-## Not mapped yet
+## Open questions: not mapped yet
 
 Blocks and functions that are named (Linux, libGLES, Nexus) but not driven
 or tested on the board:

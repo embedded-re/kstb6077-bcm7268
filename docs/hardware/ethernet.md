@@ -10,6 +10,18 @@ connected, BOLT's network not started (`ifconfig` not run). Probe and
 outputs: `../evidence/sdhci_genet/`. Register names are Linux `bcmgenet`
 (GENET v5 layout) and IEEE 802.3 clause 22; the values are tested.
 
+## Summary
+
+| | |
+|---|---|
+| MAC | GENET v5 at `0xf0480000` (GENET 1 at `0xf04a0000`: clocked, unused) |
+| PHY | BCM7268 internal PHY, ID `0xae025091`, MDIO address 1, 10/100 only |
+| Link | 100 Mbit/s full duplex to a normal switch |
+| State after BOLT | MAC idle: TX and RX off, **no MAC address**, interrupts masked |
+| Register names | Linux `bcmgenet` (GENET v5 layout), IEEE 802.3 clause 22 |
+| Tested | register reads at `BOLT>`, PHY reads with `mii read`, BOLT's own network (`../bolt/bolt.md` §9) |
+| Not tested | sending or receiving frames from bare-metal code |
+
 ## Blocks
 
 | Offset | Block | Read after BOLT |
@@ -59,3 +71,7 @@ PHY registers, read with BOLT's `mii read mdio0 1 <reg>` (cable in):
 
 Both sides advertise 100 full duplex, so that is the link speed (matches
 BOLT's `100 Mbps Full-Duplex` in `../bolt/bolt.md`).
+
+## Open questions
+
+- A bare-metal driver: MAC address, DMA rings, sending and receiving frames.

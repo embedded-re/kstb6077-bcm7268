@@ -259,10 +259,10 @@ match DTB blocks; the rule is inferred from these two).
   was seen.
 - The watchdog stays armed in case an access never completes.
 
-## Open
+## Open questions
 
 - Bringing PCIe further up (PERST, the Wi-Fi chip's power) and using the BDC.
-- Using the V3D GPU further: see "Not mapped yet" in [`gpu.md`](gpu.md).
+- Using the V3D GPU further: see "Open questions" in `gpu.md`.
 - The display pipeline blocks' names (`0xf0645000`, `0xf0650000`, `0xf06e0000…`).
 - The other Nexus multimedia blocks (video decoder, audio DSP, transport) are
   listed by the memory controller but have no known address.

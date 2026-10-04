@@ -5,6 +5,16 @@ set-top boxes those belong to the proprietary Nexus drivers. The pin map
 below was found by reading and writing the GPIO registers from BOLT with
 `d -w` / `e -w`, one bit at a time.
 
+## Summary
+
+| | |
+|---|---|
+| Controllers | AON GPIO `0xf0419c80` (banks of 28 and 6 pins), main GPIO `0xf040a500` (32, 32, 19, 2) |
+| Register layout | Linux `gpio-brcmstb`, banks `0x20` bytes apart |
+| Mapped pins | LED1 green/red (AON 18/17), LED3 blue (AON 16), SW1 standby (AON 14), SW4 recovery/BT pairing (AON 7); Wi-Fi power AON 21/26 from the DTB |
+| State after BOLT | only AON 17 and 18 are outputs; every other GPIO is an input |
+| Tested | every pin in the map, from `BOLT>` with `d -w` / `e -w` |
+
 ## Controllers
 
 Compatible `brcm,brcmstb-gpio`. The register layout matches Linux
@@ -72,7 +82,9 @@ STAT bit. It feeds the SoC's IR receiver block, channel kbd1 at
 `0xf0419900`, which decodes the remote's NEC codes once it is enabled. BOLT
 doesn't enable it. Details and the remote's key codes: `ir.md`.
 
-## Not mapped
+## Open questions
+
+Not mapped yet:
 
 | Item | Status |
 |---|---|

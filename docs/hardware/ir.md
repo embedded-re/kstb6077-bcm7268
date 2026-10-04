@@ -12,6 +12,18 @@ BOLT doesn't enable the block, so after BOLT a remote press changes nothing
 (`gpio.md`). Nothing on the box reacts to the remote by itself: the decoding
 only happens once software turns it on.
 
+## Summary
+
+| | |
+|---|---|
+| Receiver | `IR1` on the PCB → IR receiver block channel **kbd1** at `0xf0419900` (kbd2 `0xf0419980`, kbd3 `0xf0419a00`) |
+| State after BOLT | off: remote presses change nothing |
+| Mode | NEC, set up with the Nexus sequence and 27 timing parameters |
+| Remote | Kaon remote, custom code `0x0820`; all 41 received codes are in the stock key map |
+| Reading a code | poll STATUS `+0x00` bit 0, read DATA0 `+0x10`, write STATUS back with bit 0 cleared |
+| Interrupt | AON L2 `0xf0419c00` bit 0 (tested up to the L2, not through the GIC) |
+| Register names | roles from the stock Nexus driver (`BKIR_*`), not Broadcom's names |
+
 ## Where the register names come from
 
 The register layout and the set-up sequence come from the stock Nexus driver
@@ -171,7 +183,9 @@ Timing and behaviour:
 | `RED` | **always** sends `KEY_WAKEUP` (DOWN, UP 22–40 µs later) first, then `KEY_RED`, awake or in standby. No other key does |
 | `POWER` | standby, and wakes the box from standby |
 
-## Not tested
+## Open questions
+
+Not tested yet:
 
 - kbd2 and kbd3: not enabled; it isn't known whether anything is wired to
   them.

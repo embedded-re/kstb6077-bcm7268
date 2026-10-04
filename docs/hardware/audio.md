@@ -10,6 +10,20 @@ while it plays.
 Marked **tested** = seen/heard on the modified box (2026-10-02). Everything
 else is inferred from BOLT's code (`../bolt/bolt.md` §11).
 
+## Summary
+
+| | |
+|---|---|
+| Output | HDMI audio, 48 kHz, 32-bit stereo, from a looping buffer in DRAM |
+| Started by | BOLT's boot splash, if `flash0.splash` holds a `pcm0`; HDMI N/CTS must then be set by hand |
+| Ring buffer 0 | `0xf0ca0800` read pointer, `+4` write pointer, `+8` start, `+0xc` end |
+| DMA on/off | `0xf0ca00c0` = `1` / `0` |
+| HDMI N/CTS (1080p59.94) | `0xf06fa0c8` = `0x040016c0`, `0xf06fa0cc` = `0xf06fa0d0` = `0x00022551` |
+| Do not write | `0xf06fa828`, `0xf06fa884/888/898`: they break the picture |
+| State after `go -64` | keeps playing |
+| Optical (S/PDIF) | not fused off; the jack lights while audio runs; the signal is not checked |
+| Not tested | setting up the audio block without BOLT's splash |
+
 ## Making sound: the confirmed recipe
 
 1. Put a `pcm0` into the splash container and flash it (`flash0.splash` only):

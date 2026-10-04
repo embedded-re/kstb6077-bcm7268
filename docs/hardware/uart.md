@@ -4,6 +4,17 @@ The BCM7268 has three 16550-compatible UARTs. UART0 is the console; UART1
 and UART2 are working but unused by BOLT. Sources: the original DTB and
 register dumps and a loopback test from BOLT (`../evidence/uart_probe.txt`).
 
+## Summary
+
+| | |
+|---|---|
+| Controllers | UART0 `0xf040c000` (console), UART1 `0xf040d000`, UART2 `0xf040e000` |
+| Type | 16550-compatible, registers 4 bytes apart, 32-byte FIFOs |
+| Clock | 81 MHz; divisor = 81,000,000 / (16 × baud), 44 for 115200 |
+| State after BOLT | UART0: 115200 8N1, polled. UART1/2: reset state, clocked |
+| Tested | UART1 and UART2 set up and loopback-tested from `BOLT>` |
+| Unknown | which pins UART1 and UART2 reach, if any |
+
 ## Instances
 
 | | Base | DTB alias | GIC interrupt | Clock gate bit | Clock mux | Used by BOLT |

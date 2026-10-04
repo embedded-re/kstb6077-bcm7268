@@ -14,6 +14,21 @@ does nothing. A new `splash` partition was added to the modified box
 and keep the display running after `go -64` (tested). Raw captures are in
 `../evidence/display/`.
 
+## Summary
+
+| | |
+|---|---|
+| Output | HDMI, **1920 × 1080 at 59.94 Hz**, set up by BOLT's boot splash |
+| Requirement | a valid `flash0.splash` partition; without it BOLT never sets up the display |
+| Framebuffer | `0x7db0b700`, RGB565, pitch 3840 bytes; pixel(x, y) = `0x7db0b700 + y × 3840 + x × 2` |
+| Surface register | GFD `0xf0641048` (read it instead of hard-coding the address) |
+| Frame counter | `0xf0603484`, one step per frame (16,683 µs) |
+| Page flip | write the buffer address to `0xf0603488` and `0xf060348c`; takes effect at the next frame |
+| Display lists | RDC lists at `0x7db08000–0x7db0b6ff`: **never overwrite**. Running a copy of BOLT's list from free RAM is tested |
+| State after `go -64` | still running |
+| Tested | drawing, timing with and without the MMU, double buffering, our own RDC list, compositor background, window size and position, GFD source width |
+| Not understood | the GFD scaler, part of the compositor registers |
+
 ## Bringing up HDMI from the BOLT prompt
 
 ```

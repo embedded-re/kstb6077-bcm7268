@@ -8,6 +8,16 @@ start them.
 Tested on the modified box on 2026-10-02 with
 `../evidence/smp/psci_cpu_on_probe.s` (output: `psci_cpu_on_output.txt`).
 
+## Summary
+
+| | |
+|---|---|
+| Cores | 4 × Brahma-B53 (MIDR `420f1000`), MPIDR `80000000`–`80000003` |
+| After `go -64` | only core 0 runs |
+| Starting cores 1–3 | PSCI `CPU_ON` (`0xc4000003`) through `smc #0` from EL2; the PSCI monitor `smm64` lives at `0x06400000` |
+| A started core | AArch64 EL2, MMU and caches off, no stack, no vector table; `x0` = 0 (the context id is **not** passed) |
+| Tested | all three cores started and running at once |
+
 ## The PSCI calls (`smc #0` from EL2)
 
 | Call | `x0` | Arguments | Result in `x0` |
@@ -82,7 +92,7 @@ secondary:                            // runs on core 1, EL2, MMU off
         // set sp (own stack!), VBAR_EL2, then work
 ```
 
-## Open
+## Open questions
 
 - Turning a core off again (`CPU_OFF` `0x84000002`, called by that core) and
   restarting it.

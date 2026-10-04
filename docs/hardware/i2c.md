@@ -8,6 +8,16 @@ Tested on the stock box on 2026-10-04, from `go -64` (EL2, MMU off), after a
 power-on and BOLT's splash. HDMI was connected to a TV. Probes and outputs
 are in `../evidence/i2c/`.
 
+## Summary
+
+| | |
+|---|---|
+| Controllers | 5 BSC masters: `0xf040a300`, `0xf0419a80`, `0xf0419b00`, `0xf0419b80`, `0xf040a400` |
+| Devices found | ch0: HDMI DDC (`0x30`, `0x3a`, `0x50`); ch3: `0x67` (Si2168C demodulator per Nexus) |
+| State after BOLT | idle; ch3 clock set by BOLT's splash script; all BSC interrupts masked |
+| Register names | Linux `i2c-brcmstb` |
+| Tested | one-byte reads, a scan of every address on all five channels |
+
 ## Channels
 
 | Ch | Base | L2 interrupt bit | Interrupt name | Bus scan (tested) |
@@ -81,3 +91,10 @@ CTLHI `0xc0` comes from is unknown.
 
 Both BSC L2 controllers have every bit masked after BOLT: `0xf040a640` MASK
 = `7`, `0xf0419c40` MASK = `f`.
+
+## Open questions
+
+- Whether ch1 and ch4 time out because they aren't wired or because their
+  pins aren't muxed.
+- Where ch0's CTLHI `0xc0` comes from.
+- Whether the channel ↔ L2 bit pairing (from Nexus) is right.

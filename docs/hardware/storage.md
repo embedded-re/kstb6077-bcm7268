@@ -5,6 +5,16 @@ The box has one storage device: the eMMC on SDHCI 1 (`0xf0200200`; Linux
 **no SD card slot** on the case, although SDHCI 0 (`0xf0200000`) is enabled
 in the DTB and Linux registers it as `mmc0`.
 
+## Summary
+
+| | |
+|---|---|
+| eMMC | 7.28 GiB on SDHCI 1 (`0xf0200200`), 8-bit, 50 MHz |
+| SDHCI 0 | `0xf0200000`, removable-slot type, no card, no slot on the case |
+| From bare metal | no eMMC driver yet; BOLT copies data into RAM before `go` (~15 MB/s) |
+| Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header (`tools/make-wad-image`) |
+| Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT |
+
 ## The two SDHCI controllers (tested)
 
 Read on the stock box on 2026-10-04 at `BOLT>` after a power-on

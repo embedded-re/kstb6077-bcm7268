@@ -239,6 +239,8 @@ the box is CEC device type 4 (playback).
 
 With a valid `splash` partition, BOLT itself drives HDMI during a normal boot:
 `SPLASH BMEM init @ 7defffff`, `Loaded BMP: W=1920 H=1080`. The modified box
-prints `bad file 'flash0.splash'` because that partition was repurposed.
+printed `bad file 'flash0.splash'` while that partition was repurposed by the
+Linux port; since the `splash` partition was re-added it shows the splash too
+(`hardware/display.md`).
 The same display can be brought up by hand from the prompt with any BMP, and
 it keeps running after `go -64`. See `hardware/display.md`.
