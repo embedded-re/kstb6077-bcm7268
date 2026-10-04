@@ -1,0 +1,684 @@
+<title>BCM7268 SoC Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Page chrome follows the viewer's theme. The board itself is a fixed PCB look. */
+:root {
+  --bg: #eef1f4; --paper: #f9fafb; --ink: #16202a; --muted: #5a6876; --faint: #8a97a3;
+  --line: #c8d1d9; --focus: #1d5fd1;
+  --tested: #2f7d4a; --source: #6a5a9e; --inferred: #8a6d1d; --unknown: #8a97a3;
+  --shadow: 0 1px 2px rgba(22,32,42,.06), 0 4px 16px rgba(22,32,42,.06);
+
+  /* board (same in both themes) */
+  --pcb: #0d3a2b; --pcb-dot: #15523d; --silk: #eef4ef; --silk-dim: #9fc4b1;
+  --pkg: #15191b; --pkg-edge: #3c454a; --pin: #8c939a;
+  --grp: #20272b; --grp-edge: #36424a;
+  --nd: #2c353b; --nd-edge: #5a6973; --nd-text: #eaf0f3; --nd-sub: #a8b7c0; --nd-bus: #7f949f;
+  --copper: #c9924a; --sel: #8fd3ff; --offboard: #071c15;
+  --b-ext: #f1ecdc;
+  --b-reg: #b9c7d2; --b-irq: #f2a43c; --b-data: #47cdd8; --b-stream: #86acff; --b-pwr: #ff7f70;
+  --b-source: #b9a6f2; --b-inferred: #e3c45e; --b-unknown: #6f7d86;
+  --fb: #213a3d;
+
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cond: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", var(--sans);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e1317; --paper: #141b21; --ink: #dce4eb; --muted: #93a1ad; --faint: #66737f;
+    --line: #2a3640; --focus: #6aa0ff;
+    --tested: #5cc27f; --source: #a996e0; --inferred: #d2b257; --unknown: #6b7884;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1317; --paper: #141b21; --ink: #dce4eb; --muted: #93a1ad; --faint: #66737f;
+  --line: #2a3640; --focus: #6aa0ff;
+  --tested: #5cc27f; --source: #a996e0; --inferred: #d2b257; --unknown: #6b7884;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--sans); padding-inline: 16px; padding-block: 12px; }
+.wrap { display: grid; gap: 10px; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.layers { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  border-radius: 999px; padding: 5px 11px 5px 9px; font: 500 12.5px/1 var(--sans);
+}
+.chip .sw { width: 18px; height: 4px; border-radius: 2px; }
+.chip[aria-pressed="false"] { color: var(--faint); background: transparent; }
+.chip[aria-pressed="false"] .sw { opacity: .3; }
+.chip:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.lookup { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.lookup label { font: 500 12px/1 var(--sans); color: var(--muted); }
+.lookup input { font: 500 13px/1 var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; width: 15ch; }
+.ex { font: 400 11.5px/1 var(--mono); color: var(--muted); background: none; border: 1px dashed var(--line); border-radius: 4px; padding: 4px 6px; cursor: pointer; }
+.ex:hover { color: var(--ink); }
+.result { font: 400 12.5px/1.45 var(--sans); color: var(--muted); flex-basis: 100%; min-height: 1.45em; }
+.result b { color: var(--ink); font-weight: 600; }
+.result code { font-family: var(--mono); }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 12px; align-items: start; }
+@media (max-width: 980px) { .main { grid-template-columns: 1fr; } }
+.mapbox { position: relative; background: var(--offboard); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; height: calc(100vh - 92px); min-height: 480px; }
+.mapbox svg { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; user-select: none; }
+.mapbox svg.panning { cursor: grabbing; }
+.zoom { position: absolute; right: 10px; top: 10px; display: grid; gap: 4px; }
+.zoom button { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #2f5a49; background: #0a2e22; color: var(--silk); font: 500 16px/1 var(--mono); cursor: pointer; }
+.zoom button.fit { font-size: 11px; }
+.legend { position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px 14px; background: rgba(6, 30, 22, .86); border: 1px solid #2f5a49; border-radius: 6px; padding: 6px 10px; font: 400 11px/1.3 var(--sans); color: var(--silk-dim); max-width: calc(100% - 70px); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend svg { width: 26px; height: 10px; cursor: default; }
+
+aside { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 16px 18px; max-height: calc(100vh - 92px); overflow: auto; }
+@media (max-width: 980px) { aside { max-height: none; } }
+.eyebrow { font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+aside h2 { margin: 6px 0 2px; font: 600 21px/1.2 var(--cond); }
+aside h3 { margin: 18px 0 6px; font: 600 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+aside p { margin: 6px 0; }
+.addr { font: 500 13px/1.5 var(--mono); color: var(--ink); }
+.addr span { color: var(--muted); font-weight: 400; }
+.status { display: inline-block; font: 500 10.5px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; border: 1px solid currentColor; margin-top: 8px; }
+.st-tested { color: var(--tested); }
+.st-dtb, .st-nexus, .st-bolt { color: var(--source); }
+.st-inferred { color: var(--inferred); }
+.st-unknown, .st-seen { color: var(--unknown); }
+table.regs { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.regs td { padding: 5px 6px 5px 0; border-top: 1px solid var(--line); vertical-align: top; }
+table.regs td:first-child { font-family: var(--mono); font-size: 11.5px; white-space: nowrap; }
+table.regs td:nth-child(3) { color: var(--muted); }
+ul.conn { list-style: none; margin: 0; padding: 0; }
+ul.conn li { display: grid; grid-template-columns: 14px 1fr; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+ul.conn .bar { width: 4px; border-radius: 2px; justify-self: center; }
+ul.conn button, .unklist button { all: unset; cursor: pointer; font-weight: 600; color: var(--ink); }
+ul.conn button:hover, .unklist button:hover { text-decoration: underline; }
+ul.conn button:focus-visible, .unklist button:focus-visible { outline: 2px solid var(--focus); }
+ul.conn .lbl { color: var(--muted); }
+ul.conn .src { font: 400 10.5px/1 var(--mono); color: var(--faint); margin-left: 4px; }
+.note { color: var(--muted); font-size: 13px; border-left: 2px solid var(--line); padding-left: 10px; }
+a.doc { display: inline-block; margin-top: 14px; color: var(--focus); font-weight: 500; text-decoration: none; }
+a.doc:hover { text-decoration: underline; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
+.stats div { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.stats b { display: block; font: 600 20px/1.1 var(--cond); font-variant-numeric: tabular-nums; }
+.stats span { font-size: 11.5px; color: var(--muted); }
+.unklist { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+
+/* ---- board ---- */
+.pkg { fill: var(--pkg); stroke: var(--pkg-edge); stroke-width: 1.5; }
+.pkgpin { fill: var(--pin); opacity: .55; }
+.pkg.back { fill: #12171a; stroke: var(--silk-dim); stroke-dasharray: 10 6; stroke-width: 2; }
+.pin1 { fill: var(--silk); opacity: .8; }
+.silk { font: 600 15px var(--cond); letter-spacing: .12em; fill: var(--silk); }
+.silk-s { font: 500 11px var(--mono); fill: var(--silk-dim); }
+.grp { fill: var(--grp); stroke: var(--grp-edge); stroke-width: 1; }
+.grp.offchip { fill: #1b2125; }
+.glabel { font: 600 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; fill: var(--silk-dim); }
+.trace { stroke: var(--copper); stroke-width: 2.2; fill: none; }
+.tracelbl { font: 500 10.5px var(--mono); fill: var(--copper); }
+
+.spine { fill: var(--b-reg); opacity: .12; }
+.spineline { stroke: var(--b-reg); stroke-width: 2; opacity: .5; fill: none; }
+.spinelabel { font: 500 11.5px var(--mono); fill: var(--b-reg); }
+.off-reg .spine, .off-reg .spineline { opacity: .1; }
+.off-reg .spinelabel { opacity: .35; }
+
+.bus { stroke: var(--b-irq); stroke-width: 2; fill: none; opacity: .45; }
+.buslbl { font: 500 11px var(--mono); fill: var(--b-irq); opacity: .85; }
+.irqpath { stroke: var(--b-irq); stroke-width: 3; fill: none; stroke-linejoin: round; }
+.dimbus .bus { opacity: .14; }
+
+.node rect.box { fill: var(--nd); stroke: var(--nd-edge); stroke-width: 1; }
+.node.s-dtb rect.box, .node.s-nexus rect.box, .node.s-bolt rect.box { stroke: var(--b-source); stroke-dasharray: 1.5 2.5; }
+.node.s-inferred rect.box { stroke: var(--b-inferred); stroke-dasharray: 5 3; }
+.node.s-unknown rect.box { stroke: var(--b-unknown); stroke-dasharray: 3 3; fill: transparent; }
+.node.fbregion rect.box { fill: var(--fb); }
+.node .t { font: 600 13px var(--cond); fill: var(--nd-text); }
+.node .a { font: 500 10.5px var(--mono); fill: var(--nd-sub); }
+.node .b { font: 400 10px var(--mono); fill: var(--nd-bus); }
+.node .badge rect { fill: var(--b-irq); }
+.node .badge text { font: 600 10px var(--mono); fill: #20160a; }
+.off-irq .node .badge { display: none; }
+.node { cursor: pointer; }
+.node:hover rect.box { stroke: var(--sel); stroke-width: 1.6; }
+.node.sel rect.box, .node.hit rect.box { stroke: var(--sel); stroke-width: 2.6; stroke-dasharray: none; }
+.node.dim { opacity: .3; }
+.node:focus { outline: none; }
+.node:focus-visible rect.box { stroke: var(--sel); stroke-width: 2.6; }
+
+.edge { fill: none; stroke-width: 1.6; opacity: .6; }
+.edge.s-dtb, .edge.s-nexus, .edge.s-bolt { stroke-dasharray: 1.5 3.5; }
+.edge.s-inferred { stroke-dasharray: 6 4; }
+.edge.l-reg { stroke: var(--b-reg); }
+.edge.l-irq { stroke: var(--b-irq); }
+.edge.l-data { stroke: var(--b-data); stroke-width: 2; }
+.edge.l-stream { stroke: var(--b-stream); stroke-width: 2.2; }
+.edge.l-pwr { stroke: var(--b-pwr); }
+.edge.l-ext { stroke: var(--b-ext); stroke-width: 2; }
+.boardrect { fill: var(--pcb); stroke: #1f6a50; stroke-width: 2; }
+.hole { fill: var(--offboard); stroke: #c9b37a; stroke-width: 6; opacity: .85; }
+.edgelbl { font: 600 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--silk-dim); opacity: .7; }
+.node.k-conn rect.box { fill: #3a4247; stroke: #a9b3ba; }
+.node.k-chip rect.box { fill: #15191b; stroke: #5a6973; }
+.node.k-led rect.box, .node.k-button rect.box { fill: #1f2a2e; stroke: #8fa6b0; }
+.node.s-seen rect.box { stroke-dasharray: 4 3; }
+.node .where { font: 400 10px var(--mono); fill: var(--silk-dim); }
+.edge.dim { opacity: .08; }
+.edge.on { opacity: 1; stroke-width: 2.6; }
+.elabel rect { fill: #0a2219; stroke-width: 1; }
+.elabel text { font: 500 10.5px var(--mono); fill: var(--silk); }
+.pix { font: 600 11px var(--mono); fill: var(--sel); }
+@media (prefers-reduced-motion: no-preference) { .edge, .node { transition: opacity .15s ease; } }
+</style>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div class="layers" id="layers" role="group" aria-label="Connection layers"></div>
+    <div class="lookup">
+      <label for="addr">Address</label>
+      <input id="addr" type="text" autocomplete="off" spellcheck="false" placeholder="0xf0641048">
+      <button class="ex" type="button" data-a="0xf0641048">0xf0641048</button>
+      <button class="ex" type="button" data-a="0x7dc00000">0x7dc00000</button>
+      <button class="ex" type="button" data-a="0x2040c000">0x2040c000</button>
+      <button class="ex" type="button" data-a="0xf041002c">0xf041002c</button>
+    </div>
+    <div class="result" id="result" aria-live="polite"></div>
+  </div>
+  <div class="main">
+    <div class="mapbox">
+      <svg id="map" role="img" aria-label="Board diagram: the KSTB6077 PCB with the BCM7268 SoC, its blocks and buses, the LPDDR4 chip and the parts on the board"></svg>
+      <div class="zoom">
+        <button type="button" id="zin" aria-label="Zoom in">+</button>
+        <button type="button" id="zout" aria-label="Zoom out">−</button>
+        <button type="button" id="zfit" class="fit" aria-label="Fit to view">fit</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside id="panel" aria-live="polite"></aside>
+  </div>
+</div>
+
+<script src="soc-data.js"></script>
+<script src="reg-index.js"></script>
+<script>
+(function () {
+  "use strict";
+  var M = window.KSTB_MAP;
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("map"), panel = document.getElementById("panel");
+  var BOARD = { reg: "--b-reg", irq: "--b-irq", data: "--b-data", stream: "--b-stream", pwr: "--b-pwr", ext: "--b-ext" };
+  var STATUS_TEXT = { tested: "tested on the board", dtb: "from the device tree", nexus: "from the Nexus driver", bolt: "from BOLT's code", inferred: "inferred", unknown: "unknown", seen: "seen on the PCB" };
+  var VB_FULL = { x: -410, y: -350, w: 2540, h: 1740 };
+  var BUS_LO = parseInt(M.bus.lo, 16), BUS_HI = parseInt(M.bus.hi, 16), BUS_OFF = parseInt(M.bus.offset, 16);
+
+  function el(name, attrs, parent) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function txt(parent, attrs, s) { var t = el("text", attrs, parent); t.textContent = s; return t; }
+  function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]; }); }
+  function hex(n) { return "0x" + (n >>> 0).toString(16).padStart(8, "0"); }
+  function toBus(a) { return (a >= BUS_LO && a <= BUS_HI) ? (a - BUS_OFF) >>> 0 : null; }
+  function docHref(doc) {
+    var base = location.protocol === "file:" ? new URL(M.doc_base_local, location.href).href : M.doc_base_web;
+    try { return new URL(doc, base).href; } catch (e) { return base + doc; }
+  }
+
+  // ---------- geometry ----------
+  var groups = {}, nodes = {};
+  M.groups.forEach(function (g) { groups[g.id] = g; g.items = []; });
+  M.nodes.forEach(function (n) {
+    nodes[n.id] = n; groups[n.g].items.push(n);
+    if (n.range) { n.lo = parseInt(n.range[0], 16); n.hi = parseInt(n.range[1], 16); n.bus = toBus(n.lo); n.busHi = toBus(n.hi); }
+    n.subs = (n.more || []).map(function (m) { return { lo: parseInt(m[0], 16), hi: parseInt(m[1], 16), label: m[2] }; });
+  });
+  M.groups.forEach(function (g) {
+    g.items = g.items.filter(function (n) { return n.x == null; });
+    var padT = 28, padS = 12, padB = 12, gap = 8, cols = g.cols;
+    var cells = g.items.reduce(function (a, n) { return a + (n.span || 1); }, 0);
+    var rows = Math.max(1, Math.ceil(cells / cols));
+    var cw = (g.w - padS * 2 - gap * (cols - 1)) / cols, availH = g.h - padT - padB;
+    var ch = Math.min(g.items.length === 1 ? availH : 58, (availH - gap * (rows - 1)) / rows);
+    var used = rows * ch + gap * (rows - 1), y0 = g.y + padT + Math.max(0, (availH - used) / 2);
+    var c = 0, r = 0;
+    g.items.forEach(function (n) {
+      var span = Math.min(n.span || 1, cols);
+      if (c + span > cols) { c = 0; r++; }
+      n.x = g.x + padS + c * (cw + gap); n.y = y0 + r * (ch + gap); n.w = cw * span + gap * (span - 1); n.h = ch;
+      c += span; if (c >= cols) { c = 0; r++; }
+    });
+  });
+  function box(id) { if (nodes[id]) return nodes[id]; var g = groups[id]; return { x: g.x, y: g.y, w: g.w, h: g.h }; }
+  function nameOf(id) { return nodes[id] ? nodes[id].label : groups[id].label; }
+
+  // edges: interrupts into the GIC ride the interrupt bus; the rest are drawn as curves
+  var edges = M.edges.map(function (e, i) { return { i: i, from: e[0], to: e[1], layer: e[2], label: e[3], status: e[4], badge: e[5] }; });
+  edges.forEach(function (e) { e.bus = e.layer === "irq" && e.to === "gic"; e.trace = e.from === "memc" && e.to === "dram"; if (e.bus) nodes[e.from].badge = e.badge; });
+  var curves = edges.filter(function (e) { return !e.bus && !e.trace; });
+
+  function side(a, b) {
+    var dx = (b.x + b.w / 2) - (a.x + a.w / 2), dy = (b.y + b.h / 2) - (a.y + a.h / 2);
+    if (Math.abs(dx) * (a.h / a.w) * 1.4 > Math.abs(dy)) return dx > 0 ? "r" : "l";
+    return dy > 0 ? "b" : "t";
+  }
+  var slots = {};
+  curves.forEach(function (e) {
+    var a = box(e.from), b = box(e.to);
+    e.sa = side(a, b); e.sb = side(b, a);
+    (slots[e.from + "|" + e.sa] = slots[e.from + "|" + e.sa] || []).push({ e: e, end: "a", other: b });
+    (slots[e.to + "|" + e.sb] = slots[e.to + "|" + e.sb] || []).push({ e: e, end: "b", other: a });
+  });
+  Object.keys(slots).forEach(function (k) {
+    var list = slots[k], s = k.slice(-1), horiz = s === "t" || s === "b";
+    list.sort(function (p, q) { return horiz ? (p.other.x + p.other.w / 2) - (q.other.x + q.other.w / 2) : (p.other.y + p.other.h / 2) - (q.other.y + q.other.h / 2); });
+    list.forEach(function (it, idx) {
+      var bx = box(it.end === "a" ? it.e.from : it.e.to), f = (idx + 1) / (list.length + 1), p;
+      if (s === "t") p = [bx.x + bx.w * f, bx.y]; else if (s === "b") p = [bx.x + bx.w * f, bx.y + bx.h];
+      else if (s === "l") p = [bx.x, bx.y + bx.h * f]; else p = [bx.x + bx.w, bx.y + bx.h * f];
+      it.e[it.end === "a" ? "pa" : "pb"] = p;
+    });
+  });
+  function ctrl(p, s, d) { return s === "t" ? [p[0], p[1] - d] : s === "b" ? [p[0], p[1] + d] : s === "l" ? [p[0] - d, p[1]] : [p[0] + d, p[1]]; }
+  curves.forEach(function (e) {
+    var dist = Math.hypot(e.pb[0] - e.pa[0], e.pb[1] - e.pa[1]), d = Math.min(150, Math.max(24, dist * 0.4));
+    var c1 = ctrl(e.pa, e.sa, d), c2 = ctrl(e.pb, e.sb, d);
+    e.d = "M" + e.pa.join(",") + " C" + c1.join(",") + " " + c2.join(",") + " " + e.pb.join(",");
+    e.mid = [0, 1].map(function (k) { return .125 * e.pa[k] + .375 * c1[k] + .375 * c2[k] + .125 * e.pb[k]; });
+    if (dist < 100) { var A = box(e.from), B = box(e.to); e.mid[1] = Math.min(A.y, B.y) - 9 - (e.i % 2) * 15; }
+  });
+
+  // interrupt bus route for a block: block -> group gutter -> rail -> riser -> trunk -> GIC
+  var IB = M.irqbus, gicNode = nodes.gic;
+  function tapX(g) { return g.x + g.w - 5; }
+  function irqRoute(n) {
+    var g = groups[n.g], x = tapX(g), my = n.y + n.h / 2, pts = [[n.x + n.w, my], [x, my]];
+    if (g.rail < g.y) {
+      pts.push([x, g.rail]);
+      if (g.rail !== IB.trunk) {
+        var best = null;
+        IB.risers.forEach(function (r) { if (r[1] >= g.rail && (!best || Math.abs(r[0] - x) < Math.abs(best[0] - x))) best = r; });
+        pts.push([best[0], g.rail], [best[0], IB.trunk]);
+      }
+    } else {
+      pts.push([x, IB.trunk]);
+    }
+    pts.push([IB.gic_x, IB.trunk], [IB.gic_x, gicNode.y + gicNode.h]);
+    return pts;
+  }
+
+  // ---------- draw: board ----------
+  var defs = el("defs", {}, svg);
+  var pat = el("pattern", { id: "dots", width: "16", height: "16", patternUnits: "userSpaceOnUse" }, defs);
+  el("circle", { cx: "2", cy: "2", r: "1", style: "fill: var(--pcb-dot)" }, pat);
+  Object.keys(BOARD).forEach(function (l) {
+    var m = el("marker", { id: "ah-" + l, viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "6.5", markerHeight: "6.5", orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M0,1 L10,5 L0,9 z", style: "fill: var(" + BOARD[l] + ")" }, m);
+  });
+  var root = el("g", {}, svg);
+  var B = M.board;
+  el("rect", { x: B.x, y: B.y, width: B.w, height: B.h, rx: 34, "class": "boardrect" }, root);
+  el("rect", { x: B.x, y: B.y, width: B.w, height: B.h, rx: 34, fill: "url(#dots)" }, root);
+  B.holes.forEach(function (c) { el("circle", { cx: c[0], cy: c[1], r: 22, "class": "hole" }, root); });
+  B.edges.forEach(function (e) { txt(root, { x: e[1], y: e[2], "text-anchor": "middle", "class": "edgelbl" }, e[0]); });
+  txt(root, { x: B.x + 70, y: B.y + B.h - 24, "class": "silk" }, B.silk);
+
+  M.packages.forEach(function (p) {
+    el("rect", { x: p.x, y: p.y, width: p.w, height: p.h, rx: 10, "class": "pkg" + (p.back ? " back" : "") }, root);
+    for (var x = p.x + 30; x < p.x + p.w - 20; x += 26) {
+      el("rect", { x: x, y: p.y - 5, width: 10, height: 5, "class": "pkgpin" }, root);
+      el("rect", { x: x, y: p.y + p.h, width: 10, height: 5, "class": "pkgpin" }, root);
+    }
+    el("circle", { cx: p.x + 14, cy: p.y + 14, r: 4, "class": "pin1" }, root);
+  });
+  var soc = M.packages[0], ddr = M.packages[1];
+  txt(root, { x: soc.x + 26, y: soc.y + 20, "class": "silk" }, soc.label);
+  txt(root, { x: soc.x + 40 + soc.label.length * 10.5, y: soc.y + 20, "class": "silk-s" }, soc.sub);
+  txt(root, { x: ddr.x + 26, y: ddr.y + 20, "class": "silk" }, ddr.label);
+  txt(root, { x: ddr.x + 16, y: ddr.y + 44, "class": "silk-s" }, ddr.sub);
+
+  // copper traces: DDR PHY -> LPDDR4
+  var gTrace = el("g", {}, root), phy = nodes.ddrphy, dram = groups.dram;
+  for (var k = 0; k < 8; k++) {
+    var ty = phy.y + 8 + k * ((phy.h - 16) / 7);
+    el("path", { d: "M" + (phy.x + phy.w) + "," + ty + " H" + (dram.x + 8), "class": "trace" }, gTrace);
+  }
+  txt(gTrace, { x: soc.x + soc.w + 4, y: phy.y - 6, "class": "tracelbl" }, "×32");
+  txt(gTrace, { x: phy.x + phy.w + 6, y: phy.y + phy.h + 14, "class": "tracelbl" }, "1856 MHz");
+
+  // GISB spine
+  var sp = M.spine, gSpine = el("g", {}, root);
+  el("rect", { x: sp.x1, y: sp.y - sp.h / 2, width: sp.x2 - sp.x1, height: sp.h, rx: 4, "class": "spine" }, gSpine);
+  el("path", { d: "M" + sp.x1 + "," + sp.y + " H" + sp.x2, "class": "spineline" }, gSpine);
+  sp.drops.forEach(function (d) { el("path", { d: "M" + d[0] + "," + d[1] + " V" + d[2], "class": "spineline" }, gSpine); });
+  M.groups.forEach(function (g) {
+    if (sp.groups.indexOf(g.id) < 0) return;
+    var cx = g.x + g.w / 2;
+    if (g.y > sp.y) el("path", { d: "M" + cx + "," + (sp.y + sp.h / 2) + " V" + g.y, "class": "spineline" }, gSpine);
+    else el("path", { d: "M" + cx + "," + (g.y + g.h) + " V" + (sp.y - sp.h / 2), "class": "spineline" }, gSpine);
+  });
+  txt(gSpine, { x: sp.x1 + 12, y: sp.y + 4, "class": "spinelabel" }, sp.label);
+
+  // groups
+  M.groups.forEach(function (g) {
+    if (g.hidden) return;
+    el("rect", { x: g.x, y: g.y, width: g.w, height: g.h, rx: 7, "class": "grp" + (g.offchip ? " offchip" : "") }, root);
+    txt(root, { x: g.x + 12, y: g.y + 18, "class": "glabel" }, g.label);
+  });
+
+  // interrupt bus (static)
+  var gBus = el("g", {}, root);
+  IB.rails.forEach(function (y) { el("path", { d: "M" + IB.x1 + "," + y + " H" + IB.x2, "class": "bus" }, gBus); });
+  IB.risers.forEach(function (r) { el("path", { d: "M" + r[0] + "," + IB.trunk + " V" + r[1], "class": "bus" }, gBus); });
+  el("path", { d: "M" + IB.gic_x + "," + IB.trunk + " V" + (gicNode.y + gicNode.h), "class": "bus" }, gBus);
+  var tapped = {};
+  M.nodes.forEach(function (n) { if (n.badge) tapped[n.g] = 1; });
+  Object.keys(tapped).forEach(function (gid) {
+    var g = groups[gid], x = tapX(g);
+    el("path", { d: g.rail < g.y ? "M" + x + "," + g.rail + " V" + g.y : "M" + x + "," + (g.y + g.h) + " V" + g.rail, "class": "bus" }, gBus);
+  });
+  txt(gBus, { x: IB.x2 - 6, y: IB.trunk - 4, "text-anchor": "end", "class": "buslbl" }, "interrupt bus → GIC");
+
+  // curves
+  var gEdges = el("g", {}, root);
+  curves.forEach(function (e) {
+    e.el = el("path", { d: e.d, "class": "edge l-" + e.layer + " s-" + e.status, "marker-end": "url(#ah-" + e.layer + ")" }, gEdges);
+    var t = el("title", {}, e.el); t.textContent = nameOf(e.from) + " → " + nameOf(e.to) + ": " + e.label;
+  });
+
+  // nodes
+  var gNodes = el("g", {}, root);
+  M.nodes.forEach(function (n) {
+    var g = el("g", { "class": "node s-" + n.status + (n.fb ? " fbregion" : "") + (n.kind ? " k-" + n.kind : ""), tabindex: "0", role: "button", "aria-label": n.label + (n.sub ? ", " + n.sub : "") }, gNodes);
+    el("rect", { x: n.x, y: n.y, width: n.w, height: n.h, rx: 4, "class": "box" }, g);
+    var lines = n.h >= 50 ? 3 : n.h >= 36 ? 2 : 1, top = n.y + n.h / 2 - (lines - 1) * 6.5;
+    txt(g, { x: n.x + 8, y: top + 4, "class": "t" }, n.label);
+    if (lines >= 2) txt(g, { x: n.x + 8, y: top + 17, "class": "a" }, n.range ? n.range[0] : (n.sub || ""));
+    if (lines >= 3) {
+      var third = n.bus != null ? "bus " + hex(n.bus) : (n.range && n.sub ? n.sub.replace(/^0x[0-9a-f]+\s*·?\s*/i, "") : "");
+      if (third) txt(g, { x: n.x + 8, y: top + 30, "class": "b" }, third);
+    }
+    if (n.led) n.led.forEach(function (c, i) { el("circle", { cx: n.x + n.w - 14 - i * 16, cy: n.y + 14, r: 5.5, style: "fill:" + c }, g); });
+    if (n.badge) {
+      var bw = n.badge.length * 6.1 + 10, bg = el("g", { "class": "badge" }, g);
+      el("rect", { x: n.x + n.w - bw - 6, y: n.y + 6, width: bw, height: 14, rx: 7 }, bg);
+      txt(bg, { x: n.x + n.w - 6 - bw / 2, y: n.y + 16.5, "text-anchor": "middle" }, n.badge);
+    }
+    var tt = el("title", {}, g); tt.textContent = n.label + (n.sub ? " · " + n.sub : "");
+    n.el = g;
+    g.addEventListener("click", function (ev) { ev.stopPropagation(); select(n.id); });
+    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); select(n.id); } });
+    g.addEventListener("mouseenter", function () { if (!selected) focusOn(n.id, false); });
+    g.addEventListener("mouseleave", function () { if (!selected) focusOn(null); });
+  });
+  var gHi = el("g", {}, root), gMark = el("g", {}, root);
+
+  // ---------- layers ----------
+  var layerOn = {}, saved = null;
+  try { saved = JSON.parse(store("kstb-map-layers-v3") || "null"); } catch (e) { saved = null; }
+  var layersEl = document.getElementById("layers");
+  M.layers.forEach(function (l) {
+    layerOn[l.id] = saved && l.id in saved ? !!saved[l.id] : (l.id === "irq" || l.id === "ext");
+    var b = h("button", "chip"); b.type = "button"; b.title = l.hint; b.setAttribute("aria-pressed", String(layerOn[l.id]));
+    var sw = h("span", "sw"); sw.style.background = "var(" + BOARD[l.id] + ")"; sw.style.outline = "1px solid rgba(0,0,0,.25)";
+    b.appendChild(sw); b.appendChild(h("span", null, l.label));
+    b.addEventListener("click", function () {
+      layerOn[l.id] = !layerOn[l.id]; b.setAttribute("aria-pressed", String(layerOn[l.id]));
+      store("kstb-map-layers-v3", JSON.stringify(layerOn)); applyLayers(); refresh();
+    });
+    layersEl.appendChild(b);
+  });
+  function applyLayers() {
+    curves.forEach(function (e) { e.el.style.display = layerOn[e.layer] ? "" : "none"; });
+    gBus.style.display = layerOn.irq ? "" : "none";
+    gTrace.style.opacity = layerOn.data ? 1 : .55;
+    svg.classList.toggle("off-reg", !layerOn.reg);
+    svg.classList.toggle("off-irq", !layerOn.irq);
+  }
+  applyLayers();
+
+  var lg = document.getElementById("legend");
+  [["", "tested"], ["1.5 3.5", "named by a source, not tested"], ["6 4", "inferred"]].forEach(function (s) {
+    var sp2 = h("span"), sv = document.createElementNS(NS, "svg"); sv.setAttribute("viewBox", "0 0 26 10");
+    el("path", { d: "M1,5 H25", style: "stroke: var(--silk-dim); stroke-width: 1.8", "stroke-dasharray": s[0] }, sv);
+    sp2.appendChild(sv); sp2.appendChild(document.createTextNode(s[1])); lg.appendChild(sp2);
+  });
+  var bsp = h("span"), bsv = document.createElementNS(NS, "svg"); bsv.setAttribute("viewBox", "0 0 26 10");
+  el("rect", { x: 1, y: 1, width: 24, height: 8, rx: 4, style: "fill: var(--b-irq)" }, bsv);
+  bsp.appendChild(bsv); bsp.appendChild(document.createTextNode("GIC interrupt ID")); lg.appendChild(bsp);
+
+  // ---------- focus / selection ----------
+  var selected = null, focusId = null, focusLabels = true;
+  function drawRoute(n, labels) {
+    var pts = irqRoute(n);
+    el("path", { d: "M" + pts.map(function (p) { return p.join(","); }).join(" L"), "class": "irqpath" }, gHi);
+    if (labels) label(pts[2][0] - 4, pts[2][1] - 9, "ID " + n.badge, "--b-irq", "end");
+  }
+  function label(x, y, s, color, anchor) {
+    var g = el("g", { "class": "elabel" }, gHi), w = s.length * 6.4 + 12;
+    var x0 = anchor === "end" ? x - w : x - w / 2;
+    var r = el("rect", { x: x0, y: y - 8, width: w, height: 16, rx: 3 }, g); r.style.stroke = "var(" + color + ")";
+    txt(g, { x: x0 + w / 2, y: y + 3.6, "text-anchor": "middle" }, s);
+  }
+  function focusOn(id, labels) {
+    focusId = id; focusLabels = labels !== false;
+    while (gHi.firstChild) gHi.removeChild(gHi.firstChild);
+    svg.classList.toggle("dimbus", !!id);
+    if (!id) {
+      curves.forEach(function (e) { e.el.classList.remove("dim", "on"); });
+      M.nodes.forEach(function (n) { n.el.classList.remove("dim"); });
+      return;
+    }
+    var keep = {}; keep[id] = 1;
+    curves.forEach(function (e) {
+      var on = layerOn[e.layer] && (e.from === id || e.to === id);
+      e.el.classList.toggle("on", on); e.el.classList.toggle("dim", !on);
+      if (on) { keep[e.from] = 1; keep[e.to] = 1; if (focusLabels) label(e.mid[0], e.mid[1], e.label, BOARD[e.layer]); }
+    });
+    if (layerOn.irq) {
+      if (id === "gic") M.nodes.forEach(function (n) { if (n.badge) { drawRoute(n, false); keep[n.id] = 1; } });
+      else if (nodes[id] && nodes[id].badge) { drawRoute(nodes[id], focusLabels); keep.gic = 1; }
+    }
+    if (keep.dram) M.nodes.forEach(function (n) { if (n.g === "dram") keep[n.id] = 1; });
+    M.nodes.forEach(function (n) { n.el.classList.toggle("dim", !keep[n.id]); });
+  }
+  function refresh() { if (focusId) focusOn(focusId, focusLabels); }
+  function select(id, opts) {
+    opts = opts || {};
+    M.nodes.forEach(function (n) { n.el.classList.remove("sel"); if (!opts.keepHit) n.el.classList.remove("hit"); });
+    while (gMark.firstChild) gMark.removeChild(gMark.firstChild);
+    selected = id;
+    if (!id) { focusOn(null); renderOverview(); setHash(""); return; }
+    nodes[id].el.classList.add("sel"); focusOn(id, true); renderNode(nodes[id], opts.hit); setHash(id);
+  }
+  svg.addEventListener("click", function () { if (!dragMoved) select(null); });
+  function setHash(id) { try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {} }
+
+  // ---------- panel ----------
+  function renderOverview() {
+    panel.innerHTML = "";
+    panel.appendChild(h("div", "eyebrow", "KSTB6077 · BCM7268 B0"));
+    panel.appendChild(h("h2", null, "How to read the map"));
+    var blocks = M.nodes.filter(function (n) { return n.g !== "dram" && n.g !== "board"; });
+    var parts = M.nodes.filter(function (n) { return n.g === "board"; }).length;
+    var tested = blocks.filter(function (n) { return n.status === "tested"; }).length;
+    var et = edges.filter(function (e) { return e.status === "tested"; }).length;
+    var st = h("div", "stats");
+    [[blocks.length, "blocks on the SoC"], [parts, "parts on the PCB"], [et + " / " + edges.length, "connections tested"]].forEach(function (s) {
+      var d = h("div"); d.appendChild(h("b", null, String(s[0]))); d.appendChild(h("span", null, s[1])); st.appendChild(d);
+    });
+    panel.appendChild(st);
+    panel.appendChild(h("p", null, "The PCB as seen from above: rear connectors along the top edge, LEDs, IR receiver, SW1 and the UART header along the front. The BCM7268 SoC and the LPDDR4 RAM are joined by 32 data lines; copper lines (Board wiring) lead from SoC blocks to the parts. Inside the SoC, the blocks sit in their address groups. Each block shows its CPU address and its bus address (the address Broadcom's drivers use)."));
+    panel.appendChild(h("p", null, "The GISB register bus (grey) runs across the SoC: the CPU reaches every block's registers over it. The interrupt bus (amber) runs between the rows into the GIC; a block's amber badge is its GIC interrupt ID. Click a block to light up its path."));
+    panel.appendChild(h("h3", null, "Layers"));
+    var cl = h("ul", "conn");
+    M.layers.forEach(function (l) {
+      var li = h("li"), bar = h("span", "bar"); bar.style.background = "var(" + BOARD[l.id] + ")";
+      var t = h("span"); t.appendChild(h("b", null, l.label + " ")); t.appendChild(h("span", "lbl", l.hint));
+      li.appendChild(bar); li.appendChild(t); cl.appendChild(li);
+    });
+    panel.appendChild(cl);
+    panel.appendChild(h("h3", null, "Address unknown"));
+    var uk = h("ul", "unklist");
+    M.nodes.filter(function (n) { return n.status === "unknown"; }).forEach(function (n) {
+      var li = h("li"), b = h("button", null, n.label); b.type = "button"; b.addEventListener("click", function () { select(n.id); });
+      li.appendChild(b); li.appendChild(document.createTextNode(": " + n.after)); uk.appendChild(li);
+    });
+    panel.appendChild(uk);
+    panel.appendChild(h("p", "note", "Tested includes what the stock firmware showed on the board (boot log, /proc/interrupts). Bus address = CPU address − 0xd0000000 for 0xf0000000–0xf12fffff. Data: docs/map/soc-data.js."));
+    var a = h("a", "doc", "Open the manual →"); a.href = docHref("README.md"); a.target = "_blank"; a.rel = "noopener"; panel.appendChild(a);
+  }
+  function renderNode(n, hit) {
+    panel.innerHTML = "";
+    panel.appendChild(h("div", "eyebrow", n.g === "board" ? "On the PCB" : groups[n.g].label));
+    panel.appendChild(h("h2", null, n.label));
+    if (n.range) {
+      var ad = h("div", "addr"); ad.appendChild(h("span", null, "CPU ")); ad.appendChild(document.createTextNode(n.range[0] + " – " + n.range[1])); panel.appendChild(ad);
+      if (n.bus != null) { var bd = h("div", "addr"); bd.appendChild(h("span", null, "bus ")); bd.appendChild(document.createTextNode(hex(n.bus) + " – " + hex(n.busHi))); panel.appendChild(bd); }
+    } else if (n.sub) panel.appendChild(h("div", "addr", n.sub));
+    panel.appendChild(h("span", "status st-" + n.status, STATUS_TEXT[n.status]));
+    if (hit) { var hp = h("p"); hp.innerHTML = hit; panel.appendChild(hp); }
+    if (n.after) { panel.appendChild(h("h3", null, n.g === "dram" ? "Use" : n.g === "board" ? "What is known" : "State after BOLT")); panel.appendChild(h("p", null, n.after)); }
+    if (n.where) { panel.appendChild(h("h3", null, "Where on the board")); panel.appendChild(h("p", null, n.where)); }
+    if (n.regs && n.regs.length) {
+      panel.appendChild(h("h3", null, "Registers"));
+      var t = h("table", "regs"), tb = h("tbody");
+      n.regs.forEach(function (r) { var tr = h("tr"); r.forEach(function (c) { tr.appendChild(h("td", null, c)); }); tb.appendChild(tr); });
+      t.appendChild(tb); panel.appendChild(t);
+    }
+    var es = edges.filter(function (e) { return e.from === n.id || e.to === n.id; });
+    if (es.length) {
+      panel.appendChild(h("h3", null, "Connections"));
+      var ulc = h("ul", "conn");
+      M.layers.forEach(function (l) {
+        es.filter(function (e) { return e.layer === l.id; }).forEach(function (e) {
+          var other = e.from === n.id ? e.to : e.from, out = e.from === n.id;
+          var li = h("li"), bar = h("span", "bar"); bar.style.background = "var(" + BOARD[e.layer] + ")";
+          var body = h("span"); body.appendChild(document.createTextNode(out ? "→ " : "← "));
+          var b = h("button", null, nameOf(other)); b.type = "button";
+          if (nodes[other]) b.addEventListener("click", function () { select(other); });
+          body.appendChild(b); body.appendChild(h("span", "lbl", " · " + e.label));
+          if (e.status !== "tested") body.appendChild(h("span", "src", STATUS_TEXT[e.status]));
+          if (!layerOn[e.layer]) body.appendChild(h("span", "src", "(layer off)"));
+          li.appendChild(bar); li.appendChild(body); ulc.appendChild(li);
+        });
+      });
+      panel.appendChild(ulc);
+    }
+    if (n.note) panel.appendChild(h("p", "note", n.note));
+    if (n.doc) { var a = h("a", "doc", "Open the chapter →"); a.href = docHref(n.doc); a.target = "_blank"; a.rel = "noopener"; panel.appendChild(a); }
+  }
+
+  // ---------- address lookup ----------
+  var res = document.getElementById("result"), inp = document.getElementById("addr");
+  function regFor(n, a) {
+    if (!n.regs) return null;
+    for (var i = 0; i < n.regs.length; i++) {
+      var k = n.regs[i][0];
+      if (/^0x[0-9a-f]+$/i.test(k) && parseInt(k, 16) === a) return n.regs[i];
+      if (/^\+0x[0-9a-f]+$/i.test(k) && n.lo + parseInt(k.slice(1), 16) === a) return n.regs[i];
+    }
+    return null;
+  }
+  function lookup(text) {
+    var s = text.trim().toLowerCase().replace(/_/g, "");
+    if (!s) { res.textContent = ""; M.nodes.forEach(function (n) { n.el.classList.remove("hit"); }); return; }
+    if (!/^(0x)?[0-9a-f]{1,8}$/.test(s)) { res.innerHTML = "Type a hex address, such as <code>0xf040c000</code>."; return; }
+    var a = parseInt(s.replace(/^0x/, ""), 16), pre = "";
+    var bl = (BUS_LO - BUS_OFF) >>> 0, bh = (BUS_HI - BUS_OFF) >>> 0;
+    if (a >= bl && a <= bh) { pre = "Bus address " + hex(a) + " = CPU " + hex(a + BUS_OFF) + ". "; a = (a + BUS_OFF) >>> 0; }
+    var hits = [];
+    M.nodes.forEach(function (n) {
+      if (n.range && a >= n.lo && a <= n.hi) hits.push({ n: n, lo: n.lo, hi: n.hi, sub: null });
+      n.subs.forEach(function (s) { if (a >= s.lo && a <= s.hi) hits.push({ n: n, lo: s.lo, hi: s.hi, sub: s.label }); });
+    });
+    hits.sort(function (p, q) { return (p.hi - p.lo) - (q.hi - q.lo); });
+    var regs = (window.KSTB_REGS || []).filter(function (r) { return a >= r.lo && a <= r.hi; });
+    var SHEET = "hardware/registers.md";
+    regs.sort(function (p, q) { return (q.danger - p.danger) || ((q.doc === SHEET) - (p.doc === SHEET)) || ((p.hi - p.lo) - (q.hi - q.lo)); });
+    var seenDoc = {}, chapters = 0;
+    regs = regs.filter(function (r) {
+      if (r.danger || r.doc === SHEET) return true;
+      if (seenDoc[r.doc] || chapters >= 2) return false;
+      seenDoc[r.doc] = 1; chapters++; return true;
+    });
+    var hole = (M.holes || []).filter(function (x) { return parseInt(x.addr, 16) === a; })[0];
+    M.nodes.forEach(function (n) { n.el.classList.remove("hit"); });
+    function regText() {
+      var out = "";
+      regs.forEach(function (r) {
+        if (r.danger) out += " <b>Do not touch:</b> " + esc(r.desc) + ".";
+        else out += "<br>" + (r.doc === SHEET ? "Register sheet" : esc(r.doc.replace("hardware/", "")) + " (" + esc(r.section) + ")") + ": <b>" + esc(r.name) + "</b>" + (r.desc ? " · " + esc(r.desc) : "");
+      });
+      return out;
+    }
+    if (hole) { res.innerHTML = pre + "<b>" + hex(a) + "</b>: " + esc(hole.note); select(null); return; }
+    if (!hits.length) {
+      var where = a < 0x80000000 ? "It is in RAM but in no region the manual describes." :
+        (a >= BUS_LO && a <= BUS_HI) ? "It is in the peripheral window but in no known block. It may abort: read it with the abort-safe probe, watchdog armed." :
+        "It is outside every known range. Reading it may abort and hang the board.";
+      res.innerHTML = pre + "<b>" + hex(a) + "</b>: not in any known block. " + where + regText();
+      select(null); return;
+    }
+    var H = hits[0], n = H.n;
+    var msg = pre + "<b>" + hex(a) + "</b> is in <b>" + esc(n.label) + "</b>" + (H.sub ? " (" + esc(H.sub) + ")" : "") + ", offset +0x" + (a - H.lo).toString(16) + ".";
+    var bus = toBus(a); if (bus != null && !pre) msg += " Bus address " + hex(bus) + ".";
+    var named = regs.length > 0;
+    msg += regText();
+    var r = !named && regFor(n, a); if (r) msg += " Register: <b>" + esc(r[1] || r[0]) + "</b>" + (r[2] ? " (" + esc(r[2]) + ")" : "") + ".";
+    if (!named && !r && !n.fb && n.g !== "dram") msg += " No register at this address is named in the manual.";
+    var pixel = null;
+    if (n.fb) {
+      var o = a - n.lo, y = Math.floor(o / 3840), x = Math.floor((o % 3840) / 2);
+      if (y < 1080) { msg += "<br>That is pixel <b>(" + x + ", " + y + ")</b> of the 1920 × 1080 screen."; pixel = y; } else msg += " Past the last line of the picture.";
+    }
+    hits = hits.filter(function (q) { return q.n !== n; }).map(function (q) { return q.n; });
+    if (hits.length) msg += " Also inside: " + hits.map(function (q) { return esc(q.label); }).join(", ") + ".";
+    res.innerHTML = msg;
+    select(n.id, { hit: msg, keepHit: true }); n.el.classList.add("hit");
+    if (pixel != null) {
+      var py = n.y + 4 + (n.h - 8) * (pixel / 1080);
+      el("path", { d: "M" + (n.x - 8) + "," + py + " h8", style: "stroke: var(--sel); stroke-width: 2.5" }, gMark);
+      txt(gMark, { x: n.x - 11, y: py + 4, "text-anchor": "end", "class": "pix" }, "y " + pixel);
+    }
+  }
+  inp.addEventListener("input", function () { lookup(inp.value); });
+  document.querySelectorAll(".ex").forEach(function (b) { b.addEventListener("click", function () { inp.value = b.getAttribute("data-a"); lookup(inp.value); }); });
+
+  // ---------- zoom and pan ----------
+  var vb = Object.assign({}, VB_FULL);
+  function applyVB() { svg.setAttribute("viewBox", [vb.x, vb.y, vb.w, vb.h].join(" ")); }
+  function zoomAt(f, cx, cy) { var nw = Math.min(VB_FULL.w * 1.6, Math.max(260, vb.w * f)), k = nw / vb.w; vb.x = cx - (cx - vb.x) * k; vb.y = cy - (cy - vb.y) * k; vb.w = nw; vb.h *= k; applyVB(); }
+  function svgPoint(ev) {
+    var r = svg.getBoundingClientRect(), s = Math.max(vb.w / r.width, vb.h / r.height);
+    return [vb.x - (r.width * s - vb.w) / 2 + (ev.clientX - r.left) * s, vb.y - (r.height * s - vb.h) / 2 + (ev.clientY - r.top) * s, s];
+  }
+  svg.addEventListener("wheel", function (ev) { ev.preventDefault(); var p = svgPoint(ev); zoomAt(ev.deltaY > 0 ? 1.12 : 1 / 1.12, p[0], p[1]); }, { passive: false });
+  var drag = null, dragMoved = false;
+  svg.addEventListener("pointerdown", function (ev) { if (ev.button !== 0) return; drag = { x: ev.clientX, y: ev.clientY, vx: vb.x, vy: vb.y, s: svgPoint(ev)[2] }; dragMoved = false; });
+  window.addEventListener("pointermove", function (ev) {
+    if (!drag) return;
+    var dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+    if (!dragMoved && Math.hypot(dx, dy) < 4) return;
+    if (!dragMoved) { dragMoved = true; svg.classList.add("panning"); }
+    vb.x = drag.vx - dx * drag.s; vb.y = drag.vy - dy * drag.s; applyVB();
+  });
+  window.addEventListener("pointerup", function () { if (drag) { svg.classList.remove("panning"); setTimeout(function () { dragMoved = false; }, 0); } drag = null; });
+  document.getElementById("zin").addEventListener("click", function () { zoomAt(1 / 1.3, vb.x + vb.w / 2, vb.y + vb.h / 2); });
+  document.getElementById("zout").addEventListener("click", function () { zoomAt(1.3, vb.x + vb.w / 2, vb.y + vb.h / 2); });
+  document.getElementById("zfit").addEventListener("click", function () { vb = Object.assign({}, VB_FULL); applyVB(); });
+  applyVB();
+
+  var start = (location.hash || "").slice(1);
+  if (start && nodes[start]) select(start);
+  else if (/^(0x)?[0-9a-f]{1,8}$/i.test(start)) { renderOverview(); inp.value = start; lookup(start); }
+  else renderOverview();
+})();
+</script>

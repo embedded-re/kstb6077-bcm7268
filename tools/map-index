@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""Build docs/map/reg-index.js from the manual's tables.
+
+The register sheet (docs/hardware/registers.md) comes first; then every table
+row in the other hardware chapters and the BOLT chapter whose first cell holds
+an address.
+
+The SoC map's address finder uses it to name any register the manual lists.
+Run it after editing the manual:
+
+    tools/map-index
+
+First table cell forms understood:
+    `0xf040c000`                       one address
+    `0xf06fa828`, `0xf06fa884`          several addresses
+    `0xf040401c` / `20`                 a short form replaces the last digits
+    `0xf0410200–0xf04105ff`             a range
+    `+0x10` (`0xf0b00310` / `510`)      addresses in brackets after an offset
+"""
+import json
+import os
+import re
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HW = os.path.join(ROOT, "docs", "hardware")
+SRC = os.path.join(HW, "registers.md")
+OTHER = sorted(os.path.join(HW, f) for f in os.listdir(HW) if f.endswith(".md") and f != "registers.md") + [os.path.join(ROOT, "docs", "bolt", "bolt.md")]
+OUT = os.path.join(ROOT, "docs", "map", "reg-index.js")
+
+ADDR = re.compile(r"0x[0-9a-fA-F]{8}(?:\s*[–-]\s*0x[0-9a-fA-F]{8})?|(?<![0-9a-fA-Fx])[0-9a-fA-F]{2,4}(?![0-9a-fA-F])")
+
+
+def plain(s):
+    s = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", s)
+    return re.sub(r"[`*]", "", s).strip()
+
+
+def addresses(cell):
+    """Return [(lo, hi)] for the first cell of a row, or [] if it holds none."""
+    if "0x" not in cell:
+        return []
+    m = re.search(r"\(([^)]*0x[0-9a-fA-F]{8}[^)]*)\)", cell)
+    if cell.lstrip("`").startswith("+0x") and m:
+        cell = m.group(1)
+    out, last = [], None
+    for tok in re.findall(r"`([^`]*)`|/\s*([0-9a-fA-F]{2,4})\b", cell):
+        t = tok[0] or tok[1]
+        for part in re.split(r",\s*", t):
+            r = re.fullmatch(r"(0x[0-9a-fA-F]{8})\s*[–-]\s*(0x[0-9a-fA-F]{8})", part)
+            if r:
+                lo, hi = int(r.group(1), 16), int(r.group(2), 16)
+                out.append((lo, hi)); last = lo; continue
+            if re.fullmatch(r"0x[0-9a-fA-F]{8}", part):
+                a = int(part, 16); out.append((a, a)); last = a; continue
+            if re.fullmatch(r"[0-9a-fA-F]{2,4}", part) and last is not None:
+                n = len(part)
+                a = (last >> (4 * n) << (4 * n)) | int(part, 16)
+                out.append((a, a)); last = a
+    return out
+
+
+NAMEISH = ("name", "register", "block", "what", "function", "meaning", "source", "contents")
+
+
+def cells_of(line):
+    return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", line.strip().strip("|"))]
+
+
+def scan(path, sheet):
+    rows, section, danger, hdr, prev = [], "", False, [], []
+    doc = os.path.relpath(path, os.path.join(ROOT, "docs"))
+    for line in open(path, encoding="utf-8"):
+        if line.startswith("#"):
+            section = plain(line.lstrip("#"))
+            danger = sheet and section.lower().startswith("do not touch")
+            continue
+        if line.startswith("|---"):
+            hdr = [plain(c).lower() for c in prev]
+            continue
+        if not line.startswith("|"):
+            continue
+        cells = cells_of(line)
+        prev = cells
+        first = cells[0]
+        if danger:
+            if "outside" in first or "not on this sheet" in first:
+                continue  # a rule, not an address
+            first = re.sub(r"\([^)]*\)", "", first)  # bracketed addresses are explanations
+        if not sheet and not re.search(r"`0x[0-9a-fA-F]{8}", first):
+            continue
+        spans = addresses(first)
+        if not spans:
+            continue
+        rest = [plain(c) for c in cells[1:] if plain(c) and plain(c) != "—"]
+        if danger:
+            name, desc = "do not touch", " ".join(rest)
+        elif sheet:
+            name = rest[0] if rest else ""
+            desc = " · ".join(rest[1:])
+        else:
+            label = plain(re.sub(r"`[^`]*`|/\s*[0-9a-fA-F]{2,4}\b|\+0x[0-9a-fA-F]+", "", first)).strip(" ,/()")
+            cols = [(hdr[i] if i < len(hdr) else "", plain(c)) for i, c in enumerate(cells) if i > 0 and plain(c) and plain(c) != "—"]
+            pick = next((i for i, (hd, _) in enumerate(cols) if any(hd.startswith(w) for w in NAMEISH)), None)
+            if label:
+                name = label
+            elif pick is not None:
+                name = cols[pick][1]; cols = cols[:pick] + cols[pick + 1:]
+            else:
+                name = cols[0][1] if cols else ""; cols = cols[1:]
+            desc = " · ".join((hd + " " + v) if hd and not any(hd.startswith(w) for w in NAMEISH) else v for hd, v in cols)
+            spans = [(lo, hi) for lo, hi in spans if hi - lo < 0x10000]
+        for lo, hi in spans:
+            rows.append({"lo": lo, "hi": hi, "name": name, "desc": desc[:220],
+                         "section": section, "doc": doc, "danger": danger})
+    return rows
+
+
+def main():
+    rows = scan(SRC, True)
+    for path in OTHER:
+        rows += scan(path, False)
+    with open(OUT, "w", encoding="utf-8") as f:
+        f.write("// Generated by tools/map-index from the manual's tables. Do not edit.\n")
+        f.write("window.KSTB_REGS = " + json.dumps(rows, ensure_ascii=False, indent=0) + ";\n")
+    print(f"{len(rows)} entries -> {os.path.relpath(OUT, ROOT)}")
+
+
+if __name__ == "__main__":
+    main()
