@@ -17,3 +17,5 @@ __pycache__/
 /stock/
 # local to-do list
 docs/todo.md
+# editor settings
+.vscode/

@@ -1,0 +1,33 @@
+#!/bin/sh
+# Build a bare-metal C program: prog.c (+ its .h) -> prog.elf (symbols) + prog.bin (raw).
+#
+#   tools/build-c path/to/prog.c [load address, default 0x01000000]
+#
+# Uses clang + ld.lld, like tools/build-a64.
+#   -ffreestanding -nostdlib  no C library, no OS
+#   -mgeneral-regs-only       no FP/SIMD registers (not checked whether EL2 traps them)
+#   -mstrict-align            no unaligned loads/stores (MMU off = Device memory, they fault)
+#   -fno-zero-initialized-in-bss  zero globals are stored in the .bin, so no start-up code has to clear them
+set -e
+
+src=$1
+addr=${2:-0x01000000}
+[ -n "$src" ] || { echo "usage: $0 prog.c [addr]" >&2; exit 1; }
+
+base=${src%.c}
+clang --target=aarch64-none-elf -O2 -Wall \
+      -ffreestanding -nostdlib -fno-stack-protector \
+      -mgeneral-regs-only -mstrict-align -fno-zero-initialized-in-bss \
+      -c "$src" -o "$base.o"
+ld.lld -N -Ttext="$addr" -e _start "$base.o" -o "$base.elf"
+llvm-objcopy -O binary "$base.elf" "$base.bin"
+rm -f "$base.o"
+
+# BOLT jumps to the first byte: _start must be there.
+start=$(llvm-nm "$base.elf" | awk '$3 == "_start" { print $1 }')
+if [ $((0x$start)) -ne $((addr)) ]; then
+    echo "error: _start is at 0x$start, not $addr (keep the startup block at the top of the .c file)" >&2
+    exit 1
+fi
+
+echo "$base.bin: $(wc -c < "$base.bin") bytes, linked at $addr"
