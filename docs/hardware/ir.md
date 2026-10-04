@@ -6,10 +6,10 @@ decoder, the block turns every press on the original Kaon remote into a 32-bit
 code, and the codes match the stock Android key map.
 
 Tested on the modified box on 2026-10-03, from `go -64` (EL2, MMU off).
-Probes and outputs are in `../evidence/ir/`.
+Probes and outputs are in [`../evidence/ir/`](../evidence/ir/).
 
 BOLT doesn't enable the block, so after BOLT a remote press changes nothing
-(`gpio.md`). Nothing on the box reacts to the remote by itself: the decoding
+([`gpio.md`](gpio.md)). Nothing on the box reacts to the remote by itself: the decoding
 only happens once software turns it on.
 
 ## Summary
@@ -28,7 +28,7 @@ only happens once software turns it on.
 
 The register layout and the set-up sequence come from the stock Nexus driver
 (`stock/release/modules/nexus.ko`, functions `BKIR_*`, see
-`../stock-drivers.md`). The register names below are the roles those functions
+[`../stock-drivers.md`](../stock-drivers.md)). The register names below are the roles those functions
 give the registers, not Broadcom's names. The stock firmware picks the mode in
 `stock/release/vendor_build.prop`:
 
@@ -66,7 +66,7 @@ enabled.
 
 All offsets above read without an abort on all three channels, as do the PM
 AON config word `0xf0419880` (`00000000`) and the AON L2 `0xf0419c00–0c`
-(`ir_read_probe_output.txt`). `+0x04` and anything past `+0x34` were not read
+([`ir_read_probe_output.txt`](../evidence/ir/ir_read_probe_output.txt)). `+0x04` and anything past `+0x34` were not read
 (Nexus doesn't name them).
 
 ## Turning it on (NEC)
@@ -104,7 +104,7 @@ reads them first through CIR_ADDR / CIR_DATA). After that, kbd1 read STATUS
 
 ## What a press looks like (tested)
 
-One line per frame from `ir_nec_probe.s` (L2 STATUS, kbd1 STATUS, DATA1,
+One line per frame from [`ir_nec_probe.s`](../evidence/ir/ir_nec_probe.s) (L2 STATUS, kbd1 STATUS, DATA1,
 DATA0), key `1` pressed and held briefly:
 
 ```
@@ -156,7 +156,7 @@ custom code `0x2016` and `0xff00`, which belong to other remotes.
 ## The remote under stock Android 11 (tested)
 
 Read on 2026-10-04 with `getevent -lt /dev/input/event4` over `adb` (the input device
-`NexusIrHandlerTMCZ`; `../stock-firmware.md`). Nexus decodes the IR itself
+`NexusIrHandlerTMCZ`; [`../stock-firmware.md`](../stock-firmware.md)). Nexus decodes the IR itself
 and sends only Linux key codes: **no raw scan code** (`MSC_SCAN`), so this
 run gives key names, not IR codes. Its key layout
 (`/vendor/usr/keylayout/NexusIrHandlerTMCZ.kl`) is not readable without root.

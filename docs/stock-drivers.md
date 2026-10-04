@@ -3,7 +3,7 @@
 The stock box's Android firmware contains Broadcom's own drivers for this
 chip. They show how Broadcom powers, clocks and resets each block, with the
 real register addresses. This repository uses them as a reference, the same
-way it uses BOLT's code (`bolt/bolt.md` §11).
+way it uses BOLT's code ([`bolt/bolt.md`](bolt/bolt.md) §11).
 
 ## Getting the files
 
@@ -32,7 +32,7 @@ factory DRM/HDCP key blobs (`drm.bin`, `hdcp1xKeys.bin`).
 
 ## How to read them
 
-`tools/re/ko.py` works on any unstripped ARM ELF object:
+[`tools/re/ko.py`](../tools/re/ko.py) works on any unstripped ARM ELF object:
 
 ```
 K=stock/release/modules/nexus.ko
@@ -50,7 +50,7 @@ What the code looks like:
 - Register accesses are calls to `BREG_Read32(handle, addr)` /
   `BREG_Write32(handle, addr, value)`, with `addr` a **bus address** loaded
   from a literal pool: `0x2xxxxxxx`. The CPU reaches the same register at
-  `0xfxxxxxxx` (`hardware/peripherals.md`, "Bus addresses").
+  `0xfxxxxxxx` ([`hardware/peripherals.md`](hardware/peripherals.md), "Bus addresses").
 - The power tree: each `BCHP_PWR_P_Resource_<NAME>` is `{type, id, name}`;
   `BCHP_PWR_P_Depend_<NAME>` lists the resources it needs first.
   `BCHP_PWR_P_HW_ControlId` switches on the id (a jump table indexed by

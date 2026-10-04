@@ -5,7 +5,7 @@ only (`help`, `info`, `show *`, `printenv`, `rmem`, `gisb`, `rts`, `d`,
 `mii read`, `psci` version query, `rpmb counter`). Nothing was written to
 memory, the environment or flash. §9 adds the network, TFTP and 64-bit tests
 (RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw
-captures are in `../evidence/`.
+captures are in [`../evidence/`](../evidence/).
 
 Unmarked facts were observed on this board; (inferred) marks an inference or
 general knowledge.
@@ -105,14 +105,14 @@ Notes:
 | `flash0.DTB` | DTB slot | 4 MB |
 | `flash0.SWAP` | swap | 2048 MB |
 | `flash0.ROOT` | root filesystem | 5322 MB (shrunk 2026-10-02 to make room for `splash`) |
-| `flash0.splash` | boot-splash container (added 2026-10-02, `../hardware/display.md`) | 17 MB |
+| `flash0.splash` | boot-splash container (added 2026-10-02, [`../hardware/display.md`](../hardware/display.md)) | 17 MB |
 | `flash1` / `flash2` | eMMC boot partitions 1/2 (BOLT lives here) | 4 MB each |
 | `flash3` | eMMC RPMB | 4 MB |
 | `eth0` | GENET internal Ethernet | `0xf0480000` |
 | `mdio0` | GENET MDIO bus | `0xf0480800` |
 
 These partition names reflect the current (post-Android) layout, matching
-`../history/linux-port.md`.
+[`../history/linux-port.md`](../history/linux-port.md).
 
 
 ## 5. Commands by risk
@@ -136,7 +136,7 @@ These partition names reflect the current (post-Android) layout, matching
 | `rpmb program-key` | **one-time programmable**: burns the eMMC RPMB key forever |
 | `setenv -p` / `-ro`, `unsetenv`, `incenv` | write the NVRAM partition (`-ro` can never be undone) |
 | `setsn`, `macprog` | rewrite serial/MAC storage |
-| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset=N` is the destination offset (`../hardware/storage.md`); raw `flash0` offsets of 2 GB or more fail or wrap. From `mem0`, the data is first copied to a staging buffer at `0x00040000` |
+| `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset=N` is the destination offset ([`../hardware/storage.md`](../hardware/storage.md)); raw `flash0` offsets of 2 GB or more fail or wrap. From `mem0`, the data is first copied to a staging buffer at `0x00040000` |
 | `tz mon`, `tz boot` | load and run code in the secure world |
 
 
@@ -152,9 +152,9 @@ These partition names reflect the current (post-Android) layout, matching
 - **`u addr [len]`**: a built-in disassembler, handy to check what's in
   memory before a `go`.
 - **Scripting**: `loop "cmd" -count=N`, `t` (compare memory with `-eq/-gt/-lt/-and`),
-  `testenv`, `time "cmd"`, and `batch` files (like `sysinit.txt`).
+  `testenv`, `time "cmd"`, and `batch` files (like [`sysinit.txt`](../../boot/sysinit.txt)).
 - **`load -raw -splash -tftp <pc>:<file>.bmp`** brings up HDMI with a 1920 × 1080
-  BMP and leaves a live RGB565 framebuffer (`../hardware/display.md`).
+  BMP and leaves a live RGB565 framebuffer ([`../hardware/display.md`](../hardware/display.md)).
 - **Ctrl-C during boot** cancels autostart (`Automatic startup canceled via
   Ctrl-C`); `../../tools/kstb-bolt` automates it.
 - **`uncache -nommu`** turns BOLT's MMU off. Might make the GIC readable
@@ -172,7 +172,7 @@ These partition names reflect the current (post-Android) layout, matching
 |---|---|
 | `psci -r0=0x84000000` (PSCI_VERSION) | `0x2` → **PSCI v0.2** |
 | `psci -r0=0x8400000a` (PSCI_FEATURES) | `0xffffffff` = NOT_SUPPORTED. Expected: FEATURES was only added in PSCI 1.0 |
-| `smc` CPU_ON / AFFINITY_INFO from EL2 | cores 1–3 start at EL2 (`../hardware/cpu-cores.md`) |
+| `smc` CPU_ON / AFFINITY_INFO from EL2 | cores 1–3 start at EL2 ([`../hardware/cpu-cores.md`](../hardware/cpu-cores.md)) |
 | `tz dt show` | `TZ not initialized`. No TrustZone OS is loaded under BOLT |
 | `rmem` | `BL31` (1 MB @ `0x7DF00000`) and `SRR` (32 MB @ `0x7E000000`) reserved |
 
@@ -260,7 +260,7 @@ What this means:
   a 64-bit Linux kernel.
 - `boot -64 -el3` makes **your code the secure monitor**. At EL3 you control
   everything, including the GIC's secure/non-secure interrupt groups (see
-  `../ideas/second-stage-bootloader.md`). Note that BOLT's own PSCI and BL31
+  [`../ideas/second-stage-bootloader.md`](../ideas/second-stage-bootloader.md)). Note that BOLT's own PSCI and BL31
   services are then not in charge: your code replaces them, so later calls
   like CPU_ON would have to be handled by you (inferred).
 - The probe ran with no MMU setup of its own and reached the UART at its
@@ -274,8 +274,8 @@ Probe source: [`a64_el_probe.s`](../evidence/a64_el_probe.s).
 
 An AArch64 probe printed CPU system registers and GIC registers, run once
 with `go -64` (EL2) and twice with `boot -64 -el3` (EL3), watchdog armed.
-The source is in `../evidence/gic64b_probe.s` and the full output in
-`../evidence/gic_probe_el2_el3.txt`. No access aborted.
+The source is in [`../evidence/gic64b_probe.s`](../evidence/gic64b_probe.s) and the full output in
+[`../evidence/gic_probe_el2_el3.txt`](../evidence/gic_probe_el2_el3.txt). No access aborted.
 
 | | EL2 | EL3 |
 |---|---|---|
@@ -292,15 +292,15 @@ The source is in `../evidence/gic64b_probe.s` and the full output in
 | IGROUPR0 / IGROUPR1–7 | RAZ from non-secure | `fe00ffff` / **`ffffffff`**: all SPIs are group 1 (non-secure) |
 | ISENABLER0 / 1–7 | | `0000ffff` / `0`: no SPI enabled |
 
-Decoded in `../hardware/interrupts.md` ("GIC state at handoff") and
-`../booting.md` ("State of a 64-bit program at entry").
+Decoded in [`../hardware/interrupts.md`](../hardware/interrupts.md) ("GIC state at handoff") and
+[`../booting.md`](../booting.md) ("State of a 64-bit program at entry").
 
 
 ## 11. Reverse engineering BOLT's code
 
 BOLT's running image was dumped from RAM on the modified box and
 disassembled. This is how the splash/display behaviour in
-`../hardware/display.md` was worked out.
+[`../hardware/display.md`](../hardware/display.md) was worked out.
 
 ### Getting the image
 
@@ -345,12 +345,12 @@ arm-none-linux-gnueabihf-objdump -D -M force-thumb bolt.elf > bolt_thumb.dis
 | `0x07011608` | run the display script and draw (`Loaded BMP: W=%d H=%d`) |
 | `0x070108e4` | draw a BMP into every set-up surface (centred, background fill, cache flush) |
 | `0x070115f4` | return surface *i* from the array at `0x0706ae20` (0 if not set up) |
-| `0x0702fa6c` | `flash` command (`-offset` = destination, `mem0` staging copy at `0x00040000`, `../hardware/storage.md`) |
-| `0x0703a4c2` | `usb init`: DTB → controller table `0x0706b010`, env `XHCIOFF`/`EHCIOFF`/`OHCIOFF`/`BDCOFF`/`USBDBG` (`../hardware/usb.md`) |
+| `0x0702fa6c` | `flash` command (`-offset` = destination, `mem0` staging copy at `0x00040000`, [`../hardware/storage.md`](../hardware/storage.md)) |
+| `0x0703a4c2` | `usb init`: DTB → controller table `0x0706b010`, env `XHCIOFF`/`EHCIOFF`/`OHCIOFF`/`BDCOFF`/`USBDBG` ([`../hardware/usb.md`](../hardware/usb.md)) |
 | `0x0703a7a0` | stop every USB controller; called by `usb exit` and before `go`/`boot` (via `0x07011d5e`) |
 | `0x07030740` | `load` command: after loading, `-splash` → calls `0x070108e4` |
 | `0x07010994`, `0x07025358` | "splash-feedback": draw media *n* from the container |
-| `0x07024924` | startup banner (`BOLT v%d.%02d`, `Board:`, `strap=`, `otp @ …` from the fuse table at `0x070472a8`, `bond option:`), see `../hardware/audio.md` (S/PDIF) |
+| `0x07024924` | startup banner (`BOLT v%d.%02d`, `Board:`, `strap=`, `otp @ …` from the fuse table at `0x070472a8`, `bond option:`), see [`../hardware/audio.md`](../hardware/audio.md) (S/PDIF) |
 
 Helper routines seen along the way: `0x070216f0` (getenv), `0x0701c318`
 (printf), `0x0701b89c` / `0x0701b804` (heap alloc / free), `0x0701e03c` /

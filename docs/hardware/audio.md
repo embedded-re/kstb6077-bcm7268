@@ -8,7 +8,7 @@ DRAM**, and that buffer can be rewritten from `BOLT>` or bare-metal code
 while it plays.
 
 Marked **tested** = seen/heard on the modified box (2026-10-02). Everything
-else is inferred from BOLT's code (`../bolt/bolt.md` §11).
+else is inferred from BOLT's code ([`../bolt/bolt.md`](../bolt/bolt.md) §11).
 
 ## Summary
 
@@ -69,8 +69,8 @@ registers already hold video settings: `0x00510300`, `0x7ef4`, `0x7cc500` and
 | Data rate | ≈ 384,000 bytes/s = 48,000 frames × **8 bytes** | read pointer: one lap + 29,952 bytes in 0.578 s (tested) |
 | Sample format | 32-bit stereo interleaved, 48 kHz | a 0.5 s buffer with one beep gives **2 beeps per second** (tested, by ear) |
 | CPU writes reach the hardware | yes, with no cache flush | buffer rewritten with `kstb-run --no-go --addr 0x7dada100` while playing; the sound changed (tested) |
-| Survives `go -64` | yes | `../evidence/audio/rbuf_probe.s`: the read pointer kept advancing ~96 KB per 0.25 s under bare-metal code (tested) |
-| Display lists | intact; they start at `0x7db08fa0`, just past the buffer end | compared with `../evidence/display/splash0_rdc_lists_0x7db08000.txt` (tested) |
+| Survives `go -64` | yes | [`../evidence/audio/rbuf_probe.s`](../evidence/audio/rbuf_probe.s): the read pointer kept advancing ~96 KB per 0.25 s under bare-metal code (tested) |
+| Display lists | intact; they start at `0x7db08fa0`, just past the buffer end | compared with [`../evidence/display/splash0_rdc_lists_0x7db08000.txt`](../evidence/display/splash0_rdc_lists_0x7db08000.txt) (tested) |
 
 Probe output after `go -64` (read pointer every 0.25 s):
 ```
@@ -118,7 +118,7 @@ What this shows (tested):
 What it suggests (inferred):
 - The TMDS clock is **148.5/1.001 MHz (1080p at 59.94 Hz)**, not 148.5 MHz,
   so format code 22 is 1080p59.94. (Later confirmed: the display's frame
-  counter ticks every 16,683 µs = 59.94 Hz, see `display.md`, "Vsync and
+  counter ticks every 16,683 µs = 59.94 Hz, see [`display.md`](display.md), "Vsync and
   double buffering".) 5824/140625 are the standard HDMI values
   for that clock. They also follow BOLT's own pattern: code 21 (74.176 MHz)
   uses CTS 140625 too. The TV's info screen says "1920x1080@60hz", but TVs
@@ -142,7 +142,7 @@ Not explained:
 
 ### Where the audio step sits
 
-The boot splash (`0x070107f4`, see `display.md`) does this after drawing `bmp0`:
+The boot splash (`0x070107f4`, see [`display.md`](display.md)) does this after drawing `bmp0`:
 
 ```
 item = lookup(1 /* "pcm" */, 0)          0x07011430
@@ -323,7 +323,7 @@ Read on the stock box, 2026-10-04. `dumpsys media.audio_policy` on the stock box
 Bluetooth A2DP and USB outputs, and no S/PDIF device; Nexus creates 9 audio
 outputs (`NEXUS_AudioOutput count:9` in the boot log) and drives S/PDIF
 itself. So the shell can't tell which block feeds the optical output
-(`../stock-firmware.md`).
+([`../stock-firmware.md`](../stock-firmware.md)).
 
 ## Open questions
 

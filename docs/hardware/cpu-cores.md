@@ -6,7 +6,7 @@ someone asks the PSCI monitor (`smm64`, EL3, resident at `0x06400000`) to
 start them.
 
 Tested on the modified box on 2026-10-02 with
-`../evidence/smp/psci_cpu_on_probe.s` (output: `psci_cpu_on_output.txt`).
+[`../evidence/smp/psci_cpu_on_probe.s`](../evidence/smp/psci_cpu_on_probe.s) (output: [`psci_cpu_on_output.txt`](../evidence/smp/psci_cpu_on_output.txt)).
 
 ## Summary
 
@@ -51,7 +51,7 @@ The target MPIDR is just the affinity: `x1 = 1` for core 1 (no need for bit 31).
 - With the MMU off on every core, RAM accesses are uncached, so the cores see
   each other's writes immediately. Once a core turns its MMU on, use the
   same page tables, mark shared RAM inner shareable (`SH = 11`, as in
-  `display.md`), and use `dsb`/`dmb` around shared data (not tested with the
+  [`display.md`](display.md)), and use `dsb`/`dmb` around shared data (not tested with the
   MMU on yet).
 - Each core stored a counter to uncached RAM in a tight loop. Steps per 10 ms
   fell as more cores ran: 19,693 (core 1 alone), 15,494 (with core 2),

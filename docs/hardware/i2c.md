@@ -6,7 +6,7 @@ the bus: **ch0 is the HDMI DDC** (EDID, HDCP) and **ch3 carries a device at
 
 Tested on the stock box on 2026-10-04, from `go -64` (EL2, MMU off), after a
 power-on and BOLT's splash. HDMI was connected to a TV. Probes and outputs
-are in `../evidence/i2c/`.
+are in [`../evidence/i2c/`](../evidence/i2c/).
 
 ## Summary
 
@@ -34,7 +34,7 @@ are in `../evidence/i2c/`.
 - The L2 bits come from Nexus's interrupt-ID table next to it (`.rodata
   0xbb468`; an ID is `(L2 address >> 5) << 8 | bit`). They match the
   interrupt names the stock kernel attaches to those bits
-  (`interrupts.md`). The channel ↔ bit pairing itself is from Nexus, not
+  ([`interrupts.md`](interrupts.md)). The channel ↔ bit pairing itself is from Nexus, not
   tested.
 - On ch0, `0x50` is the EDID EEPROM, `0x30` the E-DDC segment pointer and
   `0x3a` the HDCP receiver port. Nexus gives the HDMI output I2C handle 0,
@@ -42,7 +42,7 @@ are in `../evidence/i2c/`.
 - On ch3, Nexus (`NEXUS_Platform_InitFrontend`) opens a **Silicon Labs
   Si2168C** (DVB-T/T2/C demodulator) at I2C address 103 = `0x67`, using I2C
   handle 3. Under stock Android, `iicd` counts about 10 interrupts per second
-  (`interrupts.md`), presumably the demodulator being polled. The ACK at
+  ([`interrupts.md`](interrupts.md)), presumably the demodulator being polled. The ACK at
   `0x67` is tested; that the chip is a Si2168C is from Nexus only.
 - "Times out" means the transfer never completed (no done bit within
   ~11 ms). Either the bus isn't wired or its pins aren't muxed to the
@@ -81,7 +81,7 @@ All registers read `0` except:
 | 3 | `000000d3` | `00000040` |
 
 The ch3 values come from BOLT's splash script, the register-write list it
-replays to set up the display (`display.md`, SplashData at `0x07056f30`:
+replays to set up the display ([`display.md`](display.md), SplashData at `0x07056f30`:
 1381 `{register, value}` entries from `0x07054318`). Entries 776–779 write
 ch3 CTL `0x93`, CTLHI `0x40`, CTL `0xd3`, CTLHI `0x40`, just before the
 HDMI set-up. That is the sequence of Nexus's `BI2C_OpenChannel` (set the

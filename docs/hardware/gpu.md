@@ -62,7 +62,7 @@ off.
 ## Reset values (tested)
 
 Read right after power-up and reset, before the Nexus default registers
-(`../evidence/v3d/v3d_sweep_probe.s`, output `v3d_sweep_output.txt`). All
+([`../evidence/v3d/v3d_sweep_probe.s`](../evidence/v3d/v3d_sweep_probe.s), output [`v3d_sweep_output.txt`](../evidence/v3d/v3d_sweep_output.txt)). All
 166 addresses Linux names were read with the abort-safe read. **None
 aborted**, including the CSD registers V3D 3.3 doesn't have. So the GPU
 answers 0 at unused offsets, and a zero here doesn't prove a register exists.
@@ -154,7 +154,7 @@ enough; no clock was changed.
 
 Tested on the modified box, 2026-10-02.
 
-`../evidence/v3d/v3d_reset_probe.s` (output next to it) powers up, then
+[`../evidence/v3d/v3d_reset_probe.s`](../evidence/v3d/v3d_reset_probe.s) (output next to it) powers up, then
 replays the stock driver's bring-up: `BVC5_P_HardwareResetV3D` and
 `BVC5_P_HardwareSetDefaultRegisterState` from `nexus.ko`. It reads the
 registers after each step and powers down at the end. No access aborted.
@@ -212,7 +212,7 @@ Tested on the modified box, 2026-10-02.
 
 The TFU (texture formatting unit) reads an image from memory and writes it
 back in one of the GPU's tiled layouts. It needs no shader and no control
-list. `../evidence/v3d/v3d_tfu_probe.s` (output next to it) does the
+list. [`../evidence/v3d/v3d_tfu_probe.s`](../evidence/v3d/v3d_tfu_probe.s) (output next to it) does the
 bring-up above, then runs one job with the **GPU MMU off** (its reset state):
 the GPU uses physical addresses, and no page table is needed.
 
@@ -266,7 +266,7 @@ Result:
 
 Tested on the modified box, 2026-10-03.
 
-`../evidence/v3d/v3d_render_probe.s` (output next to it) runs a render job
+[`../evidence/v3d/v3d_render_probe.s`](../evidence/v3d/v3d_render_probe.s) (output next to it) runs a render job
 with no binner and no shaders. The GPU clears one 64×64 tile to a colour in
 its tile buffer, then stores the tile to RAM as a raster image. The GPU MMU
 is off. Like the TFU job, this needs no page table.
@@ -325,7 +325,7 @@ Result:
   read `deadbeef`: nothing else was written.
 - The stored word equals the clear word.
 
-**Byte order** (`v3d_order_probe.s`, output `v3d_order_output.txt`): the
+**Byte order** ([`v3d_order_probe.s`](../evidence/v3d/v3d_order_probe.s), output [`v3d_order_output.txt`](../evidence/v3d/v3d_order_output.txt)): the
 same job, with the clear packet `79 04 00 11 22 33 44 00 00`. The clear word
 is packet bytes 2–5, so the word was `0x33221100`. Every word of the tile
 read `33221100`: the clear word's lowest byte goes to the lowest address,
@@ -352,7 +352,7 @@ and `v3d_cl_rcfg_clear_colors`. libGLES's own tables
 32 bpp, the same as `rgba8`, so byte 2 of the colour config stays `08`. In
 libGLES's name table, format 7 is `bgr565` and format 27 is `rgba8`.
 
-**Scratch RAM first** (`../evidence/v3d/v3d_fb_scr_probe.s`, outputs
+**Scratch RAM first** ([`../evidence/v3d/v3d_fb_scr_probe.s`](../evidence/v3d/v3d_fb_scr_probe.s), outputs
 `v3d_fb_scr_output_<word>.txt`). The tile went to `0x031dcb40` inside a 4 MB
 area at `0x03000000` filled with `deadbeef`, at the place (928,508) has on
 screen. Every run changed exactly 4096 halfwords: 64 rows of 64 pixels, with
@@ -373,7 +373,7 @@ alpha**. Format 7 stores ordinary RGB565 with red in the top bits, the same
 layout as the framebuffer. Alpha is dropped. The 8-bit values are rounded,
 not cut: `f8` became blue 30 (248 × 31 / 255 = 30.2), `80` became green 32.
 
-**Then the screen** (`v3d_fb_tv_probe.s`, output `v3d_fb_tv_output.txt`):
+**Then the screen** ([`v3d_fb_tv_probe.s`](../evidence/v3d/v3d_fb_tv_probe.s), output [`v3d_fb_tv_output.txt`](../evidence/v3d/v3d_fb_tv_output.txt)):
 the same job with the clear word `000000ff` and the tile address `0x7dce8240`
 = (928,508) in the framebuffer `0x7db0b700`. A 64×64 red square appeared in
 the middle of the splash screen. Reading back: the tile was `f800`. The
@@ -386,8 +386,8 @@ Tested on the modified box, 2026-10-03.
 A binner job followed by a render job draws a flat-coloured triangle. There's
 no vertex shader: the vertices are given in screen pixels (an "NV" shader
 record). There's one fragment shader, copied from libGLES. Probe:
-`../evidence/v3d/v3d_tri_scr_probe.s` (scratch RAM), then
-`v3d_tri_tv_probe.s` (screen).
+[`../evidence/v3d/v3d_tri_scr_probe.s`](../evidence/v3d/v3d_tri_scr_probe.s) (scratch RAM), then
+[`v3d_tri_tv_probe.s`](../evidence/v3d/v3d_tri_tv_probe.s) (screen).
 
 **Sources.** Packet names and which list may hold them come from libGLES
 `v3d_desc_cl_opcode`, `v3d_cl_instr_ok_in_bin` and
@@ -432,7 +432,7 @@ and `PTB_BPCA` `0xf1208300` = `04003000` (12 KB of tile memory used).
 The tile counts in the config are **counts, not minus one**: libGLES computes
 `((pixels - 1) >> shift) + 1`. A first run with `00 00 00` there read its
 whole list, but `FLDONE` never came, `PTB_BPCA` moved by `0xaa000` and no
-triangle was drawn (`v3d_tri_scr_output_run1_tiles0.txt`).
+triangle was drawn ([`v3d_tri_scr_output_run1_tiles0.txt`](../evidence/v3d/v3d_tri_scr_output_run1_tiles0.txt)).
 
 **NV shader record** (60 bytes, 32-byte aligned; values from libGLES
 `v3d_create_nv_shader_record`, layout from `v3d_unpack_shadrec_gl_main` /
@@ -471,12 +471,12 @@ thread, two `nop`s. Uniforms: `R | G << 16` as half floats, `ffffffff`,
   1152 is the triangle's area (48 × 48 / 2).
 - Per row, the blue pixels run from x = 8–55 on row 8, narrowing by one
   pixel on each side every two rows, down to 31–32 on row 54. Rows 0–7 and
-  55–63 have none (`v3d_tri_scr_output_spans.txt`).
+  55–63 have none ([`v3d_tri_scr_output_spans.txt`](../evidence/v3d/v3d_tri_scr_output_spans.txt)).
 
 **On the screen:** the same jobs with the tile at (928,508) in the
 framebuffer showed a red square with a blue triangle pointing down.
 Reading the framebuffer back gave the same per-row spans
-(`v3d_tri_tv_output.txt`).
+([`v3d_tri_tv_output.txt`](../evidence/v3d/v3d_tri_tv_output.txt)).
 
 ### A fragment shader of our own
 
@@ -484,8 +484,8 @@ Tested on the modified box, 2026-10-03.
 
 The triangle job from the previous section, with a fragment shader written
 and encoded here instead of copied from libGLES
-(`../evidence/v3d/v3d_grad_scr_probe.s`, output `v3d_grad_scr_output.txt`).
-The encoder/disassembler is `tools/re/qpu.py`. Its instruction layout
+([`../evidence/v3d/v3d_grad_scr_probe.s`](../evidence/v3d/v3d_grad_scr_probe.s), output [`v3d_grad_scr_output.txt`](../evidence/v3d/v3d_grad_scr_output.txt)).
+The encoder/disassembler is [`tools/re/qpu.py`](../../tools/re/qpu.py). Its instruction layout
 follows Mesa's `qpu_pack.c`. libGLES's own tables match Mesa's V3D 3.3
 tables entry for entry: the signal table, the magic write-address names
 and the small immediates (see [QPU instructions](#qpu-instructions)).
@@ -517,7 +517,7 @@ register.
 
 ## QPU instructions
 
-`tools/re/qpu.py` disassembles and encodes 64-bit QPU instructions. Its
+[`tools/re/qpu.py`](../../tools/re/qpu.py) disassembles and encodes 64-bit QPU instructions. Its
 layout is Mesa's (`qpu_pack.c`). These tables were checked against
 `libGLES_nexus.so` and match Mesa's V3D 3.3 tables entry for entry:
 
@@ -626,6 +626,6 @@ or tested on the board:
 | Depth/stencil, blending, colour write masks other than "all on" | `50`, `54`, `56`, `57`, Z/stencil stores | not used |
 | Frames bigger than one tile | supertile config, tile lists per tile | only 1×1 tile |
 | Other primitives and draws | indexed lists, instancing, points, lines, transform feedback | only `vertex_array_prims` with triangles |
-| QPU instructions | `tools/re/qpu.py` | about ten tested; branches, flags, SFU, semaphore/barrier types not tested |
+| QPU instructions | [`tools/re/qpu.py`](../../tools/re/qpu.py) | about ten tested; branches, flags, SFU, semaphore/barrier types not tested |
 | TFU options | `0xf1200400` | one format conversion tested; mipmaps, other formats not |
 | Timing | | no GPU job timed yet |

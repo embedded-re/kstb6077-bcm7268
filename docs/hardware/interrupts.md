@@ -20,7 +20,7 @@
 | `brcm,l2-intc` | `0xf0403000` (sys), `0xf0201000`, `0xf0410640`, `0xf04d1200` | SoC-level interrupt muxes |
 | `brcm,hif-spi-l2-intc` | `0xf0201a00` | HIF SPI interrupts |
 | `brcm,bcm7271-l2-intc` | `0xf040a600`, `0xf0419c00` (upg_main_aon), `0xf040a640`, `0xf0419c40`, `0xf0419000` | level-type L2 controllers |
-| GPIO | `0xf040a500` / `0xf0419c80` | GPIO banks as interrupt controllers (`gpio.md`) |
+| GPIO | `0xf040a500` / `0xf0419c80` | GPIO banks as interrupt controllers ([`gpio.md`](gpio.md)) |
 
 GIC numbering: DTB `<0x0 N ...>` = SPI *N* = GIC interrupt ID *N* + 32.
 
@@ -37,7 +37,7 @@ them.
 
 Two sources. **Tested** = listed in `/proc/interrupts` of the stock Android
 kernel (4.9.322) on the stock box, read over `adb shell` on 2026-10-04
-(`../evidence/stock/adb/proc_interrupts_1.txt`), with a count when the
+([`../evidence/stock/adb/proc_interrupts_1.txt`](../evidence/stock/adb/proc_interrupts_1.txt)), with a count when the
 interrupt had fired. **DTB** = only in the DTB (not tested). The kernel's
 numbers in `/proc/interrupts` are the GIC IDs themselves.
 
@@ -109,8 +109,8 @@ numbers in `/proc/interrupts` are the GIC IDs themselves.
 | | 26 | AVS CPU `sw_intr` (reads set) |
 | UPG main `0xf040a600` | 0, 1, 2 | main GPIO (`gio`), `irb`, spare |
 | UPG main AON `0xf0419c00` | 0–6 | see "AON L2 controller" below |
-| UPG BSC `0xf040a640` | 0, 1, 2 | I2C `iica` (ch0, HDMI DDC), `iice` (ch4), spare (`i2c.md`) |
-| UPG BSC AON `0xf0419c40` | 0, 1, 2, 3 | I2C `iicb` (ch1), `iicc` (ch2), `iicd` (ch3, device at `0x67`), spare (`i2c.md`) |
+| UPG BSC `0xf040a640` | 0, 1, 2 | I2C `iica` (ch0, HDMI DDC), `iice` (ch4), spare ([`i2c.md`](i2c.md)) |
+| UPG BSC AON `0xf0419c40` | 0, 1, 2, 3 | I2C `iicb` (ch1), `iicc` (ch2), `iicd` (ch3, device at `0x67`), spare ([`i2c.md`](i2c.md)) |
 | UPG SPI AON `0xf0419000` | 0, 1 | MSPI `spi` (`mspi_done`), spare |
 
 The stock kernel's `/proc/interrupts` attaches these L2 bits (tested, same
@@ -126,15 +126,15 @@ read as above; "fired" = non-zero count after ~10 minutes of use):
 | AVS `0xf04d1200` 6 / 26 | `brcmstb_thermal` / `sw_intr` | 26: yes |
 | UPG SPI AON `0xf0419000` 0 | `spi` | |
 | UPG main `0xf040a600` 1 | `irb` | |
-| UPG main AON `0xf0419c00` 0 | `kbd1`: **the remote** (`ir.md`) | yes (410) |
+| UPG main AON `0xf0419c00` 0 | `kbd1`: **the remote** ([`ir.md`](ir.md)) | yes (410) |
 | UPG main AON `0xf0419c00` 1, 2, 4, 5 | `kbd2`, `kbd3`, `ldk`, `icap` | |
 | UPG BSC `0xf040a640` 0, 1 | I2C `iica`, `iice` | |
 | UPG BSC AON `0xf0419c40` 0, 1 | I2C `iicb`, `iicc` | |
 | UPG BSC AON `0xf0419c40` 2 | I2C **`iicd`**: the busy bus | yes (8024) |
-| AON GPIO `0xf0419c80` pins 4, 5, 14 | `nexus gpio` (14 = SW1, `gpio.md`) | pin 4: yes (6) |
+| AON GPIO `0xf0419c80` pins 4, 5, 14 | `nexus gpio` (14 = SW1, [`gpio.md`](gpio.md)) | pin 4: yes (6) |
 
 The wake-timer bit (4 of `0xf0410640`) did not show in STATUS while masked
-(`system-blocks.md`).
+([`system-blocks.md`](system-blocks.md)).
 
 ## What each action fires (tested)
 
@@ -165,7 +165,7 @@ no SD card slot.
 
 ## L2 controller registers (tested)
 
-All ten read on the stock box at `BOLT>` on 2026-10-03, with `../evidence/sys/l2_probe.s`
+All ten read on the stock box at `BOLT>` on 2026-10-03, with [`../evidence/sys/l2_probe.s`](../evidence/sys/l2_probe.s)
 (output next to it), twice, 1 s apart. **Every word past the DTB's
 `reg` size aborts**, so the sizes below are exact.
 
@@ -216,7 +216,7 @@ There is no clear register: a bit stays set until its source is cleared.
 
 | Bit | Source |
 |---|---|
-| 0–2 | kbd1–3 (IR receivers). Bit 0 tested: set while kbd1 holds a received code (`ir.md`) |
+| 0–2 | kbd1–3 (IR receivers). Bit 0 tested: set while kbd1 holds a received code ([`ir.md`](ir.md)) |
 | 3 | gio (AON GPIO) |
 | 4 | ldk (LED/keypad controller) |
 | 5 | icap |
@@ -242,14 +242,14 @@ interrupt reaches the L2 with no trigger-type (EC/EI/LEVEL) setup.
 
 The GIC hop needs the GIC reachable: `ISENABLER3`/`ISPENDR3` bit 2 for ID 98
 are at `0xffd0110c`/`0xffd0120c`. From 32-bit code under BOLT that means
-mapping the `0xffd` megabyte in BOLT's page table (`../bolt/bolt.md` §3) or
+mapping the `0xffd` megabyte in BOLT's page table ([`../bolt/bolt.md`](../bolt/bolt.md) §3) or
 turning the MMU off. From 64-bit code (`go -64` / `boot -64 -el3`) the GIC is
 reachable directly (next section).
 
 ## GIC state at handoff (read from AArch64)
 
-Read with an AArch64 probe (`../evidence/gic64b_probe.s`; output in
-`../evidence/gic_probe_el2_el3.txt`), started by `go -64` (EL2, non-secure
+Read with an AArch64 probe ([`../evidence/gic64b_probe.s`](../evidence/gic64b_probe.s); output in
+[`../evidence/gic_probe_el2_el3.txt`](../evidence/gic_probe_el2_el3.txt)), started by `go -64` (EL2, non-secure
 view) and `boot -64 -el3` (EL3, secure view). No read aborted.
 
 ### Identity

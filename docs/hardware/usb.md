@@ -8,7 +8,7 @@ drive the controllers with the standard specs (EHCI 1.0, OHCI 1.0a,
 xHCI 1.0), with no Broadcom-specific code. That last point is tested for
 OHCI up to port enable; transfers are not tested yet.
 
-Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
+Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../evidence/usb/).
 
 ## Summary
 
@@ -21,11 +21,11 @@ Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
 | Tested | OHCI1 from bare metal up to an enabled port with a keyboard attached |
 | Not tested | transfers (control, interrupt, bulk) |
 
-## Blocks (stock DTB `boot/stock_dtb.dts`, capability registers read)
+## Blocks (stock DTB [`boot/stock_dtb.dts`](../../boot/stock_dtb.dts), capability registers read)
 
 | Base | DTB node | Size | Capability registers | Meaning |
 |---|---|---|---|---|
-| `0xf0b00200` | `usb-phy@f0b00200` (`brcm,usb-phy`, `ipp`/`ioc` = 1, `has_xhci`) | `0x100` | read in full (`peripherals.md`, "PCIe and the USB device controller") | Broadcom USB control / PHY block |
+| `0xf0b00200` | `usb-phy@f0b00200` (`brcm,usb-phy`, `ipp`/`ioc` = 1, `has_xhci`) | `0x100` | read in full ([`peripherals.md`](peripherals.md), "PCIe and the USB device controller") | Broadcom USB control / PHY block |
 | `0xf0b00300` | `ehci_v2` (IRQ SPI `0x5a`) | `0xa8` | `01000010` `00001111` `0000a027` | EHCI0: v1.0, op regs at +0x10, 1 port, 1 companion, 64-bit |
 | `0xf0b00400` | `ohci_v2` (SPI `0x5b`) | `0x58` | `00000110`, RhDescA `02000901` | OHCI0: v1.0, 1 port, per-port power, POTPGT 2 (4 ms) |
 | `0xf0b00500` | `ehci_v2` (SPI `0x5e`) | `0xa8` | same as EHCI0 | EHCI1 |
@@ -34,7 +34,7 @@ Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
 | `0xf0b02000` | `bdc_v2` (`status = "disabled"`) | `0xfc4` | not read | device-mode controller |
 
 GIC IDs = SPI + 32: EHCI0 122, OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127
-(matches `../stock-firmware.md`). Clocks (DTB): `sw_usb20` (`usb0_freerun`,
+(matches [`../stock-firmware.md`](../stock-firmware.md)). Clocks (DTB): `sw_usb20` (`usb0_freerun`,
 `usb0_gisb`, `sys_108/54/scb_usb20`) and `sw_usb30`, gated in
 `0xf04e049c–0xf04e04bc`.
 
@@ -46,7 +46,7 @@ GIC IDs = SPI + 32: EHCI0 122, OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127
 | **EHCI1 + OHCI1** | the **USB-A port** | with a low-speed USB keyboard (`0461:0010`) plugged in: OHCI1 port `00000303` (connected, enabled, low speed); EHCI1 handed it over (`00003000`) |
 | xHCI ports 1–2 | unknown | `000002a0` (powered, RxDetect, empty) with and without the keyboard. A SanDisk stick `0781:558a` on the USB-A port came up as `New high speed device connected to bus 1` (EHCI1), not on the xHCI. Caution: If that stick is USB 3 (not checked), the port's USB 3 lines don't reach the xHCI, or BOLT doesn't use them |
 
-Confirmed under stock Android (2026-10-04, `interrupts.md`): plugging the
+Confirmed under stock Android (2026-10-04, [`interrupts.md`](interrupts.md)): plugging the
 keyboard into the USB-A port fired EHCI1 (ID 126) first, then OHCI1 (ID
 127): EHCI1 sees the connection and hands the low-speed device to its
 companion OHCI1. Unplugging fired only OHCI1.
@@ -66,7 +66,7 @@ BOLT's bus numbers in `show usb` (inferred from its reset messages; bus 1 =
 EHCI1 confirmed by the high-speed stick): 0 = EHCI0, 1 = EHCI1, 2 = OHCI0 (BT), 3 = OHCI1 (USB-A low/full speed), 4 = xHCI.
 BOLT's own keyboard driver picks up a keyboard (`USBHID: Keyboard Configured.`).
 
-## What BOLT does (from its code, `../bolt/bolt.md` §11)
+## What BOLT does (from its code, [`../bolt/bolt.md`](../bolt/bolt.md) §11)
 
 - **Start-up** (`usb init`, `0x0703a4c2`): reads the DTB nodes (`usb-phy@`,
   `ipp`, `ioc`, `has_xhci`, `ehci@`/`ohci@`/`xhci@`/`bdc@`) into a table at
@@ -81,7 +81,7 @@ BOLT's own keyboard driver picks up a keyboard (`USBHID: Keyboard Configured.`).
   controller driver's stop routine (function pointer at `ops + 0x2c`). `usb
   exit` ends with the same call.
 
-## State after `go -64` (tested: `usb_state_probe.s`)
+## State after `go -64` (tested: [`usb_state_probe.s`](../evidence/usb/usb_state_probe.s))
 
 | Register | At `BOLT>` | After `go -64` |
 |---|---|---|
@@ -98,7 +98,7 @@ Every register still reads without an abort, so the block stays clocked.
 The controllers are back at their reset values, so a driver starts as it
 would after its own reset.
 
-## OHCI1 from bare metal (tested: `ohci_port_probe.s`, keyboard plugged in)
+## OHCI1 from bare metal (tested: [`ohci_port_probe.s`](../evidence/usb/ohci_port_probe.s), keyboard plugged in)
 
 Steps, OHCI 1.0a spec, offsets from `0xf0b00600`:
 
@@ -119,11 +119,11 @@ PHY and clocks from BOLT's start-up survive `go -64`.
 - Control transfers on OHCI1 (EDs/TDs in RAM, `GET_DESCRIPTOR`, `SET_ADDRESS`,
   `SET_CONFIGURATION`), then HID boot-protocol keyboard reports from an
   interrupt endpoint (8-byte reports). With the MMU off, RAM is uncached, so
-  DMA needs no cache maintenance. With the MMU map from `display.md`, the
+  DMA needs no cache maintenance. With the MMU map from [`display.md`](display.md), the
   ED/TD/buffer area must be mapped non-cacheable, or cleaned/invalidated.
 - Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).
-- The `0xf0b00200` control block: read in full (`peripherals.md`), but
+- The `0xf0b00200` control block: read in full ([`peripherals.md`](peripherals.md)), but
   only `USB_PM` (`+0x34`) and `USB_DEVICE_CTL1` (`+0x90`) have names.
 - Would a cold start (no BOLT `usb init`, e.g. `USB` skipped) leave the PHY
   off? Not needed while programs start through BOLT.

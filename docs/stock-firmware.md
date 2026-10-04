@@ -2,17 +2,17 @@
 
 Observed on a second, unmodified KSTB6077 running the stock Android TV
 firmware: serial boot logs and a read-only BOLT session. Raw captures are in
-`evidence/stock/`:
+[`evidence/stock/`](evidence/stock/):
 
 | File | Contents |
 |---|---|
-| `android-normal-boot.txt` | full normal boot into Android |
-| `android-recovery-to-bolt.txt` | normal boot → recovery (SW4) → "Reboot to bootloader" → `BOLT>` |
+| [`android-normal-boot.txt`](evidence/stock/android-normal-boot.txt) | full normal boot into Android |
+| [`android-recovery-to-bolt.txt`](evidence/stock/android-recovery-to-bolt.txt) | normal boot → recovery (SW4) → "Reboot to bootloader" → `BOLT>` |
 | `attempts/` | earlier captures: four normal boots, and one multi-boot log with `RR:00000000` resets and the recovery kernel |
-| `help_summary.txt`, `help_android.txt`, `info_devices_env_rmem.txt` | the read-only BOLT session |
-| `aon_read_abort.txt` | the AON control read that external-aborted at `0xf041002c` |
+| `help_summary.txt`, [`help_android.txt`](evidence/stock/help_android.txt), `info_devices_env_rmem.txt` | the read-only BOLT session |
+| [`aon_read_abort.txt`](evidence/stock/aon_read_abort.txt) | the AON control read that external-aborted at `0xf041002c` |
 
-The stock DTB is in `../boot/stock_dtb.dts`.
+The stock DTB is in [`../boot/stock_dtb.dts`](../boot/stock_dtb.dts).
 
 ## Boot chain
 
@@ -44,11 +44,11 @@ The modified box stops at `BOLT>` because its `STARTUP` variable is unset.
 
 **Easiest way to a `BOLT>` prompt (any box): Ctrl-C.** BOLT cancels its
 autostart when it receives Ctrl-C on the console, right after its banner
-(`Automatic startup canceled via Ctrl-C`). `tools/kstb-bolt` sends Ctrl-C
+(`Automatic startup canceled via Ctrl-C`). [`tools/kstb-bolt`](../tools/kstb-bolt) sends Ctrl-C
 continuously during a power-on or a software reset, which always hits the
-window (tested from both, `evidence/stock/ctrlc_cancel_after_reset.txt`).
+window (tested from both, [`evidence/stock/ctrlc_cancel_after_reset.txt`](evidence/stock/ctrlc_cancel_after_reset.txt)).
 Ctrl-C cancels only the autoboot / `STARTUP` step; BOLT's boot splash still
-runs first, so HDMI comes up as usual (`hardware/display.md`).
+runs first, so HDMI comes up as usual ([`hardware/display.md`](hardware/display.md)).
 
 Without serial access: hold SW4 while powering on, then in the recovery menu
 choose "Reboot to bootloader".
@@ -61,7 +61,7 @@ How the reboot reason travels:
 - The value 98 (`'b'`; `'r'` = 114 for recovery, 0 for normal) survives the
   reset in an unidentified register.
   AON control `0xf0410000–0x27` matches the modified box, and `0xf041002c`
-  gives an external abort (`evidence/stock/aon_read_abort.txt`).
+  gives an external abort ([`evidence/stock/aon_read_abort.txt`](evidence/stock/aon_read_abort.txt)).
 - The `misc` partition's BCB command was empty in an earlier capture. After
   recovery's "Reboot to bootloader" it reads `bootonce-bootloader` on every
   later boot, including normal ones. On this "legacy" boot path the BSU
@@ -77,7 +77,7 @@ It fails without a USB host on `usbdev0`, and then drops to `BOLT>`.
 | `android boot [-rawfs] [-tee [-32]] [-i image]` | boots an Android boot image. `-tee` = "Android trusted boot with BL31/Trusty OS" (64-bit Trusty by default) |
 | `android fastboot -transport=usb\|tcp -device=…` | fastboot over USB or **TCP** |
 
-Full help text: `evidence/stock/help_android.txt`.
+Full help text: [`evidence/stock/help_android.txt`](evidence/stock/help_android.txt).
 
 ## Environment: stock vs modified box
 
@@ -112,10 +112,10 @@ the boot-logo framebuffer.
 | vendor | `0x0a9f00000` | 224 MB |
 | userdata | `0x0b7f00000` | 4353 MB |
 
-## Stock DTB (`../boot/stock_dtb.dts`)
+## Stock DTB ([`../boot/stock_dtb.dts`](../boot/stock_dtb.dts))
 
 This is the tree Linux actually receives: BOLT's base tree
-(`boot/original_dtb.dts`) after BOLT's `dt bolt` fix-ups and the BSU's
+([`boot/original_dtb.dts`](../boot/original_dtb.dts)) after BOLT's `dt bolt` fix-ups and the BSU's
 additions. Differences from the base tree:
 
 - `/memreserve/` entries for PSCI (`0x06400000`, 64 KB) and the splash
@@ -192,8 +192,8 @@ root**.
 
 | Readable as `shell` | Not readable (root only) |
 |---|---|
-| `/proc/interrupts` (`evidence/stock/adb/proc_interrupts_1.txt`, decoded in `hardware/interrupts.md`) | `/proc/iomem`, `dmesg`, `/sys/kernel/debug` |
-| `/proc/config.gz`: the kernel config (`evidence/stock/adb/kernel_config.gz`) | `/proc/partitions`, `/sys/class/gpio/gpiochip*/label` |
+| `/proc/interrupts` ([`evidence/stock/adb/proc_interrupts_1.txt`](evidence/stock/adb/proc_interrupts_1.txt), decoded in [`hardware/interrupts.md`](hardware/interrupts.md)) | `/proc/iomem`, `dmesg`, `/sys/kernel/debug` |
+| `/proc/config.gz`: the kernel config ([`evidence/stock/adb/kernel_config.gz`](evidence/stock/adb/kernel_config.gz)) | `/proc/partitions`, `/sys/class/gpio/gpiochip*/label` |
 | `/proc/modules`, `/proc/meminfo`, `/proc/mounts`, `getprop` (saved next to it) | `/vendor/lib/modules/*.ko`, `/vendor/usr/keylayout/*.kl` |
 | the live device tree's **node names** (`/sys/firmware/devicetree/base`; every property file is root-only) | `/sys/firmware/fdt` |
 | `dumpsys` (e.g. `dumpsys input`, `dumpsys power`) | |
@@ -213,9 +213,9 @@ keyboard as `usb-f0b00600.ohci_v2-1`.
 **Standby (SW1) is not a kernel suspend:** the
 console prints nothing, adb keeps answering, and `dumpsys power` shows
 `mWakefulness=Asleep`, `Display Power: state=OFF`. Waking turns HDMI back on
-(`hardware/interrupts.md`, "What each action fires").
+([`hardware/interrupts.md`](hardware/interrupts.md), "What each action fires").
 
-Live device tree vs `../boot/stock_dtb.dts` (node names only): the same
+Live device tree vs [`../boot/stock_dtb.dts`](../boot/stock_dtb.dts) (node names only): the same
 nodes, plus `firmware/android` and `bcmbt_rfkill`, which are added for the
 Android boot.
 
@@ -241,6 +241,6 @@ With a valid `splash` partition, BOLT itself drives HDMI during a normal boot:
 `SPLASH BMEM init @ 7defffff`, `Loaded BMP: W=1920 H=1080`. The modified box
 printed `bad file 'flash0.splash'` while that partition was repurposed by the
 Linux port; since the `splash` partition was re-added it shows the splash too
-(`hardware/display.md`).
+([`hardware/display.md`](hardware/display.md)).
 The same display can be brought up by hand from the prompt with any BMP, and
-it keeps running after `go -64`. See `hardware/display.md`.
+it keeps running after `go -64`. See [`hardware/display.md`](hardware/display.md).

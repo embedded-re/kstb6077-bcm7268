@@ -12,13 +12,13 @@ in the DTB and Linux registers it as `mmc0`.
 | eMMC | 7.28 GiB on SDHCI 1 (`0xf0200200`), 8-bit, 50 MHz |
 | SDHCI 0 | `0xf0200000`, removable-slot type, no card, no slot on the case |
 | From bare metal | no eMMC driver yet; BOLT copies data into RAM before `go` (~15 MB/s) |
-| Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header (`tools/make-wad-image`) |
+| Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header ([`tools/make-wad-image`](../../tools/make-wad-image)) |
 | Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT |
 
 ## The two SDHCI controllers (tested)
 
 Read on the stock box on 2026-10-04 at `BOLT>` after a power-on
-(`../evidence/sdhci_genet/`). Each controller has a standard SD host block
+([`../evidence/sdhci_genet/`](../evidence/sdhci_genet/)). Each controller has a standard SD host block
 and a Broadcom config block (DTB `reg-names` "host", "cfg"). Register names
 are from the SD Host Controller spec; the values are tested. The buffer data
 port `+0x20` was not read (reading it pops the FIFO).
@@ -69,7 +69,7 @@ what the partition holds now.
 ## Layout of `flash0.splash` (modified box)
 
 `flash0.splash` = LBA 15239168–15273594 = 34,427 sectors = 17,626,624 bytes
-(`display.md`, "Adding a splash partition").
+([`display.md`](display.md), "Adding a splash partition").
 
 | Partition offset | Contents |
 |---|---|
@@ -124,7 +124,7 @@ file was loaded.
 
 ## Recipe
 
-**Write once** (from the BOLT prompt, file over TFTP; see `../bolt/bolt.md` §9):
+**Write once** (from the BOLT prompt, file over TFTP; see [`../bolt/bolt.md`](../bolt/bolt.md) §9):
 
 ```
 ifconfig eth0 -auto
@@ -160,7 +160,7 @@ The `flash` command is at `0x0702fa6c`:
   call is `write(dev, buf, N, len)`, after a check that `N + len` fits in the
   device (`ERROR: File larger than flash device…`). `-offset` is parsed into
   a 64-bit value, but large raw-`flash0` offsets were seen to fail or wrap
-  (`display.md`), so stay in partition devices.
+  ([`display.md`](display.md)), so stay in partition devices.
 - **`-noerase`** skips the erase step. Without it, eMMC targets get an erase
   of `[N, N + len)` first.
 - **From `mem0`, BOLT first copies the data to its staging buffer at
@@ -176,7 +176,7 @@ above starts at the header, not at the splash container).
 
 ## RAM to use
 
-Free for a program's data: `0x10000000…` (BOLT `rmem`, `memory-map.md`).
+Free for a program's data: `0x10000000…` (BOLT `rmem`, [`memory-map.md`](memory-map.md)).
 Avoid BOLT `0x06ffc000–0x09200000`, PSCI `0x06400000`, `splash0`
 `0x7db08000–0x7df00000`, the second framebuffer `0x7d600000–0x7d9f47ff`,
 and BOLT's flash staging buffer `0x00040000+` while running `flash`.
@@ -188,4 +188,4 @@ To remove it, overwrite `0x100000…` with zeros the same way. Before any
 write, check the container: `load -raw -rawfs -addr=0x02000000 -max=0x3000
 flash0.splash`, then `crc -offset=0x02000000 -size=0x3000` = `0x985d62dc`
 (it was the same before and after this write). If it is ever damaged,
-rebuild it with `tools/make-splash`.
+rebuild it with [`tools/make-splash`](../../tools/make-splash).

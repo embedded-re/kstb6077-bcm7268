@@ -32,7 +32,7 @@ The tool sends Ctrl-C continuously, so timing doesn't matter. Tested on the
 stock box: from a power-cycle (`RR:00000003`) and with `--reset`
 (`RR:00000200`, about 5.5 s back to `BOLT>`). Ctrl-C only cancels the
 autoboot / `STARTUP` step: BOLT's boot splash (and so HDMI) still runs before
-the prompt (`hardware/display.md`).
+the prompt ([`hardware/display.md`](hardware/display.md)).
 
 ## Building the monitor
 
@@ -44,7 +44,7 @@ It's linked at `0x01000000`, so it must be loaded to exactly that address.
 
 ## Development loop: upload over the serial console (recommended)
 
-No network, no TFTP server, no USB stick. `tools/kstb-run` writes the binary
+No network, no TFTP server, no USB stick. [`tools/kstb-run`](../tools/kstb-run) writes the binary
 into RAM through BOLT's `e -w` command (32 words = 128 bytes per command),
 checks every write, compares BOLT's `crc` with the file's CRC32, and then
 runs it:
@@ -79,7 +79,7 @@ Requirements and limits:
 
 ## Loading from a USB stick (FAT32)
 
-Copy `bootstrap.bin` to the stick as `boot.bin`. `boot/sysinit.txt` on the
+Copy [`bootstrap.bin`](../assembly/bootstrap.bin) to the stick as `boot.bin`. [`boot/sysinit.txt`](../boot/sysinit.txt) on the
 stick runs automatically at boot. By hand:
 
 ```
@@ -121,14 +121,14 @@ is untested.
 
 Caution: **32-bit `go` may enter in HYP mode with the MMU off.** The stock kernel is
 started through the same `32 bit PSCI boot` path and reports `CPU: All CPU(s)
-started in HYP mode` (`stock-firmware.md`). If `go` behaves the same, a 32-bit
+started in HYP mode` ([`stock-firmware.md`](stock-firmware.md)). If `go` behaves the same, a 32-bit
 program starts in HYP mode with its MMU off, not in SVC under BOLT's page
 table. Not yet checked: print `cpsr` and HSCTLR from a 32-bit program. BOLT's
-own commands (`d`, `e`) do run under BOLT's MMU (`hardware/memory-map.md`).
+own commands (`d`, `e`) do run under BOLT's MMU ([`hardware/memory-map.md`](hardware/memory-map.md)).
 
 The DTB address is `0x07613000` in all modes. `go`/`boot` close the network
 first (`-noclose` keeps it open). `-nopsci` boots without PSCI (untested). A
-32-bit program inherits BOLT's page table (`hardware/memory-map.md`).
+32-bit program inherits BOLT's page table ([`hardware/memory-map.md`](hardware/memory-map.md)).
 
 ### State of a 64-bit program at entry (read by a probe on core 0)
 
@@ -163,5 +163,5 @@ go ...
 ## Serial console
 
 UART0, 115200 8N1, on the 5-pin "UART shell" header (see
-`images/PCB.png`). The modified box stops at `BOLT>` when autoboot finds no
+[`images/PCB.png`](images/PCB.png)). The modified box stops at `BOLT>` when autoboot finds no
 USB stick (its `STARTUP` is unset); otherwise use Ctrl-C (above).

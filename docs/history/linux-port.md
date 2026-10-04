@@ -385,12 +385,12 @@ The second stage was still pending (a qemu binfmt registration problem).
 
 ## 9. Files of that phase
 
-Only `sysinit.txt` and the DTB variants in `boot/` are in this repository.
+Only [`sysinit.txt`](../../boot/sysinit.txt) and the DTB variants in [`boot/`](../../boot/) are in this repository.
 The rest stayed local.
 
 | File | Notes |
 |---|---|
-| `sysinit.txt` | BOLT autoboot script on the USB stick ([`../../boot/sysinit.txt`](../../boot/sysinit.txt)) |
+| [`sysinit.txt`](../../boot/sysinit.txt) | BOLT autoboot script on the USB stick ([`../../boot/sysinit.txt`](../../boot/sysinit.txt)) |
 | `dtb_usb_debian.dtb` | patched DTB for the USB Debian boot |
 | `dtb_working_fixed.dts` | decompiled and patched DTS source |
 | `fix_dtb_v2.py` | Python script that patched the DTB |

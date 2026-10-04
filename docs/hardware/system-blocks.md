@@ -30,7 +30,7 @@ Example: `00000dd8` → code 748 → 45.8 °C, matching BOLT's own reading
 
 It runs under BOLT, so no setup is needed.
 
-**Alarm (tested 2026-10-03, `../evidence/sys/addrmap1_probe.s`):** write
+**Alarm (tested 2026-10-03, [`../evidence/sys/addrmap1_probe.s`](../evidence/sys/addrmap1_probe.s)):** write
 ALARM = COUNTER + 3. EVENT bit 0 turned `1` in the second COUNTER reached
 ALARM (`0xd0`) and stayed `1`. Writing `1` to EVENT cleared it. ALARM reads
 `0` after a reset.
@@ -39,7 +39,7 @@ The DTB routes the wake timer to the AON L2 controller `0xf0410640`
 (`sys_pm`) bit 4. With that controller fully masked (mask `007fffff`, as
 after BOLT), its status register stayed `0` while EVENT was set, so status
 there is not visible while masked (unlike the AON UPG controller
-`0xf0419c00`, `interrupts.md`). Unmasking it was not tried.
+`0xf0419c00`, [`interrupts.md`](interrupts.md)). Unmasking it was not tried.
 
 ## Watchdog
 
@@ -85,7 +85,7 @@ to AON `0xf0410000`, which clears the history. That's why the register reads
 `0` once BOLT is running. BOLT passes the saved value to Linux as the DTB
 `/bolt` `reset-history` (and the names as `reset-list`).
 
-Tested 2026-10-03 (`../evidence/sys/sys_probe.s`, output next to it):
+Tested 2026-10-03 ([`../evidence/sys/sys_probe.s`](../evidence/sys/sys_probe.s), output next to it):
 
 | Reset | Banner `RR:` | `0x07069844` at `BOLT>` | `0xf041006c` at `BOLT>` |
 |---|---|---|---|

@@ -1,8 +1,8 @@
 # Device tree files: which one is original
 
-## `boot/original_dtb.dts`: the original
+## [`boot/original_dtb.dts`](../../boot/original_dtb.dts): the original
 
-The vendor device tree BOLT was running when `docs/evidence/rescue.txt` was
+The vendor device tree BOLT was running when [`docs/evidence/rescue.txt`](../evidence/rescue.txt) was
 captured, dumped live with `dt show` (`DT_SIZE a53e` = 42,258 bytes), and
 reproduced exactly. Its `chosen` node is stock:
 
@@ -15,7 +15,7 @@ chosen {
 It has no `bootargs`, no `no-map` and no `bl31` node. This is the tree to
 trust for bare-metal work.
 
-## `boot/stock_dtb.dts`: what a stock box hands to Linux
+## [`boot/stock_dtb.dts`](../../boot/stock_dtb.dts): what a stock box hands to Linux
 
 Dumped with `dt show` from an untouched box at `BOLT>` (`DT_ADDRESS 7614000`,
 `DT_SIZE b65e` = 46,686 bytes). It is the base tree above after BOLT's
@@ -23,10 +23,10 @@ Dumped with `dt show` from an untouched box at `BOLT>` (`DT_ADDRESS 7614000`,
 node, `BL31`/`SRR` reservations, the Ethernet PHY node, MAC addresses, the
 `gpio_keys_polled` `BT_PAIR` key, ~30 `pmap` clock nodes and a `/bolt` node
 (`reset-history`, `timer-wdog`). SATA is removed. The full list is in
-`../stock-firmware.md`. It does not yet contain the BSU's kernel command line
+[`../stock-firmware.md`](../stock-firmware.md). It does not yet contain the BSU's kernel command line
 and partition list; those are added at `android boot`.
 
-## `boot/dtb.dtb` / `boot/Decompiled_dtb.dts`: a patched variant
+## [`boot/dtb.dtb`](../../boot/dtb.dtb) / [`boot/Decompiled_dtb.dts`](../../boot/Decompiled_dtb.dts): a patched variant
 
 A later variant from the Linux port. Differences from the original:
 

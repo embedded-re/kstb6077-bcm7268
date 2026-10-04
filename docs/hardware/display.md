@@ -12,7 +12,7 @@ Linux port repurposed it); without it, the boot splash stops at
 does nothing. A new `splash` partition was added to the modified box
 (see "Adding a splash partition" below). Since then both boxes show the splash
 and keep the display running after `go -64` (tested). Raw captures are in
-`../evidence/display/`.
+[`../evidence/display/`](../evidence/display/).
 
 ## Summary
 
@@ -36,7 +36,7 @@ ifconfig eth0 -auto
 load -raw -splash -tftp <PC IP>:test1080.bmp
 ```
 
-- The file must be a **1920 × 1080, 24-bit BMP**. `../evidence/display/make_test_bmp.py`
+- The file must be a **1920 × 1080, 24-bit BMP**. [`../evidence/display/make_test_bmp.py`](../evidence/display/make_test_bmp.py)
   generates the test pattern used here.
 - BOLT converts it to RGB565, flips the BMP's bottom-up rows and draws it,
   centred, into the framebuffer(s) the boot splash already set up. It prints
@@ -50,7 +50,7 @@ load -raw -splash -tftp <PC IP>:test1080.bmp
 - `load -splash -rawfs flash0.splash` does **not** work: the splash partition
   uses BOLT's own container format (`Invalid boot block on disk`). BOLT reads
   that partition itself during every boot, before the prompt and before
-  AUTOBOOT. A Ctrl-C cancel (`../booting.md`) doesn't skip it.
+  AUTOBOOT. A Ctrl-C cancel ([`../booting.md`](../booting.md)) doesn't skip it.
 
 ## Framebuffer layout
 
@@ -92,7 +92,7 @@ registers that BOLT's display lists use all read without an abort (see
 the display blocks may abort.
 
 Bare-metal code should read `0xf0641048` instead of hard-coding the address
-(`../evidence/display/fbdraw_probe.s` does exactly that).
+([`../evidence/display/fbdraw_probe.s`](../evidence/display/fbdraw_probe.s) does exactly that).
 
 ## What's in front of the pixels: display lists (do not touch)
 
@@ -100,7 +100,7 @@ Bare-metal code should read `0xf0641048` instead of hard-coding the address
 lists**. The first list entry is at `0x7db08fa0`; the bytes before it are
 random leftover RAM contents (they differ between boots). With a `pcm0` in the splash
 container, BOLT puts the audio buffer at `0x7dada100–0x7db08eff`, and the
-lists starting at `0x7db08fa0` stay intact (tested, see `audio.md`). The RDC
+lists starting at `0x7db08fa0` stay intact (tested, see [`audio.md`](audio.md)). The RDC
 lists are: register-write programs that the display hardware's register-DMA
 controller fetches from RAM by itself. The DTB's memory-client list names
 `bvn_rdc`, and the bus arbiter lists an `rdc_0` master. The format, how
@@ -108,7 +108,7 @@ BOLT's lists run, and how to run a list of our own are in "Display lists
 (RDC)" below.
 
 **Overwriting this area blanks the screen** until the next reboot (tested by
-accident). Full dump: `../evidence/display/splash0_rdc_lists_0x7db08000.txt`.
+accident). Full dump: [`../evidence/display/splash0_rdc_lists_0x7db08000.txt`](../evidence/display/splash0_rdc_lists_0x7db08000.txt).
 
 ## Drawing from bare-metal code: the confirmed recipe
 
@@ -118,7 +118,7 @@ accident). Full dump: `../evidence/display/splash0_rdc_lists_0x7db08000.txt`.
 3. Read the base from `0xf0641048`, then write RGB565 halfwords at
    `base + y × 3840 + x × 2`.
 
-Tested: `../evidence/display/fbdraw_probe.s` read `surface @ 7db0b700` and
+Tested: [`../evidence/display/fbdraw_probe.s`](../evidence/display/fbdraw_probe.s) read `surface @ 7db0b700` and
 drew a 400 × 200 magenta box in the centre of the screen, over the BMP.
 The display was still on and refreshing after `go`.
 
@@ -130,9 +130,9 @@ pipeline's registers.
 
 Measured on the modified box (2026-10-02) at EL2 after `go -64`, with the
 generic timer (27 MHz). The area is 1600 × 1000 (a 320 × 200 image scaled ×5),
-centred at (160, 40). Probes: `../evidence/display/video_probe.s` (MMU off,
-as entered) and `../evidence/display/video_probe_mmu.s` (MMU on, see below).
-`../evidence/display/video_demo_mmu.s` runs the same drawing as a demo to
+centred at (160, 40). Probes: [`../evidence/display/video_probe.s`](../evidence/display/video_probe.s) (MMU off,
+as entered) and [`../evidence/display/video_probe_mmu.s`](../evidence/display/video_probe_mmu.s) (MMU on, see below).
+[`../evidence/display/video_demo_mmu.s`](../evidence/display/video_demo_mmu.s) runs the same drawing as a demo to
 watch (35 fps paced, then full speed).
 
 | Test | MMU off | MMU on |
@@ -179,7 +179,7 @@ from `BOLT>` with the watchdog armed (one word each, no abort):
 
 | Register | Value | Meaning |
 |---|---|---|
-| `0xf0603484` | `5000xxxx`, low bits count up | **frame counter**: one step every 16,683 µs = **59.94 Hz** (timed over 60 steps by `vsync_probe.s`) |
+| `0xf0603484` | `5000xxxx`, low bits count up | **frame counter**: one step every 16,683 µs = **59.94 Hz** (timed over 60 steps by [`vsync_probe.s`](../evidence/display/vsync_probe.s)) |
 | `0xf0603488` | `7db0b700` | surface address the RDC copies into `0xf0641048` |
 | `0xf060348c` | `7db0b700` | same value; written together with `+0x488` |
 | `0xf0603498` | `60845e89` | didn't change between reads; unknown |
@@ -190,7 +190,7 @@ and the picture switches whole, with no half-drawn frame (tested). A second
 buffer at `0x7d600000` (`0x3f4800` bytes, free `rmem` below `splash0`) is
 displayed fine. It has the same layout as BOLT's: pitch 3840, RGB565.
 
-Double-buffered loop (`../evidence/display/vsync_probe.s`):
+Double-buffered loop ([`../evidence/display/vsync_probe.s`](../evidence/display/vsync_probe.s)):
 ```
 draw the frame into the back buffer
 write the back buffer's address to 0xf0603488 and 0xf060348c
@@ -205,11 +205,11 @@ swap front and back
 | palette path (320 × 200 → palette → ×5), 2 ticks per frame | 33,366 µs/frame, 29.9 fps | motion clean; the picture itself shows 5 × 5 pixel blocks, as any ×5 scaling does |
 
 - The mode is **1080p at 59.94 Hz**, not 60 Hz (tested by the counter). This
-  matches the HDMI audio finding in `audio.md`.
+  matches the HDMI audio finding in [`audio.md`](audio.md).
 - Stock Android 11 uses **1080p at 50 Hz** on the same TV (PHILIPS FTV):
   the display-frame interrupt `VEC` (GIC ID 47) counted 502 in 10.05 s, and
   `dumpsys display` reports `refreshRate=50.0`. So the 59.94 Hz is BOLT's
-  choice, not the TV's (`interrupts.md`).
+  choice, not the TV's ([`interrupts.md`](interrupts.md)).
 - A program drawing at 35 fps on a 59.94 Hz display gets an uneven mix of 1- and 2-tick
   frames. Locking to 30 fps (2 ticks) or 60 fps keeps motion even.
 - Writing only `0xf0603488`, or only `+0x48c`, wasn't tried. The probe always
@@ -240,7 +240,7 @@ nothing touches BL31. Page tables at `0x10600000`, test data at
 ## Display lists (RDC)
 
 Tested on the modified box on 2026-10-03, from `go -64` (EL2, MMU off).
-Probes and outputs are in `../evidence/display/`.
+Probes and outputs are in [`../evidence/display/`](../evidence/display/).
 
 ### List format
 
@@ -270,7 +270,7 @@ Opcodes `15`–`17` exist in the dumper but don't appear in BOLT's lists.
 
 `tools/re/rdc.py DUMP [START]` decodes a hex dump with this table, skipping
 the leftover RAM between lists. The decoded lists:
-`../evidence/display/splash0_rdc_lists_decoded.txt`.
+[`../evidence/display/splash0_rdc_lists_decoded.txt`](../evidence/display/splash0_rdc_lists_decoded.txt).
 
 Example, the surface reload that runs every frame (see "Vsync and double
 buffering"):
@@ -328,7 +328,7 @@ the prompt is the one at `0x7db09ae0`.
 
 ### Reading the registers the lists use
 
-`bvn_read_probe.s` read every register that the decoded lists write or read:
+[`bvn_read_probe.s`](../evidence/display/bvn_read_probe.s) read every register that the decoded lists write or read:
 590 addresses, all through an abort-safe read. It left out the HDMI registers
 `0xf06fa828/884/888/898`.
 
@@ -339,7 +339,7 @@ the prompt is the one at `0x7db09ae0`.
 - The rest are RDC variables, the descriptor address (see above), and HDMI
   registers that the lists change by read-modify-write.
 
-Output: `../evidence/display/bvn_read_probe_output.txt`.
+Output: [`../evidence/display/bvn_read_probe_output.txt`](../evidence/display/bvn_read_probe_output.txt).
 
 ### What the lists write, block by block
 
@@ -359,7 +359,7 @@ functions). Only the registers marked tested below have been changed.
 
 ### Running our own list (tested)
 
-The RDC can run a list of our own from free RAM. `rdc_ownlist_probe.s`:
+The RDC can run a list of our own from free RAM. [`rdc_ownlist_probe.s`](../evidence/display/rdc_ownlist_probe.s):
 
 1. Copy the 73 words at `0x7db09c60` to `0x02000000` and check the copy.
    BOLT's lists are only read.
@@ -378,14 +378,14 @@ returned within a second.
 Why this matters: registers that the per-frame list writes can't be changed
 by a direct write. The list puts its own value back at the next frame (about
 16.7 ms). `0xf0645810` written directly read `0018b87b` again one second
-later, and nothing showed on the TV (`gfd_bg_probe.s`). Registers that only
+later, and nothing showed on the TV ([`gfd_bg_probe.s`](../evidence/display/gfd_bg_probe.s)). Registers that only
 the set-up lists write keep a direct write (GFD `+0x01c`, `+0x044`, `+0x170`
 held their values for 10 s).
 
 ## Compositor CMP0 (tested)
 
-All changed through our own list (`rdc_ownlist_visible_probe.s`,
-`cmp_window_probe.s`, `cmp_window_pos_probe.s`), and observed on the TV.
+All changed through our own list ([`rdc_ownlist_visible_probe.s`](../evidence/display/rdc_ownlist_visible_probe.s),
+[`cmp_window_probe.s`](../evidence/display/cmp_window_probe.s), [`cmp_window_pos_probe.s`](../evidence/display/cmp_window_pos_probe.s)), and observed on the TV.
 
 | Register | BOLT | What it does (tested) |
 |---|---|---|
@@ -411,7 +411,7 @@ frame: `0xf064580c = 07800438` (canvas size, named by Nexus' builder),
 ## Graphics feeder GFD0: source width and scaler
 
 Register roles from `BVDC_P_GfxFeeder_BuildRul_isr`; effects tested on the
-TV (`gfd_hzoom_probe.s`, `gfd_bg_probe.s`).
+TV ([`gfd_hzoom_probe.s`](../evidence/display/gfd_hzoom_probe.s), [`gfd_bg_probe.s`](../evidence/display/gfd_bg_probe.s)).
 
 | Register | BOLT | From Nexus | Tested |
 |---|---|---|---|
@@ -429,7 +429,7 @@ but the picture isn't stretched.
 
 ## How BOLT's splash works (reverse-engineered)
 
-From BOLT's own code, dumped from RAM and disassembled (`../bolt/bolt.md` §11).
+From BOLT's own code, dumped from RAM and disassembled ([`../bolt/bolt.md`](../bolt/bolt.md) §11).
 BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
 
 ### Boot splash (`0x070107f4`, runs in `custom_early`, before the prompt)
@@ -444,7 +444,7 @@ BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
    `SPLASH: bad file '…'` → `SPLASH: load failed` → the display is never set up.
 6. Run the display script and draw `bmp0` (`0x07011608`): fills the
    **surface array** (4 pointers at `0x0706ae20`) and prints `Loaded BMP: W=… H=…`.
-7. Optional audio (`pcm0`), see `audio.md`.
+7. Optional audio (`pcm0`), see [`audio.md`](audio.md).
 
 Other strings in the same code: `Splash screen disabled via Ctrl-S` (a
 boot-time key), and the default file name `splash.bmp`.
@@ -514,7 +514,7 @@ end of `ROOT`. `KRN`, `DTB` and everything before `ROOT` are unchanged.
 Method (all from BOLT, over the serial console):
 
 1. Read the primary GPT into RAM: `load -raw -rawfs -addr=0x02000000 -max=0x4400 flash0`.
-   Dump it to the PC with `tools/kstb-dump` and decode it.
+   Dump it to the PC with [`tools/kstb-dump`](../../tools/kstb-dump) and decode it.
 2. On the PC, change `ROOT`'s end LBA, add the `splash` entry, recompute the
    entry-array CRC and the header CRC. Check with `fdisk -l` on a sparse image.
 3. Upload sectors 0–5 (`0xc00` bytes; sector 0 unchanged) to RAM with
@@ -525,9 +525,9 @@ Method (all from BOLT, over the serial console):
 5. Write the container: `flash -noerase -mem=<addr> -memsize=<size> mem0 flash0.splash`.
 
 BOLT uses only the first 512 KB of the partition. The rest now holds a data
-file for bare-metal programs at offset 1 MB (`storage.md`).
+file for bare-metal programs at offset 1 MB ([`storage.md`](storage.md)).
 
-The before/after images of sectors 0–5 are in `../evidence/gpt/`. Writing the
+The before/after images of sectors 0–5 are in [`../evidence/gpt/`](../evidence/gpt/). Writing the
 "before" image back with the same `flash` command restores the original table.
 
 Constraints found on the way:

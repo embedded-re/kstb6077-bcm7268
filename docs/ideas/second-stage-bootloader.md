@@ -13,7 +13,7 @@ BOLT → load shim + zImage + DTB → go <shim>
      → shim: inspect / fix hardware state → hand off to Linux
 ```
 
-The shim would reuse the existing monitor pieces: UART output, `build.sh`, and
+The shim would reuse the existing monitor pieces: UART output, [`build.sh`](../../assembly/build.sh), and
 the BOLT `load` + `go` flow.
 
 ## What it can and cannot fix
@@ -42,7 +42,7 @@ earlier `IRQ_TYPE_NONE` → `LEVEL_HIGH` fix.
 ## Finding: BOLT can start the shim at EL3
 
 Tested 2026-09-30. `boot -64 -el3 …` launched a test program **as the secure monitor at EL3**
-(AArch64), and `go -64` launches at EL2 (details in `../bolt/bolt.md` §9). That
+(AArch64), and `go -64` launches at EL2 (details in [`../bolt/bolt.md`](../bolt/bolt.md) §9). That
 removes the biggest unknown in point 1 above: a shim started this way runs
 secure, so it can move GIC interrupts into the non-secure group before
 dropping to Linux. The costs: the shim must be AArch64 code, and it takes
@@ -60,7 +60,7 @@ Tested 2026-09-30. Read from EL3 (secure view): **IGROUPR1–7 = `ffffffff`, so 
 secure. The GIC distributor and CPU interface are enabled for both groups.
 A non-secure Linux kernel can see and configure every peripheral interrupt,
 so point 1 above was **not** the cause of the old Linux IRQ problem.
-Details: `../hardware/interrupts.md` ("GIC state at handoff").
+Details: [`../hardware/interrupts.md`](../hardware/interrupts.md) ("GIC state at handoff").
 
 What remains plausible: point 2 (clocks, power or pin mux that Linux has no
 driver for) and DTB errors. For those a shim doesn't need EL3: `go -64` (EL2)
@@ -70,7 +70,7 @@ or a 32-bit shim is enough.
 
 Turning the MMU off for the handoff also makes the GIC reachable
 (`0xffd01000` / `0xffd02000`). BOLT's page tables don't map it; see
-`../hardware/memory-map.md`. The shim doubles as the tool for inspecting GIC state.
+[`../hardware/memory-map.md`](../hardware/memory-map.md). The shim doubles as the tool for inspecting GIC state.
 
 ## Test plan
 

@@ -19,26 +19,26 @@ the register says otherwise. From BOLT: `d -w <addr> 4` reads one word,
 | `0xf064105c` | display GFD: **external abort** on read |
 | `0x7db08000–0x7db0b6ff` | display lists in RAM: overwriting them **blanks the screen** until reboot |
 | `0xf06fa828`, `0xf06fa884`, `0xf06fa888`, `0xf06fa898` | HDMI audio packet set-up: writing them **broke the picture** |
-| `0xf0460000` (PCIe: reset by `0xf0469210` bit 1), `0xf0b02000` (USB BDC: reset by `0xf0b00234` bit 23), `0xf1200000–0xf120bfff` (V3D GPU: power island `0xf041d020`, `gpu.md`), `0xf0402800` (nothing there) | **external abort** on read while in reset / off (`peripherals.md`) |
-| any address not on this sheet | unknown: may abort. Read new ones one word at a time, watchdog armed, or with the abort-safe probe (`peripherals.md`) |
+| `0xf0460000` (PCIe: reset by `0xf0469210` bit 1), `0xf0b02000` (USB BDC: reset by `0xf0b00234` bit 23), `0xf1200000–0xf120bfff` (V3D GPU: power island `0xf041d020`, [`gpu.md`](gpu.md)), `0xf0402800` (nothing there) | **external abort** on read while in reset / off ([`peripherals.md`](peripherals.md)) |
+| any address not on this sheet | unknown: may abort. Read new ones one word at a time, watchdog armed, or with the abort-safe probe ([`peripherals.md`](peripherals.md)) |
 | under BOLT's 32-bit `go`: anything outside `0xf0000000–0xf12fffff` | unmapped in BOLT's MMU (the GIC hung the board this way) |
 
-## RAM (`memory-map.md`)
+## RAM ([`memory-map.md`](memory-map.md))
 
 | Address | What |
 |---|---|
 | `0x00040000–0x0103ffff` | BOLT's `flash` staging buffer (only while `flash` runs) |
 | `0x01000000` | where `kstb-run` loads your program (`go -64` entry) |
-| `0x06400000–0x0640ffff` | PSCI monitor `smm64` (EL3): don't overwrite. `smc #0` calls it: version, CPU_ON (`cpu-cores.md`) |
+| `0x06400000–0x0640ffff` | PSCI monitor `smm64` (EL3): don't overwrite. `smc #0` calls it: version, CPU_ON ([`cpu-cores.md`](cpu-cores.md)) |
 | `0x06ffc000–0x09200000` | BOLT (page table `0x07000000`, code, heap, stack). **Free after `go -64`** |
-| `0x10000000…` | free RAM for programs (the WAD is loaded here, `storage.md`). All free RAM: `memory-map.md`, "RAM for a bare-metal program" (~2,000 MB, tested) |
+| `0x10000000…` | free RAM for programs (the stored data file is loaded here, [`storage.md`](storage.md)). All free RAM: [`memory-map.md`](memory-map.md), "RAM for a bare-metal program" (~2,000 MB, tested) |
 | `0x7d600000–0x7d9f47ff` | second framebuffer for double buffering (free `rmem`) |
 | `0x7db08000–0x7db0b6ff` | display lists: never write |
 | `0x7db0b700–0x7defffff` | **framebuffer**: pixel(x, y) = `0x7db0b700 + y × 3840 + x × 2`, RGB565 |
 | `0x7df00000–0x7dffffff` | BL31 (secure firmware): don't touch |
 | `0x7e000000–0x7fffffff` | SRR (secure): don't touch |
 
-## UART0, the console: `0xf040c000` (`uart.md`)
+## UART0, the console: `0xf040c000` ([`uart.md`](uart.md))
 
 16550, registers 4 bytes apart, 115200 8N1 set by BOLT (81 MHz clock, divisor 44).
 UART1 `0xf040d000` and UART2 `0xf040e000` have the same layout (pins unknown).
@@ -54,7 +54,7 @@ UART1 `0xf040d000` and UART2 `0xf040e000` have the same layout (pins unknown).
 | `0xf040c018` | MSR | bit 4 = CTS (`10`) | — |
 | `0xf04e0488` | UART clock gate | bits 4/5/6 = UART0/1/2, 1 = **off**; reads `0` | — |
 
-## AON GPIO, LEDs and buttons: `0xf0419c80` (`gpio.md`)
+## AON GPIO, LEDs and buttons: `0xf0419c80` ([`gpio.md`](gpio.md))
 
 Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 
@@ -76,14 +76,14 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | 7 | **SW4** recovery / BT-pairing button, 0 = pressed |
 | 21, 26 | Wi-Fi / WLAN power (DTB) (not tested) |
 
-## System blocks (`system-blocks.md`)
+## System blocks ([`system-blocks.md`](system-blocks.md))
 
 | Address | Name | What it does |
 |---|---|---|
 | `0xf0404000` | chip family ID | `72680010` = BCM7268 B0 |
 | `0xf0404004` | chip product ID | `72680010` |
 | `0xf040401c` / `20` | straps | `00000f1e` / `0`: bits 0–4 = boot device (`0x1e` = eMMC), bit 9 = SATA off / PCIe on |
-| `0xf0404030` / `34`, `0xf0404520` | **OTP fuses**: read only, never write | `40` / `00a02000` / `0`; field names in `system-blocks.md` |
+| `0xf0404030` / `34`, `0xf0404520` | **OTP fuses**: read only, never write | `40` / `00a02000` / `0`; field names in [`system-blocks.md`](system-blocks.md) |
 | `0xf041006c` | **reset history** (`RR:`) | bit 0 power-on, 6 watchdog, 9 software; BOLT clears it at boot |
 | `0x07069844` | BOLT's copy of the reset history (RAM) | `d -w 0x07069844 1` at `BOLT>` = last reset reason |
 | `0xf0404304` | reset source enable | write `1` first |
@@ -99,7 +99,7 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | `0xf0410000–0xf0410027` | AON control | readable (`0x2c` aborts) |
 | `0xf0410200–0xf04105ff` | **AON SRAM**, 1 KB | survives software and watchdog resets (use the end; Linux uses the start) |
 
-## GISB bus arbiter (`peripherals.md`)
+## GISB bus arbiter ([`peripherals.md`](peripherals.md))
 
 | Address | Name | What it does |
 |---|---|---|
@@ -108,14 +108,14 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | `0xf04007f4` | error capture status | `0000083d` after a failed read |
 | `0xf0400000–0x1e4`, `0xf04007e4–0x7fc` | readable | `0xf04001e8–0x7e0` abort |
 
-## V3D GPU power (`gpu.md`)
+## V3D GPU power ([`gpu.md`](gpu.md))
 
 | Address | Name | What it does |
 |---|---|---|
 | `0xf041d020` | V3D power island control | write `1d00` → wait `(v & 0x74000000) == 0x34000000` (1.6 ms) = **on**; write `b00` → wait `(v & 0x72000000) == 0x42000000` = off. After BOLT: `424e0908` (off) |
 | `0xf120000c` | V3D hub IDENT1 | `000e1133` = V3D 3.3 (only while powered) |
 
-## M2MC 2D blitter: `0xf09b0000` (`2d-blitter.md`)
+## M2MC 2D blitter: `0xf09b0000` ([`2d-blitter.md`](2d-blitter.md))
 
 Names from the stock `nexus.ko` (`BGRC_`) where it has them.
 
@@ -126,11 +126,11 @@ Names from the stock `nexus.ko` (`BGRC_`) where it has them.
 | `0xf09b0014` | first packet address | physical address of the first packet |
 | `0xf09b0018` | current packet address | the last packet's address when done |
 | `0xf09b001c` | blit status | `0` when idle |
-| `0xf09b02f0`, `0xf09b1808` | reset (no name) | reset sequence in `2d-blitter.md` |
+| `0xf09b02f0`, `0xf09b1808` | reset (no name) | reset sequence in [`2d-blitter.md`](2d-blitter.md) |
 | `0xf09b0400–0xf09b05fc` | palette | entries 0–127 of the last palette loaded by a packet |
 | `0xf04e04e8` | M2MC0 clocks | `7` = all on (after BOLT) |
 
-## IR receiver kbd1: `0xf0419900` (`ir.md`)
+## IR receiver kbd1: `0xf0419900` ([`ir.md`](ir.md))
 
 kbd2 at `0xf0419980`, kbd3 at `0xf0419a00`, same layout. Names from Nexus `BKIR_*`.
 
@@ -141,7 +141,7 @@ kbd2 at `0xf0419980`, kbd3 at `0xf0419a00`, same layout. Names from Nexus `BKIR_
 | `0xf0419914` | CMD | BOLT: `7`. bit 4 CIR on, bit 5 interrupt enable; NEC on = `37` |
 | `0xf0419918` / `1c` | CIR_ADDR / CIR_DATA | timing parameter index / value (27 written for NEC) |
 
-## Interrupts (`interrupts.md`)
+## Interrupts ([`interrupts.md`](interrupts.md))
 
 | Address | Name | What it does |
 |---|---|---|
@@ -156,7 +156,7 @@ kbd2 at `0xf0419980`, kbd3 at `0xf0419a00`, same layout. Names from Nexus `BKIR_
 GIC IDs: AON L2 (SW1, buttons) 98, UART0 102, UART1 103, UART2 104, EHCI0 122,
 OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127; generic timers 26/27/29/30.
 
-## Display (`display.md`)
+## Display ([`display.md`](display.md))
 
 | Address | Name | What it does |
 |---|---|---|
@@ -171,9 +171,9 @@ OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127; generic timers 26/27/29/30.
 | `0xf0645988` | CMP0 graphics window size | `w << 16 \| h`, BOLT `07800438`. Own list only |
 | `0xf064598c` | CMP0 graphics window position | `x << 16 \| y`, BOLT `0`. Own list only |
 
-The 590 registers the display lists use all read safely; see `display.md`, "Display lists (RDC)".
+The 590 registers the display lists use all read safely; see [`display.md`](display.md), "Display lists (RDC)".
 
-## Audio, HDMI (`audio.md`)
+## Audio, HDMI ([`audio.md`](audio.md))
 
 Only after a boot whose splash container has `pcm0` (otherwise these blocks
 may not be set up (not tested)).
@@ -189,7 +189,7 @@ may not be set up (not tested)).
 | `0xf06fa0cc`, `0xf06fa0d0` | HDMI audio CTS | `0x00022551` (140625) |
 | `0xf0cb0300` | HDMI audio output port | bit 31 cleared = TV goes silent |
 
-## USB (`usb.md`)
+## USB ([`usb.md`](usb.md))
 
 The USB-A port = EHCI1 (high speed, e.g. USB sticks) + OHCI1 (low/full
 speed, e.g. keyboards). The internal Bluetooth adapter = EHCI0 + OHCI0.
@@ -218,7 +218,7 @@ speed, e.g. keyboards). The internal Bluetooth adapter = EHCI0 + OHCI0.
 
 These live **inside the CPU**. They have names, no addresses, and no
 `ldr`/`str` reaches them: use `mrs`/`msr` (AArch64). Values at EL2 after
-`go -64` (`../bolt/bolt.md` §10).
+`go -64` ([`../bolt/bolt.md`](../bolt/bolt.md) §10).
 
 | Name | Value | What it is |
 |---|---|---|
