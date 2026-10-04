@@ -93,9 +93,9 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xffd01000` | GIC-400 | DTB | | `interrupts.md` |
 | `0xffe00000` | boot SRAM, 128 KB | DTB | `00000000` | all readable from EL2, almost all zero (`memory-map.md`) |
 
-## The four switched-off blocks (investigated 2026-10-02)
+## The four switched-off blocks
 
-Probes (read-only, abort-safe): `clk_gate_probe.s`, `swinit_probe.s`,
+Investigated on the modified box, 2026-10-02. Probes (read-only, abort-safe): `clk_gate_probe.s`, `swinit_probe.s`,
 `pcie_usbctrl_probe.s` in `../evidence/periph/`, outputs next to them.
 
 ### Clocks are not the reason (tested)
@@ -208,9 +208,9 @@ BOLT prints these as `GISB Address`, `GISB Data`, `GISB Master` (its code at
 which address caused it, if the board can be brought back without power loss
 (not tried across a watchdog reset).
 
-### The whole block (tested 2026-10-03)
+### The whole block (tested)
 
-Every word of `0xf0400000–0x7ff`, read by `../evidence/sys/addrmap1_probe.s`
+Every word of `0xf0400000–0x7ff`, read on 2026-10-03 by `../evidence/sys/addrmap1_probe.s`
 (output next to it):
 
 | Range | Result |

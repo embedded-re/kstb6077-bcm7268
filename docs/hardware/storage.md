@@ -49,12 +49,12 @@ cfg registers' names are unknown.
 A bare-metal program can't read the eMMC itself (no driver yet), but BOLT can
 copy any part of a partition into RAM before `go`. The modified box's
 `flash0.splash` partition is 16.8 MB, and BOLT's splash uses only the first
-512 KB of it. The rest holds a large data file (meant for a Doom WAD), loaded
-in a quarter of a second. Over serial the same 4 MB takes ~50 minutes.
+512 KB of it. The rest can hold a large data file: 4 MB loads in about a
+quarter of a second. Over serial the same 4 MB takes ~50 minutes.
 
 All of this was tested on the modified box on 2026-10-02: first with a
-random 4,196,020-byte test file (the size of the shareware `doom1.wad`), then
-with the user's WAD (below), which is what the partition holds now.
+random 4,196,020-byte test file, then with a 14.4 MB file (below), which is
+what the partition holds now.
 
 ## Layout of `flash0.splash` (modified box)
 
@@ -65,7 +65,7 @@ with the user's WAD (below), which is what the partition holds now.
 |---|---|
 | `0x000000–0x07ffff` | splash container (`GZBR`…). BOLT reads exactly these 512 KB at boot. The current container uses `0x2f2e` bytes, and the first 12 KB have CRC `0x985d62dc` |
 | `0x080000–0x0fffff` | unused (zeros) |
-| `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: 16,578,048 bytes. Now: the user's `doom1.wad` (below), image `0xdc7000` bytes |
+| `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: 16,578,048 bytes. Now: a 14.4 MB file (below), image `0xdc7000` bytes |
 
 **Nothing else reads past 512 KB (tested: from BOLT's code).** The container
 reader `0x07011304` opens `flash0.splash` once, allocates `0x80000` bytes,
@@ -78,16 +78,8 @@ rebooting, the boot log still shows `Loaded BMP: W=1920 H=1080`.
 
 ## What is stored now
 
-The user's `doom1.wad` (14,445,628 bytes, md5 `88ce96442d269ef515b39fe34f08a9b7`).
-Despite the name it is not the shareware file (4,196,020 bytes, episode 1
-only). Its header says `PWAD`, not `IWAD`, and its 2,305 lumps hold all four
-episodes (`E1M1`–`E4M9`, the Ultimate Doom set). Many lumps appear twice
-(episode 1 music `D_E1M1`…, sounds `DSPISTOL`…), so it looks like the
-shareware WAD and the full one merged into one file. Doom engines use the
-last copy of a duplicate lump. Inferred, to check when porting: the engine
-must accept a `PWAD` as its main file, and the game mode it picks (shareware
-from the name `doom1.wad`, or registered/Ultimate from the maps it finds)
-decides whether episodes 2–4 can be played.
+A game data file, `doom1.wad` (14,445,628 bytes, md5
+`88ce96442d269ef515b39fe34f08a9b7`), stored as a `KWAD` image:
 
 | | Value |
 |---|---|
@@ -131,7 +123,7 @@ crc -offset=0x10000000 -size=0x400a00             ← must equal the PC's image 
 flash -noerase -offset=0x100000 -mem=0x10000000 -memsize=0x400a00 mem0 flash0.splash
 ```
 
-(These are the test file's numbers; for the WAD now stored, use
+(These are the test file's numbers; for the file now stored, use
 `-memsize`/`-max` `0xdc7000`.) Measured: TFTP 4 MB in a few seconds; `flash` 217 ms
 (`Programming...done. 4196864 bytes written`); CRC `0x37b79960` on the PC,
 after TFTP, and after read-back.

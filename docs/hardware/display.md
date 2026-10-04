@@ -114,7 +114,7 @@ pipeline's registers.
 ## Video speed: how fast the CPU can redraw the screen
 
 Measured on the modified box (2026-10-02) at EL2 after `go -64`, with the
-generic timer (27 MHz). The area is 1600 × 1000 (a 320 × 200 game scaled ×5),
+generic timer (27 MHz). The area is 1600 × 1000 (a 320 × 200 image scaled ×5),
 centred at (160, 40). Probes: `../evidence/display/video_probe.s` (MMU off,
 as entered) and `../evidence/display/video_probe_mmu.s` (MMU on, see below).
 `../evidence/display/video_demo_mmu.s` runs the same drawing as a demo to
@@ -140,8 +140,8 @@ All numbers are tested. The MMU-off probe ran twice and the runs agreed to
   Normal non-cacheable, so writes go to DRAM without cache maintenance but are
   merged on the way, and 2-byte stores cost the same as 16-byte ones. Source
   data in cached RAM reads fast.
-- So a 320 × 200 game at 35 fps (28.6 ms per frame) spends **under 5 ms**
-  per frame on drawing at ×5, but only with the MMU on. Compiled C also needs
+- So a 320 × 200 picture redrawn at 35 fps (28.6 ms per frame) takes **under 5 ms**
+  per frame to draw at ×5, but only with the MMU on. Compiled C also needs
   the MMU on for a second reason: unaligned accesses fault on Device memory.
 - Drawing straight into the visible buffer **tears**. At 35 fps and at full
   speed, moving bar edges showed as "stairs" (tested, by eye). The display
@@ -187,7 +187,7 @@ swap front and back
 |---|---|---|
 | 8 flips A ↔ B, 0.5 s apart (B = copy of A plus a magenta box) | | clean blinks |
 | scrolling bars, 1 frame per tick | 16,683 µs/frame, 59.9 fps | **smooth, no stairs** |
-| Doom path (320 × 200 → palette → ×5), 2 ticks per frame | 33,366 µs/frame, 29.9 fps | motion clean; the picture itself shows 5 × 5 pixel blocks, as any ×5 scaling does |
+| palette path (320 × 200 → palette → ×5), 2 ticks per frame | 33,366 µs/frame, 29.9 fps | motion clean; the picture itself shows 5 × 5 pixel blocks, as any ×5 scaling does |
 
 - The mode is **1080p at 59.94 Hz**, not 60 Hz (tested by the counter). This
   matches the HDMI audio finding in `audio.md`.
@@ -195,7 +195,7 @@ swap front and back
   the display-frame interrupt `VEC` (GIC ID 47) counted 502 in 10.05 s, and
   `dumpsys display` reports `refreshRate=50.0`. So the 59.94 Hz is BOLT's
   choice, not the TV's (`interrupts.md`).
-- A game at 35 fps on a 59.94 Hz display gets an uneven mix of 1- and 2-tick
+- A program drawing at 35 fps on a 59.94 Hz display gets an uneven mix of 1- and 2-tick
   frames. Locking to 30 fps (2 ticks) or 60 fps keeps motion even.
 - Writing only `0xf0603488`, or only `+0x48c`, wasn't tried. The probe always
   writes both.
@@ -486,9 +486,9 @@ Tested on the modified box:
 `tools/make-splash image.png splash.bin` builds the compressed container from
 any image (use 1920 × 1080).
 
-## Adding a splash partition (modified box, done 2026-10-02)
+## Adding a splash partition (modified box)
 
-The modified box's GPT had no `splash` entry, so the space was taken from the
+Done on 2026-10-02. The modified box's GPT had no `splash` entry, so the space was taken from the
 end of `ROOT`. `KRN`, `DTB` and everything before `ROOT` are unchanged.
 
 | | Before | After |

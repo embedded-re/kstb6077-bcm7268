@@ -14,7 +14,7 @@ Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
 
 | Base | DTB node | Size | Capability registers | Meaning |
 |---|---|---|---|---|
-| `0xf0b00200` | `usb-phy@f0b00200` (`brcm,usb-phy`, `ipp`/`ioc` = 1, `has_xhci`) | `0x100` | not read | Broadcom USB control / PHY block |
+| `0xf0b00200` | `usb-phy@f0b00200` (`brcm,usb-phy`, `ipp`/`ioc` = 1, `has_xhci`) | `0x100` | read in full (`peripherals.md`, "PCIe and the USB device controller") | Broadcom USB control / PHY block |
 | `0xf0b00300` | `ehci_v2` (IRQ SPI `0x5a`) | `0xa8` | `01000010` `00001111` `0000a027` | EHCI0: v1.0, op regs at +0x10, 1 port, 1 companion, 64-bit |
 | `0xf0b00400` | `ohci_v2` (SPI `0x5b`) | `0x58` | `00000110`, RhDescA `02000901` | OHCI0: v1.0, 1 port, per-port power, POTPGT 2 (4 ms) |
 | `0xf0b00500` | `ehci_v2` (SPI `0x5e`) | `0xa8` | same as EHCI0 | EHCI1 |
@@ -112,6 +112,7 @@ PHY and clocks from BOLT's start-up survive `go -64`.
   ED/TD/buffer area must be mapped non-cacheable, or cleaned/invalidated.
 - Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).
-- The `0xf0b00200` control block (not read: no register names yet).
+- The `0xf0b00200` control block: read in full (`peripherals.md`), but
+  only `USB_PM` (`+0x34`) and `USB_DEVICE_CTL1` (`+0x90`) have names.
 - Would a cold start (no BOLT `usb init`, e.g. `USB` skipped) leave the PHY
-  off? Not needed while we boot through BOLT.
+  off? Not needed while programs start through BOLT.

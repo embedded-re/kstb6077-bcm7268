@@ -4,12 +4,12 @@ Mapped over the serial console on 2026-09-30. §1–8 used **read-only** command
 only (`help`, `info`, `show *`, `printenv`, `rmem`, `gisb`, `rts`, `d`,
 `mii read`, `psci` version query, `rpmb counter`). Nothing was written to
 memory, the environment or flash. §9 adds the network, TFTP and 64-bit tests
-(RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw captures are in `../evidence/`.
+(RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw
+captures are in `../evidence/`.
 
-Unmarked facts were observed on
-this board; (inferred) marks an inference or general knowledge.
+Unmarked facts were observed on this board; (inferred) marks an inference or
+general knowledge.
 
----
 
 ## 1. Identity
 
@@ -27,7 +27,6 @@ Compiled-in drivers (`info`): loaders ELF, RAW, SREC, ZIMG; FAT/FAT32; a
 network stack (Ethernet, TCP); USB (disk, Ethernet, serial, HID); NAND flash
 support; splash 512 KB from `flash0.splash`.
 
----
 
 ## 2. Memory: BOLT's own layout (tested: `info`)
 
@@ -54,7 +53,6 @@ Available to programs: `0x00000000–0x06400000` and `0x06410000` + `0x77af0000`
 (up to `0x7DF00000`). BOLT's own 34 MB sits inside the second range, so
 treat `0x06FFC000–0x09200000` as occupied while BOLT is alive.
 
----
 
 ## 3. The MMU page table (tested: read from `0x07000000`)
 
@@ -77,7 +75,7 @@ read).
 | `0xFFF` | `00000000` | unmapped (so high vectors at `0xffff0000` are not mapped (inferred)) |
 
 Notes:
-- RAM entries have **XN=1** (execute-never), yet your monitor executes from
+- RAM entries have **XN=1** (execute-never), yet the 32-bit monitor executes from
   `0x01000000`. That means domain 0 is set to *Manager* in DACR, which
   ignores permission bits (inferred; confirm by reading DACR with
   `mrc p15, 0, r0, c3, c0, 0` from a 32-bit program).
@@ -90,7 +88,6 @@ Notes:
   writing BOLT's page table from BOLT's `e` command is also possible, but
   the TLB may still hold the old entry.
 
----
 
 ## 4. Devices BOLT knows about (tested: `show devices`)
 
@@ -117,7 +114,6 @@ Notes:
 These partition names reflect the current (post-Android) layout, matching
 `../history/linux-port.md`.
 
----
 
 ## 5. Commands by risk
 
@@ -143,11 +139,10 @@ These partition names reflect the current (post-Android) layout, matching
 | `flash`, `erase` | write or erase eMMC, including BOLT's own boot partitions. `flash -noerase -mem=<addr> -memsize=<n> mem0 <dev>` writes exactly *n* bytes from RAM to the start of `<dev>` (tested). `-offset=N` is the destination offset (`../hardware/storage.md`); raw `flash0` offsets of 2 GB or more fail or wrap. From `mem0`, the data is first copied to a staging buffer at `0x00040000` |
 | `tz mon`, `tz boot` | load and run code in the secure world |
 
----
 
 ## 6. Useful capabilities discovered
 
-- **64-bit boot works** (tested 2026-09-30, §9). `go -64` starts an
+- **64-bit boot works** (tested, §9). `go -64` starts an
   AArch64 program at **EL2**. `boot -64 -el3` starts it at **EL3**, as the
   secure monitor (the highest privilege level). The default without flags is
   32-bit (AArch32).
@@ -170,7 +165,6 @@ These partition names reflect the current (post-Android) layout, matching
 - **`rmem`** can reserve memory and export it to the DTB (`-dt`), for a later
   Linux boot.
 
----
 
 ## 7. Secure world / PSCI
 
@@ -193,7 +187,6 @@ are in the `PSCI` region: **`smm64` at `0x06400000` is the EL3 monitor that
 handles PSCI calls.** `SCR_EL3 = 0x131` (NS = 1, RW = 0): BOLT's world is
 **non-secure AArch32**.
 
----
 
 ## 8. Other hardware facts reported by BOLT
 
@@ -207,51 +200,51 @@ handles PSCI calls.** `SCR_EL3 = 0x131` (NS = 1, RW = 0): BOLT's world is
 | eMMC RPMB | `RPMB response error. result: 0x7`. In the eMMC spec, result 7 = "authentication key not yet programmed" (spec-based). So the RPMB key was **never programmed**; `rpmb program-key` would set it permanently. | `rpmb counter flash3` |
 | AVS | STB 0.962 V, CPU 0.945 V, 44.8 °C | `info` |
 
----
 
-## 9. Network, TFTP and 64-bit tests (2026-09-30, Ethernet connected)
+## 9. Network, TFTP and 64-bit entry
+
+Tested on the modified box on 2026-09-30, with an Ethernet cable connected.
+How to load programs this way: [`../booting.md`](../booting.md).
 
 ### Network
+
 ```
 ifconfig eth0 -auto
 100 Mbps Full-Duplex
 Device eth0:  hwaddr 90-F8-91-E7-00-0A, ipaddr 192.168.1.33, mask 255.255.255.0
         gateway 192.168.1.1, nameserver 192.168.1.1
 ```
-Ping works both ways (board ↔ PC `192.168.1.38`). Network settings are lost
-on reboot, so re-run `ifconfig eth0 -auto` after each boot. `go`/`boot`
-print `Closing network 'eth0'` before jumping (use `-noclose` to keep it).
 
-### TFTP, with a caveat
-PC side (needs root for UDP port 69), serving one folder:
-```
-sudo dnsmasq --no-daemon --port=0 --enable-tftp --user=arch \
-  --tftp-root=<folder> --listen-address=<PC IP> --bind-interfaces
-```
-Board side:
-```
-load -tftp -raw -addr=0x01000000 <PC IP>:bootstrap.bin
-crc -offset=0x1000000 -size=<file size>     ← compare with the PC's CRC32
-```
+- Ping works both ways between the board and a PC on the same network.
+- Network settings are lost on reboot: run `ifconfig eth0 -auto` after each
+  boot.
+- `go` and `boot` print `Closing network 'eth0'` before they jump (`-noclose`
+  keeps it open).
+
+### TFTP and the stale-file problem
+
+With dnsmasq as the TFTP server (command in [`../booting.md`](../booting.md)):
+
 - The first load was byte-perfect: 264 bytes, CRC `0xa5961154` on both sides.
-- **Stale-file problem.** Later loads returned the **previous transfer's
-  file**, whatever name was asked for. It survived `ifconfig -off/-auto` and
-  even a board reboot: the first request after a reboot got the file from
-  before the reboot. curl on the PC received the correct files from the same
-  dnsmasq, so the problem is in the BOLT ↔ dnsmasq exchange. Likely
-  cause: BOLT sends every request from the same UDP source port, and dnsmasq
-  treats the new request as a retransmit of its still-open old transfer.
-  After a few minutes' pause, a load worked again.
-- **Workarounds** (untested): use a TFTP server that handles each request
-  separately (e.g. tftp-hpa's `in.tftpd`), or pause between loads. **Always
-  check `crc`** before `go`.
+- **Later loads returned the previous transfer's file**, whatever name was
+  asked for. This survived `ifconfig -off/-auto` and even a board reboot: the
+  first request after a reboot got the file from before the reboot. After a
+  pause of a few minutes, a load worked again.
+- curl on the PC received the correct files from the same dnsmasq, so the
+  problem is in the BOLT ↔ dnsmasq exchange. Likely cause (inferred): BOLT
+  sends every request from the same UDP source port, and dnsmasq treats a new
+  request as a retransmit of its still-open old transfer.
 - The "bytes read" count BOLT prints is the size of the file actually
-  received, which makes a stale file easy to spot.
+  received, which makes a stale file easy to spot. **Always check `crc`**
+  before `go`.
+- Possible workarounds (untested): a TFTP server that handles each request
+  separately (e.g. tftp-hpa's `in.tftpd`), or a pause between loads.
 
-### 64-bit (AArch64)
-A 24-instruction AArch64 probe (prints `A64 OK, EL<n>` from `CurrentEL`, then
-spins; built with `clang --target=aarch64-none-elf` + `ld.lld -Ttext=0x01000000`)
-was loaded by TFTP. The watchdog was armed for 20 s first
+### 64-bit entry (AArch64)
+
+A 24-instruction AArch64 probe prints `A64 OK, EL<n>` from `CurrentEL`, then
+spins. It was built with `clang --target=aarch64-none-elf` and
+`ld.lld -Ttext=0x01000000` and loaded by TFTP. The watchdog was armed for 20 s first
 (`e -w 0xf040a6a8 202fbf00`, then `ff00`, `00ff` to `+0x4`), so the board
 rebooted itself afterwards (`RR:00000040`).
 
@@ -274,40 +267,8 @@ What this means:
   physical address (the MMU is presumably off on entry to a fresh
   exception level).
 
-Probe source (not part of the monitor):
-```asm
-// AArch64 probe: prints "A64 OK, EL<n>" on the UART, then spins.
-.global _start
-_start:
-    mov     x1, #0xc000
-    movk    x1, #0xf040, lsl #16      // x1 = 0xf040c000 (UART)
-    adr     x2, msg
-1:  ldrb    w0, [x2], #1
-    cbz     w0, 3f
-2:  ldr     w3, [x1, #0x14]           // LSR
-    tbz     w3, #5, 2b                // wait THRE
-    str     w0, [x1]
-    b       1b
-3:  mrs     x4, CurrentEL             // EL in bits [3:2]
-    ubfx    x4, x4, #2, #2
-    add     w0, w4, #'0'
-4:  ldr     w3, [x1, #0x14]
-    tbz     w3, #5, 4b
-    str     w0, [x1]
-    adr     x2, tail
-5:  ldrb    w0, [x2], #1
-    cbz     w0, 7f
-6:  ldr     w3, [x1, #0x14]
-    tbz     w3, #5, 6b
-    str     w0, [x1]
-    b       5b
-7:  wfe
-    b       7b
-msg:  .asciz "\r\nA64 OK, EL"
-tail: .asciz "\r\n"
-```
+Probe source: [`a64_el_probe.s`](../evidence/a64_el_probe.s).
 
----
 
 ## 10. CPU and GIC state probe (AArch64, EL2 and EL3)
 
@@ -334,7 +295,6 @@ The source is in `../evidence/gic64b_probe.s` and the full output in
 Decoded in `../hardware/interrupts.md` ("GIC state at handoff") and
 `../booting.md` ("State of a 64-bit program at entry").
 
----
 
 ## 11. Reverse engineering BOLT's code
 

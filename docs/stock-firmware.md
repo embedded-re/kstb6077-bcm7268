@@ -174,7 +174,9 @@ The recovery image carries its own kernel build: `4.1.45-1-15pre … #1 SMP
 Fri Feb 1 16:40:17 KST 2019`. The normal boot image's kernel is dated
 Apr 14 2020.
 
-## Stock Android 11 over `adb` (2026-10-04)
+## Stock Android 11 over `adb`
+
+Read on 2026-10-04.
 
 On 2026-10-03 a "reboot to recovery" made the box install a pending
 over-the-air update by itself. Afterwards it runs **Android 11**

@@ -37,7 +37,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | 3D GPU | Broadcom V3D 3.3 at `0xf1200000` (hub) / `0xf1208000` (core), 8 QPUs, behind power island `0xf041d020`; driven from EL2: TFU job, render jobs into the framebuffer, a binner job and a shaded triangle | `docs/hardware/gpu.md` |
 | 2D blitter | M2MC at `0xf09b0000`: fill, copy, scaling, 8-bit palette lookup; 320 × 200 → 1600 × 1000 onto the screen in 1.65 ms | `docs/hardware/2d-blitter.md` |
 | Audio | HDMI, 48 kHz 32-bit stereo from a looping DRAM buffer. BOLT's splash starts it from a `pcm0` in `flash0.splash` but skips the HDMI audio clock at 1080p; three register writes (N/CTS) make it audible. Keeps running after `go -64` | `docs/hardware/audio.md` |
-| Data storage | `flash0.splash` past 1 MB holds a large file that BOLT loads into RAM before `go` (~15 MB/s); now a 14.4 MB Doom WAD | `docs/hardware/storage.md` |
+| Data storage | `flash0.splash` past 1 MB holds a large file that BOLT loads into RAM before `go` (~15 MB/s); now holds a 14.4 MB file | `docs/hardware/storage.md` |
 | TV tuner | DVB-T tuner with RF input | |
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | `docs/hardware/gpio.md` |
 | Blue LED (LED3) | AON GPIO 16, active-low | `docs/hardware/gpio.md` |

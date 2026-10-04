@@ -141,9 +141,9 @@ TUNER, `b14e0820` PLAY, `b7480820` PREVIOUSSONG. Either this remote doesn't
 have those keys, or they weren't pressed. The key map also has codes with
 custom code `0x2016` and `0xff00`, which belong to other remotes.
 
-## The remote under stock Android 11 (tested 2026-10-04)
+## The remote under stock Android 11 (tested)
 
-Read with `getevent -lt /dev/input/event4` over `adb` (the input device
+Read on 2026-10-04 with `getevent -lt /dev/input/event4` over `adb` (the input device
 `NexusIrHandlerTMCZ`; `../stock-firmware.md`). Nexus decodes the IR itself
 and sends only Linux key codes: **no raw scan code** (`MSC_SCAN`), so this
 run gives key names, not IR codes. Its key layout

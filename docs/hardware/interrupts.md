@@ -124,9 +124,9 @@ read as above; "fired" = non-zero count after ~10 minutes of use):
 The wake-timer bit (4 of `0xf0410640`) did not show in STATUS while masked
 (`system-blocks.md`).
 
-## What each action fires (tested 2026-10-04)
+## What each action fires (tested)
 
-Stock box, Android 11, `/proc/interrupts` read over `adb` once a second
+Stock box, 2026-10-04, Android 11, `/proc/interrupts` read over `adb` once a second
 while one thing was done at a time. "Background" lines move on their own
 and were filtered out:
 
@@ -151,9 +151,9 @@ The HDMI hot-plug arrives on the HDMI transmitter's own interrupt; AON GPIO
 4 and 5 (also claimed by Nexus) did not move for any of these. The box has
 no SD card slot.
 
-## L2 controller registers (tested 2026-10-03)
+## L2 controller registers (tested)
 
-All ten read on the stock box at `BOLT>` with `../evidence/sys/l2_probe.s`
+All ten read on the stock box at `BOLT>` on 2026-10-03, with `../evidence/sys/l2_probe.s`
 (output next to it), twice, 1 s apart. **Every word past the DTB's
 `reg` size aborts**, so the sizes below are exact.
 
