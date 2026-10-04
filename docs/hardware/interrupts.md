@@ -96,7 +96,7 @@ numbers in `/proc/interrupts` are the GIC IDs themselves.
 | L2 controller | Bit | Source (DTB name) |
 |---|---|---|
 | sys `0xf0403000` | 0 | GISB timeout |
-| | 2 | **GISB target error** (`gisb_tea`): tested, set by our own aborted reads |
+| | 2 | **GISB target error** (`gisb_tea`): tested, set by the probe's aborted reads |
 | HIF `0xf0201000` | 4, 24 | NAND `flash_dma_done`, `nand_ctlrdy` (no NAND fitted; bits 24–25 read set) |
 | HIF SPI `0xf0201a00` | 0–6 | QSPI (disabled): `spi_lr_*`, `mspi_done` (5), `mspi_halted` (6) |
 | AON `0xf0410640` (`sys_pm`) | 1, 2, 3 | wake-ups: `cec`, `irr`, `kpd` |
@@ -292,7 +292,7 @@ The OS (or bare-metal code) enables and routes each interrupt it uses.
 ## CPU state under BOLT
 
 BOLT runs in AArch32 SVC mode with IRQ and FIQ masked (`cpsr 800001d3`). On
-entry to our EL3 code, `SCR_EL3` = `0x131`: NS = 1 (the lower exception
+entry to a program started at EL3, `SCR_EL3` = `0x131`: NS = 1 (the lower exception
 levels are non-secure) and RW = 0 (the level below EL3 runs AArch32). That
 matches BOLT's world being **non-secure AArch32** (inferred: this is the
 SCR state left by the EL3 monitor).

@@ -44,8 +44,8 @@ them by folder.
 | `video_demo_mmu.s` | the same drawing as a demo to watch | [Display](../hardware/display.md) |
 | `vsync_probe.s` | frame counter and double buffering through the RDC registers | [Display](../hardware/display.md), "Vsync" |
 | `bvn_read_probe.s` | reads every register the display lists use (590, abort-safe) | [Display](../hardware/display.md), "Display lists" |
-| `rdc_ownlist_probe.s`, `rdc_ownlist_visible_probe.s` | run a copy of BOLT's per-frame list from free RAM | [Display](../hardware/display.md), "Running our own list" |
-| `cmp_window_probe.s`, `cmp_window_pos_probe.s` | compositor window size and position through our own list | [Display](../hardware/display.md), "Compositor CMP0" |
+| `rdc_ownlist_probe.s`, `rdc_ownlist_visible_probe.s` | run a copy of BOLT's per-frame list from free RAM | [Display](../hardware/display.md), "Running a custom list" |
+| `cmp_window_probe.s`, `cmp_window_pos_probe.s` | compositor window size and position through a custom list | [Display](../hardware/display.md), "Compositor CMP0" |
 | `gfd_bg_probe.s`, `gfd_hzoom_probe.s` | graphics feeder source width and scaler, compositor background | [Display](../hardware/display.md), "Graphics feeder" |
 
 | Capture | What it is |
@@ -160,4 +160,4 @@ old table.
 | `v3d_render_probe.s`, `v3d_order_probe.s` | a clear-only render job; the clear word's byte order | [3D GPU](../hardware/gpu.md) |
 | `v3d_fb_scr_probe.s`, `v3d_fb_tv_probe.s` | render job in the framebuffer's layout: scratch RAM (one output per clear word), then the screen | [3D GPU](../hardware/gpu.md) |
 | `v3d_tri_scr_probe.s`, `v3d_tri_tv_probe.s` | binner + render job: a triangle, scratch RAM then the screen | [3D GPU](../hardware/gpu.md) |
-| `v3d_grad_scr_probe.s` | the same triangle with our own fragment shader | [3D GPU](../hardware/gpu.md) |
+| `v3d_grad_scr_probe.s` | the same triangle with a custom fragment shader | [3D GPU](../hardware/gpu.md) |

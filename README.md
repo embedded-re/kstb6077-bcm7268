@@ -1,7 +1,12 @@
 # KaonMedia KSTB6077
 
-Reverse-engineering notes and bare-metal ARM code for the KaonMedia KSTB6077,
-an Android TV set-top box built on the Broadcom BCM7268 SoC.
+A reverse-engineered hardware manual and bare-metal ARM code for the
+KaonMedia KSTB6077, an Android TV set-top box built on the Broadcom BCM7268
+SoC. Broadcom publishes no datasheet for this chip; everything here was
+tested on the board or says where it came from.
+
+**Start here: [the manual](docs/README.md)**: table of contents,
+conventions and safety rules.
 
 <p align="center">
   <img src="docs/images/kstb6077-telekom.png" alt="KSTB6077 with Telekom branding" height="260">
@@ -23,7 +28,10 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Storage | 7.28 GiB eMMC: user area, two 4 MB boot partitions, 4 MB RPMB |
 | Firmware | BOLT v1.34 bootloader, BSP 4.2.5, ARM Trusted Firmware BL31, PSCI v0.2 |
 
-## What the board has
+## Features
+
+Each row links to the chapter that describes it.
+
 
 | Function | Hardware | Where |
 |---|---|---|
@@ -33,7 +41,7 @@ varies by provider (Telekom and COSMOTE TV shown).
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | [`docs/stock-firmware.md`](docs/stock-firmware.md) |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 brought up from EL2, keyboard detected | [`docs/hardware/usb.md`](docs/hardware/usb.md) |
-| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP. The display's register-DMA (RDC) runs a list of our own from RAM: background colour, window size and position tested | [`docs/hardware/display.md`](docs/hardware/display.md) |
+| Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP. The display's register-DMA (RDC) runs a custom list from RAM: background colour, window size and position tested | [`docs/hardware/display.md`](docs/hardware/display.md) |
 | 3D GPU | Broadcom V3D 3.3 at `0xf1200000` (hub) / `0xf1208000` (core), 8 QPUs, behind power island `0xf041d020`; driven from EL2: TFU job, render jobs into the framebuffer, a binner job and a shaded triangle | [`docs/hardware/gpu.md`](docs/hardware/gpu.md) |
 | 2D blitter | M2MC at `0xf09b0000`: fill, copy, scaling, 8-bit palette lookup; 320 × 200 → 1600 × 1000 onto the screen in 1.65 ms | [`docs/hardware/2d-blitter.md`](docs/hardware/2d-blitter.md) |
 | Audio | HDMI, 48 kHz 32-bit stereo from a looping DRAM buffer. BOLT's splash starts it from a `pcm0` in `flash0.splash` but skips the HDMI audio clock at 1080p; three register writes (N/CTS) make it audible. Keeps running after `go -64` | [`docs/hardware/audio.md`](docs/hardware/audio.md) |
@@ -73,29 +81,13 @@ Details: [`docs/booting.md`](docs/booting.md), [`docs/hardware/memory-map.md`](d
 
 | Path | Contents |
 |---|---|
-| [`assembly/`](assembly/) | 32-bit bare-metal UART monitor ([`boot.s`](assembly/boot.s)), [`build.sh`](assembly/build.sh), built [`bootstrap.bin`](assembly/bootstrap.bin)/`.elf` |
-| [`tools/build-a64`](tools/build-a64) | builds an AArch64 program (`.s` → `.elf` + `.bin`, clang + ld.lld) |
-| [`tools/kstb-run`](tools/kstb-run) | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
-| [`tools/kstb-bolt`](tools/kstb-bolt) | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
-| [`tools/kstb-dump`](tools/kstb-dump) | dumps board memory to a file over the BOLT console (read-only) |
-| [`tools/make-splash`](tools/make-splash) | builds a `flash0.splash` boot-splash container (GZBR/zlib) from an image, optionally with a raw `pcm0` sound (`--pcm`) |
-| [`tools/re/`](tools/re/) | helpers for analysing a BOLT RAM dump: [`xref.py`](tools/re/xref.py) (string → code), [`ann.py`](tools/re/ann.py) (annotated listing), [`callers.py`](tools/re/callers.py) |
-| [`boot/original_dtb.dts`](boot/original_dtb.dts) | BOLT's base vendor device tree |
-| [`boot/stock_dtb.dts`](boot/stock_dtb.dts) | the device tree a stock box hands to Linux (after BOLT and BSU fix-ups) |
-| [`boot/dtb.dtb`](boot/dtb.dtb), [`boot/Decompiled_dtb.dts`](boot/Decompiled_dtb.dts) | patched device tree from the Linux port |
-| [`boot/sysinit.txt`](boot/sysinit.txt) | BOLT autoboot script for the USB stick |
-| [`docs/booting.md`](docs/booting.md) | how to load and run code: USB stick, TFTP, 32/64-bit, watchdog safety net |
-| [`docs/stock-drivers.md`](docs/stock-drivers.md) | the stock firmware's Broadcom drivers ([`tools/fetch-stock`](tools/fetch-stock), local only) and how to read them as a guide |
-| [`docs/stock-firmware.md`](docs/stock-firmware.md) | the untouched stock firmware: boot chain, boot reasons, how to reach BOLT, stock DTB, stock kernel facts |
-| [`docs/hardware/peripherals.md`](docs/hardware/peripherals.md) | every known hardware block (DTB + BOLT), what it is, and the first word read from it |
-| [`docs/hardware/gpu.md`](docs/hardware/gpu.md) | **V3D GPU map**: blocks, reset values, control-list opcodes, what is tested and what isn't |
-| [`docs/hardware/registers.md`](docs/hardware/registers.md) | **register sheet**: every known address on one page, what it does, what not to touch |
-| [`docs/hardware/`](docs/hardware/) | memory map, GPIO, IR, UARTs, display, audio, storage, USB, interrupts, system blocks, device-tree provenance |
-| [`docs/bolt/bolt.md`](docs/bolt/bolt.md) | the BOLT bootloader: memory layout, page table, devices, commands by risk |
-| [`docs/evidence/`](docs/evidence/) | raw BOLT console captures, including [`rescue.txt`](docs/evidence/rescue.txt); `stock/` holds the stock box's boot logs and BOLT session |
-| [`docs/ideas/second-stage-bootloader.md`](docs/ideas/second-stage-bootloader.md) | proposal: a shim between BOLT and Linux |
-| [`docs/history/linux-port.md`](docs/history/linux-port.md) | the earlier Alpine / Linux 6.6 port |
-| [`docs/images/`](docs/images/) | product photos, PCB photo, Android recovery screenshot |
+| [`docs/`](docs/README.md) | the manual |
+| [`docs/evidence/`](docs/evidence/README.md) | probe programs, their outputs and raw console captures |
+| [`boot/`](boot/) | device trees and the USB-stick autoboot script |
+| [`assembly/`](assembly/), [`c/`](c/) | a 32-bit UART monitor and a bare-metal C example |
+| [`tools/`](tools/) | build, upload, dump and analysis tools |
+
+Full layout and tool list: [`docs/README.md`](docs/README.md#repository-layout-and-tools).
 
 ## Quick start
 
@@ -104,6 +96,9 @@ With the board at `BOLT>` and the serial bridge running:
 ```
 tools/build-a64 prog.s
 tools/kstb-run --a64 --watchdog 20 --wait-bolt prog.bin    # AArch64 at EL2
+
+tools/build-c c/main.c
+tools/kstb-run --a64 --watchdog 60 --listen 30 --wait-bolt c/main.bin   # C example
 
 assembly/build.sh
 tools/kstb-run assembly/bootstrap.bin                      # 32-bit monitor

@@ -20,7 +20,7 @@ Sources:
 | Address | hub `0xf1200000`, bridge `0xf1204000`, GCA `0xf1204100`, core `0xf1208000` |
 | State after BOLT | power island off: every access aborts. Power up through `0xf041d020` |
 | GPU MMU | off after reset; jobs use physical addresses |
-| Tested | power, reset, a TFU job, render jobs into the framebuffer, a binner + render job drawing a triangle, a fragment shader of our own |
+| Tested | power, reset, a TFU job, render jobs into the framebuffer, a binner + render job drawing a triangle, a custom fragment shader |
 | Not tested | the GPU MMU, interrupts, textures, vertex shaders, frames larger than one tile |
 
 ## Configuration (tested, from the ID registers)
@@ -98,7 +98,7 @@ The other 143 read `0`.
 | Render job: clear, store as `rgba8`, byte order | [Render job](#render-job-a-clear-with-no-shaders) |
 | Render job straight into the framebuffer (RGB565, stride 1920) | [Rendering into the framebuffer](#rendering-into-the-framebuffer) |
 | Binner job, NV shader record, fragment shader on the QPUs: a triangle | [A triangle](#a-triangle-binner-and-render-jobs) |
-| Our own fragment shader (colour from the pixel position) | [A fragment shader of our own](#a-fragment-shader-of-our-own) |
+| A custom fragment shader (colour from the pixel position) | [A custom fragment shader](#a-custom-fragment-shader) |
 
 ## Bring-up, step by step
 
@@ -478,7 +478,7 @@ framebuffer showed a red square with a blue triangle pointing down.
 Reading the framebuffer back gave the same per-row spans
 ([`v3d_tri_tv_output.txt`](../evidence/v3d/v3d_tri_tv_output.txt)).
 
-### A fragment shader of our own
+### A custom fragment shader
 
 Tested on the modified box, 2026-10-03.
 

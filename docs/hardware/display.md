@@ -26,7 +26,7 @@ and keep the display running after `go -64` (tested). Raw captures are in
 | Page flip | write the buffer address to `0xf0603488` and `0xf060348c`; takes effect at the next frame |
 | Display lists | RDC lists at `0x7db08000–0x7db0b6ff`: **never overwrite**. Running a copy of BOLT's list from free RAM is tested |
 | State after `go -64` | still running |
-| Tested | drawing, timing with and without the MMU, double buffering, our own RDC list, compositor background, window size and position, GFD source width |
+| Tested | drawing, timing with and without the MMU, double buffering, a custom RDC list, compositor background, window size and position, GFD source width |
 | Not understood | the GFD scaler, part of the compositor registers |
 
 ## Bringing up HDMI from the BOLT prompt
@@ -104,7 +104,7 @@ lists starting at `0x7db08fa0` stay intact (tested, see [`audio.md`](audio.md)).
 lists are: register-write programs that the display hardware's register-DMA
 controller fetches from RAM by itself. The DTB's memory-client list names
 `bvn_rdc`, and the bus arbiter lists an `rdc_0` master. The format, how
-BOLT's lists run, and how to run a list of our own are in "Display lists
+BOLT's lists run, and how to run a custom list are in "Display lists
 (RDC)" below.
 
 **Overwriting this area blanks the screen** until the next reboot (tested by
@@ -322,7 +322,7 @@ not tested.
 
 **The list address register reads back the previously written value**, not
 the current one. In three switches, `0xf0604000` read `7db09c60` while BOLT's
-`0x7db09ae0` was running, then `7db09ae0` while our list ran, then
+`0x7db09ae0` was running, then `7db09ae0` while the custom list ran, then
 `02000000` after the switch back. So the list that is actually running at
 the prompt is the one at `0x7db09ae0`.
 
@@ -357,9 +357,9 @@ functions). Only the registers marked tested below have been changed.
 | colour conversion for HDMI | `0xf06e4000–0x41xx` | `BVDC_P_Vec_Build_DVI_CSC` | 62 registers |
 | HDMI transmitter | `0xf06fa000–0xa8xx` | `BHDM_*`, `BVDC_P_Vec_Build_DVI_RM` | rate manager, read-modify-write of `+0x810/814/81c/820/854` |
 
-### Running our own list (tested)
+### Running a custom list (tested)
 
-The RDC can run a list of our own from free RAM. [`rdc_ownlist_probe.s`](../evidence/display/rdc_ownlist_probe.s):
+The RDC can run a custom list from free RAM. [`rdc_ownlist_probe.s`](../evidence/display/rdc_ownlist_probe.s):
 
 1. Copy the 73 words at `0x7db09c60` to `0x02000000` and check the copy.
    BOLT's lists are only read.
@@ -369,8 +369,8 @@ The RDC can run a list of our own from free RAM. [`rdc_ownlist_probe.s`](../evid
    and count stay, since the copy has the same length.
 4. To go back: the same three writes with `0x7db09ae0`.
 
-While our list ran, the frame counter kept counting at 60 per second, and the
-values from our copy appeared in the registers. Words in the copy can be
+While the custom list ran, the frame counter kept counting at 60 per second, and the
+values from the copy appeared in the registers. Words in the copy can be
 changed while it runs: the RDC fetches it from RAM every frame (with the MMU
 off, no cache maintenance is needed). After the switch back, BOLT's values
 returned within a second.
@@ -384,7 +384,7 @@ held their values for 10 s).
 
 ## Compositor CMP0 (tested)
 
-All changed through our own list ([`rdc_ownlist_visible_probe.s`](../evidence/display/rdc_ownlist_visible_probe.s),
+All changed through a custom list ([`rdc_ownlist_visible_probe.s`](../evidence/display/rdc_ownlist_visible_probe.s),
 [`cmp_window_probe.s`](../evidence/display/cmp_window_probe.s), [`cmp_window_pos_probe.s`](../evidence/display/cmp_window_pos_probe.s)), and observed on the TV.
 
 | Register | BOLT | What it does (tested) |

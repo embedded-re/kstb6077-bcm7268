@@ -286,7 +286,7 @@ registers is safe, since BOLT reads them on every boot. Never write them.
 
 So something in `0x070109cc` drives the S/PDIF transmitter's input pin
 (that probably includes its pin mux, inferred). Whether the line carries an S/PDIF
-stream with our samples, or the pin is just driven high, can't be told
+stream with the samples, or the pin is just driven high, can't be told
 without a receiver (inferred: likely a stream).
 
 ### The three output ports in `0xf0cb…`
