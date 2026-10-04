@@ -25,7 +25,7 @@ them.
 
 Two sources. **Tested** = listed in `/proc/interrupts` of the stock Android
 kernel (4.9.322) on the stock box, read over `adb shell` on 2026-10-04
-(`../bolt/raw/stock/adb/proc_interrupts_1.txt`), with a count when the
+(`../evidence/stock/adb/proc_interrupts_1.txt`), with a count when the
 interrupt had fired. **DTB** = only in the DTB (not tested). The kernel's
 numbers in `/proc/interrupts` are the GIC IDs themselves.
 
@@ -153,7 +153,7 @@ no SD card slot.
 
 ## L2 controller registers (tested 2026-10-03)
 
-All ten read on the stock box at `BOLT>` with `../bolt/raw/sys/l2_probe.s`
+All ten read on the stock box at `BOLT>` with `../evidence/sys/l2_probe.s`
 (output next to it), twice, 1 s apart. **Every word past the DTB's
 `reg` size aborts**, so the sizes below are exact.
 
@@ -236,8 +236,8 @@ reachable directly (next section).
 
 ## GIC state at handoff (read from AArch64)
 
-Read with an AArch64 probe (`../bolt/raw/gic64b_probe.s`; output in
-`../bolt/raw/gic_probe_el2_el3.txt`), started by `go -64` (EL2, non-secure
+Read with an AArch64 probe (`../evidence/gic64b_probe.s`; output in
+`../evidence/gic_probe_el2_el3.txt`), started by `go -64` (EL2, non-secure
 view) and `boot -64 -el3` (EL3, secure view). No read aborted.
 
 ### Identity

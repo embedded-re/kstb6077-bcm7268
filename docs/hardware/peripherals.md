@@ -8,7 +8,7 @@ Every hardware block found so far, from three sources:
    tables (from the RAM dump, `../bolt/bolt.md` §11). These include blocks
    the DTBs don't name (display, transport DMA).
 3. **A read of the first word of each block** from EL2 with an abort-safe
-   probe (`../bolt/raw/periph/periph_probe.s`, output
+   probe (`../evidence/periph/periph_probe.s`, output
    `periph_probe_output.txt`), on the modified box, 2026-10-02.
 
 Register-level details for blocks already in use are in `registers.md`.
@@ -95,7 +95,7 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 ## The four switched-off blocks (investigated 2026-10-02)
 
 Probes (read-only, abort-safe): `clk_gate_probe.s`, `swinit_probe.s`,
-`pcie_usbctrl_probe.s` in `../bolt/raw/periph/`, outputs next to them.
+`pcie_usbctrl_probe.s` in `../evidence/periph/`, outputs next to them.
 
 ### Clocks are not the reason (tested)
 
@@ -219,7 +219,7 @@ enough; no clock was changed.
 
 ### V3D GPU: reset and default registers (tested 2026-10-02)
 
-`../bolt/raw/v3d/v3d_reset_probe.s` (output next to it) powers up, then
+`../evidence/v3d/v3d_reset_probe.s` (output next to it) powers up, then
 replays the stock driver's bring-up: `BVC5_P_HardwareResetV3D` and
 `BVC5_P_HardwareSetDefaultRegisterState` from `nexus.ko`. It reads the
 registers after each step and powers down at the end. No access aborted.
@@ -275,7 +275,7 @@ Three registers read back something other than what was written:
 
 The TFU (texture formatting unit) reads an image from memory and writes it
 back in one of the GPU's tiled layouts. It needs no shader and no control
-list. `../bolt/raw/v3d/v3d_tfu_probe.s` (output next to it) does the
+list. `../evidence/v3d/v3d_tfu_probe.s` (output next to it) does the
 bring-up above, then runs one job with the **GPU MMU off** (its reset state):
 the GPU uses physical addresses, and no page table is needed.
 
@@ -326,7 +326,7 @@ Result:
 
 ### V3D GPU: first render job, a clear with no shaders (tested 2026-10-03)
 
-`../bolt/raw/v3d/v3d_render_probe.s` (output next to it) runs a render job
+`../evidence/v3d/v3d_render_probe.s` (output next to it) runs a render job
 with no binner and no shaders. The GPU clears one 64×64 tile to a colour in
 its tile buffer, then stores the tile to RAM as a raster image. The GPU MMU
 is off. Like the TFU job, this needs no page table.
@@ -410,7 +410,7 @@ and `v3d_cl_rcfg_clear_colors`. libGLES's own tables
 32 bpp, the same as `rgba8`, so byte 2 of the colour config stays `08`. In
 libGLES's name table, format 7 is `bgr565` and format 27 is `rgba8`.
 
-**Scratch RAM first** (`../bolt/raw/v3d/v3d_fb_scr_probe.s`, outputs
+**Scratch RAM first** (`../evidence/v3d/v3d_fb_scr_probe.s`, outputs
 `v3d_fb_scr_output_<word>.txt`). The tile went to `0x031dcb40` inside a 4 MB
 area at `0x03000000` filled with `deadbeef`, at the place (928,508) has on
 screen. Every run changed exactly 4096 halfwords: 64 rows of 64 pixels, with
@@ -442,7 +442,7 @@ pixels to its right and below it still held the splash background (`07e0`).
 A binner job followed by a render job draws a flat-coloured triangle. There's
 no vertex shader: the vertices are given in screen pixels (an "NV" shader
 record). There's one fragment shader, copied from libGLES. Probe:
-`../bolt/raw/v3d/v3d_tri_scr_probe.s` (scratch RAM), then
+`../evidence/v3d/v3d_tri_scr_probe.s` (scratch RAM), then
 `v3d_tri_tv_probe.s` (screen).
 
 **Sources.** Packet names and which list may hold them come from libGLES
@@ -538,7 +538,7 @@ Reading the framebuffer back gave the same per-row spans
 
 The triangle job from the previous section, with a fragment shader written
 and encoded here instead of copied from libGLES
-(`../bolt/raw/v3d/v3d_grad_scr_probe.s`, output `v3d_grad_scr_output.txt`).
+(`../evidence/v3d/v3d_grad_scr_probe.s`, output `v3d_grad_scr_output.txt`).
 The encoder/disassembler is `tools/re/qpu.py`. Its instruction layout
 follows Mesa's `qpu_pack.c`. libGLES's own tables match Mesa's V3D 3.3
 tables entry for entry: the signal table, the magic write-address names
@@ -574,7 +574,7 @@ register.
 The stock `nexus.ko` (`BGRC_` module) drives the M2MC at bus `0x209b0000`,
 which is CPU **`0xf09b0000`**. The code names one core only.
 
-**After BOLT** (`../bolt/raw/m2mc/m2mc_read_probe.s`, read-only, output next
+**After BOLT** (`../evidence/m2mc/m2mc_read_probe.s`, read-only, output next
 to it), the block is powered and answers. Register meanings come from
 Nexus's `BCHP_PWR` code and `BGRC_` functions:
 
@@ -709,7 +709,7 @@ scaler word 0.
 
 ### M2MC 2D blitter: 320×200 → 1600×1000 onto the TV (tested 2026-10-03)
 
-`../bolt/raw/m2mc/m2mc_tv_probe.s` (output `m2mc_tv_output.txt`) scales a
+`../evidence/m2mc/m2mc_tv_probe.s` (output `m2mc_tv_output.txt`) scales a
 320×200 RGB565 test image 5× with the filter off (nearest neighbour).
 
 **Striping:** with widths over 128 pixels, the blitter works in vertical
@@ -754,7 +754,7 @@ That edge is in the source image itself.
 
 The M2MC converts an 8-bit indexed image to RGB565 through a 256-entry
 palette, and can scale it in the same packet. Probes and outputs are in
-`../bolt/raw/m2mc/` (`m2mc_pal*`).
+`../evidence/m2mc/` (`m2mc_pal*`).
 
 **Palette-8 source format.** Nexus `BGRC_PACKET_P_ConvertPixelFormat` maps
 BPXL `0x12e40008` to BM2MC format **33**. Its table entry
@@ -840,7 +840,7 @@ keeps running. It writes the first new packet's address into word 0 of the
 last packet it sent before, then writes **`3`** to `+0x0c`. Only the very
 first batch uses `+0x14` and `6`.
 
-`../bolt/raw/m2mc/m2mc_cont_probe.s` (output `m2mc_cont_output.txt`), with
+`../evidence/m2mc/m2mc_cont_probe.s` (output `m2mc_cont_output.txt`), with
 one M2MC reset at the start and three packets. Each packet is the 16×8
 palette-8 → RGB565 packet from the palette section, with word 0 = `1` and
 bit 14 set in blit word 0.
@@ -888,7 +888,7 @@ which address caused it, if the board can be brought back without power loss
 
 ### The whole block (tested 2026-10-03)
 
-Every word of `0xf0400000–0x7ff`, read by `../bolt/raw/sys/addrmap1_probe.s`
+Every word of `0xf0400000–0x7ff`, read by `../evidence/sys/addrmap1_probe.s`
 (output next to it):
 
 | Range | Result |

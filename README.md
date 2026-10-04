@@ -92,7 +92,7 @@ Details: `docs/booting.md`, `docs/hardware/memory-map.md`.
 | `docs/hardware/registers.md` | **register sheet**: every known address on one page, what it does, what not to touch |
 | `docs/hardware/` | memory map, GPIO, IR, UARTs, display, audio, storage, USB, interrupts, system blocks, device-tree provenance |
 | `docs/bolt/bolt.md` | the BOLT bootloader: memory layout, page table, devices, commands by risk |
-| `docs/bolt/raw/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
+| `docs/evidence/` | raw BOLT console captures, including `rescue.txt`; `stock/` holds the stock box's boot logs and BOLT session |
 | `docs/ideas/second-stage-bootloader.md` | proposal: a shim between BOLT and Linux |
 | `docs/history/linux-port.md` | the earlier Alpine / Linux 6.6 port |
 | `docs/images/` | product photos, PCB photo, Android recovery screenshot |

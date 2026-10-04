@@ -6,7 +6,7 @@ the bus: **ch0 is the HDMI DDC** (EDID, HDCP) and **ch3 carries a device at
 
 Tested on the stock box on 2026-10-04, from `go -64` (EL2, MMU off), after a
 power-on and BOLT's splash. HDMI was connected to a TV. Probes and outputs
-are in `../bolt/raw/i2c/`.
+are in `../evidence/i2c/`.
 
 ## Channels
 

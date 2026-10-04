@@ -2,7 +2,7 @@
 
 Observed on a second, unmodified KSTB6077 running the stock Android TV
 firmware: serial boot logs and a read-only BOLT session. Raw captures are in
-`bolt/raw/stock/`:
+`evidence/stock/`:
 
 | File | Contents |
 |---|---|
@@ -46,7 +46,7 @@ The modified box stops at `BOLT>` because its `STARTUP` variable is unset.
 autostart when it receives Ctrl-C on the console, right after its banner
 (`Automatic startup canceled via Ctrl-C`). `tools/kstb-bolt` sends Ctrl-C
 continuously during a power-on or a software reset, which always hits the
-window (tested from both, `bolt/raw/stock/ctrlc_cancel_after_reset.txt`).
+window (tested from both, `evidence/stock/ctrlc_cancel_after_reset.txt`).
 Ctrl-C cancels only the autoboot / `STARTUP` step; BOLT's boot splash still
 runs first, so HDMI comes up as usual (`hardware/display.md`).
 
@@ -61,7 +61,7 @@ How the reboot reason travels:
 - The value 98 (`'b'`; `'r'` = 114 for recovery, 0 for normal) survives the
   reset in an unidentified register.
   AON control `0xf0410000–0x27` matches the modified box, and `0xf041002c`
-  gives an external abort (`bolt/raw/stock/aon_read_abort.txt`).
+  gives an external abort (`evidence/stock/aon_read_abort.txt`).
 - The `misc` partition's BCB command was empty in an earlier capture. After
   recovery's "Reboot to bootloader" it reads `bootonce-bootloader` on every
   later boot, including normal ones. On this "legacy" boot path the BSU
@@ -77,7 +77,7 @@ It fails without a USB host on `usbdev0`, and then drops to `BOLT>`.
 | `android boot [-rawfs] [-tee [-32]] [-i image]` | boots an Android boot image. `-tee` = "Android trusted boot with BL31/Trusty OS" (64-bit Trusty by default) |
 | `android fastboot -transport=usb\|tcp -device=…` | fastboot over USB or **TCP** |
 
-Full help text: `bolt/raw/stock/help_android.txt`.
+Full help text: `evidence/stock/help_android.txt`.
 
 ## Environment: stock vs modified box
 
@@ -190,8 +190,8 @@ root**.
 
 | Readable as `shell` | Not readable (root only) |
 |---|---|
-| `/proc/interrupts` (`bolt/raw/stock/adb/proc_interrupts_1.txt`, decoded in `hardware/interrupts.md`) | `/proc/iomem`, `dmesg`, `/sys/kernel/debug` |
-| `/proc/config.gz`: the kernel config (`bolt/raw/stock/adb/kernel_config.gz`) | `/proc/partitions`, `/sys/class/gpio/gpiochip*/label` |
+| `/proc/interrupts` (`evidence/stock/adb/proc_interrupts_1.txt`, decoded in `hardware/interrupts.md`) | `/proc/iomem`, `dmesg`, `/sys/kernel/debug` |
+| `/proc/config.gz`: the kernel config (`evidence/stock/adb/kernel_config.gz`) | `/proc/partitions`, `/sys/class/gpio/gpiochip*/label` |
 | `/proc/modules`, `/proc/meminfo`, `/proc/mounts`, `getprop` (saved next to it) | `/vendor/lib/modules/*.ko`, `/vendor/usr/keylayout/*.kl` |
 | the live device tree's **node names** (`/sys/firmware/devicetree/base`; every property file is root-only) | `/sys/firmware/fdt` |
 | `dumpsys` (e.g. `dumpsys input`, `dumpsys power`) | |

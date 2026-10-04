@@ -4,7 +4,7 @@ Mapped over the serial console on 2026-09-30. §1–8 used **read-only** command
 only (`help`, `info`, `show *`, `printenv`, `rmem`, `gisb`, `rts`, `d`,
 `mii read`, `psci` version query, `rpmb counter`). Nothing was written to
 memory, the environment or flash. §9 adds the network, TFTP and 64-bit tests
-(RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw captures are in `raw/`.
+(RAM loads, watchdog, `go`/`boot`; still no flash or NVRAM writes). Raw captures are in `../evidence/`.
 
 Unmarked facts were observed on
 this board; (inferred) marks an inference or general knowledge.
@@ -313,8 +313,8 @@ tail: .asciz "\r\n"
 
 An AArch64 probe printed CPU system registers and GIC registers, run once
 with `go -64` (EL2) and twice with `boot -64 -el3` (EL3), watchdog armed.
-The source is in `raw/gic64b_probe.s` and the full output in
-`raw/gic_probe_el2_el3.txt`. No access aborted.
+The source is in `../evidence/gic64b_probe.s` and the full output in
+`../evidence/gic_probe_el2_el3.txt`. No access aborted.
 
 | | EL2 | EL3 |
 |---|---|---|

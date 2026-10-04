@@ -38,7 +38,7 @@ Available to programs (BOLT `rmem`): `0x00000000–0x06400000` and
 
 ## RAM for a bare-metal program after `go -64` (tested 2026-10-02)
 
-Probes and outputs: `../bolt/raw/ram/`. All at EL2 on the modified box.
+Probes and outputs: `../evidence/ram/`. All at EL2 on the modified box.
 
 | Range | Size | After `go -64` |
 |---|---|---|
@@ -111,7 +111,7 @@ All peripheral registers are 32 bits wide, on 4-byte-aligned addresses.
 ## Boot SRAM `0xffe00000–0xffe1ffff` (tested 2026-10-03)
 
 All 128 KB read from EL2 at `go -64` without an abort
-(`../bolt/raw/sys/addrmap1_probe.s`). It's **all zero** except 10 words at
+(`../evidence/sys/addrmap1_probe.s`). It's **all zero** except 10 words at
 `0xffe0ff24–0xffe0ff47`:
 
 ```

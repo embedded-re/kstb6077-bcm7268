@@ -6,7 +6,7 @@ decoder, the block turns every press on the original Kaon remote into a 32-bit
 code, and the codes match the stock Android key map.
 
 Tested on the modified box on 2026-10-03, from `go -64` (EL2, MMU off).
-Probes and outputs are in `../bolt/raw/ir/`.
+Probes and outputs are in `../evidence/ir/`.
 
 BOLT doesn't enable the block, so after BOLT a remote press changes nothing
 (`gpio.md`). Nothing on the box reacts to the remote by itself: the decoding

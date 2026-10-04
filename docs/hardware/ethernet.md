@@ -7,7 +7,7 @@ GENET 1 (`0xf04a0000`) is clocked but unused (`peripherals.md`).
 
 Tested on the stock box on 2026-10-04 at `BOLT>` after a power-on, cable
 connected, BOLT's network not started (`ifconfig` not run). Probe and
-outputs: `../bolt/raw/sdhci_genet/`. Register names are Linux `bcmgenet`
+outputs: `../evidence/sdhci_genet/`. Register names are Linux `bcmgenet`
 (GENET v5 layout) and IEEE 802.3 clause 22; the values are tested.
 
 ## Blocks

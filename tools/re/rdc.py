@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Decode Broadcom RDC (register DMA) lists from a hex dump.
 
-Input: dump lines "addr w0 w1 w2 w3 ..." (as in docs/bolt/raw/display/).
+Input: dump lines "addr w0 w1 w2 w3 ..." (as in docs/evidence/display/).
 Opcode table and word counts from nexus.ko BRDC_DBG_GetListEntry_isr and the
 BRDC_AddrRul_* builders. Register addresses in the lists are CPU addresses
 (0xfxxxxxxx).

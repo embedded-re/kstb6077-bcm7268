@@ -55,8 +55,8 @@ registers already hold video settings: `0x00510300`, `0x7ef4`, `0x7cc500` and
 | Data rate | ≈ 384,000 bytes/s = 48,000 frames × **8 bytes** | read pointer: one lap + 29,952 bytes in 0.578 s (tested) |
 | Sample format | 32-bit stereo interleaved, 48 kHz | a 0.5 s buffer with one beep gives **2 beeps per second** (tested, by ear) |
 | CPU writes reach the hardware | yes, with no cache flush | buffer rewritten with `kstb-run --no-go --addr 0x7dada100` while playing; the sound changed (tested) |
-| Survives `go -64` | yes | `../bolt/raw/audio/rbuf_probe.s`: the read pointer kept advancing ~96 KB per 0.25 s under bare-metal code (tested) |
-| Display lists | intact; they start at `0x7db08fa0`, just past the buffer end | compared with `../bolt/raw/display/splash0_rdc_lists_0x7db08000.txt` (tested) |
+| Survives `go -64` | yes | `../evidence/audio/rbuf_probe.s`: the read pointer kept advancing ~96 KB per 0.25 s under bare-metal code (tested) |
+| Display lists | intact; they start at `0x7db08fa0`, just past the buffer end | compared with `../evidence/display/splash0_rdc_lists_0x7db08000.txt` (tested) |
 
 Probe output after `go -64` (read pointer every 0.25 s):
 ```

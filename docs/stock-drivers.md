@@ -41,7 +41,7 @@ tools/re/ko.py $K dis BVC5_P_HardwareResetV3D    # disassembly, literal loads an
 tools/re/ko.py $K pwr GRAPHICS3D                 # a BCHP_PWR resource: type, id, dependencies
 tools/re/ko.py $K data BCHP_PWR_P_Resource_HW_V3D  # raw words of a data symbol, relocations resolved
 llvm-nm $K | grep BCHP_PWR_P_Resource_           # every power/clock resource by name
-tools/re/rdc.py docs/bolt/raw/display/splash0_rdc_lists_0x7db08000.txt 7db08fa0 --names
+tools/re/rdc.py docs/evidence/display/splash0_rdc_lists_0x7db08000.txt 7db08fa0 --names
                                                  # decode RDC display lists (format from BRDC_*)
 ```
 

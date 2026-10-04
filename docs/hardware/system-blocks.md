@@ -30,7 +30,7 @@ Example: `00000dd8` → code 748 → 45.8 °C, matching BOLT's own reading
 
 It runs under BOLT, so no setup is needed.
 
-**Alarm (tested 2026-10-03, `../bolt/raw/sys/addrmap1_probe.s`):** write
+**Alarm (tested 2026-10-03, `../evidence/sys/addrmap1_probe.s`):** write
 ALARM = COUNTER + 3. EVENT bit 0 turned `1` in the second COUNTER reached
 ALARM (`0xd0`) and stayed `1`. Writing `1` to EVENT cleared it. ALARM reads
 `0` after a reset.
@@ -85,7 +85,7 @@ to AON `0xf0410000`, which clears the history. That's why the register reads
 `0` once BOLT is running. BOLT passes the saved value to Linux as the DTB
 `/bolt` `reset-history` (and the names as `reset-list`).
 
-Tested 2026-10-03 (`../bolt/raw/sys/sys_probe.s`, output next to it):
+Tested 2026-10-03 (`../evidence/sys/sys_probe.s`, output next to it):
 
 | Reset | Banner `RR:` | `0x07069844` at `BOLT>` | `0xf041006c` at `BOLT>` |
 |---|---|---|---|

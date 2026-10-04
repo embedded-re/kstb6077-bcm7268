@@ -6,7 +6,7 @@ someone asks the PSCI monitor (`smm64`, EL3, resident at `0x06400000`) to
 start them.
 
 Tested on the modified box on 2026-10-02 with
-`../bolt/raw/smp/psci_cpu_on_probe.s` (output: `psci_cpu_on_output.txt`).
+`../evidence/smp/psci_cpu_on_probe.s` (output: `psci_cpu_on_output.txt`).
 
 ## The PSCI calls (`smc #0` from EL2)
 

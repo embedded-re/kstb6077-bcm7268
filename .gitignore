@@ -11,7 +11,7 @@ CLAUDE.md
 handoff-*.md
 # personal study material
 docs/learning/
-!docs/bolt/raw/gpt/*.bin
+!docs/evidence/gpt/*.bin
 __pycache__/
 # stock firmware files from the GitHub release (tools/fetch-stock): Broadcom/Kaon binaries, kept local
 /stock/

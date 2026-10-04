@@ -2,7 +2,7 @@
 
 The BCM7268 has three 16550-compatible UARTs. UART0 is the console; UART1
 and UART2 are working but unused by BOLT. Sources: the original DTB and
-register dumps and a loopback test from BOLT (`../bolt/raw/uart_probe.txt`).
+register dumps and a loopback test from BOLT (`../evidence/uart_probe.txt`).
 
 ## Instances
 
@@ -106,7 +106,7 @@ Which package pins UART1/UART2 are routed to, if any, is unknown.
   - pad control `0xf040413c` onwards: `15500090 00005555 15566aa8 1555595a 15555555 15555555 2aaaaa95 02aaa182`
   - AON: `0xf0410700` `00000000 00000000 00112222 00000100`, and pad control `0xf0410714` `155a5544 15654001 00000255`
 
-  (Full dumps are in `../bolt/raw/uart_probe.txt`.)
+  (Full dumps are in `../evidence/uart_probe.txt`.)
 
 To find a TX pin physically: make the UART transmit continuously, for
 example with BOLT's `loop "e -w 0xf040d000 00000055" -count=100000`, and

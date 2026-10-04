@@ -8,7 +8,7 @@ drive the controllers with the standard specs (EHCI 1.0, OHCI 1.0a,
 xHCI 1.0), with no Broadcom-specific code. That last point is tested for
 OHCI up to port enable; transfers are not tested yet.
 
-Tested on the modified box on 2026-10-02. Probes are in `../bolt/raw/usb/`.
+Tested on the modified box on 2026-10-02. Probes are in `../evidence/usb/`.
 
 ## Blocks (stock DTB `boot/stock_dtb.dts`, capability registers read)
 

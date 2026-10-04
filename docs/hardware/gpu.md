@@ -4,7 +4,7 @@ The BCM7268's 3D GPU is a Broadcom **V3D 3.3** (VideoCore 3D). This page maps
 it: which blocks are where, what each one does, what has been tested on the
 board and what hasn't. The detailed write-ups of each test are in
 `peripherals.md` (sections "V3D GPU: …"); probe sources and outputs are in
-`../bolt/raw/v3d/`.
+`../evidence/v3d/`.
 
 Sources:
 - Register names: Linux `drivers/gpu/drm/v3d/v3d_regs.h` (6.6).
@@ -51,7 +51,7 @@ off.
 ## Reset values (tested)
 
 Read right after power-up and reset, before the Nexus default registers
-(`../bolt/raw/v3d/v3d_sweep_probe.s`, output `v3d_sweep_output.txt`). All
+(`../evidence/v3d/v3d_sweep_probe.s`, output `v3d_sweep_output.txt`). All
 166 addresses Linux names were read with the abort-safe read. **None
 aborted**, including the CSD registers V3D 3.3 doesn't have. So the GPU
 answers 0 at unused offsets, and a zero here doesn't prove a register exists.

@@ -12,7 +12,7 @@ Linux port repurposed it); without it, the boot splash stops at
 does nothing. A new `splash` partition was added to the modified box
 (see "Adding a splash partition" below). Since then both boxes show the splash
 and keep the display running after `go -64` (tested). Raw captures are in
-`../bolt/raw/display/`.
+`../evidence/display/`.
 
 ## Bringing up HDMI from the BOLT prompt
 
@@ -21,7 +21,7 @@ ifconfig eth0 -auto
 load -raw -splash -tftp <PC IP>:test1080.bmp
 ```
 
-- The file must be a **1920 × 1080, 24-bit BMP**. `../bolt/raw/display/make_test_bmp.py`
+- The file must be a **1920 × 1080, 24-bit BMP**. `../evidence/display/make_test_bmp.py`
   generates the test pattern used here.
 - BOLT converts it to RGB565, flips the BMP's bottom-up rows and draws it,
   centred, into the framebuffer(s) the boot splash already set up. It prints
@@ -77,7 +77,7 @@ registers that BOLT's display lists use all read without an abort (see
 the display blocks may abort.
 
 Bare-metal code should read `0xf0641048` instead of hard-coding the address
-(`../bolt/raw/display/fbdraw_probe.s` does exactly that).
+(`../evidence/display/fbdraw_probe.s` does exactly that).
 
 ## What's in front of the pixels: display lists (do not touch)
 
@@ -93,7 +93,7 @@ BOLT's lists run, and how to run a list of our own are in "Display lists
 (RDC)" below.
 
 **Overwriting this area blanks the screen** until the next reboot (tested by
-accident). Full dump: `../bolt/raw/display/splash0_rdc_lists_0x7db08000.txt`.
+accident). Full dump: `../evidence/display/splash0_rdc_lists_0x7db08000.txt`.
 
 ## Drawing from bare-metal code: the confirmed recipe
 
@@ -103,7 +103,7 @@ accident). Full dump: `../bolt/raw/display/splash0_rdc_lists_0x7db08000.txt`.
 3. Read the base from `0xf0641048`, then write RGB565 halfwords at
    `base + y × 3840 + x × 2`.
 
-Tested: `../bolt/raw/display/fbdraw_probe.s` read `surface @ 7db0b700` and
+Tested: `../evidence/display/fbdraw_probe.s` read `surface @ 7db0b700` and
 drew a 400 × 200 magenta box in the centre of the screen, over the BMP.
 The display was still on and refreshing after `go`.
 
@@ -115,9 +115,9 @@ pipeline's registers.
 
 Measured on the modified box (2026-10-02) at EL2 after `go -64`, with the
 generic timer (27 MHz). The area is 1600 × 1000 (a 320 × 200 game scaled ×5),
-centred at (160, 40). Probes: `../bolt/raw/display/video_probe.s` (MMU off,
-as entered) and `../bolt/raw/display/video_probe_mmu.s` (MMU on, see below).
-`../bolt/raw/display/video_demo_mmu.s` runs the same drawing as a demo to
+centred at (160, 40). Probes: `../evidence/display/video_probe.s` (MMU off,
+as entered) and `../evidence/display/video_probe_mmu.s` (MMU on, see below).
+`../evidence/display/video_demo_mmu.s` runs the same drawing as a demo to
 watch (35 fps paced, then full speed).
 
 | Test | MMU off | MMU on |
@@ -175,7 +175,7 @@ and the picture switches whole, with no half-drawn frame (tested). A second
 buffer at `0x7d600000` (`0x3f4800` bytes, free `rmem` below `splash0`) is
 displayed fine. It has the same layout as BOLT's: pitch 3840, RGB565.
 
-Double-buffered loop (`../bolt/raw/display/vsync_probe.s`):
+Double-buffered loop (`../evidence/display/vsync_probe.s`):
 ```
 draw the frame into the back buffer
 write the back buffer's address to 0xf0603488 and 0xf060348c
@@ -225,7 +225,7 @@ nothing touches BL31. Page tables at `0x10600000`, test data at
 ## Display lists (RDC)
 
 Tested on the modified box on 2026-10-03, from `go -64` (EL2, MMU off).
-Probes and outputs are in `../bolt/raw/display/`.
+Probes and outputs are in `../evidence/display/`.
 
 ### List format
 
@@ -255,7 +255,7 @@ Opcodes `15`–`17` exist in the dumper but don't appear in BOLT's lists.
 
 `tools/re/rdc.py DUMP [START]` decodes a hex dump with this table, skipping
 the leftover RAM between lists. The decoded lists:
-`../bolt/raw/display/splash0_rdc_lists_decoded.txt`.
+`../evidence/display/splash0_rdc_lists_decoded.txt`.
 
 Example, the surface reload that runs every frame (see "Vsync and double
 buffering"):
@@ -324,7 +324,7 @@ the prompt is the one at `0x7db09ae0`.
 - The rest are RDC variables, the descriptor address (see above), and HDMI
   registers that the lists change by read-modify-write.
 
-Output: `../bolt/raw/display/bvn_read_probe_output.txt`.
+Output: `../evidence/display/bvn_read_probe_output.txt`.
 
 ### What the lists write, block by block
 
@@ -512,7 +512,7 @@ Method (all from BOLT, over the serial console):
 BOLT uses only the first 512 KB of the partition. The rest now holds a data
 file for bare-metal programs at offset 1 MB (`storage.md`).
 
-The before/after images of sectors 0–5 are in `../bolt/raw/gpt/`. Writing the
+The before/after images of sectors 0–5 are in `../evidence/gpt/`. Writing the
 "before" image back with the same `flash` command restores the original table.
 
 Constraints found on the way:

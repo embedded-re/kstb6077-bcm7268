@@ -2,7 +2,7 @@
 
 ## `boot/original_dtb.dts`: the original
 
-The vendor device tree BOLT was running when `docs/bolt/raw/rescue.txt` was
+The vendor device tree BOLT was running when `docs/evidence/rescue.txt` was
 captured, dumped live with `dt show` (`DT_SIZE a53e` = 42,258 bytes), and
 reproduced exactly. Its `chosen` node is stock:
 

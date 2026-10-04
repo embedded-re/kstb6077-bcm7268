@@ -8,7 +8,7 @@ in the DTB and Linux registers it as `mmc0`.
 ## The two SDHCI controllers (tested)
 
 Read on the stock box on 2026-10-04 at `BOLT>` after a power-on
-(`../bolt/raw/sdhci_genet/`). Each controller has a standard SD host block
+(`../evidence/sdhci_genet/`). Each controller has a standard SD host block
 and a Broadcom config block (DTB `reg-names` "host", "cfg"). Register names
 are from the SD Host Controller spec; the values are tested. The buffer data
 port `+0x20` was not read (reading it pops the FIFO).
