@@ -19,7 +19,7 @@ the register says otherwise. From BOLT: `d -w <addr> 4` reads one word,
 | `0xf064105c` | display GFD: **external abort** on read |
 | `0x7db08000–0x7db0b6ff` | display lists in RAM: overwriting them **blanks the screen** until reboot |
 | `0xf06fa828`, `0xf06fa884`, `0xf06fa888`, `0xf06fa898` | HDMI audio packet set-up: writing them **broke the picture** |
-| `0xf0460000` (PCIe: reset by `0xf0469210` bit 1), `0xf0b02000` (USB BDC: reset by `0xf0b00234` bit 23), `0xf1200000–0xf120bfff` (V3D GPU: power island `0xf041d020`), `0xf0402800` (nothing there) | **external abort** on read while in reset / off (`peripherals.md`) |
+| `0xf0460000` (PCIe: reset by `0xf0469210` bit 1), `0xf0b02000` (USB BDC: reset by `0xf0b00234` bit 23), `0xf1200000–0xf120bfff` (V3D GPU: power island `0xf041d020`, `gpu.md`), `0xf0402800` (nothing there) | **external abort** on read while in reset / off (`peripherals.md`) |
 | any address not on this sheet | unknown: may abort. Read new ones one word at a time, watchdog armed, or with the abort-safe probe (`peripherals.md`) |
 | under BOLT's 32-bit `go`: anything outside `0xf0000000–0xf12fffff` | unmapped in BOLT's MMU (the GIC hung the board this way) |
 
@@ -108,12 +108,27 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | `0xf04007f4` | error capture status | `0000083d` after a failed read |
 | `0xf0400000–0x1e4`, `0xf04007e4–0x7fc` | readable | `0xf04001e8–0x7e0` abort |
 
-## V3D GPU power (`peripherals.md`)
+## V3D GPU power (`gpu.md`)
 
 | Address | Name | What it does |
 |---|---|---|
 | `0xf041d020` | V3D power island control | write `1d00` → wait `(v & 0x74000000) == 0x34000000` (1.6 ms) = **on**; write `b00` → wait `(v & 0x72000000) == 0x42000000` = off. After BOLT: `424e0908` (off) |
 | `0xf120000c` | V3D hub IDENT1 | `000e1133` = V3D 3.3 (only while powered) |
+
+## M2MC 2D blitter: `0xf09b0000` (`2d-blitter.md`)
+
+Names from the stock `nexus.ko` (`BGRC_`) where it has them.
+
+| Address | Name | What it does |
+|---|---|---|
+| `0xf09b000c` | list control | `6` = start the list at `+0x14` (first list after a reset); `3` = continue with packets linked onto the last one |
+| `0xf09b0010` | list status | `2` when the list is done |
+| `0xf09b0014` | first packet address | physical address of the first packet |
+| `0xf09b0018` | current packet address | the last packet's address when done |
+| `0xf09b001c` | blit status | `0` when idle |
+| `0xf09b02f0`, `0xf09b1808` | reset (no name) | reset sequence in `2d-blitter.md` |
+| `0xf09b0400–0xf09b05fc` | palette | entries 0–127 of the last palette loaded by a packet |
+| `0xf04e04e8` | M2MC0 clocks | `7` = all on (after BOLT) |
 
 ## IR receiver kbd1: `0xf0419900` (`ir.md`)
 
