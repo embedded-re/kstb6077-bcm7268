@@ -163,5 +163,5 @@ go ...
 ## Serial console
 
 UART0, 115200 8N1, on the 5-pin "UART shell" header (see
-[`images/PCB.png`](images/PCB.png)). The modified box stops at `BOLT>` when autoboot finds no
+[`images/PCB_Front.jpg`](images/PCB_Front.jpg)). The modified box stops at `BOLT>` when autoboot finds no
 USB stick (its `STARTUP` is unset); otherwise use Ctrl-C (above).
