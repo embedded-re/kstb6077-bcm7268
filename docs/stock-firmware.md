@@ -32,7 +32,8 @@ boot ROM → BFW / BBL (secure first stage) → BOLT v1.34
   → Linux 4.1.45-1-15pre (32-bit ARM), Android 8.0.0
 ```
 
-The modified box stops at `BOLT>` because its `STARTUP` variable is unset.
+The modified box's `STARTUP` was unset (it stopped at `BOLT>`) until
+2026-10-15; now it starts kmon ([`booting.md`](booting.md), "Autostart of kmon").
 
 ## Boot reasons and how to reach BOLT
 
@@ -83,7 +84,7 @@ Full help text: [`evidence/stock/help_android.txt`](evidence/stock/help_android.
 
 | Variable | Stock | Modified box |
 |---|---|---|
-| `STARTUP` | `boot -elf -noclose -bsu flash0.bsu; android boot -rawfs` | unset |
+| `STARTUP` | `boot -elf -noclose -bsu flash0.bsu; android boot -rawfs` | unset until 2026-10-15; now starts kmon from `flash0.splash` ([`booting.md`](booting.md)) |
 | `BT_PAIR` | `upg_gio_aon 7`: SW4 is the Bluetooth remote pairing button | unset |
 | `DT_ADDRESS` / `DT_SIZE` | `7614000` / `b65e` (46,686 bytes) | `7613000` / `a53e` (42,258 bytes) |
 | `PRODUCTNAME` | `KSTB6077` | unset |

@@ -82,7 +82,7 @@ Every fact carries its source. Untagged statements in a section marked
 
 | Name | What it is |
 |---|---|
-| **modified box** | the box used for most tests. Its Android was replaced by the [Linux port](history/linux-port.md); `STARTUP` is unset, so it stops at `BOLT>`. A `splash` partition was re-added ([`hardware/display.md`](hardware/display.md)) |
+| **modified box** | the box used for most tests. Its Android was replaced by the [Linux port](history/linux-port.md). A `splash` partition was re-added ([`hardware/display.md`](hardware/display.md)); `SWAP`/`ROOT` became a 1 GB `ROOT` and a FAT32 `DATA` partition ([`hardware/storage.md`](hardware/storage.md)). `STARTUP` starts kmon ([`booting.md`](booting.md)) |
 | **stock box** | an untouched second box. It shipped with Android 8.0 and installed an Android 11 update by itself ([`stock-firmware.md`](stock-firmware.md)). BOLT is the same v1.34 on both |
 
 ### Notation

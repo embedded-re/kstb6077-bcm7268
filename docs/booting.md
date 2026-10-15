@@ -163,5 +163,21 @@ go ...
 ## Serial console
 
 UART0, 115200 8N1, on the 5-pin "UART shell" header (see
-[`images/PCB_Front.jpg`](images/PCB_Front.jpg)). The modified box stops at `BOLT>` when autoboot finds no
-USB stick (its `STARTUP` is unset); otherwise use Ctrl-C (above).
+[`images/PCB_Front.jpg`](images/PCB_Front.jpg)). Since 2026-10-15 the modified box starts kmon by
+itself (`STARTUP`, below); Ctrl-C (above) still stops at `BOLT>`.
+
+## Autostart of kmon (modified box)
+
+BOLT runs the `STARTUP` variable after AUTOBOOT. On the modified box it is
+set in NVRAM to load kmon from `flash0.splash` and start it:
+
+```
+setenv -p STARTUP "load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0000 flash0.splash; go -64 0x00100000"
+```
+
+Tested 2026-10-15: after a software reset with no USB stick, BOLT printed
+`USB device matching <USB Disk> not found!`, `Executing STARTUP...`, loaded
+1,835,008 bytes and kmon came up on the TV and the serial line. It still
+works after the `DATA` partition change. `tools/kstb-bolt` (Ctrl-C at boot)
+still reaches `BOLT>`. With a USB stick carrying `sysinit.txt`, AUTOBOOT runs
+that first. To undo: `unsetenv -p STARTUP`.

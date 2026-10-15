@@ -1,11 +1,14 @@
 // mmc.h - eMMC driver (mmc.c).
 #include <stdint.h>
 
-// flash0.splash on the modified box (docs/hardware/display.md, "Adding a
-// splash partition"): the only area mmc_write() accepts.
+// The only areas mmc_write() accepts, on the modified box:
+// flash0.splash (docs/hardware/display.md, "Adding a splash partition") and
+// flash0.DATA, the FAT32 partition for files (docs/hardware/storage.md).
 #define SPLASH_FIRST    15239168u
 #define SPLASH_LAST     15273594u
 #define SPLASH_PROTECT  1024u       // first 512 KB: the splash container
+#define DATA_FIRST      2242560u
+#define DATA_LAST       15239167u
 
 #define MMC_EIO      (-1)
 #define MMC_ETIMEOUT (-2)

@@ -94,7 +94,9 @@ EXT_CSD, read from the card with CMD8:
 | PRE_EOL_INFO [267] | `01` | normal |
 | FIRMWARE_VERSION [261:254] | `37 33 31 30 33 35 31 37` | ASCII "73103517" |
 
-GPT read with the driver (`mmc part`, entries at LBA 2):
+GPT read with the driver (`mmc part`, entries at LBA 2). Since 2026-10-15
+the Linux port's `SWAP` and `ROOT` are replaced by a 1 GB `ROOT` and the
+FAT32 `DATA` partition ("The `DATA` partition" below):
 
 | # | First LBA | Last LBA | Name |
 |---|---|---|---|
@@ -105,15 +107,47 @@ GPT read with the driver (`mmc part`, entries at LBA 2):
 | 5 | 4096 | 6143 | hwcfg |
 | 6 | 6144 | 137215 | KRN |
 | 7 | 137216 | 145407 | DTB |
-| 8 | 145408 | 4339711 | SWAP |
-| 9 | 4339712 | 15239167 | ROOT |
+| 8 | 145408 | 2242559 | ROOT (1 GB, kept for a minimal Linux rootfs; empty) |
+| 9 | 2242560 | 15239167 | **DATA** (6346 MB, FAT32) |
 | 10 | 15239168 | 15273594 | splash |
 
 Safety rules in the driver: it never sends CMD6 (SWITCH, which could change
 the boot or partition configuration), erase or lock commands, and
-`mmc_write()` refuses anything outside `flash0.splash`, and the splash
-container (its first 512 KB) unless forced (tested: LBA 100 in `nvram` and
-the container's first sector were both refused).
+`mmc_write()` refuses anything outside `flash0.splash` and `flash0.DATA`,
+and the splash container (its first 512 KB) unless forced (tested: LBA 100
+in `nvram` and the container's first sector were both refused).
+
+## The `DATA` partition (modified box)
+
+Made on 2026-10-15 from the Linux port's `SWAP` (2048 MB) and `ROOT`
+(5322 MB). `KRN`, `DTB` and everything before them, and `splash`, are
+unchanged.
+
+| Entry | Before | After |
+|---|---|---|
+| 8 | `SWAP` LBA 145408–4339711, type Linux swap | `ROOT` LBA 145408–**2242559** (1 GB), type Linux filesystem |
+| 9 | `ROOT` LBA 4339712–15239167, type Linux filesystem | **`DATA`** LBA **2242560**–15239167 (6346 MB), type Microsoft basic data, new unique GUID |
+
+Written the same way as the splash change ([`display.md`](display.md), "Adding a splash
+partition"): sectors 0–5 built on the PC, checked with `sfdisk --verify` on
+a sparse image ("No errors detected"; only the missing backup GPT reported),
+uploaded at `BOLT>` with `tools/kstb-run --no-go --addr 0x02200000`, written
+with `flash -noerase -mem=0x02200000 -memsize=0xc00 mem0 flash0`, read back
+(CRC `b10c9741`, same as the file). Only sectors 1, 3 and 4 changed. After a
+reset BOLT lists `flash0.ROOT` (1024 MB) and `flash0.DATA` (6346 MB), and the
+autostart from `flash0.splash` works as before. Images:
+[`../evidence/gpt/modified-box_primary-gpt_lba0-5_data.bin`](../evidence/gpt/modified-box_primary-gpt_lba0-5_data.bin); writing back
+`…_with-splash.bin` the same way restores the previous table. The backup GPT
+at the end of the eMMC still describes the original layout (as before).
+
+**FAT32**: `mkfs.fat -F 32 -s 64 -S 512 -n KSTB -h 2242560` on a sparse
+6346 MB image on the PC: 32 KB clusters, 64 reserved sectors, two FATs of
+1600 sectors, root directory in cluster 2, 203,020 clusters. The first 3328
+sectors (1.6 MB: reserved area, both FATs, the root cluster) were written
+from kmon with zeros everywhere `mkfs` left zeros, so no old swap data
+remains in them. Read back: CRC `aef8579e`, the same as the image, which
+`fsck.fat` reports clean (empty). Not tested yet: reading or writing it from
+a program.
 
 ## Reading the eMMC with BOLT before `go`
 

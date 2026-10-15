@@ -195,8 +195,9 @@ initialisation. It reads at ~33 MB/s and writes at ~9 MB/s. LBAs are 512-byte
 sectors from the start of the user area; `flash0.splash` is LBA
 `#15239168`–`#15273594`, so `flash0.splash + offset` = `#15239168 + offset/512`.
 
-Writes are refused outside `flash0.splash`, and in its first 512 KB (the
-splash container BOLT reads at boot) unless the command is `mmc!`. The driver
+Writes are refused outside `flash0.splash` and `flash0.DATA` (LBA
+`#2242560`–`#15239167`, FAT32), and in splash's first 512 KB (the splash
+container BOLT reads at boot) unless the command is `mmc!`. The driver
 never sends CMD6, erase or lock commands, so it can't change the card's
 boot or partition setup.
 

@@ -10,8 +10,8 @@
 //   - only these commands are ever sent: CMD8 (read EXT_CSD), CMD13 (status),
 //     CMD17/18 (read), CMD24/25 (write). Never CMD6 (SWITCH: could change the
 //     boot or partition configuration), erase, or lock commands.
-//   - writes are refused outside flash0.splash, and in its first 512 KB (the
-//     splash container) unless forced.
+//   - writes are refused outside flash0.splash and flash0.DATA, and in the
+//     first 512 KB of flash0.splash (the splash container) unless forced.
 
 #include <stdio.h>
 #include <stdint.h>
@@ -172,6 +172,8 @@ int mmc_read_ext_csd(uint8_t *buf)
 
 int mmc_write_allowed(uint32_t lba, uint32_t n, int force)
 {
+    if (n && lba >= DATA_FIRST && lba + n - 1 <= DATA_LAST)
+        return 0;
     if (n == 0 || lba < SPLASH_FIRST || lba + n - 1 > SPLASH_LAST)
         return MMC_EGUARD;
     if (!force && lba < SPLASH_FIRST + SPLASH_PROTECT)
@@ -219,7 +221,7 @@ const char *mmc_strerror(int r)
     case MMC_ETIMEOUT: return "timeout";
     case MMC_EBUSY:    return "controller/card busy";
     case MMC_ENOCARD:  return "no card";
-    case MMC_EGUARD:   return "refused: outside flash0.splash, or in its first 512 KB (use '!')";
+    case MMC_EGUARD:   return "refused: outside flash0.splash and flash0.DATA, or in splash's first 512 KB (use '!')";
     }
     return "ok";
 }

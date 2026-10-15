@@ -1297,9 +1297,10 @@ static void cmd_mmc(struct cmd *c)
                us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0);
     } else {
         printf("usage: mmc [extcsd | part | dump lba | read lba count [addr] | write lba count addr]\n"
-               "  lba/count in 512-byte sectors (hex, or #decimal). flash0.splash = LBA #%u-#%u;\n"
-               "  writes only there, and not in its first 512 KB without 'mmc!'.\n",
-               SPLASH_FIRST, SPLASH_LAST);
+               "  lba/count in 512-byte sectors (hex, or #decimal). Writes only to\n"
+               "  flash0.splash = LBA #%u-#%u (not its first 512 KB without 'mmc!')\n"
+               "  and flash0.DATA = LBA #%u-#%u.\n",
+               SPLASH_FIRST, SPLASH_LAST, DATA_FIRST, DATA_LAST);
     }
 }
 
