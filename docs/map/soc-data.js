@@ -22,7 +22,7 @@
 
 window.KSTB_MAP = {
   doc_base_local: "../",
-  doc_base_web: "https://github.com/embedded-re/KAON-KSTB6077/blob/main/docs/",
+  doc_base_web: "https://github.com/embedded-re/kstb6077-bcm7268/blob/main/docs/",
 
   layers: [
     { id: "reg",    label: "Register bus",      hint: "CPU or RDC writing a block's registers over GISB" },

@@ -8,7 +8,7 @@
 set -e
 cd "$(dirname "$0")/.."
 mkdir -p stock
-gh release download v1.0 -R embedded-re/KAON-KSTB6077 -p KSTB6077_assets.zip -D stock --clobber
+gh release download v1.0 -R embedded-re/kstb6077-bcm7268 -p KSTB6077_assets.zip -D stock --clobber
 unzip -o -q stock/KSTB6077_assets.zip -d stock
 rm stock/KSTB6077_assets.zip
 echo "extracted to stock/release/ ($(find stock/release -type f | wc -l) files)"
