@@ -774,6 +774,7 @@ static void cmd_go(struct cmd *c)
         return;
     printf("go %08lx (MMU off, like BOLT's go -64; a program returns by jumping to x2)\n", a);
     irq_off();
+    usb_stop();
     run_program(a);
 }
 
@@ -830,6 +831,7 @@ static void cmd_doom(struct cmd *c)
     memcpy((void *)PROG_ADDR, bin, img->size);  // a fresh copy every time
     printf("starting Doom (%u bytes); quitting from its menu comes back here\n", img->size);
     irq_off();
+    usb_stop();
     run_program(PROG_ADDR);
 }
 
@@ -934,6 +936,64 @@ static void cmd_wdt(struct cmd *c)
 static void cmd_irq(struct cmd *c)
 {
     irq_cmd(c->argc, c->argv, key_pressed);
+}
+
+// USB keyboard on the USB-A port (usb.c, docs/hardware/usb.md)
+static void usb_kbd(void)
+{
+    uint8_t r[8], prev[8] = {0};
+    printf("USB keyboard: reports and typed characters; any serial key stops\n");
+    uint64_t t0 = ticks();
+    while (!key_pressed()) {
+        int n = usb_kbd_poll(r);
+        if (n < 0)
+            return;
+        if (n == 0 || !memcmp(r, prev, 8))
+            continue;
+        if (r[2] == 0x01) {                     // ErrorRollOver: too many keys, ignore
+            printf("%7lu ms: rollover (too many keys at once)\n", (ticks() - t0) / TICKS_PER_MS);
+            continue;
+        }
+        printf("%7lu ms: %02x %02x %02x %02x %02x %02x %02x %02x ", (ticks() - t0) / TICKS_PER_MS,
+               r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]);
+        for (int i = 2; i < 8; i++) {           // keys that weren't down in the last report
+            if (!r[i] || memchr(prev + 2, r[i], 6))
+                continue;
+            static const char *const names[] = {
+                [0x28] = "Enter", [0x29] = "Esc", [0x2a] = "Backspace", [0x2b] = "Tab",
+                [0x39] = "CapsLock", [0x4f] = "Right", [0x50] = "Left", [0x51] = "Down",
+                [0x52] = "Up", [0x65] = "Menu",
+            };
+            int ch = usb_hid_char(r[i], r[0]);
+            if (ch >= 0x20 && ch < 0x7f)
+                printf(" '%c'", ch);
+            else if (ch > 0 && ch < 0x20 && (r[0] & 0x11))
+                printf(" Ctrl-%c", ch + '@');
+            else if (r[i] < sizeof names / sizeof names[0] && names[r[i]])
+                printf(" %s", names[r[i]]);
+            else if (r[i] >= 0x3a && r[i] <= 0x45)
+                printf(" F%d", r[i] - 0x39);
+            else
+                printf(" [usage %02x]", r[i]);
+        }
+        printf("\n");
+        memcpy(prev, r, 8);
+    }
+}
+
+static void cmd_usb(struct cmd *c)
+{
+    const char *w = c->argc ? c->argv[0] : "";
+    if (!*w)
+        usb_status();
+    else if (!strcmp(w, "init"))
+        usb_init();
+    else if (!strcmp(w, "kbd"))
+        usb_kbd();
+    else if (!strcmp(w, "stop"))
+        usb_stop();
+    else
+        printf("usage: usb [init|kbd|stop]\n");
 }
 
 static void cmd_reset(struct cmd *c)
@@ -1170,6 +1230,7 @@ static const struct {
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
     { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
+    { "usb",     cmd_usb,     "[init|kbd|stop]",            "USB-A port: OHCI1, keyboard" },
     { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },
     { "led",     cmd_led,     "green|red|orange|blue|off",  "front LEDs" },
     { "wdt",     cmd_wdt,     "[seconds|off]",              "watchdog" },
@@ -1181,7 +1242,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb",
     "led", "wdt", "history", "reset", NULL,
 };
 

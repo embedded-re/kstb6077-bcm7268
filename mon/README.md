@@ -61,6 +61,7 @@ mmc read lba count [addr]      sectors to RAM (default 0x02000000)
 mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
 irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
+usb [init|kbd|stop]            USB-A port (see below)
 led green|red|orange|blue|off  front LEDs
 wdt [seconds|off]              watchdog
 history                        reset    software reset back to BOLT
@@ -125,6 +126,29 @@ The IRQ vector ([`start.S`](start.S)) saves x0-x18, x29, x30, ELR and SPSR and c
 `irq_handler`; `irq.c` is built with `-mgeneral-regs-only` so the handler
 never touches FP/SIMD registers.
 
+## USB keyboard (`usb`, [`usb.c`](usb.c))
+
+OHCI1, the USB-A port's low/full-speed controller, polled (tested
+2026-10-15, details in [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
+
+```
+usb            controller and port state
+usb init       reset the controller and the port, enumerate the device, print its
+               descriptors; a boot-protocol keyboard is then polled
+usb kbd        print keyboard reports and the keys (US layout); any serial key stops
+usb stop       controller back to reset (also done before go/doom)
+```
+
+```
+kmon> usb init
+usb: port 00130303: device connected, low speed, enabled yes
+usb: device 0461:0010, USB 1.10, class 00, ep0 max packet 8, 1 configuration(s)
+...
+usb: keyboard ready (interface 0, endpoint 1 IN, 8 bytes, every 10 ms)
+kmon> usb kbd
+  22082 ms: 00 00 0b 00 00 00 00 00  'h'
+```
+
 ## Trying a new build without flashing (`mon-ram.bin`)
 
 `make -C mon` also builds `mon/build/mon-ram.bin`: [`reload.S`](reload.S), a copy stub,
@@ -182,12 +206,13 @@ exactly that once, and the CRC check caught it.
 |---|---|
 | `0x00100000–0x0013ffff` | the monitor: code, data, 64 KB stack, page tables (≤ 256 KB, checked by `link.ld`) |
 | `0x00140000–` | `doom.bin` in a `KWAD` header (from the bundle) |
+| `0x00600000–0x007fffff` | DMA block, non-cacheable: USB descriptors and buffers |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |
 | `0x10000000–0x10dc6fff` | the WAD (`KWAD` image), loaded by BOLT |
 
 MMU and caches are on, with the same identity map as Doom
-([`../doom/start.S`](../doom/start.S)): DRAM cached, `0x7d600000–0x7dffffff` (framebuffers,
+([`../doom/start.S`](../doom/start.S)) plus the DMA block: DRAM cached, `0x7d600000–0x7dffffff` (framebuffers,
 audio ring) non-cacheable, `0x80000000–0xbfffffff` unmapped, `0xc0000000+`
 Device. `md` of RAM therefore reads through the cache.
 

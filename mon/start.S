@@ -116,15 +116,29 @@ mmu_off:
         isb
         ret     x12
 
-// Identity map (same as doom/start.S):
-//   0x00000000-0x3fffffff  Normal write-back
+// Identity map (as doom/start.S, plus the DMA block):
+//   0x00000000-0x3fffffff  Normal write-back, except
+//   0x00600000-0x007fffff  Normal non-cacheable (DMA_BASE: USB descriptors)
 //   0x40000000-0x7fffffff  Normal write-back, except
 //   0x7d600000-0x7dffffff  Normal non-cacheable (framebuffers, audio ring)
 //   0x80000000-0xbfffffff  unmapped (a read gives a translation fault, caught)
 //   0xc0000000-0xffffffff  Device-nGnRE, execute-never
 mmu_on:
+        ldr     x0, =pt_l0g                     // first GB in 2 MB blocks: WB, except
+        mov     x1, #0x705                      // the DMA block 0x00600000 (index 3): NC
+        mov     x2, #0
+1:      cmp     x2, #3
+        mov     x3, #0x705                      // Normal WB (attr 1), inner shareable, AF
+        mov     x4, #0x709                      // Normal non-cacheable (attr 2)
+        csel    x3, x4, x3, eq
+        orr     x3, x3, x2, lsl #21
+        str     x3, [x0, x2, lsl #3]
+        add     x2, x2, #1
+        cmp     x2, #512
+        b.lo    1b
         ldr     x0, =pt_l1
-        ldr     x1, =0x705                      // block: Normal WB (attr 1), inner shareable, AF
+        ldr     x1, =pt_l0g
+        orr     x1, x1, #3                      // table
         str     x1, [x0]
         ldr     x1, =pt_l2
         orr     x1, x1, #3
@@ -388,6 +402,7 @@ exc_frame:      .space 37 * 8                   // x0-x30, sp, elr, esr, type, f
         .balign 4096
 pt_l1:  .space  4096
 pt_l2:  .space  4096
+pt_l0g: .space  4096
         .balign 16
         .space  0x10000                         // 64 KB stack
 stack_top:
