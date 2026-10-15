@@ -5,8 +5,8 @@ The BCM7268 has one USB block at `0xf0b00000` with five host controllers
 DTB). BOLT sets up the PHY and clocks at boot, and its `go` resets the
 controllers but leaves that set-up in place. A bare-metal program can then
 drive the controllers with the standard specs (EHCI 1.0, OHCI 1.0a,
-xHCI 1.0), with no Broadcom-specific code. That last point is tested for
-OHCI up to port enable; transfers are not tested yet.
+xHCI 1.0), with no Broadcom-specific code. That is tested for OHCI1: control
+transfers, enumeration and a HID keyboard's interrupt endpoint.
 
 Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../evidence/usb/).
 
@@ -18,8 +18,8 @@ Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../
 | Control / PHY | `0xf0b00200`, set up by BOLT; survives `go` |
 | Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; xHCI ports unknown |
 | State after `go -64` | every controller reset and stopped, still clocked |
-| Tested | OHCI1 from bare metal up to an enabled port with a keyboard attached |
-| Not tested | transfers (control, interrupt, bulk) |
+| Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard reports from an interrupt endpoint (kmon `usb`) |
+| Not tested | bulk transfers, EHCI, xHCI, interrupts from the USB controllers |
 
 ## Blocks (stock DTB [`boot/stock_dtb.dts`](../../boot/stock_dtb.dts), capability registers read)
 
@@ -114,13 +114,58 @@ Steps, OHCI 1.0a spec, offsets from `0xf0b00600`:
 Nothing Broadcom-specific was needed (no PHY or `0xf0b00200` writes): the
 PHY and clocks from BOLT's start-up survive `go -64`.
 
+## Transfers and a keyboard on OHCI1 (tested)
+
+Tested on 2026-10-15 on the modified box with kmon's `usb` command
+([`../../mon/usb.c`](../../mon/usb.c)): polled, no interrupts, MMU and caches on. The EDs,
+TDs, HCCA and buffers sit in a 2 MB block at `0x00600000` that kmon maps
+Normal non-cacheable, so no cache maintenance is needed.
+
+Bring-up as in the table above (reset, HCCA, frame timing, Operational, port
+power, port reset), then the standard OHCI 1.0a lists:
+
+| What | How |
+|---|---|
+| Control transfer | one ED on the control list (`HcControlHeadED` `+0x20`), a SETUP TD (DATA0), an optional data TD (DATA1, buffer rounding on), a status TD (DATA1, opposite direction), an empty tail TD. Start: `HcControl` CLE (bit 4), `HcCommandStatus` CLF (bit 1). Done when the ED's HeadP reaches the tail; each TD's condition code (bits 28–31) is `0` |
+| List pointers | written only with CLE off (the spec's rule) |
+| Interrupt endpoint | one ED with direction IN hung from all 32 HCCA interrupt slots (polled every frame), `HcControl` PLE (bit 2). Each finished TD becomes the new tail and the old tail gets the next request; the data toggle is carried in the ED |
+
+Enumeration that worked: `GET_DESCRIPTOR` (device, 8 bytes) at address 0,
+`SET_ADDRESS` 1, `GET_DESCRIPTOR` (device, 18), configuration (9 bytes, then
+`wTotalLength`), `SET_CONFIGURATION`, then for the keyboard `SET_PROTOCOL` 0
+(boot) and `SET_IDLE` 0. No request was STALLed.
+
+| Device | Port status after reset | Descriptors |
+|---|---|---|
+| keyboard `0461:0010` | `00130303`: connected, enabled, **low speed** | USB 1.10, ep0 8 bytes; 59-byte configuration, 2 HID interfaces: 0 = boot keyboard (03/01/01), endpoint `81` interrupt 8 bytes / 10 ms; 1 = 03/00/00, endpoint `82` interrupt 8 bytes / 10 ms |
+| USB stick `0781:558a` | `00110103`: connected, enabled, **full speed** | USB 2.10, ep0 64 bytes; mass storage (08/06/50 = SCSI, bulk-only), endpoints `81` IN and `02` OUT, bulk 64 bytes |
+
+The stick is a high-speed device (BOLT puts it on EHCI1). With EHCI1 not
+running (CONFIGFLAG 0), the port belongs to OHCI1 and the stick fell back to
+full speed there.
+
+Keyboard reports (8 bytes, boot protocol): byte 0 = modifiers, bytes 2–7 =
+up to six usage codes of the keys held down. Seen on this keyboard:
+
+| Byte 0 bit | Key |
+|---|---|
+| 0 / 1 / 2 / 3 | left Ctrl / Shift / Alt / GUI |
+| 4 / 5 / 6 / 7 | right Ctrl / Shift / Alt / GUI |
+
+- One report per change (`SET_IDLE` 0), none while nothing changes.
+- Usages seen: letters `04`–`1d`, digits `1e`–`27`, Enter `28`, Esc `29`,
+  Backspace `2a`, Tab `2b`, space `2c`, punctuation `2d`–`38` (including
+  `32`, the extra ISO key), CapsLock `39`, F1–F12 `3a`–`45`, `46`–`4e`
+  (Print Screen … Page Down), arrows `4f`–`52`, keypad `53`–`63`, Menu `65`.
+- Several keys at once that the keyboard can't resolve give `01` in all six
+  key bytes (HID ErrorRollOver).
+- Not tested: Shift or Ctrl together with a letter (only alone), the
+  keyboard LEDs (`SET_REPORT`).
+
 ## Open questions
 
-- Control transfers on OHCI1 (EDs/TDs in RAM, `GET_DESCRIPTOR`, `SET_ADDRESS`,
-  `SET_CONFIGURATION`), then HID boot-protocol keyboard reports from an
-  interrupt endpoint (8-byte reports). With the MMU off, RAM is uncached, so
-  DMA needs no cache maintenance. With the MMU map from [`display.md`](display.md), the
-  ED/TD/buffer area must be mapped non-cacheable, or cleaned/invalidated.
+- Bulk transfers (the USB stick) and EHCI1 for high-speed devices.
+- The OHCI1 interrupt (ID 127) instead of polling.
 - Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).
 - The `0xf0b00200` control block: read in full ([`peripherals.md`](peripherals.md)), but
