@@ -44,9 +44,4 @@ int irq_ir_on(void);
 // mon.c
 void ir_setup(void);
 
-// usb.c
-int usb_init(void);
-int usb_kbd_poll(uint8_t *report);
-int usb_hid_char(uint8_t usage, uint8_t mods);
-void usb_stop(void);
-void usb_status(void);
+#include "usb.h"                        // ../usb

@@ -8,13 +8,15 @@
 //   usb_init()  controller reset, port power and reset, then enumeration:
 //               GET_DESCRIPTOR, SET_ADDRESS, configuration, boot protocol
 //   usb_kbd_poll()  one 8-byte report from the interrupt endpoint, if any
+//
+// Shared by mon/ and doom/ (like libc/); each builds it with its own kstb.h.
 
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
-#include "kstb.h"
-#include "mon.h"
+#include "kstb.h"                       // the program's: DMA_BASE
+#include "usb.h"
 
 #define OHCI            0xf0b00600
 #define HC_CONTROL      (OHCI + 0x04)

@@ -4,7 +4,8 @@
 //   2. FP/SIMD on: clear CPTR_EL2.TFP
 //   3. zero .bss
 //   4. identity map + MMU + caches on (as docs/evidence/display/vsync_probe.s):
-//        0x00000000-0x3fffffff  Normal write-back
+//        0x00000000-0x3fffffff  Normal write-back, except
+//        0x00600000-0x007fffff  Normal non-cacheable (DMA_BASE: USB, ../usb)
 //        0x40000000-0x7fffffff  Normal write-back, except
 //        0x7d600000-0x7dffffff  Normal non-cacheable (both framebuffers)
 //        0xc0000000-0xffffffff  Device-nGnRE, execute-never
@@ -42,9 +43,21 @@ _start:
         b       3b
 
 mmu_on:
+        ldr     x0, =pt_l0g                     // 0x00000000-0x3fffffff in 2 MB blocks: WB,
+        mov     x2, #0                          // except DMA_BASE 0x00600000 (index 3): NC
+1:      cmp     x2, #3
+        mov     x3, #0x705                      // Normal WB (attr 1), inner shareable, AF
+        mov     x4, #0x709                      // Normal non-cacheable (attr 2)
+        csel    x3, x4, x3, eq
+        orr     x3, x3, x2, lsl #21
+        str     x3, [x0, x2, lsl #3]
+        add     x2, x2, #1
+        cmp     x2, #512
+        b.lo    1b
         ldr     x0, =pt_l1
-        ldr     x1, =0x705                      // block: Normal WB (attr 1), inner shareable, AF
-        str     x1, [x0]                        // 0x00000000-0x3fffffff
+        ldr     x1, =pt_l0g
+        orr     x1, x1, #3
+        str     x1, [x0]                        // 0x00000000-0x3fffffff: table
         ldr     x1, =pt_l2
         orr     x1, x1, #3
         str     x1, [x0, #8]                    // 0x40000000-0x7fffffff: 2 MB blocks in L2
@@ -113,6 +126,7 @@ mon_resume: .quad 0
         .balign 4096
 pt_l1:  .space  4096
 pt_l2:  .space  4096
+pt_l0g: .space  4096
         .balign 16
         .space  0x40000                         // 256 KB stack
 stack_top:

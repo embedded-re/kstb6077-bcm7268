@@ -2,8 +2,8 @@
 
 [doomgeneric](https://github.com/ozkl/doomgeneric) (git submodule, unmodified)
 running without an OS, started from BOLT with `go -64`. Video goes to HDMI,
-sound effects to HDMI audio, and input comes from the IR remote or the serial
-console.
+sound effects to HDMI audio, and input comes from a USB keyboard, the IR
+remote or the serial console.
 
 Tested on the modified box on 2026-10-15: the game runs, picture and sound
 effects are fine, and the IR remote controls it.
@@ -15,6 +15,7 @@ effects are fine, and the IR remote controls it.
 | `start.S` | entry point: stack, exception vectors (print ESR/ELR/FAR), FP/SIMD on (`CPTR_EL2.TFP` = 0), `.bss`, identity-mapped MMU + caches (map from [`../docs/evidence/display/vsync_probe.s`](../docs/evidence/display/vsync_probe.s)) |
 | `dg_kstb.c` | platform layer: video, timer, input, WAD check, `main` |
 | `dg_sound.c` | sound effects mixed into the HDMI audio ring buffer; music is a stub |
+| [`../usb/`](../usb/) | OHCI1 USB driver and HID boot keyboard (shared with the monitor) |
 | [`../libc/`](../libc/) | the small C library (shared with the monitor): the ~40 functions doomgeneric calls, and their headers |
 | `kstb.h` | addresses and RAM layout |
 | `Makefile` | clang + ld.lld → `build/doom.bin`, linked at `0x01000000` |
@@ -47,6 +48,7 @@ a second; over serial (`kstb-run`) the same 570 KB takes about 7 minutes.
 
 | Range | Use |
 |---|---|
+| `0x00600000–0x007fffff` | USB descriptors and buffers (non-cacheable, `DMA_BASE`) |
 | `0x01000000–0x0110ffff` | program: code, data, `.bss`, 256 KB stack, page tables |
 | `0x10000000–0x10dc6fff` | `KWAD` image with the WAD, loaded by BOLT ([`../docs/hardware/storage.md`](../docs/hardware/storage.md)) |
 | `0x20000000–0x3fffffff` | `malloc` heap; Doom's zone takes 32 MB of it (`-mb 32`) |
@@ -92,6 +94,30 @@ summed and clipped to 16 bits.
 Not done: music (`DG_music_module` is a stub).
 
 ## Input
+
+USB keyboard on the USB-A port (tested 2026-10-15, "very much playable"),
+driver in [`../usb/`](../usb/) ([`../docs/hardware/usb.md`](../docs/hardware/usb.md)). `main` enumerates it at
+start-up (about 150 ms; without a keyboard it prints "nothing connected" and
+goes on). It reports real presses and releases, several keys at once:
+
+| Key | Doom |
+|---|---|
+| W / S | forward / back |
+| A / D | strafe left / right |
+| arrows | move / turn |
+| F | fire |
+| E, space | use (doors, switches) |
+| Shift | run |
+| Alt | strafe (with left/right) |
+| Enter, Esc, Tab, Backspace | as labelled (menu, automap) |
+| F1–F12, Pause | as labelled |
+| other letters, digits, `-` `=` | themselves (weapons, `y`/`n`, cheat codes) |
+
+W, A, S, D, E and F reach Doom as game keys, not as letters, so they can't
+be typed (e.g. in a savegame name; not tested).
+
+Keys are mapped as a US layout. The keyboard is polled once per `DG_GetKey`
+call; a rollover report (too many keys) is ignored.
 
 Neither the remote nor the serial terminal reports key releases. A key counts
 as held while its repeats keep arriving. It is released 150 ms (remote) or

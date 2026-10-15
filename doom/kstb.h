@@ -5,6 +5,7 @@
 
 // RAM layout (all free after `go -64`, docs/hardware/memory-map.md)
 #define LOAD_ADDR   0x01000000      // this program (code, data, bss, stack, page tables)
+#define DMA_BASE    0x00600000      // 2 MB, mapped non-cacheable: USB descriptors and buffers (../usb)
 #define WAD_ADDR    0x10000000      // KWAD image, loaded by BOLT before `go -64`
 #define HEAP_BASE   0x20000000      // malloc
 #define HEAP_END    0x40000000

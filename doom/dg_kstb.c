@@ -4,9 +4,11 @@
 //           1600x1000 in the middle of the 1920x1080 HDMI framebuffer.
 //           Two buffers, flipped at the frame boundary (docs/hardware/display.md).
 //   timer   CNTPCT_EL0, 27 MHz.
-//   input   UART0 (a raw terminal, e.g. `kstb -i`) and the IR remote (kbd1, NEC).
-//           Neither reports key releases: a key counts as held while it repeats,
-//           and is released when no repeat arrives for a while.
+//   input   UART0 (a raw terminal, e.g. `kstb -i`), the IR remote (kbd1, NEC)
+//           and a USB keyboard on the USB-A port (../usb, polled).
+//           UART and IR don't report key releases: a key counts as held while
+//           it repeats, and is released when no repeat arrives for a while.
+//           The USB keyboard reports real presses and releases.
 //   WAD     loaded by BOLT to WAD_ADDR as a KWAD image (docs/hardware/storage.md).
 
 #include <stdio.h>
@@ -14,6 +16,7 @@
 #include <string.h>
 
 #include "kstb.h"
+#include "usb.h"
 #include "doomgeneric/doomgeneric/doomgeneric.h"
 #include "doomgeneric/doomgeneric/doomkeys.h"
 #include "doomgeneric/doomgeneric/i_video.h"
@@ -312,10 +315,70 @@ static void ir_poll(void)
     held_check(&ir_held);
 }
 
+// USB keyboard: the boot-protocol report holds the modifiers (byte 0) and up
+// to six keys held down (bytes 2-7), so presses and releases come from
+// comparing it with the previous report. Keys: W/S forward/back, A/D
+// strafe, arrows move and turn, F fire, E or space use, Shift run.
+static int usb_up;
+static uint8_t usb_prev[8];
+
+static unsigned char usb_key(uint8_t u)
+{
+    switch (u) {
+    case 0x28: return KEY_ENTER;
+    case 0x29: return KEY_ESCAPE;
+    case 0x2a: return KEY_BACKSPACE;
+    case 0x2b: return KEY_TAB;
+    case 0x1a: return KEY_UPARROW;              // W A S D: move and strafe
+    case 0x04: return KEY_STRAFE_L;
+    case 0x16: return KEY_DOWNARROW;
+    case 0x07: return KEY_STRAFE_R;
+    case 0x09: return KEY_FIRE;                 // F
+    case 0x08: return KEY_USE;                  // E and space: doors, switches
+    case 0x2c: return KEY_USE;
+    case 0x44: return KEY_F11;
+    case 0x45: return KEY_F12;
+    case 0x48: return KEY_PAUSE;
+    case 0x4f: return KEY_RIGHTARROW;
+    case 0x50: return KEY_LEFTARROW;
+    case 0x51: return KEY_DOWNARROW;
+    case 0x52: return KEY_UPARROW;
+    }
+    if (u >= 0x3a && u <= 0x43)                 // F1-F10
+        return KEY_F1 + (u - 0x3a);
+    int c = usb_hid_char(u, 0);                 // letters, digits, - = , . etc.
+    return c >= 0x20 && c < 0x7f ? c : 0;
+}
+
+static void usb_poll(void)
+{
+    static const struct { uint8_t mask; unsigned char key; } mods[] = {
+        { 0x22, KEY_RSHIFT },                   // Shift: run
+        { 0x44, KEY_RALT },                     // Alt: strafe
+    };
+    uint8_t r[8];
+    if (!usb_up || usb_kbd_poll(r) != 1 || r[2] == 0x01)   // 01 = rollover: ignore
+        return;
+    for (unsigned i = 0; i < sizeof mods / sizeof mods[0]; i++) {
+        int was = !!(usb_prev[0] & mods[i].mask), now = !!(r[0] & mods[i].mask);
+        if (was != now)
+            post(mods[i].key, now);
+    }
+    unsigned char k;
+    for (int i = 2; i < 8; i++)                 // released: in the old report, not the new
+        if (usb_prev[i] && !memchr(r + 2, usb_prev[i], 6) && (k = usb_key(usb_prev[i])))
+            post(k, 0);
+    for (int i = 2; i < 8; i++)                 // pressed: in the new report, not the old
+        if (r[i] && !memchr(usb_prev + 2, r[i], 6) && (k = usb_key(r[i])))
+            post(k, 1);
+    memcpy(usb_prev, r, 8);
+}
+
 int DG_GetKey(int *pressed, unsigned char *key)
 {
     uart_poll();
     ir_poll();
+    usb_poll();
     if (q_tail == q_head)
         return 0;
     *key = queue[q_tail % QUEUE].key;
@@ -484,6 +547,7 @@ void platform_exit(int status)
     if (mon_magic != MON_MAGIC)
         return;
     sound_silence();
+    usb_stop();
     ((void (*)(long))mon_resume)(status);
 }
 
@@ -501,6 +565,7 @@ int main(void)
     if (wad == NULL)
         return 1;
     ir_init();
+    usb_up = usb_init() == 0;                   // a keyboard on the USB-A port, if any
 
     static char *argv[] = { "doom", "-iwad", NULL, "-mb", "32", NULL, NULL, NULL };
     int argc = 5;

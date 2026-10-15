@@ -1,6 +1,7 @@
 --target=aarch64-none-elf
 -nostdlibinc
 -I../libc/include
+-I../usb
 -I.
 -DCMAP256
 -DDOOMGENERIC_RESX=320

@@ -2,3 +2,4 @@
 -nostdlibinc
 -I../libc/include
 -I.
+-I../usb
