@@ -1,0 +1,8 @@
+--target=aarch64-none-elf
+-nostdlibinc
+-Ilibc/include
+-I.
+-DCMAP256
+-DDOOMGENERIC_RESX=320
+-DDOOMGENERIC_RESY=200
+-DFEATURE_SOUND

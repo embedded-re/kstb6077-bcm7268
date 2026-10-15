@@ -343,3 +343,10 @@ The modified box's `flash0.splash` was restored to the test pattern without
 on read-back). The boot log shows `SPLASH: audio not present` again, and the
 audio block is not started. To repeat the tests, build a container with
 `tools/make-splash --pcm`, as in the recipe above.
+
+On 2026-10-15 the container was rebuilt with the same picture and a `pcm0` of
+0.5 s of silence (192,000 zero bytes; `0x30c4` bytes, CRC `0x3fffa0ed`), for
+the Doom port's sound effects ([`../../doom/README.md`](../../doom/README.md)). Every boot now logs
+`SPLASH: start audio` / `SPLASH: failed starting audio -1`, and the DMA loops
+over `0x7dada100–0x7db08eff` (tested). Doom writes N/CTS itself, and the
+effects play clean on the TV (tested, by ear).

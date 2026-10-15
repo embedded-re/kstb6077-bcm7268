@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""Start the bare-metal Doom port (doom/) on the KSTB6077 from the BOLT> prompt.
+
+    kstb-doom                       network up, WAD from flash, doom.bin by TFTP, go -64
+    kstb-doom --watchdog 120        arm the watchdog first (test runs: reboots after 120 s)
+    kstb-doom --server 192.168.1.38 TFTP server (default: this PC's address on the board's network)
+
+Steps (all RAM loads, nothing is written to flash):
+  1. ifconfig eth0 -auto
+  2. load the KWAD image from flash0.splash +0x100000 to 0x10000000 (docs/hardware/storage.md)
+  3. load doom.bin by TFTP to 0x01000000 and compare its CRC with doom/build/doom.bin
+     (dnsmasq can return the previous file: docs/booting.md)
+  4. go -64 0x01000000, then print the console for --listen seconds
+
+Needs a TFTP server serving doom/build (docs/booting.md), the kstb-bridge service
+and the board at BOLT>. Sound needs a boot whose splash has a pcm0 (doom/README.md).
+"""
+import argparse, importlib.machinery, importlib.util, os, re, zlib
+
+here = os.path.dirname(os.path.abspath(__file__))
+_loader = importlib.machinery.SourceFileLoader("kstb_run", os.path.join(here, "kstb-run"))
+kstb_run = importlib.util.module_from_spec(importlib.util.spec_from_loader("kstb_run", _loader))
+_loader.exec_module(kstb_run)
+
+BIN = os.path.join(here, "..", "doom", "build", "doom.bin")
+WAD_LOAD = "load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0xdc7000 flash0.splash"
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--server", default="192.168.1.38", help="TFTP server address")
+    ap.add_argument("--watchdog", type=int, metavar="S", help="arm the watchdog for S seconds before go")
+    ap.add_argument("--listen", type=float, default=15, help="seconds to print output after go")
+    a = ap.parse_args()
+
+    data = open(BIN, "rb").read()
+    want = zlib.crc32(data)
+    b = kstb_run.Board(kstb_run.SOCK)
+
+    for line, timeout in (("ifconfig eth0 -auto", 30), (WAD_LOAD, 30),
+                          (f"load -raw -addr=0x01000000 -tftp {a.server}:doom.bin", 60)):
+        out, st = b.cmd(line, timeout)
+        if st is None or st < 0:
+            raise SystemExit(f"failed: {line}\n{out}")
+        print(f"ok: {line}")
+
+    out, _ = b.cmd(f"crc -offset=0x01000000 -size={len(data)}")
+    m = re.search(r"=\s+0x([0-9a-f]+)", out)
+    got = int(m.group(1), 16) if m else None
+    if got != want:
+        raise SystemExit(f"CRC MISMATCH: board {got and hex(got)}, file {hex(want)} (stale TFTP file?)")
+    print(f"doom.bin CRC OK 0x{want:08x} ({len(data)} bytes)")
+
+    if a.watchdog:
+        ticks = a.watchdog * kstb_run.TICKS_PER_S
+        if ticks > 0xffffffff:
+            raise SystemExit("watchdog too long (max 159 s)")
+        for line in (f"e -w 0xf040a6a8 {ticks:08x}", "e -w 0xf040a6ac 0000ff00", "e -w 0xf040a6ac 000000ff"):
+            b.cmd(line)
+        print(f"watchdog armed: {a.watchdog} s")
+
+    print("--- go -64 0x01000000 ---")
+    b.send_raw("go -64 0x01000000")
+    b.stream(a.listen)
+    print()
+
+
+if __name__ == "__main__":
+    main()

@@ -85,6 +85,7 @@ Details: [`docs/booting.md`](docs/booting.md), [`docs/hardware/memory-map.md`](d
 | [`docs/evidence/`](docs/evidence/README.md) | probe programs, their outputs and raw console captures |
 | [`boot/`](boot/) | device trees and the USB-stick autoboot script |
 | [`assembly/`](assembly/), [`c/`](c/) | a 32-bit UART monitor and a bare-metal C example |
+| [`doom/`](doom/README.md) | Doom (doomgeneric) on bare metal: HDMI video, sound effects, IR remote |
 | [`tools/`](tools/) | build, upload, dump and analysis tools |
 
 Full layout and tool list: [`docs/README.md`](docs/README.md#repository-layout-and-tools).
@@ -102,6 +103,9 @@ tools/kstb-run --a64 --watchdog 60 --listen 30 --wait-bolt c/main.bin   # C exam
 
 assembly/build.sh
 tools/kstb-run assembly/bootstrap.bin                      # 32-bit monitor
+
+make -C doom
+tools/kstb-doom                                            # Doom, over TFTP
 ```
 
 USB-stick and TFTP loading: [`docs/booting.md`](docs/booting.md).

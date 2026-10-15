@@ -73,7 +73,7 @@ what the partition holds now.
 
 | Partition offset | Contents |
 |---|---|
-| `0x000000–0x07ffff` | splash container (`GZBR`…). BOLT reads exactly these 512 KB at boot. The current container uses `0x2f2e` bytes, and the first 12 KB have CRC `0x985d62dc` |
+| `0x000000–0x07ffff` | splash container (`GZBR`…). BOLT reads exactly these 512 KB at boot. Since 2026-10-15 the container has a silent `pcm0` for the Doom port's sound ([`../../doom/README.md`](../../doom/README.md)): `0x30c4` bytes, CRC `0x3fffa0ed` (checked on read-back). Before that: `0x2f2e` bytes, first 12 KB CRC `0x985d62dc` |
 | `0x080000–0x0fffff` | unused (zeros) |
 | `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: 16,578,048 bytes. Now: a 14.4 MB file (below), image `0xdc7000` bytes |
 
@@ -185,7 +185,8 @@ and BOLT's flash staging buffer `0x00040000+` while running `flash`.
 
 The data image doesn't touch the first 512 KB, so the splash keeps working.
 To remove it, overwrite `0x100000…` with zeros the same way. Before any
-write, check the container: `load -raw -rawfs -addr=0x02000000 -max=0x3000
-flash0.splash`, then `crc -offset=0x02000000 -size=0x3000` = `0x985d62dc`
-(it was the same before and after this write). If it is ever damaged,
+write, check the container: `load -raw -rawfs -addr=0x02000000 -max=0x30c4
+flash0.splash`, then `crc -offset=0x02000000 -size=0x30c4` = `0x3fffa0ed`
+(the container with `pcm0`, since 2026-10-15; the WAD write was checked the
+same way against the older container, `-size=0x3000` = `0x985d62dc`). If it is ever damaged,
 rebuild it with [`tools/make-splash`](../../tools/make-splash).

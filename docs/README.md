@@ -132,6 +132,7 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`tools/build-c`](../tools/build-c) | builds a bare-metal C program: `.c` → `.elf` + `.bin` |
 | [`tools/kstb-run`](../tools/kstb-run) | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
 | [`tools/kstb-bolt`](../tools/kstb-bolt) | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
+| [`tools/kstb-doom`](../tools/kstb-doom) | starts the Doom port: WAD from flash, `doom.bin` by TFTP, CRC check, `go -64` ([`../doom/README.md`](../doom/README.md)) |
 | [`tools/kstb-dump`](../tools/kstb-dump) | dumps board memory to a file over the BOLT console (read-only) |
 | [`tools/make-splash`](../tools/make-splash) | builds a `flash0.splash` container (GZBR/zlib) from an image, optionally with a `pcm0` sound |
 | [`tools/make-wad-image`](../tools/make-wad-image) | wraps a data file in a `KWAD` header for the splash partition ([`hardware/storage.md`](hardware/storage.md)) |
