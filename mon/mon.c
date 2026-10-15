@@ -1304,6 +1304,153 @@ static void cmd_mmc(struct cmd *c)
     }
 }
 
+// ---------------- files on flash0.DATA (FAT32, ../fat) ----------------
+
+int fat_blk_read(uint32_t lba, uint32_t n, void *buf)
+{
+    return mmc_read(lba, n, buf);
+}
+
+int fat_blk_write(uint32_t lba, uint32_t n, const void *buf)
+{
+    return mmc_write(lba, n, buf, 0);          // the driver allows only DATA (and splash)
+}
+
+static int fs_ready(void)
+{
+    int r = mmc_init();
+    if (r) {
+        printf("eMMC: %s\n", mmc_strerror(r));
+        return 0;
+    }
+    r = fat_mount(DATA_FIRST);
+    if (r)
+        printf("flash0.DATA: %s\n", fat_strerror(r));
+    return r == 0;
+}
+
+static int fs_fail(const char *what, const char *path, int r)
+{
+    if (r)
+        printf("%s %s: %s\n", what, path, fat_strerror(r));
+    return r;
+}
+
+static int ls_cb(const struct fat_entry *e, void *arg)
+{
+    int *n = arg;
+    if (!strcmp(e->short_name, ".") || !strcmp(e->short_name, ".."))
+        return 0;
+    if (e->attr & 0x10)
+        printf("  %-40s      <dir>\n", e->name);
+    else
+        printf("  %-40s %10u\n", e->name, e->size);
+    ++*n;
+    return key_pressed();                       // a key stops a long listing
+}
+
+static void cmd_ls(struct cmd *c)
+{
+    const char *path = c->argc ? c->argv[0] : "/";
+    int n = 0;
+    if (fs_ready() && !fs_fail("ls", path, fat_list(path, ls_cb, &n)))
+        printf("%d entries\n", n);
+}
+
+static void cmd_fs(struct cmd *c)
+{
+    (void)c;
+    uint32_t cb, total, avail;
+    if (!fs_ready() || fs_fail("fs", "flash0.DATA", fat_info(&cb, &total, &avail)))
+        return;
+    printf("flash0.DATA (LBA #%u-#%u): FAT32, %u clusters of %u KB, %u MB free of %u MB\n",
+           DATA_FIRST, DATA_LAST, total, cb / 1024, (uint32_t)((uint64_t)avail * cb >> 20),
+           (uint32_t)((uint64_t)total * cb >> 20));
+}
+
+// Read a file to RAM: the same checks as `load`. Returns its size, or -1.
+static long fget(const char *path, uint64_t a, int force)
+{
+    struct fat_entry e;
+    int r = fat_stat(path, &e);
+    if (fs_fail("fget", path, r))
+        return -1;
+    if (e.attr & 0x10)
+        return fs_fail("fget", path, FAT_EISDIR), -1;
+    if (a + e.size > 0x7d600000 || !allowed(a, e.size, DANGER_W, force) ||
+        (a < HEAP_END && a + e.size > HEAP_BASE)) {
+        printf("fget: refused %08lx + %x (monitor, its buffers, its heap, or not RAM)\n", a, e.size);
+        return -1;
+    }
+    uint32_t size;
+    uint64_t t = ticks();
+    if (fs_fail("fget", path, fat_read(path, (void *)a, e.size, &size)))
+        return -1;
+    uint64_t us = (ticks() - t) / 27;
+    printf("%s: %u bytes at %08lx, CRC %08x, %lu ms\n", path, size, a, crc32((void *)a, size), us / 1000);
+    load_addr = a, load_size = size;
+    return size;
+}
+
+static void cmd_fget(struct cmd *c)
+{
+    uint64_t a = PROG_ADDR;
+    if (!c->argc || arg_num(c, 1, &a) < 0) {
+        printf("usage: fget path [addr]   (default %08x; then `go` runs it)\n", PROG_ADDR);
+        return;
+    }
+    if (fs_ready())
+        fget(c->argv[0], a, c->force);
+}
+
+static void cmd_run(struct cmd *c)
+{
+    if (!c->argc) {
+        printf("usage: run path   (fget to %08x, then go)\n", PROG_ADDR);
+        return;
+    }
+    if (fs_ready() && fget(c->argv[0], PROG_ADDR, c->force) >= 0) {
+        printf("go %08x\n", PROG_ADDR);
+        irq_off();
+        usb_stop();
+        run_program(PROG_ADDR);
+    }
+}
+
+static void cmd_fput(struct cmd *c)
+{
+    uint64_t a = load_addr, len = load_size;
+    if (!c->argc || arg_num(c, 1, &a) < 0 || arg_num(c, 2, &len) < 0 || (c->argc == 2)) {
+        printf("usage: fput path [addr len]   (default: the last load/fget, %lx bytes at %08lx)\n",
+               load_size, load_addr);
+        return;
+    }
+    if (!fs_ready())
+        return;
+    uint64_t t = ticks();
+    if (fs_fail("fput", c->argv[0], fat_write(c->argv[0], (const void *)a, len)))
+        return;
+    uint64_t us = (ticks() - t) / 27;
+    printf("%s: %lu bytes from %08lx, CRC %08x, %lu ms\n", c->argv[0], len, a,
+           crc32((const void *)a, len), us / 1000);
+}
+
+static void cmd_rm(struct cmd *c)
+{
+    if (!c->argc)
+        printf("usage: rm path   (a file or an empty directory)\n");
+    else if (fs_ready())
+        fs_fail("rm", c->argv[0], fat_remove(c->argv[0]));
+}
+
+static void cmd_mkdir(struct cmd *c)
+{
+    if (!c->argc)
+        printf("usage: mkdir path\n");
+    else if (fs_ready())
+        fs_fail("mkdir", c->argv[0], fat_mkdir(c->argv[0]));
+}
+
 typedef void (*cmd_fn)(struct cmd *);
 
 static const struct {
@@ -1334,6 +1481,13 @@ static const struct {
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
     { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
+    { "fs",      cmd_fs,      "",                           "flash0.DATA: FAT32 size and free space" },
+    { "ls",      cmd_ls,      "[dir]",                      "list a directory on flash0.DATA" },
+    { "fget",    cmd_fget,    "path [addr]",                "read a file to RAM (default prog)" },
+    { "fput",    cmd_fput,    "path [addr len]",            "write RAM to a file (default: last load)" },
+    { "rm",      cmd_rm,      "path",                       "delete a file or empty directory" },
+    { "mkdir",   cmd_mkdir,   "path",                       "make a directory" },
+    { "run",     cmd_run,     "path",                       "fget a program and go" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
     { "usb",     cmd_usb,     "[init|kbd|stop]",            "USB-A port: OHCI1, keyboard" },
     { "con",     cmd_con,     "[on|off|clear]",             "text console on the HDMI screen" },
@@ -1348,7 +1502,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 

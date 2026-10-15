@@ -54,3 +54,4 @@ void con_scroll(int lines);
 int con_rows(void);
 
 #include "usb.h"                        // ../usb
+#include "fat.h"                        // ../fat

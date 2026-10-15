@@ -94,6 +94,7 @@ const struct danger dangers[] = {
     { 0x7df00000, 0x7fffffff, DANGER_R | DANGER_W, "BL31 / SRR secure memory" },
     { 0x06400000, 0x0640ffff, DANGER_W, "PSCI monitor smm64 (EL3)" },
     { 0x00100000, 0x0013ffff, DANGER_W, "the monitor itself" },
+    { 0x00600000, 0x0082ffff, DANGER_W, "the monitor's USB DMA, console scrollback and FAT buffers" },
     { 0, 0, 0, NULL },
 };
 

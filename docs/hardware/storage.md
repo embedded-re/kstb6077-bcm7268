@@ -146,8 +146,22 @@ at the end of the eMMC still describes the original layout (as before).
 sectors (1.6 MB: reserved area, both FATs, the root cluster) were written
 from kmon with zeros everywhere `mkfs` left zeros, so no old swap data
 remains in them. Read back: CRC `aef8579e`, the same as the image, which
-`fsck.fat` reports clean (empty). Not tested yet: reading or writing it from
-a program.
+`fsck.fat` reports clean (empty).
+
+**Files from bare metal** (tested 2026-10-15): kmon's FAT32 driver
+([`../../fat/`](../../fat/), commands in [`../../mon/README.md`](../../mon/README.md)) on the eMMC driver.
+
+| Test | Result |
+|---|---|
+| 64 KB file written, read back | identical (CRC `713f7468`), 26 ms / 5 ms |
+| the 14.4 MB WAD (441 clusters) | written in 1152 ms (~12.5 MB/s), read in 435 ms (~33 MB/s), identical |
+| a directory, a 1000-byte file in it, replacing a file with a shorter one | read back identical |
+| delete a file, refuse a non-empty directory, delete the empty one | as expected |
+| PC check: the changed sectors (boot, FSInfo, both FATs, the directories) dumped with `mmc dump` into the `mkfs` image | `fsck.fat`: no errors, only "Free cluster summary uninitialized" (kmon sets FSInfo's free count to unknown on purpose); `mdir` lists the files with the right sizes |
+
+New names are 8.3 only (no long-name records are written); lowercase names
+get the NT lowercase flags, so PCs show them as typed. Dates are fixed at
+2026-01-01 (no clock). `flash0.DATA` now holds `doom1.wad`.
 
 ## Reading the eMMC with BOLT before `go`
 

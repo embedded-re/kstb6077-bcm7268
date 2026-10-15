@@ -63,6 +63,12 @@ ir                             live IR remote codes with key names
 irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
 usb [init|kbd|stop]            USB-A port (see below)
 con [on|off|clear]             text console on the HDMI screen (see below)
+fs                             flash0.DATA: FAT32 size and free space
+ls [dir]                       list a directory on flash0.DATA
+fget path [addr]               read a file to RAM (default 0x01000000); then `go` runs it
+fput path [addr len]           write RAM to a file, create or replace (default: the last load/fget)
+rm path / mkdir path           delete a file or empty directory / make a directory
+run path                       fget a program to 0x01000000 and go
 led green|red|orange|blue|off  front LEDs
 wdt [seconds|off]              watchdog
 history                        reset    software reset back to BOLT
@@ -172,6 +178,22 @@ instead takes 98 ms, because the framebuffer is uncached and reading it is
 slow. The screen is updated before the serial line, so a host tool waiting
 for a prompt (`kstb-send`) never sends while the screen is still busy.
 
+## Files on `flash0.DATA` (FAT32, [`../fat/`](../fat/))
+
+The eMMC's 6.3 GB `DATA` partition ([`../docs/hardware/storage.md`](../docs/hardware/storage.md)) holds
+files. Paths are `/`-separated from the root, names match without regard to
+case (long names from a PC too); new names must be 8.3 (`doom1.wad`,
+`games/save0.dsg`). Getting a file onto the box from the PC:
+
+```
+tools/kstb-send --addr 0x02000000 file.bin     # into RAM over serial
+kmon> fput file.bin                             # the last load: to flash0.DATA
+kmon> run prog.bin                              # later, with no PC: read it and start it
+```
+
+Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
+(`0x00600000–0x0082ffff`) and the heap are refused as `fget` targets.
+
 ## Trying a new build without flashing (`mon-ram.bin`)
 
 `make -C mon` also builds `mon/build/mon-ram.bin`: [`reload.S`](reload.S), a copy stub,
@@ -232,6 +254,7 @@ exactly that once, and the CRC check caught it.
 | `0x00140000–` | `doom.bin` in a `KWAD` header (from the bundle) |
 | `0x00600000–0x007fffff` | DMA block, non-cacheable: USB descriptors and buffers |
 | `0x00800000–0x0081c7ff` | HDMI console scrollback (1024 lines) |
+| `0x00820000–0x0082ffff` | FAT32 work buffers (`FAT_BUF`) |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |
 | `0x10000000–0x10dc6fff` | the WAD (`KWAD` image), loaded by BOLT |
