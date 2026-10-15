@@ -106,7 +106,7 @@ Notes:
 | `flash0.SWAP` | swap | 2048 MB |
 | `flash0.ROOT` | root filesystem | 5322 MB (shrunk 2026-10-02 to make room for `splash`) |
 | `flash0.splash` | boot-splash container (added 2026-10-02, [`../hardware/display.md`](../hardware/display.md)) | 17 MB |
-| `flash1` / `flash2` | eMMC boot partitions 1/2 (BOLT lives here) | 4 MB each |
+| `flash1` / `flash2` | eMMC boot partitions 1/2: BOLT is in `flash1` (boot0) only, `flash2` (boot1) is all zeros ([`../hardware/storage.md`](../hardware/storage.md)) | 4 MB each |
 | `flash3` | eMMC RPMB | 4 MB |
 | `eth0` | GENET internal Ethernet | `0xf0480000` |
 | `mdio0` | GENET MDIO bus | `0xf0480800` |

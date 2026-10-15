@@ -163,6 +163,40 @@ New names are 8.3 only (no long-name records are written); lowercase names
 get the NT lowercase flags, so PCs show them as typed. Dates are fixed at
 2026-01-01 (no clock). `flash0.DATA` now holds `doom1.wad`.
 
+## Boot partitions and backups (modified box, tested 2026-10-15)
+
+BOLT read both eMMC boot partitions into RAM (`load -raw -rawfs
+-max=0x400000 flash1` / `flash2`). kmon's driver can't read them itself: it
+never sends CMD6, which switching to a boot partition needs.
+
+| | Contents | CRC32 (4 MB) |
+|---|---|---|
+| boot0 (`flash1`) | BOLT: ARM32 vector table at offset 0, data up to `0x145f34` (1.27 MB), zeros after that | `2778e541` |
+| boot1 (`flash2`) | **all zeros**: every 32-bit word is 0 | `1147406a` |
+
+PARTITION_CONFIG `48` boots from boot partition 1, so **there is one copy of
+BOLT on the box and no fallback**.
+
+Backups, each checked by CRC against kmon's `crc` of the same RAM:
+
+| File | What | Size | CRC32 |
+|---|---|---|---|
+| `boot0.bin` | boot partition 1 (BOLT) | 4 MB | `2778e541` |
+| `boot1.bin` | boot partition 2 (zeros) | 4 MB | `1147406a` |
+| `lba0.bin` | user area LBA 0–6143: protective MBR, primary GPT, `macadr`, `nvram`, `bsu`, `misc`, `hwcfg` | 3 MB | `d8ef1f15` |
+| `gptbak.bin` | LBA 15273567–15273599: backup GPT entries and header (stale on purpose, see [`display.md`](display.md)) | 16,896 B | `8afde2c0` |
+
+- All four are on the box in `flash0.DATA` under `backup/` (kmon `fput`)
+  and on the PC, sent with BOLT `save` over TFTP ([`../booting.md`](../booting.md)).
+- `boot0.bin` and `boot1.bin` are also in the GitHub release `v1.0` as
+  `KSTB6077_bolt_boot_backup.zip`, with CRC32 and SHA-256 in its
+  `README.txt`:
+  `gh release download v1.0 -R embedded-re/kstb6077-bcm7268 -p KSTB6077_bolt_boot_backup.zip`.
+  The other release asset, `KSTB6077_assets.zip` (`tools/fetch-stock`), has
+  no BOLT and no raw factory partitions.
+- Sectors 0–5 of `lba0.bin` are the same as
+  [`../evidence/gpt/modified-box_primary-gpt_lba0-5_data.bin`](../evidence/gpt/modified-box_primary-gpt_lba0-5_data.bin).
+
 ## Reading the eMMC with BOLT before `go`
 
 Without a driver, BOLT can

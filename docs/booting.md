@@ -111,6 +111,28 @@ requests all come from the same UDP port. Always verify with `crc`; the
 handles each request separately (e.g. tftp-hpa) should avoid this, but that
 is untested.
 
+### Saving RAM to the PC (`save`)
+
+BOLT's `save <PC IP>:<file> <addr> <len>` sends RAM to the PC over TFTP.
+dnsmasq can't receive files, so [`tools/tftpd`](../tools/tftpd) does both directions: it
+serves files from `--root` (like dnsmasq above) and stores received files in
+`--save`, printing each one's size and CRC32. Stop dnsmasq first, since both
+need UDP port 69. tftpd binds the port as root, then drops to the user who
+ran sudo.
+
+```
+sudo tools/tftpd --ip <PC IP> --root doom/build --save ~/kstb-backup     # PC
+
+ifconfig eth0 -auto                                                       # BOLT>
+load -raw -rawfs -max=0x400000 -addr=0x20000000 flash1
+save <PC IP>:boot0.bin 0x20000000 0x400000
+```
+
+Tested 2026-10-15: 4 MB and 3 MB saves arrived with the same CRC32 as kmon's
+`crc` of the same RAM. Use this rather than the serial line for large
+files: a 4 MB `send` from kmon over serial lost 11,354 bytes, already
+missing in the bridge's log, so before the PC software.
+
 ## `go` / `boot` modes
 
 | Command | CPU state at entry | BOLT prints |

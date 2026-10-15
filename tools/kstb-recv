@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""Receive RAM or a file on flash0.DATA from kmon (the monitor, mon/) over serial.
+
+    kstb-recv 0x20000000 0x400000 out.bin        RAM range -> out.bin
+    kstb-recv --file backup/boot0.bin out.bin    fget to --addr (default 0x20000000), then send
+
+The board must be at the `kmon>` prompt. Runs kmon's `send <addr> <len>`,
+which answers with 'KSD1', u32 size, u32 crc32 (little-endian) and the raw
+bytes; the CRC is checked here. About 11 KB/s at 115200 baud (4 MB in ~6 min).
+The file is written only when the CRC matches.
+Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
+"""
+import argparse, os, re, socket, struct, sys, time, zlib
+
+SOCK = os.environ.get("KSTB_SOCK", "/tmp/kstb.sock")
+
+
+def read_until(s, pattern, timeout, buf=b""):
+    end = time.time() + timeout
+    while time.time() < end:
+        m = re.search(pattern, buf)
+        if m:
+            return buf, m
+        try:
+            chunk = s.recv(65536)
+            if not chunk:
+                raise SystemExit("bridge closed the connection")
+            buf += chunk
+        except socket.timeout:
+            pass
+    raise SystemExit(f"timeout waiting for {pattern!r}; got:\n{buf.decode('latin1')[-400:]}")
+
+
+def read_n(s, buf, n, timeout):
+    end = time.time() + timeout
+    last = 0
+    while len(buf) < n:
+        if time.time() > end:
+            raise SystemExit(f"timeout after {len(buf)} of {n} bytes")
+        try:
+            chunk = s.recv(65536)
+            if not chunk:
+                raise SystemExit("bridge closed the connection")
+            buf += chunk
+        except socket.timeout:
+            pass
+        if sys.stderr.isatty() and len(buf) - last >= 65536:
+            last = len(buf)
+            sys.stderr.write(f"\r{min(len(buf), n) * 100 // n:3d}%  {len(buf)} / {n}")
+    if sys.stderr.isatty():
+        sys.stderr.write("\r" + " " * 40 + "\r")
+    return buf[:n], buf[n:]
+
+
+def cmd(s, line, pattern, timeout=10):
+    s.sendall(line.encode() + b"\r")
+    return read_until(s, pattern, timeout)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("args", nargs="+", help="addr len out | out (with --file)")
+    ap.add_argument("--file", help="path on flash0.DATA: fget it first")
+    ap.add_argument("--addr", default="0x20000000", help="RAM address for --file (default 0x20000000)")
+    a = ap.parse_args()
+
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(SOCK)
+    s.settimeout(0.05)
+    try:                                    # drop old output
+        while s.recv(4096):
+            pass
+    except socket.timeout:
+        pass
+
+    if a.file:
+        if len(a.args) != 1:
+            ap.error("with --file give only the output file")
+        out = a.args[0]
+        buf, m = cmd(s, f"fget {a.file} {a.addr}", rb"(\d+) bytes at ([0-9a-f]+), CRC|\n[^\n]*(not found|error|refused)[^\n]*", 60)
+        if not m.group(1):
+            raise SystemExit(f"fget failed: {m.group(0).decode('latin1').strip()}")
+        addr, size = int(m.group(2), 16), int(m.group(1))
+        read_until(s, rb"kmon> ", 5, buf[m.end():])
+    else:
+        if len(a.args) != 3:
+            ap.error("give addr len out")
+        addr, size, out = int(a.args[0], 0), int(a.args[1], 0), a.args[2]
+
+    t = time.time()
+    buf, m = cmd(s, f"send {addr:#x} {size:#x}", rb"KSD1", 15)
+    hdr, rest = read_n(s, buf[m.end():], 8, 5)
+    n, want = struct.unpack("<II", hdr)
+    if n != size:
+        raise SystemExit(f"board sends {n} bytes, asked for {size}")
+    data, rest = read_n(s, rest, n, n / 9000 + 30)
+    read_until(s, rb"send: done", 5, rest)
+    got = zlib.crc32(data)
+    secs = time.time() - t
+    if got != want:
+        raise SystemExit(f"CRC mismatch: board {want:08x}, received {got:08x}; {out} not written")
+    with open(out, "wb") as f:
+        f.write(data)
+    print(f"{out}: {n} bytes from {addr:08x}, CRC {got:08x} OK, {secs:.1f} s ({n / secs / 1024:.1f} KB/s)")
+
+
+if __name__ == "__main__":
+    main()

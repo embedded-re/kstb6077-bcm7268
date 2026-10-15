@@ -856,6 +856,32 @@ static void cmd_load(struct cmd *c)
         load_addr = a, load_size = size;
 }
 
+// send addr len: transmit RAM over the serial line (tools/kstb-recv).
+// Protocol: 'KSD1', u32 size, u32 crc32, then the bytes, raw on UART0 (not
+// on the HDMI console, no \n -> \r\n).
+static void cmd_send(struct cmd *c)
+{
+    uint64_t a, len;
+    if (arg_num(c, 0, &a) <= 0 || arg_num(c, 1, &len) <= 0) {
+        printf("usage: send addr len   (tools/kstb-recv receives it)\n");
+        return;
+    }
+    if (!allowed(a, len, DANGER_R, c->force))
+        return;
+    if (a >= 0x80000000 || a + len > 0x80000000) {
+        printf("send: RAM only (below 0x80000000)\n");
+        return;
+    }
+    const uint8_t *p = (const uint8_t *)a;
+    uint32_t hdr[3] = { 0x3144534b, (uint32_t)len, crc32(p, len) };    // 'KSD1'
+    printf("send: %lu bytes from %08lx, CRC %08x\n", len, a, hdr[2]);
+    for (int i = 0; i < 12; i++)
+        uart_putc(((const char *)hdr)[i]);
+    for (uint64_t i = 0; i < len; i++)
+        uart_putc(p[i]);
+    printf("\nsend: done\n");
+}
+
 static void cmd_go(struct cmd *c)
 {
     uint64_t a = load_addr;
@@ -1477,6 +1503,7 @@ static const struct {
     { "find",    cmd_find,    "[.bhwq] addr len value",     "search for a value" },
     { "calc",    cmd_calc,    "expr",                       "evaluate a number/name expression" },
     { "load",    cmd_load,    "[addr]",                     "receive a file over serial (tools/kstb-send)" },
+    { "send",    cmd_send,    "addr len",                   "send RAM over serial (tools/kstb-recv)" },
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },

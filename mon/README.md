@@ -51,6 +51,7 @@ crc addr len                   CRC32, same as BOLT's crc and zlib.crc32
 find[.b|.h|.w|.q] addr len value
 calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
+send addr len                  send RAM over serial (tools/kstb-recv)
 go [addr]                      start a program like BOLT's go -64 (default: last load)
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
 doom                           start Doom (loads the WAD from eMMC if needed); quitting returns here
@@ -289,3 +290,11 @@ then the bytes; it stores them and compares the CRC. Measured: 64 KB in
 matched (tested, and checked again with `crc`). Ctrl-C cancels while it
 waits for the header. It refuses targets in the monitor, its heap or outside
 RAM.
+
+`send addr len` is the other direction: `KSD1`, u32 size, u32 CRC32, then
+the raw bytes, straight to UART0 (not to the HDMI console).
+[`tools/kstb-recv`](../tools/kstb-recv) receives it and writes the file only when the CRC
+matches; `--file path` runs `fget` first. Tested: 16,896 bytes, CRC matched
+(11.1 KB/s). A 4 MB transfer lost 11,354 bytes on the serial line (they are
+missing from the bridge's log too), so large files go over the network
+instead: BOLT `save` ([`../docs/booting.md`](../docs/booting.md)).

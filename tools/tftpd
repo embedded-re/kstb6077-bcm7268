@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""A small TFTP server for the board: serves files and receives BOLT's `save`.
+
+    sudo tools/tftpd --ip 192.168.1.38 --root doom/build --save ~/kstb-backup
+
+Read requests (BOLT `load -tftp`, `boot -tftp`) are served from --root; write
+requests (BOLT `save host:file addr len`) go into --save. dnsmasq's TFTP
+can't receive files, and both want UDP port 69, so stop dnsmasq first.
+
+Port 69 needs root: the socket is bound as root, then the process drops to
+the user who ran sudo before handling any request. File names are plain
+names only (no directories); an existing file in --save is replaced. Every
+received file is reported with its size and CRC32 (same as BOLT's/kmon's
+crc), to compare with the board. Octet mode, 512-byte blocks, one transfer
+at a time, options ignored (RFC 1350).
+"""
+import argparse, os, pwd, socket, struct, sys, time, zlib
+
+RRQ, WRQ, DATA, ACK, ERROR = 1, 2, 3, 4, 5
+BLK = 512
+
+
+def err(sock, addr, code, msg):
+    sock.sendto(struct.pack("!HH", ERROR, code) + msg.encode() + b"\0", addr)
+
+
+def safe_name(name, base):
+    name = os.path.basename(name.replace("\\", "/"))
+    return os.path.join(base, name) if name and name not in (".", "..") else None
+
+
+def send_file(ip, addr, path):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind((ip, 0))
+    s.settimeout(1.0)
+    data = open(path, "rb").read()
+    block = 1
+    while True:
+        chunk = data[(block - 1) * BLK:block * BLK]
+        pkt = struct.pack("!HH", DATA, block & 0xffff) + chunk
+        for _ in range(10):
+            s.sendto(pkt, addr)
+            try:
+                r, src = s.recvfrom(1024)
+            except socket.timeout:
+                continue
+            if src == addr and len(r) >= 4 and struct.unpack("!HH", r[:4]) == (ACK, block & 0xffff):
+                break
+        else:
+            print(f"  read {path}: timeout at block {block}", flush=True)
+            return
+        if len(chunk) < BLK:
+            print(f"  sent {path}: {len(data)} bytes, CRC {zlib.crc32(data):08x}", flush=True)
+            return
+        block += 1
+
+
+def recv_file(ip, addr, path):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind((ip, 0))
+    s.settimeout(5.0)
+    out = bytearray()
+    block, t = 0, time.time()
+    s.sendto(struct.pack("!HH", ACK, 0), addr)
+    while True:
+        try:
+            r, src = s.recvfrom(BLK + 4)
+        except socket.timeout:
+            print(f"  write {path}: timeout after {len(out)} bytes, not saved", flush=True)
+            return
+        if src != addr or len(r) < 4:
+            continue
+        op, n = struct.unpack("!HH", r[:4])
+        if op != DATA:
+            continue
+        if n == (block + 1) & 0xffff:
+            block += 1
+            out += r[4:]
+        s.sendto(struct.pack("!HH", ACK, n), addr)      # also re-ACK duplicates
+        if n == block & 0xffff and len(r) - 4 < BLK:
+            break
+    with open(path, "wb") as f:
+        f.write(out)
+    secs = time.time() - t
+    print(f"  saved {path}: {len(out)} bytes, CRC {zlib.crc32(out):08x}, "
+          f"{secs:.1f} s ({len(out) / max(secs, 1e-3) / 1024:.0f} KB/s)", flush=True)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--ip", default="192.168.1.38", help="address to listen on")
+    ap.add_argument("--port", type=int, default=69)
+    ap.add_argument("--root", required=True, help="directory files are served from")
+    ap.add_argument("--save", required=True, help="directory received files go into")
+    a = ap.parse_args()
+    root, save = os.path.abspath(os.path.expanduser(a.root)), os.path.abspath(os.path.expanduser(a.save))
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((a.ip, a.port))
+    if os.getuid() == 0 and os.environ.get("SUDO_UID"):     # drop root after binding
+        pw = pwd.getpwuid(int(os.environ["SUDO_UID"]))
+        os.setgroups([])
+        os.setgid(pw.pw_gid)
+        os.setuid(pw.pw_uid)
+    os.makedirs(save, exist_ok=True)
+    print(f"tftpd on {a.ip}:{a.port}, serving {root}, saving into {save} (uid {os.getuid()})", flush=True)
+
+    while True:
+        pkt, addr = sock.recvfrom(2048)
+        if len(pkt) < 4:
+            continue
+        op = struct.unpack("!H", pkt[:2])[0]
+        parts = pkt[2:].split(b"\0")
+        name = parts[0].decode("latin1") if parts else ""
+        mode = parts[1].decode("latin1").lower() if len(parts) > 1 else ""
+        print(f"{time.strftime('%H:%M:%S')} {addr[0]} {'read' if op == RRQ else 'write' if op == WRQ else op} {name} {mode}", flush=True)
+        if mode != "octet":
+            err(sock, addr, 0, "octet mode only")
+        elif op == RRQ:
+            path = safe_name(name, root)
+            if not path or not os.path.isfile(path):
+                err(sock, addr, 1, "file not found")
+            else:
+                send_file(a.ip, addr, path)
+        elif op == WRQ:
+            path = safe_name(name, save)
+            if not path:
+                err(sock, addr, 2, "bad file name")
+            else:
+                recv_file(a.ip, addr, path)
+        else:
+            err(sock, addr, 4, "illegal operation")
+
+
+if __name__ == "__main__":
+    main()

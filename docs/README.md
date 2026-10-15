@@ -136,6 +136,8 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`tools/kstb-bolt`](../tools/kstb-bolt) | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
 | [`tools/kstb-mon`](../tools/kstb-mon) | starts kmon, the monitor (WAD + bundle from flash, `go -64`); `--install` writes a new bundle ([`../mon/README.md`](../mon/README.md)) |
 | [`tools/kstb-send`](../tools/kstb-send) | sends a file to kmon over the serial line (`load`, ~11.5 KB/s) |
+| [`tools/kstb-recv`](../tools/kstb-recv) | receives RAM or a `DATA` file from kmon over the serial line (`send`, CRC-checked); for small files |
+| [`tools/tftpd`](../tools/tftpd) | TFTP server that serves files and receives BOLT's `save` (RAM to the PC) ([`booting.md`](booting.md)) |
 | [`tools/kstb-doom`](../tools/kstb-doom) | starts the Doom port: WAD from flash, `doom.bin` by TFTP, CRC check, `go -64` ([`../doom/README.md`](../doom/README.md)) |
 | [`tools/kstb-dump`](../tools/kstb-dump) | dumps board memory to a file over the BOLT console (read-only) |
 | [`tools/make-font`](../tools/make-font) | renders a monospaced font into the C header for kmon's HDMI console |
