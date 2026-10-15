@@ -1,0 +1,33 @@
+// mon.h - shared declarations of the monitor.
+#include <stdint.h>
+
+struct reg {
+    const char *name;
+    uint32_t addr;
+    const char *desc;
+};
+
+#define DANGER_R 1
+#define DANGER_W 2
+
+struct danger {
+    uint32_t start, end;    // inclusive
+    int what;
+    const char *why;
+};
+
+struct irkey {
+    uint8_t cmd;
+    const char *name;
+};
+
+extern const struct reg regs[];
+extern const struct danger dangers[];
+extern const struct irkey irkeys[];
+
+// start.S
+int safe_read(uint64_t addr, int size, uint64_t *val);
+int safe_write(uint64_t addr, int size, uint64_t val);
+void run_program(uint64_t entry) __attribute__((noreturn));
+void dcache_flush_all(void);
+extern uint64_t exc_frame[37];

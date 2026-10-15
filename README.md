@@ -85,6 +85,7 @@ Details: [`docs/booting.md`](docs/booting.md), [`docs/hardware/memory-map.md`](d
 | [`docs/evidence/`](docs/evidence/README.md) | probe programs, their outputs and raw console captures |
 | [`boot/`](boot/) | device trees and the USB-stick autoboot script |
 | [`assembly/`](assembly/), [`c/`](c/) | a 32-bit UART monitor and a bare-metal C example |
+| [`mon/`](mon/README.md) | kmon, a memory monitor (EL2): registers by name, abort-safe access, serial upload, starts Doom |
 | [`doom/`](doom/README.md) | Doom (doomgeneric) on bare metal: HDMI video, sound effects, IR remote |
 | [`tools/`](tools/) | build, upload, dump and analysis tools |
 
@@ -104,8 +105,10 @@ tools/kstb-run --a64 --watchdog 60 --listen 30 --wait-bolt c/main.bin   # C exam
 assembly/build.sh
 tools/kstb-run assembly/bootstrap.bin                      # 32-bit monitor
 
+tools/kstb-mon                                             # kmon monitor from flash; then 'doom'
+
 make -C doom
-tools/kstb-doom                                            # Doom, over TFTP
+tools/kstb-doom                                            # Doom alone, over TFTP
 ```
 
 USB-stick and TFTP loading: [`docs/booting.md`](docs/booting.md).

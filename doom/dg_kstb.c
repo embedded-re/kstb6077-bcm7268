@@ -21,6 +21,7 @@
 void file_register(const char *name, void *data, size_t size);
 void uart_putc(char c);
 void sound_mix(void);
+void sound_silence(void);
 
 // ---------------- timer ----------------
 
@@ -471,6 +472,20 @@ static const char *epi4_wad(const uint8_t *wad)
 }
 
 // ---------------- start ----------------
+
+#define MON_MAGIC 0x4b4d4f4e                // 'KMON': started by the monitor (mon/)
+
+extern uint64_t mon_magic, mon_resume;
+
+// exit() (libc) calls this: started by the monitor, go back to its prompt
+// instead of resetting the board.
+void platform_exit(int status)
+{
+    if (mon_magic != MON_MAGIC)
+        return;
+    sound_silence();
+    ((void (*)(long))mon_resume)(status);
+}
 
 void exception(uint64_t esr, uint64_t elr, uint64_t far)
 {

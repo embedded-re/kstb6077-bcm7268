@@ -7,7 +7,7 @@ DG      = doomgeneric/doomgeneric
 B       = build
 CC      = clang
 CFLAGS  = --target=aarch64-none-elf -mcpu=cortex-a53 -O2 -g \
-          -nostdlibinc -Ilibc/include -I. -fno-stack-protector -fno-pic \
+          -nostdlibinc -I../libc/include -I. -fno-stack-protector -fno-pic \
           -DCMAP256 -DDOOMGENERIC_RESX=320 -DDOOMGENERIC_RESY=200 -DFEATURE_SOUND
 DGFLAGS = -w                     # upstream code: don't drown our warnings in theirs
 LIBCFLAGS = -ffreestanding -fno-builtin -Wall   # no memcpy-idiom calls inside memcpy
@@ -30,7 +30,7 @@ $(B)/%.o: %.c kstb.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -Wall -c $< -o $@
 
-$(B)/libc.o: libc/libc.c kstb.h
+$(B)/libc.o: ../libc/libc.c kstb.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) $(LIBCFLAGS) -c $< -o $@
 

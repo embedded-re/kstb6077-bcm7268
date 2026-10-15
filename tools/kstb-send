@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""Send a file to kmon (the monitor, mon/) over the serial console.
+
+    kstb-send prog.bin                  to 0x01000000
+    kstb-send --addr 0x02000000 data.bin
+    kstb-send --go prog.bin             then start it (`go`)
+    kstb-send --go --listen 30 prog.bin print the board's output for 30 s
+
+The board must be at the `kmon>` prompt. Runs kmon's `load <addr>`, then
+sends 'KLD1', u32 size, u32 crc32 (little-endian) and the bytes; kmon checks
+the CRC. Raw bytes at 115200 baud: about 11 KB/s (BOLT's `e -w` upload in
+kstb-run: about 1.3 KB/s).
+Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
+"""
+import argparse, os, re, socket, struct, sys, time, zlib
+
+SOCK = os.environ.get("KSTB_SOCK", "/tmp/kstb.sock")
+
+
+def read_until(s, pattern, timeout):
+    buf, end = b"", time.time() + timeout
+    while time.time() < end:
+        try:
+            chunk = s.recv(4096)
+            if not chunk:
+                raise SystemExit("bridge closed the connection")
+            buf += chunk
+            m = re.search(pattern, buf)
+            if m:
+                return buf, m
+        except socket.timeout:
+            pass
+    raise SystemExit(f"timeout waiting for {pattern!r}; got:\n{buf.decode('latin1')[-400:]}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("file")
+    ap.add_argument("--addr", default="0x01000000")
+    ap.add_argument("--go", action="store_true", help="start it after loading")
+    ap.add_argument("--listen", type=float, default=5, help="seconds of output to print after --go")
+    a = ap.parse_args()
+
+    data = open(a.file, "rb").read()
+    crc = zlib.crc32(data)
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(SOCK)
+    s.settimeout(0.05)
+    try:                                    # drop old output
+        while s.recv(4096):
+            pass
+    except socket.timeout:
+        pass
+
+    s.sendall(f"load {a.addr}\r".encode())
+    read_until(s, rb"waiting for data", 5)
+    t = time.time()
+    s.sendall(b"KLD1" + struct.pack("<II", len(data), crc) + data)
+    est = len(data) / 11000 + 10
+    out, m = read_until(s, rb"load: [^\r\n]*\r?\n", est + 30)
+    line = m.group(0).decode("latin1").strip()
+    print(f"{line}  ({len(data)} bytes in {time.time() - t:.1f} s, file CRC {crc:08x})")
+    if "OK" not in line:
+        sys.exit(1)
+    if b"kmon> " not in out[m.end():]:
+        read_until(s, rb"kmon> ", 5)
+
+    if a.go:
+        s.sendall(f"go {a.addr}\r".encode())
+        end = time.time() + a.listen
+        while time.time() < end:
+            try:
+                chunk = s.recv(4096)
+                if chunk:
+                    sys.stdout.write(chunk.decode("latin1"))
+                    sys.stdout.flush()
+            except socket.timeout:
+                pass
+        print()
+
+
+if __name__ == "__main__":
+    main()

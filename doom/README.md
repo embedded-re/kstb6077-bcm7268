@@ -15,7 +15,7 @@ effects are fine, and the IR remote controls it.
 | `start.S` | entry point: stack, exception vectors (print ESR/ELR/FAR), FP/SIMD on (`CPTR_EL2.TFP` = 0), `.bss`, identity-mapped MMU + caches (map from [`../docs/evidence/display/vsync_probe.s`](../docs/evidence/display/vsync_probe.s)) |
 | `dg_kstb.c` | platform layer: video, timer, input, WAD check, `main` |
 | `dg_sound.c` | sound effects mixed into the HDMI audio ring buffer; music is a stub |
-| `libc/` | the ~40 C library functions doomgeneric calls, and their headers |
+| [`../libc/`](../libc/) | the small C library (shared with the monitor): the ~40 functions doomgeneric calls, and their headers |
 | `kstb.h` | addresses and RAM layout |
 | `Makefile` | clang + ld.lld → `build/doom.bin`, linked at `0x01000000` |
 | [`../tools/kstb-doom`](../tools/kstb-doom) | starts it from `BOLT>` |
@@ -27,7 +27,10 @@ git submodule update --init      # once
 make -C doom                      # -> doom/build/doom.bin
 ```
 
-Serve `doom/build` with a TFTP server ([`../docs/booting.md`](../docs/booting.md)), get the board to
+The usual way to start it is from kmon, the monitor ([`../mon/README.md`](../mon/README.md)),
+which has `doom.bin` stored in flash: `tools/kstb-mon`, then `doom`. Quitting
+from Doom's menu returns to the `kmon>` prompt (tested). To test a new build
+without flashing, serve `doom/build` with a TFTP server ([`../docs/booting.md`](../docs/booting.md)), get the board to
 `BOLT>`, then:
 
 ```
@@ -132,5 +135,6 @@ Before Doom starts, the WAD's CRC is checked against the `KWAD` header
   Saving and loading in one session: not tested.
 - `malloc` is a bump allocator. `free` only gives back the newest block,
   which is enough because Doom allocates through its own zone.
-- Quitting from the menu calls `exit(0)`, which does a software reset back to
-  BOLT. Not tested. Errors (`I_Error`) print the message and stop.
+- Quitting from the menu calls `exit(0)`: started from kmon, Doom silences
+  its sound and returns to the `kmon>` prompt (tested); started from BOLT, it
+  does a software reset back to BOLT. Errors (`I_Error`) print the message and stop.

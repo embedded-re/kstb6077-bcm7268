@@ -1,6 +1,7 @@
-// libc.c - the small C library the bare-metal Doom port needs.
+// libc.c - the small C library for the bare-metal programs (doom/, mon/).
 //
-// Only what doomgeneric calls (found with `llvm-nm -u` on its objects).
+// What doomgeneric calls (found with `llvm-nm -u` on its objects), plus a few
+// extras for the monitor. Each program provides kstb.h (UART0, HEAP_BASE/END).
 //   output    printf & co. go to UART0 (\n -> \r\n)
 //   memory    bump allocator from HEAP_BASE; free() only gives back the last block
 //   files     a RAM file system: the WAD is registered by the platform code,
@@ -235,6 +236,14 @@ char *strstr(const char *h, const char *n)
         if (strncmp(h, n, len) == 0)
             return (char *)h;
     return len == 0 ? (char *)h : NULL;
+}
+
+size_t strcspn(const char *s, const char *reject)
+{
+    size_t n = 0;
+    while (s[n] && !strchr(reject, s[n]))
+        n++;
+    return n;
 }
 
 char *strdup(const char *s)
@@ -747,9 +756,15 @@ int system(const char *cmd) { (void)cmd; return -1; }
 
 // ---------------- exit ----------------
 
+// A program can define platform_exit(), e.g. to return to the monitor;
+// if it returns (or isn't defined), exit() does the default below.
+void platform_exit(int status) __attribute__((weak));
+
 void exit(int status)
 {
     printf("\nexit(%d)\n", status);
+    if (platform_exit)
+        platform_exit(status);
     if (status == 0) {
         // Quit from the menu: software reset back to BOLT (docs/hardware/system-blocks.md)
         write32(RESET_A, 1);

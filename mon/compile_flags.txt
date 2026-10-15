@@ -1,0 +1,4 @@
+--target=aarch64-none-elf
+-nostdlibinc
+-I../libc/include
+-I.

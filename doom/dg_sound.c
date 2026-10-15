@@ -119,9 +119,19 @@ static boolean snd_init(boolean use_sfx_prefix)
     return true;
 }
 
+// Stop our sound: the DMA keeps looping over the ring, so fill it with silence.
+void sound_silence(void)
+{
+    if (!ready)
+        return;
+    ready = 0;
+    for (uint32_t i = 0; i < frames * 2; i++)
+        ring[i] = 0;
+}
+
 static void snd_shutdown(void)
 {
-    ready = 0;
+    sound_silence();
 }
 
 static int snd_lump(sfxinfo_t *sfx)

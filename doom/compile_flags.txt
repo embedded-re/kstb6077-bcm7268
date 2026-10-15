@@ -1,6 +1,6 @@
 --target=aarch64-none-elf
 -nostdlibinc
--Ilibc/include
+-I../libc/include
 -I.
 -DCMAP256
 -DDOOMGENERIC_RESX=320

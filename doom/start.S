@@ -9,10 +9,16 @@
 //        0x7d600000-0x7dffffff  Normal non-cacheable (both framebuffers)
 //        0xc0000000-0xffffffff  Device-nGnRE, execute-never
 //   5. main()
+// Started by the monitor (mon/), x1 = MON_MAGIC and x2 = the monitor's resume
+// address; both are kept in mon_magic / mon_resume (dg_kstb.c returns there).
 
         .section .text.start, "ax"
         .global _start
 _start:
+        ldr     x0, =mon_magic                  // .data: not cleared below
+        str     x1, [x0]
+        ldr     x0, =mon_resume
+        str     x2, [x0]
         ldr     x0, =stack_top
         mov     sp, x0
         adr     x0, vectors
@@ -96,6 +102,12 @@ vectors:
         .endr
 
         .ltorg
+
+        .data
+        .balign 8
+        .global mon_magic, mon_resume
+mon_magic:  .quad 0
+mon_resume: .quad 0
 
         .bss
         .balign 4096

@@ -18,6 +18,7 @@ int strncmp(const char *a, const char *b, size_t n);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
 char *strstr(const char *h, const char *n);
+size_t strcspn(const char *s, const char *reject);
 char *strdup(const char *s);
 char *strerror(int e);
 #endif
