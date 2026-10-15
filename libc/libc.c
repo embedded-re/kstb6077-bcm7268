@@ -2,7 +2,8 @@
 //
 // What doomgeneric calls (found with `llvm-nm -u` on its objects), plus a few
 // extras for the monitor. Each program provides kstb.h (UART0, HEAP_BASE/END).
-//   output    printf & co. go to UART0 (\n -> \r\n)
+//   output    printf & co. go to UART0 (\n -> \r\n), and to libc_output_hook
+//             if the program sets one (the monitor's HDMI console)
 //   memory    bump allocator from HEAP_BASE; free() only gives back the last block
 //   files     a RAM file system: the WAD is registered by the platform code,
 //             files opened for writing (config, savegames) live in the heap
@@ -30,8 +31,14 @@ void uart_putc(char c)
     write32(UART0, c);
 }
 
+void (*libc_output_hook)(const char *s, size_t n);
+
+// The hook runs first, so a slow screen update is done before the text reaches
+// the serial line (where a host tool may be waiting for it to start sending).
 static void uart_write(const char *s, size_t n)
 {
+    if (libc_output_hook)
+        libc_output_hook(s, n);
     for (size_t i = 0; i < n; i++) {
         if (s[i] == '\n')
             uart_putc('\r');

@@ -62,6 +62,7 @@ mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
 irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
 usb [init|kbd|stop]            USB-A port (see below)
+con [on|off|clear]             text console on the HDMI screen (see below)
 led green|red|orange|blue|off  front LEDs
 wdt [seconds|off]              watchdog
 history                        reset    software reset back to BOLT
@@ -149,6 +150,28 @@ kmon> usb kbd
   22082 ms: 00 00 0b 00 00 00 00 00  'h'
 ```
 
+## On the TV with a USB keyboard (tested 2026-10-15)
+
+kmon needs no PC once it runs. At start (and when a program returns) it:
+
+- takes over the HDMI screen: a 114 x 32 text console ([`fbcon.c`](fbcon.c)) in
+  BOLT's splash framebuffer, anti-aliased Source Code Pro 16 x 32 px
+  ([`font.h`](font.h), from [`../tools/make-font`](../tools/make-font)), with a margin for TV overscan. Everything
+  printed goes to the screen and the serial line.
+- sets up a USB keyboard on the USB-A port, if one is there, and checks every
+  200 ms for one being plugged in. It types into the prompt like the serial
+  line: arrows, Home/End/Delete, Tab completion, Ctrl keys; a held key repeats
+  (500 ms, then every 40 ms). Keys are a US layout.
+
+Scrollback: the last 1024 lines. **Alt+Up/Down** scrolls a line,
+**Shift+PgUp/PgDn** (or Alt+PgUp/PgDn) a page; a marker shows how far back;
+typing or new output returns to the bottom.
+
+A scroll redraws every cell from the text (about 8 ms). Moving the pixels
+instead takes 98 ms, because the framebuffer is uncached and reading it is
+slow. The screen is updated before the serial line, so a host tool waiting
+for a prompt (`kstb-send`) never sends while the screen is still busy.
+
 ## Trying a new build without flashing (`mon-ram.bin`)
 
 `make -C mon` also builds `mon/build/mon-ram.bin`: [`reload.S`](reload.S), a copy stub,
@@ -207,6 +230,7 @@ exactly that once, and the CRC check caught it.
 | `0x00100000–0x0013ffff` | the monitor: code, data, 64 KB stack, page tables (≤ 256 KB, checked by `link.ld`) |
 | `0x00140000–` | `doom.bin` in a `KWAD` header (from the bundle) |
 | `0x00600000–0x007fffff` | DMA block, non-cacheable: USB descriptors and buffers |
+| `0x00800000–0x0081c7ff` | HDMI console scrollback (1024 lines) |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |
 | `0x10000000–0x10dc6fff` | the WAD (`KWAD` image), loaded by BOLT |

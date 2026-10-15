@@ -44,4 +44,13 @@ int irq_ir_on(void);
 // mon.c
 void ir_setup(void);
 
+// fbcon.c
+void con_init(void);
+void con_off(void);
+void con_clear(void);
+void con_write(const char *s, unsigned long n);
+void con_status(void);
+void con_scroll(int lines);
+int con_rows(void);
+
 #include "usb.h"                        // ../usb

@@ -20,20 +20,111 @@
 #include "mmc.h"
 
 void uart_putc(char c);
+extern void (*libc_output_hook)(const char *s, size_t n);
 
 // ---------------- console ----------------
 
-// With `irq uart on` the receive interrupt (irq.c) fills a ring buffer and the
-// console reads that; otherwise it polls the UART.
+static uint64_t ticks(void);
+#define TICKS_PER_MS 27000
+
+// ---------------- USB keyboard input ----------------
+//
+// A keyboard on the USB-A port types into the console like the serial line:
+// key presses become bytes in kbd_q, arrows and Home/End/Delete the escape
+// sequences a terminal sends. A held key repeats after 500 ms, every 40 ms.
+// Alt+Up/Down and Shift+PgUp/PgDn scroll the HDMI console back (fbcon.c).
+// Plugging a keyboard in is noticed within 200 ms (port connect change) and
+// it is set up quietly.
+
+static char kbd_q[32];
+static unsigned kq_head, kq_tail;
+static uint8_t kbd_prev[8];
+static uint8_t rep_usage, rep_mods;
+static uint64_t rep_next, port_check_next;
+
+static void kq_put(const char *s)
+{
+    for (; *s; s++)
+        if (kq_head - kq_tail < sizeof kbd_q)
+            kbd_q[kq_head++ % sizeof kbd_q] = *s;
+}
+
+static void kbd_emit(uint8_t usage, uint8_t mods)
+{
+    static const char *const seq[] = {
+        [0x4a] = "\x1b[H", [0x4c] = "\x1b[3~", [0x4d] = "\x1b[F",
+        [0x4f] = "\x1b[C", [0x50] = "\x1b[D", [0x51] = "\x1b[B", [0x52] = "\x1b[A",
+    };
+    int alt = mods & 0x44, shift = mods & 0x22;
+    if (alt && (usage == 0x52 || usage == 0x51)) {      // Alt+Up/Down: console scrollback
+        con_scroll(usage == 0x52 ? 1 : -1);
+        return;
+    }
+    if ((alt || shift) && (usage == 0x4b || usage == 0x4e)) {   // Shift/Alt+PgUp/PgDn: a page
+        con_scroll(usage == 0x4b ? con_rows() - 1 : -(con_rows() - 1));
+        return;
+    }
+    if (usage < sizeof seq / sizeof seq[0] && seq[usage]) {
+        kq_put(seq[usage]);
+        return;
+    }
+    char c[2] = { usb_hid_char(usage, mods), 0 };      // also Enter, Esc, Backspace, Tab, Ctrl-x
+    kq_put(c);
+}
+
+void kbd_start(void)
+{
+    usb_verbose = 0;
+    usb_init();
+    usb_verbose = 1;
+    memset(kbd_prev, 0, sizeof kbd_prev);
+    rep_usage = 0;
+}
+
+static void kbd_poll(void)
+{
+    uint64_t t = ticks();
+    if (t >= port_check_next) {
+        int connected;
+        port_check_next = t + 200 * TICKS_PER_MS;
+        if (usb_port_changed(&connected) && connected)
+            kbd_start();
+    }
+    uint8_t r[8];
+    if (usb_kbd_up() && usb_kbd_poll(r) == 1 && r[2] != 0x01) {     // 01: rollover
+        for (int i = 2; i < 8; i++)
+            if (r[i] && !memchr(kbd_prev + 2, r[i], 6)) {
+                kbd_emit(r[i], r[0]);
+                rep_usage = r[i], rep_next = t + 500 * TICKS_PER_MS;
+            }
+        if (!memchr(r + 2, rep_usage, 6))
+            rep_usage = 0;
+        rep_mods = r[0];
+        memcpy(kbd_prev, r, 8);
+    }
+    if (rep_usage && t >= rep_next) {
+        kbd_emit(rep_usage, rep_mods);
+        rep_next = t + 40 * TICKS_PER_MS;
+    }
+}
+
+// ---------------- console input ----------------
+//
+// The serial line and the USB keyboard. With `irq uart on` the receive
+// interrupt (irq.c) fills a ring buffer and the console reads that;
+// otherwise it polls the UART.
 static int uart_ready(void)
 {
-    if (irq_rx_ready())
+    kbd_poll();
+    if (kq_head != kq_tail || irq_rx_ready())
         return 1;
     return !irq_uart_on() && (read32(UART0 + 0x14) & 1);   // LSR bit 0: byte received
 }
 
 static int uart_read(void)
 {
+    if (kq_head != kq_tail)
+        return (unsigned char)kbd_q[kq_tail++ % sizeof kbd_q];
     int c = irq_rx_get();
     return c >= 0 ? c : (int)(read32(UART0) & 0xff);
 }
@@ -59,8 +150,6 @@ static int key_pressed(void)
 }
 
 // ---------------- time ----------------
-
-#define TICKS_PER_MS 27000
 
 static uint64_t ticks(void)
 {
@@ -996,6 +1085,21 @@ static void cmd_usb(struct cmd *c)
         printf("usage: usb [init|kbd|stop]\n");
 }
 
+static void cmd_con(struct cmd *c)
+{
+    const char *w = c->argc ? c->argv[0] : "";
+    if (!*w)
+        con_status();
+    else if (!strcmp(w, "on"))
+        con_init();
+    else if (!strcmp(w, "off"))
+        con_off();
+    else if (!strcmp(w, "clear"))
+        con_clear();
+    else
+        printf("usage: con [on|off|clear]\n");
+}
+
 static void cmd_reset(struct cmd *c)
 {
     (void)c;
@@ -1231,6 +1335,7 @@ static const struct {
     { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
     { "usb",     cmd_usb,     "[init|kbd|stop]",            "USB-A port: OHCI1, keyboard" },
+    { "con",     cmd_con,     "[on|off|clear]",             "text console on the HDMI screen" },
     { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },
     { "led",     cmd_led,     "green|red|orange|blue|off",  "front LEDs" },
     { "wdt",     cmd_wdt,     "[seconds|off]",              "watchdog" },
@@ -1242,7 +1347,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con",
     "led", "wdt", "history", "reset", NULL,
 };
 
@@ -1319,6 +1424,11 @@ void mon_main(int how, long status)
     struct cmd c;
 
     irq_off();                                  // a crash or a program may have left them on
+    if (how != 2) {                             // after a crash: keep what is on screen
+        libc_output_hook = con_write;
+        con_init();                             // the TV shows the console (Doom flips its own buffers)
+        kbd_start();                            // a USB keyboard, if one is plugged in
+    }
     if (how == 0)
         printf("\nkmon: KSTB6077 monitor, EL2. 'help' lists the commands.\n");
     else if (how == 1)

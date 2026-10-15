@@ -8,7 +8,7 @@ B       = build
 CC      = clang
 CFLAGS  = --target=aarch64-none-elf -mcpu=cortex-a53 -O2 -g -Wall \
           -nostdlibinc -I../libc/include -I../usb -I. -fno-stack-protector -fno-pic
-OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/mmc.o $(B)/irq.o $(B)/usb.o $(B)/libc.o
+OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/mmc.o $(B)/irq.o $(B)/usb.o $(B)/fbcon.o $(B)/libc.o
 DOOMBIN = ../doom/build/doom.bin
 
 all: $(B)/kmon.img $(B)/mon-ram.bin
@@ -47,7 +47,7 @@ $(B)/irq.o: irq.c kstb.h mon.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -mgeneral-regs-only -c $< -o $@
 
-$(B)/%.o: %.c kstb.h mon.h mmc.h ../usb/usb.h
+$(B)/%.o: %.c kstb.h mon.h mmc.h ../usb/usb.h font.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -c $< -o $@
 

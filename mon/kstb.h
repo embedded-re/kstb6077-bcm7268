@@ -11,6 +11,7 @@
 #define DOOM_IMG    0x00140000      // KWAD image of doom.bin, loaded with the monitor (the bundle)
 #define BUNDLE_END  0x00400000
 #define DMA_BASE    0x00600000      // 2 MB, mapped non-cacheable: USB descriptors and buffers
+#define SCROLLBACK  0x00800000      // HDMI console scrollback (fbcon.c), 1024 lines x 114 = 114 KB
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
 #define HEAP_END    0x01000000
 #define PROG_ADDR   0x01000000      // where programs run (doom.bin, kstb-run/build-c programs)

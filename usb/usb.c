@@ -18,6 +18,9 @@
 #include "kstb.h"                       // the program's: DMA_BASE
 #include "usb.h"
 
+int usb_verbose = 1;                    // 0: print nothing (kmon starts it quietly)
+#define say(...) do { if (usb_verbose) printf(__VA_ARGS__); } while (0)
+
 #define OHCI            0xf0b00600
 #define HC_CONTROL      (OHCI + 0x04)
 #define HC_CMDSTATUS    (OHCI + 0x08)
@@ -139,7 +142,7 @@ static int control(int addr, uint8_t rtype, uint8_t req, uint16_t value, uint16_
     uint64_t end = now() + 500ull * TICKS_PER_MS;
     while ((W(ED_CTRL + 8) & ~0xfu) != dummy && !(W(ED_CTRL + 8) & 1)) {
         if (now() > end) {
-            printf("usb: control %02x %02x: timeout (ED head %08x)\n", rtype, req, W(ED_CTRL + 8));
+            say("usb: control %02x %02x: timeout (ED head %08x)\n", rtype, req, W(ED_CTRL + 8));
             W(ED_CTRL + 0) |= 1u << 14;
             return -1;
         }
@@ -151,7 +154,7 @@ static int control(int addr, uint8_t rtype, uint8_t req, uint16_t value, uint16_
         if (i == 1 && !len)
             continue;
         if (cc != 0 && !(i == 1 && cc == 9)) {               // underrun = short packet: fine with R
-            printf("usb: control %02x %02x stage %d: %s\n", rtype, req, i, cc_names[cc]);
+            say("usb: control %02x %02x stage %d: %s\n", rtype, req, i, cc_names[cc]);
             W(ED_CTRL + 8) = dummy;                         // clear the halt
             return -1;
         }
@@ -191,7 +194,7 @@ static int port_reset(void)
 {
     uint32_t ps = W(HC_PORT1);
     if (!(ps & 1)) {
-        printf("usb: nothing connected to the USB-A port (port status %08x)\n", ps);
+        say("usb: nothing connected to the USB-A port (port status %08x)\n", ps);
         return -1;
     }
     wait_ms(100);                               // debounce
@@ -199,14 +202,14 @@ static int port_reset(void)
     uint64_t end = now() + 100ull * TICKS_PER_MS;
     while (!(W(HC_PORT1) & (1u << 20)))
         if (now() > end) {
-            printf("usb: port reset didn't finish (port status %08x)\n", W(HC_PORT1));
+            say("usb: port reset didn't finish (port status %08x)\n", W(HC_PORT1));
             return -1;
         }
     ps = W(HC_PORT1);
     W(HC_PORT1) = 0x1f0000;                     // clear the change bits
     wait_ms(10);                                // reset recovery
     lowspeed = (ps >> 9) & 1;
-    printf("usb: port %08x: device connected, %s speed, enabled %s\n", ps,
+    say("usb: port %08x: device connected, %s speed, enabled %s\n", ps,
            lowspeed ? "low" : "full", ps & 2 ? "yes" : "no");
     return ps & 2 ? 0 : -1;
 }
@@ -218,13 +221,13 @@ static int parse_config(const uint8_t *c, int n)
     kbd_ep = 0;
     for (int i = 0; i + 1 < n && c[i]; i += c[i]) {
         if (c[i + 1] == 4) {                    // interface
-            printf("usb:   interface %d: class %02x subclass %02x protocol %02x, %d endpoints\n",
+            say("usb:   interface %d: class %02x subclass %02x protocol %02x, %d endpoints\n",
                    c[i + 2], c[i + 5], c[i + 6], c[i + 7], c[i + 4]);
             iface = (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 1) ? c[i + 2] : -1;
             if (iface >= 0 && !kbd_ep)
                 kbd_iface = iface;
         } else if (c[i + 1] == 5) {             // endpoint
-            printf("usb:     endpoint %02x: type %d, max packet %d, interval %d ms\n",
+            say("usb:     endpoint %02x: type %d, max packet %d, interval %d ms\n",
                    c[i + 2], c[i + 3] & 3, c[i + 4] | c[i + 5] << 8, c[i + 6]);
             if (iface >= 0 && !kbd_ep && (c[i + 2] & 0x80) && (c[i + 3] & 3) == 3) {
                 kbd_ep = c[i + 2] & 0xf;
@@ -269,7 +272,7 @@ int usb_init(void)
     if (get_descriptor(1, 1, 18, d) < 18)
         return -1;
     vid = d[8] | d[9] << 8, pid = d[10] | d[11] << 8;
-    printf("usb: device %04x:%04x, USB %x.%02x, class %02x, ep0 max packet %d, %d configuration(s)\n",
+    say("usb: device %04x:%04x, USB %x.%02x, class %02x, ep0 max packet %d, %d configuration(s)\n",
            vid, pid, d[3], d[2], d[4], mps0, d[17]);
     if (get_descriptor(1, 2, 9, d) < 9)
         return -1;
@@ -280,9 +283,9 @@ int usb_init(void)
     if (n < 9)
         return -1;
     int config = d[5];
-    printf("usb: configuration %d, %d bytes, %d interface(s)\n", config, n, d[4]);
+    say("usb: configuration %d, %d bytes, %d interface(s)\n", config, n, d[4]);
     if (parse_config(d, n)) {
-        printf("usb: no boot-protocol keyboard interface\n");
+        say("usb: no boot-protocol keyboard interface\n");
         return -1;
     }
     if (control(1, 0x00, 9, config, 0, 0, NULL) < 0)        // SET_CONFIGURATION
@@ -305,12 +308,31 @@ int usb_init(void)
     W(HC_CONTROL) = W(HC_CONTROL) | CTL_PLE;
     report_n = 0;
     up = 1;
-    printf("usb: keyboard ready (interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
+    say("usb: keyboard ready (interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
            kbd_iface, kbd_ep, kbd_mps, kbd_interval);
     return 0;
 }
 
 // One finished report copied to r (8 bytes): 1; nothing yet: 0; error: -1.
+// The port's connect-change bit (set by plugging or unplugging), cleared on
+// read; *connected = whether a device is there now.
+int usb_port_changed(int *connected)
+{
+    uint32_t ps = W(HC_PORT1);
+    *connected = ps & 1;
+    if (!(ps & (1u << 16)))
+        return 0;
+    W(HC_PORT1) = 1u << 16;
+    if (!*connected)
+        up = 0;
+    return 1;
+}
+
+int usb_kbd_up(void)
+{
+    return up;
+}
+
 int usb_kbd_poll(uint8_t *r)
 {
     if (!up)
@@ -325,7 +347,7 @@ int usb_kbd_poll(uint8_t *r)
     if (ok)
         memcpy(r, (void *)(uintptr_t)buf, 8);
     if (head & 1) {                             // halted: report, clear, retry
-        printf("usb: interrupt endpoint: %s\n", cc_names[cc]);
+        say("usb: interrupt endpoint: %s\n", cc_names[cc]);
         W(ED_INTR + 8) = intr_dummy & ~1u;
     }
     intr_queue();
