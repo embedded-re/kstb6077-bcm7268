@@ -55,7 +55,9 @@ def main():
     s.sendall(f"load {a.addr}\r".encode())
     read_until(s, rb"waiting for data", 5)
     t = time.time()
+    s.settimeout(None)                      # the bridge drains at serial speed: block
     s.sendall(b"KLD1" + struct.pack("<II", len(data), crc) + data)
+    s.settimeout(0.05)
     est = len(data) / 11000 + 10
     out, m = read_until(s, rb"load: [^\r\n]*\r?\n", est + 30)
     line = m.group(0).decode("latin1").strip()

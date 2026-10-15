@@ -17,6 +17,7 @@
 
 #include "kstb.h"
 #include "mon.h"
+#include "mmc.h"
 
 void uart_putc(char c);
 
@@ -795,10 +796,19 @@ static void cmd_doom(struct cmd *c)
         printf("no doom.bin image at %08x: start the monitor with tools/kstb-mon (mon/README.md)\n", DOOM_IMG);
         return;
     }
-    if (wad->magic != KWAD_MAGIC) {
-        printf("no WAD at %08x. From BOLT:\n"
-               "  load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0xdc7000 flash0.splash\n", WAD_ADDR);
-        return;
+    if (wad->magic != KWAD_MAGIC) {             // not loaded by BOLT: read it from the eMMC
+        uint32_t lba = SPLASH_FIRST + WAD_OFFSET / 512;
+        printf("loading the WAD from flash0.splash +%x ...\n", WAD_OFFSET);
+        if (mmc_init() || mmc_read(lba, 1, (void *)WAD_ADDR) || wad->magic != KWAD_MAGIC) {
+            printf("no KWAD image at flash0.splash +%x\n", WAD_OFFSET);
+            return;
+        }
+        uint32_t sectors = (wad->offset + wad->size + 511) / 512;
+        if (mmc_read(lba, sectors, (void *)WAD_ADDR)) {
+            printf("eMMC read failed\n");
+            ((struct kwad *)WAD_ADDR)->magic = 0;
+            return;
+        }
     }
     const uint8_t *bin = (const uint8_t *)DOOM_IMG + img->offset;
     if (crc32(bin, img->size) != img->crc) {
@@ -946,6 +956,162 @@ static void cmd_info(struct cmd *c)
            MON_ADDR, DOOM_IMG, HEAP_BASE, PROG_ADDR, WAD_ADDR);
 }
 
+// ---------------- eMMC ----------------
+
+static uint8_t sector[512] __attribute__((aligned(16)));
+
+static const char *const card_states[] = {
+    "idle", "ready", "ident", "stby", "tran", "data", "rcv", "prg", "dis",
+};
+
+static int mmc_ok(int r)
+{
+    if (r == MMC_EGUARD || r == MMC_ENOCARD)
+        printf("mmc: %s\n", mmc_strerror(r));
+    else if (r)
+        printf("mmc: %s (interrupt status %08x)\n", mmc_strerror(r), mmc_last_int());
+    return r == 0;
+}
+
+static void mmc_show_status(void)
+{
+    printf("host   present %08x, control %08x, clock %08x\n",
+           read32(0xf0200224), read32(0xf0200228), read32(0xf020022c));
+    for (uint32_t rca = 1; rca <= 4; rca++) {
+        uint32_t st;
+        if (mmc_status(rca, &st) == 0) {
+            unsigned s = (st >> 9) & 0xf;
+            printf("card   RCA %u: status %08x, state %s%s\n", rca, st,
+                   s < 9 ? card_states[s] : "?", st & (1 << 8) ? ", ready for data" : "");
+            return;
+        }
+    }
+    printf("card   no answer to CMD13 with RCA 1-4\n");
+}
+
+static void mmc_show_ext_csd(void)
+{
+    static uint8_t e[512] __attribute__((aligned(16)));
+    if (!mmc_ok(mmc_read_ext_csd(e)))
+        return;
+    uint32_t sec = e[212] | e[213] << 8 | e[214] << 16 | (uint32_t)e[215] << 24;
+    printf("EXT_CSD_REV          %u\n", e[192]);
+    printf("SEC_COUNT            %u sectors = %u MiB\n", sec, sec / 2048);
+    printf("DEVICE_TYPE          %02x\n", e[196]);
+    printf("HS_TIMING            %u\n", e[185]);
+    printf("BUS_WIDTH            %u (0 = 1-bit, 1 = 4-bit, 2 = 8-bit, 5/6 = DDR)\n", e[183]);
+    printf("PARTITION_CONFIG     %02x (boot partition enabled %u, access %u)\n",
+           e[179], (e[179] >> 3) & 7, e[179] & 7);
+    printf("BOOT_BUS_CONDITIONS  %02x\n", e[177]);
+    printf("BOOT_SIZE_MULT       %u x 128 KB = %u KB per boot partition\n", e[226], e[226] * 128);
+    printf("RPMB_SIZE_MULT       %u x 128 KB\n", e[168]);
+    printf("BOOT_WP              %02x   BOOT_WP_STATUS %02x\n", e[173], e[174]);
+    printf("PARTITIONING_SUPPORT %02x   PARTITION_SETTING_COMPLETED %02x\n", e[160], e[155]);
+    printf("ERASE_GROUP_DEF      %u   HC_ERASE_GRP_SIZE %u x 512 KB\n", e[175], e[224]);
+    printf("RST_n_FUNCTION       %02x\n", e[162]);
+    printf("life time est. A/B   %02x / %02x (01 = 0-10%% used ... 0b = exceeded)\n", e[268], e[269]);
+    printf("PRE_EOL_INFO         %02x (01 normal, 02 warning, 03 urgent)\n", e[267]);
+    printf("FIRMWARE_VERSION     ");
+    for (int i = 254; i < 262; i++)
+        printf("%02x", e[i]);
+    printf("\n");
+}
+
+static void mmc_show_part(void)
+{
+    if (!mmc_ok(mmc_read(1, 1, sector)))
+        return;
+    if (memcmp(sector, "EFI PART", 8) != 0) {
+        printf("LBA 1 is not a GPT header\n");
+        return;
+    }
+    uint64_t entries;
+    uint32_t count, size;
+    memcpy(&entries, sector + 72, 8);
+    memcpy(&count, sector + 80, 4);
+    memcpy(&size, sector + 84, 4);
+    printf("GPT: %u entries of %u bytes at LBA %lu\n", count, size, entries);
+    printf("  #  first LBA   last LBA    size        name\n");
+    for (uint32_t i = 0; i < count && size >= 128 && size <= 512; i++) {
+        uint32_t per = 512 / size;
+        if (i % per == 0 && !mmc_ok(mmc_read(entries + i / per, 1, sector)))
+            return;
+        const uint8_t *en = sector + (i % per) * size;
+        uint64_t first, last;
+        memcpy(&first, en + 32, 8);
+        memcpy(&last, en + 40, 8);
+        if (first == 0 && last == 0)
+            continue;
+        char name[37];
+        for (int k = 0; k < 36; k++)
+            name[k] = en[56 + 2 * k] < 0x80 ? en[56 + 2 * k] : '?';
+        name[36] = 0;
+        uint64_t kb = (last - first + 1) / 2;
+        printf("  %-2u %-11lu %-11lu %7lu %s  %s\n", i + 1, first, last,
+               kb >= 10240 ? kb / 1024 : kb, kb >= 10240 ? "MB" : "KB", name);
+    }
+}
+
+static void cmd_mmc(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    uint64_t lba, n, a = 0x02000000;
+    int r = mmc_init();
+    if (!mmc_ok(r))
+        return;
+
+    if (!strcmp(sub, "")) {
+        mmc_show_status();
+    } else if (!strcmp(sub, "extcsd")) {
+        mmc_show_ext_csd();
+    } else if (!strcmp(sub, "part")) {
+        mmc_show_part();
+    } else if (!strcmp(sub, "dump")) {
+        if (arg_num(c, 1, &lba) <= 0) {
+            printf("usage: mmc dump lba\n");
+            return;
+        }
+        if (!mmc_ok(mmc_read(lba, 1, sector)))
+            return;
+        for (int i = 0; i < 512; i += 16) {
+            printf("%03x:", i);
+            for (int k = 0; k < 16; k++)
+                printf(" %02x", sector[i + k]);
+            printf("  ");
+            for (int k = 0; k < 16; k++)
+                putchar(isprint(sector[i + k]) ? sector[i + k] : '.');
+            printf("\n");
+        }
+    } else if (!strcmp(sub, "read") || !strcmp(sub, "write")) {
+        int write = sub[0] == 'w';
+        if (arg_num(c, 1, &lba) <= 0 || arg_num(c, 2, &n) <= 0 || arg_num(c, 3, &a) < 0 || n == 0) {
+            printf("usage: mmc %s lba count [addr]   (512-byte sectors; addr default 2000000)\n", sub);
+            return;
+        }
+        uint64_t end = a + n * 512;                 // RAM side: not the monitor, its heap, or non-RAM
+        if (a < 0x00001000 || end > 0x7d600000 || (a < DOOM_IMG && end > MON_ADDR) ||
+            (a < HEAP_END && end > HEAP_BASE)) {
+            printf("mmc: RAM %08lx + %lx refused\n", a, n * 512);
+            return;
+        }
+        if (write && !mmc_ok(mmc_write_allowed(lba, n, c->force)))
+            return;
+        uint64_t t = ticks();
+        r = write ? mmc_write(lba, n, (const void *)a, c->force) : mmc_read(lba, n, (void *)a);
+        uint64_t us = (ticks() - t) / 27;
+        if (!mmc_ok(r))
+            return;
+        printf("%s %lu sectors (%lu KB) LBA %lu %s %08lx in %lu ms (%lu KB/s)\n",
+               write ? "wrote" : "read", n, n / 2, lba, write ? "from" : "to", a,
+               us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0);
+    } else {
+        printf("usage: mmc [extcsd | part | dump lba | read lba count [addr] | write lba count addr]\n"
+               "  lba/count in 512-byte sectors (hex, or #decimal). flash0.splash = LBA #%u-#%u;\n"
+               "  writes only there, and not in its first 512 KB without 'mmc!'.\n",
+               SPLASH_FIRST, SPLASH_LAST);
+    }
+}
+
 typedef void (*cmd_fn)(struct cmd *);
 
 static const struct {
@@ -975,6 +1141,7 @@ static const struct {
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
+    { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
     { "led",     cmd_led,     "green|red|orange|blue|off",  "front LEDs" },
     { "wdt",     cmd_wdt,     "[seconds|off]",              "watchdog" },
@@ -986,7 +1153,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "ir",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir",
     "led", "wdt", "history", "reset", NULL,
 };
 

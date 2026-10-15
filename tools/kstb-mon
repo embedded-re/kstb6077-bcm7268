@@ -8,9 +8,11 @@
 The bundle (mon/build/kmon.img) = the monitor + doom.bin; it lives in
 flash0.splash at +0xf00000, after the WAD (+0x100000). By hand, from BOLT>:
 
-    load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0xdc7000 flash0.splash
     load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0000 flash0.splash
     go -64 0x00100000
+
+(kmon's `doom` reads the WAD from the eMMC itself; this tool also has BOLT
+load it first, which is just as fast.)
 
 --tftp/--install need a TFTP server whose root holds kmon.img (docs/booting.md).
 --install writes only flash0.splash +0xf00000 ... +0xf00000 + size.

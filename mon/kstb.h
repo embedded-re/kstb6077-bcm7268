@@ -13,7 +13,9 @@
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
 #define HEAP_END    0x01000000
 #define PROG_ADDR   0x01000000      // where programs run (doom.bin, kstb-run/build-c programs)
-#define WAD_ADDR    0x10000000      // the WAD's KWAD image, loaded by BOLT
+#define WAD_ADDR    0x10000000      // the WAD's KWAD image (loaded by BOLT, or by `doom` itself)
+#define WAD_OFFSET  0x100000        // where it is in flash0.splash (docs/hardware/storage.md)
+#define BUNDLE_OFFSET 0xf00000      // the kmon bundle in flash0.splash
 
 #define MON_MAGIC   0x4b4d4f4e      // 'KMON' in x1 at a program's entry; x2 = resume address
 

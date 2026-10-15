@@ -11,9 +11,9 @@ in the DTB and Linux registers it as `mmc0`.
 |---|---|
 | eMMC | 7.28 GiB on SDHCI 1 (`0xf0200200`), 8-bit, 50 MHz |
 | SDHCI 0 | `0xf0200000`, removable-slot type, no card, no slot on the case |
-| From bare metal | no eMMC driver yet; BOLT copies data into RAM before `go` (~15 MB/s) |
+| From bare metal | **own driver** in kmon ([`../../mon/mmc.c`](../../mon/mmc.c)): read ~33 MB/s, write ~9 MB/s, PIO; or BOLT copies data into RAM before `go` (~15 MB/s) |
 | Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header ([`tools/make-wad-image`](../../tools/make-wad-image)) |
-| Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT |
+| Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT; reading and writing from bare metal (kmon, 2026-10-15) |
 
 ## The two SDHCI controllers (tested)
 
@@ -54,9 +54,70 @@ mirror some host values (e.g. `+0x18` = the host's `+0x60` preset
 (`+0x04` = `40`, `+0x08` = `00010100`, `+0x0c` and `+0x30–0x3b` abort). The
 cfg registers' names are unknown.
 
-## Reading the eMMC from bare metal
+## The eMMC driver (tested)
 
-A bare-metal program can't read the eMMC itself (no driver yet), but BOLT can
+Tested on the modified box on 2026-10-15 with kmon's `mmc` command
+([`../../mon/README.md`](../../mon/README.md)), at EL2 after `go -64`.
+
+**BOLT's set-up survives `go -64`**, so the driver doesn't initialise the
+card. After `go` the host registers are the same as at `BOLT>` (present
+`1fff0000`, control `00000f24` = 8-bit + high speed, clock `000e0107` =
+50 MHz), and the last command is BOLT's own `load` of the kmon bundle: CMD18,
+argument `0x00e90dc0`, SDMA address `0x002c0000`, the end of that load. That
+also confirms **sector addressing: LBA = 15239168 + offset / 512** inside
+`flash0.splash`.
+
+| | |
+|---|---|
+| Card address (RCA) | **2** (CMD13 to RCA 1 times out; RCA 2 answers `00000900` = state tran, ready for data) |
+| Commands used | CMD8 (EXT_CSD), CMD13, CMD17/18 read, CMD24/25 write, auto-CMD12; programmed I/O through `+0x20` |
+| Interrupt status enable `+0x34` | BOLT leaves `13ff060f`: buffer read/write ready (bits 5/4) are off, the driver turns them on. Signal enable `+0x38` stays `0` (no GIC interrupt) |
+| Read | 14,446,592 bytes (the WAD image, 28,216 sectors) in 428 ms = **33 MB/s**; CRC `0x81c4660f` = the stored image. 25 sectors (the splash container): CRC `0x3fffa0ed`, matches |
+| Write | 128 sectors (64 KB) of random data with CMD25 in 6 ms; read back, CRC matched the file. One sector with CMD24: exactly that sector changed. Then zeros written back and checked |
+| Write area used for the test | `flash0.splash +0x80000` (LBA 15240192–15240319), unused; zeros again afterwards (CRC `d7978eeb`) |
+
+EXT_CSD, read from the card with CMD8:
+
+| Field | Value | Meaning |
+|---|---|---|
+| EXT_CSD_REV [192] | 8 | eMMC 5.1 |
+| SEC_COUNT [215:212] | 15,273,600 | 7,457 MiB user area; the last LBA is 15,273,599 |
+| PARTITION_CONFIG [179] | `48` | boot acknowledge on, boot from boot partition 1, access = user area |
+| BOOT_SIZE_MULT [226] | 32 | two 4 MB boot partitions (BOLT's) |
+| RPMB_SIZE_MULT [168] | 32 | 4 MB RPMB |
+| HS_TIMING [185] | 1 | high speed |
+| BUS_WIDTH [183] | 0 | although the bus runs 8-bit; probably not readable back (inferred) |
+| DEVICE_TYPE [196] | `57` | |
+| BOOT_WP [173] / status [174] | `00` / `00` | boot partitions not write-protected |
+| PARTITIONING_SUPPORT [160] / SETTING_COMPLETED [155] | `07` / `00` | no enhanced/GP partitions set up |
+| Life time estimate A/B [268/269] | `01` / `01` | 0–10 % of the rated wear used |
+| PRE_EOL_INFO [267] | `01` | normal |
+| FIRMWARE_VERSION [261:254] | `37 33 31 30 33 35 31 37` | ASCII "73103517" |
+
+GPT read with the driver (`mmc part`, entries at LBA 2):
+
+| # | First LBA | Last LBA | Name |
+|---|---|---|---|
+| 1 | 34 | 34 | macadr |
+| 2 | 35 | 162 | nvram |
+| 3 | 163 | 2046 | bsu |
+| 4 | 2048 | 4095 | misc |
+| 5 | 4096 | 6143 | hwcfg |
+| 6 | 6144 | 137215 | KRN |
+| 7 | 137216 | 145407 | DTB |
+| 8 | 145408 | 4339711 | SWAP |
+| 9 | 4339712 | 15239167 | ROOT |
+| 10 | 15239168 | 15273594 | splash |
+
+Safety rules in the driver: it never sends CMD6 (SWITCH, which could change
+the boot or partition configuration), erase or lock commands, and
+`mmc_write()` refuses anything outside `flash0.splash`, and the splash
+container (its first 512 KB) unless forced (tested: LBA 100 in `nvram` and
+the container's first sector were both refused).
+
+## Reading the eMMC with BOLT before `go`
+
+Without a driver, BOLT can
 copy any part of a partition into RAM before `go`. The modified box's
 `flash0.splash` partition is 16.8 MB, and BOLT's splash uses only the first
 512 KB of it. The rest can hold a large data file: 4 MB loads in about a
@@ -77,7 +138,7 @@ what the partition holds now.
 | `0x080000–0x0fffff` | unused (zeros) |
 | `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: up to the kmon bundle at `0xf00000` (14,680,064 bytes). Now: a 14.4 MB file (below), image `0xdc7000` bytes |
 | `0xec7000–0xefffff` | unused |
-| `0xf00000–0xfccfff` | **kmon bundle** (since 2026-10-15): the monitor padded to 256 KB, then `doom.bin` in a `KWAD` header; `0xcd000` bytes, written and read back by `tools/kstb-mon --install` (CRC matched). Loaded to `0x00100000` ([`../../mon/README.md`](../../mon/README.md)) |
+| `0xf00000–0xfccfff` | **kmon bundle** (since 2026-10-15): the monitor padded to 256 KB, then `doom.bin` in a `KWAD` header; `0xcd000` bytes, written and read back by `tools/kstb-mon --install` (CRC matched), and since then also from kmon itself with `mmc write` (CRC matched). Loaded to `0x00100000` ([`../../mon/README.md`](../../mon/README.md)) |
 | `0xfcd000–0x10cf5ff` | unused |
 
 **Nothing else reads past 512 KB (tested: from BOLT's code).** The container

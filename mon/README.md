@@ -15,12 +15,12 @@ The monitor and `doom.bin` are stored together (the "bundle") in
 From `BOLT>`:
 
 ```
-load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0xdc7000 flash0.splash
 load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0000 flash0.splash
 go -64 0x00100000
 ```
 
-or `tools/kstb-mon`, which sends the same three commands. Type into it with
+or `tools/kstb-mon`, which also has BOLT load the WAD first. Without that,
+`doom` reads the WAD from the eMMC itself (14 MB in about 0.4 s, tested). Type into it with
 `kstb -i` (raw mode).
 
 | Tool | What it does |
@@ -53,7 +53,12 @@ calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
 go [addr]                      start a program like BOLT's go -64 (default: last load)
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
-doom                           start Doom; quitting from its menu returns here
+doom                           start Doom (loads the WAD from eMMC if needed); quitting returns here
+mmc                            eMMC: card status
+mmc extcsd | part              the card's EXT_CSD fields | the GPT partition table
+mmc dump lba                   hex dump of one sector
+mmc read lba count [addr]      sectors to RAM (default 0x02000000)
+mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
 led green|red|orange|blue|off  front LEDs
 wdt [seconds|off]              watchdog
@@ -89,6 +94,43 @@ history and Tab completion of commands and names.
   `!` to the command to do it anyway: `w! …`, `md! …`.
 - The watchdog is not armed by the monitor. `wdt 60` arms it, `wdt off`
   stops it.
+
+## eMMC (`mmc`, [`mmc.c`](mmc.c))
+
+kmon has its own eMMC driver (tested, details and measurements in
+[`../docs/hardware/storage.md`](../docs/hardware/storage.md), "The eMMC driver"). It uses the card as
+BOLT left it (RCA 2, tran state, 8-bit, 50 MHz), so it needs no
+initialisation. It reads at ~33 MB/s and writes at ~9 MB/s. LBAs are 512-byte
+sectors from the start of the user area; `flash0.splash` is LBA
+`#15239168`–`#15273594`, so `flash0.splash + offset` = `#15239168 + offset/512`.
+
+Writes are refused outside `flash0.splash`, and in its first 512 KB (the
+splash container BOLT reads at boot) unless the command is `mmc!`. The driver
+never sends CMD6, erase or lock commands, so it can't change the card's
+boot or partition setup.
+
+```
+kmon> mmc read #15239168 #25         the splash container to 0x02000000
+kmon> crc 0x02000000 0x30c4          = 3fffa0ed
+```
+
+### Updating the stored bundle from kmon (tested)
+
+No BOLT and no TFTP needed: send the new bundle over serial, write it to
+`flash0.splash +0xf00000` (= LBA `#15269888`), check the read-back.
+
+```
+make -C mon
+tools/kstb-send --addr 0x02000000 mon/build/kmon.img      # ~73 s for 820 KB
+kmon> mmc write #15269888 #1640 0x02000000                 # 839680 / 512 = 1640 sectors
+kmon> mmc read #15269888 #1640 0x04000000
+kmon> crc 0x04000000 0xcd000                               # = the file's CRC32
+```
+
+Measured: write 1,640 sectors in 26 ms, read back in 28 ms, CRC matched; the
+next start from flash ran the new build. Don't type into `kstb -i` during a
+`kstb-send`: the bridge mixes it into the data. A stray Ctrl-C (`03`) did
+exactly that once, and the CRC check caught it.
 
 ## Memory map
 

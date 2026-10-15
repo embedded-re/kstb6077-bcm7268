@@ -7,7 +7,7 @@ B       = build
 CC      = clang
 CFLAGS  = --target=aarch64-none-elf -mcpu=cortex-a53 -O2 -g -Wall \
           -nostdlibinc -I../libc/include -I. -fno-stack-protector -fno-pic
-OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/libc.o
+OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/mmc.o $(B)/libc.o
 DOOMBIN = ../doom/build/doom.bin
 
 all: $(B)/kmon.img
@@ -30,7 +30,7 @@ $(B)/start.o: start.S
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(B)/%.o: %.c kstb.h mon.h
+$(B)/%.o: %.c kstb.h mon.h mmc.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -c $< -o $@
 
