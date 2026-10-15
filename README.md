@@ -40,12 +40,12 @@ Each row links to the chapter that describes it.
 | Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s full duplex (10/100 PHY). After BOLT the MAC is idle with no address | [`docs/hardware/ethernet.md`](docs/hardware/ethernet.md) |
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | [`docs/stock-firmware.md`](docs/stock-firmware.md) |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
-| USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 brought up from EL2, keyboard detected | [`docs/hardware/usb.md`](docs/hardware/usb.md) |
+| USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 driven from EL2: control and interrupt transfers, a HID keyboard (kmon, Doom) and a USB stick enumerated | [`docs/hardware/usb.md`](docs/hardware/usb.md) |
 | Video | HDMI, driven by the Broadcom display pipeline (no open driver). BOLT's boot splash sets it up (from the `flash0.splash` partition; re-added on the modified box) and leaves a **1920 × 1080 RGB565 framebuffer** (surface register `0xf0641048`), which stays live after `go -64`; `load -splash` redraws it with any BMP. The display's register-DMA (RDC) runs a custom list from RAM: background colour, window size and position tested | [`docs/hardware/display.md`](docs/hardware/display.md) |
 | 3D GPU | Broadcom V3D 3.3 at `0xf1200000` (hub) / `0xf1208000` (core), 8 QPUs, behind power island `0xf041d020`; driven from EL2: TFU job, render jobs into the framebuffer, a binner job and a shaded triangle | [`docs/hardware/gpu.md`](docs/hardware/gpu.md) |
 | 2D blitter | M2MC at `0xf09b0000`: fill, copy, scaling, 8-bit palette lookup; 320 × 200 → 1600 × 1000 onto the screen in 1.65 ms | [`docs/hardware/2d-blitter.md`](docs/hardware/2d-blitter.md) |
 | Audio | HDMI, 48 kHz 32-bit stereo from a looping DRAM buffer. BOLT's splash starts it from a `pcm0` in `flash0.splash` but skips the HDMI audio clock at 1080p; three register writes (N/CTS) make it audible. Keeps running after `go -64` | [`docs/hardware/audio.md`](docs/hardware/audio.md) |
-| Data storage | `flash0.splash` past 1 MB holds a large file that BOLT loads into RAM before `go` (~15 MB/s); now holds a 14.4 MB file | [`docs/hardware/storage.md`](docs/hardware/storage.md) |
+| Data storage | `flash0.splash` past 1 MB holds a large file that BOLT loads into RAM before `go` (~15 MB/s); now holds a 14.4 MB file. On the modified box the Linux port's `SWAP`/`ROOT` became a 6.3 GB FAT32 `DATA` partition that kmon reads and writes (~33 / 12.5 MB/s) | [`docs/hardware/storage.md`](docs/hardware/storage.md) |
 | TV tuner | DVB-T tuner with RF input | |
 | Power LED (LED1) | green = AON GPIO 18, red = AON GPIO 17; active-low; both on = orange | [`docs/hardware/gpio.md`](docs/hardware/gpio.md) |
 | Blue LED (LED3) | AON GPIO 16, active-low | [`docs/hardware/gpio.md`](docs/hardware/gpio.md) |
@@ -59,7 +59,7 @@ Each row links to the chapter that describes it.
 | Watchdog | `0xf040a6a8`, 27 MHz ticks | [`docs/hardware/system-blocks.md`](docs/hardware/system-blocks.md) |
 | Software reset | SUN_TOP_CTRL `0xf0404304` / `0xf0404308` | [`docs/hardware/system-blocks.md`](docs/hardware/system-blocks.md) |
 | Reset-surviving memory | 1 KB AON SRAM at `0xf0410200` | [`docs/hardware/system-blocks.md`](docs/hardware/system-blocks.md) |
-| Interrupt controller | ARM GIC-400 (GICv2) at `0xffd01000`, 256 interrupt IDs, 4 CPU interfaces, fed by Broadcom L2 controllers; all SPIs are non-secure (group 1) | [`docs/hardware/interrupts.md`](docs/hardware/interrupts.md) |
+| Interrupt controller | ARM GIC-400 (GICv2) at `0xffd01000`, 256 interrupt IDs, 4 CPU interfaces, fed by Broadcom L2 controllers; all SPIs are non-secure (group 1). Taken at EL2 with `HCR_EL2.IMO` = 1: timer, UART0, SW1, IR remote tested | [`docs/hardware/interrupts.md`](docs/hardware/interrupts.md) |
 | CPU timer | ARM generic timer, 27 MHz | [`docs/hardware/system-blocks.md`](docs/hardware/system-blocks.md) |
 | CPU cores | 4 × Brahma-B53; `go -64` runs core 0, PSCI `CPU_ON` starts cores 1–3 at EL2 (tested) | [`docs/hardware/cpu-cores.md`](docs/hardware/cpu-cores.md) |
 
@@ -85,8 +85,9 @@ Details: [`docs/booting.md`](docs/booting.md), [`docs/hardware/memory-map.md`](d
 | [`docs/evidence/`](docs/evidence/README.md) | probe programs, their outputs and raw console captures |
 | [`boot/`](boot/) | device trees and the USB-stick autoboot script |
 | [`assembly/`](assembly/), [`c/`](c/) | a 32-bit UART monitor and a bare-metal C example |
-| [`mon/`](mon/README.md) | kmon, a memory monitor (EL2): registers by name, abort-safe access, serial upload, starts Doom |
-| [`doom/`](doom/README.md) | Doom (doomgeneric) on bare metal: HDMI video, sound effects, IR remote |
+| [`mon/`](mon/README.md) | kmon, the monitor (EL2), autostarted by BOLT: HDMI text console and USB keyboard, files on the eMMC, registers by name, abort-safe access, interrupts, serial upload, starts Doom |
+| [`doom/`](doom/README.md) | Doom (doomgeneric) on bare metal: HDMI video, sound effects, USB keyboard, IR remote |
+| [`libc/`](libc/), [`usb/`](usb/), [`fat/`](fat/) | code shared by kmon and Doom: a small C library, the OHCI/HID keyboard driver, the FAT32 driver |
 | [`tools/`](tools/) | build, upload, dump and analysis tools |
 
 Full layout and tool list: [`docs/README.md`](docs/README.md#repository-layout-and-tools).

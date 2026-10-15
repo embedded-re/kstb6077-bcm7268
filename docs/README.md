@@ -124,6 +124,8 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`../boot/`](../boot/) | device trees ([which is which](hardware/device-tree.md)) and the USB-stick autoboot script `sysinit.txt` |
 | [`../assembly/`](../assembly/) | 32-bit bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin` / `.elf` |
 | [`../c/`](../c/) | bare-metal C example (`main.c`) and its address header (`kstb.h`) |
+| [`../mon/`](../mon/README.md), [`../doom/`](../doom/README.md) | kmon, the monitor, and the Doom port |
+| [`../libc/`](../libc/), [`../usb/`](../usb/), [`../fat/`](../fat/) | shared by kmon and Doom: C library, OHCI1 + HID keyboard driver, FAT32 driver |
 | `stock/` | stock firmware files, downloaded by `tools/fetch-stock` (local only, not in git) |
 
 | Tool | What it does |
@@ -136,6 +138,7 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`tools/kstb-send`](../tools/kstb-send) | sends a file to kmon over the serial line (`load`, ~11.5 KB/s) |
 | [`tools/kstb-doom`](../tools/kstb-doom) | starts the Doom port: WAD from flash, `doom.bin` by TFTP, CRC check, `go -64` ([`../doom/README.md`](../doom/README.md)) |
 | [`tools/kstb-dump`](../tools/kstb-dump) | dumps board memory to a file over the BOLT console (read-only) |
+| [`tools/make-font`](../tools/make-font) | renders a monospaced font into the C header for kmon's HDMI console |
 | [`tools/make-splash`](../tools/make-splash) | builds a `flash0.splash` container (GZBR/zlib) from an image, optionally with a `pcm0` sound |
 | [`tools/make-wad-image`](../tools/make-wad-image) | wraps a data file in a `KWAD` header for the splash partition ([`hardware/storage.md`](hardware/storage.md)) |
 | [`tools/fetch-stock`](../tools/fetch-stock) | downloads the stock firmware archive into `stock/` |
