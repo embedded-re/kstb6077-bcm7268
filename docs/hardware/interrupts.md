@@ -7,10 +7,10 @@
 | Root controller | ARM **GIC-400** (GICv2): distributor `0xffd01000`, CPU interface `0xffd02000`; 256 IDs, 4 CPU interfaces |
 | Numbering | DTB SPI *N* = GIC ID *N* + 32 |
 | Second level | Broadcom L2 controllers (`brcm,l2-intc`, `brcm,bcm7271-l2-intc`) in front of the GIC |
-| State at handoff | GIC enabled, every SPI in group 1 (non-secure), **every SPI disabled and untargeted**; all L2 sources masked |
+| State at handoff | GIC enabled, every SPI in group 1 (non-secure), **every SPI disabled and untargeted**, **GICC_PMR = `00`** (blocks everything); all L2 sources masked; HCR_EL2.IMO = 0 |
 | Reachable | from AArch64 (`go -64`, `boot -64 -el3`); **not** under BOLT's 32-bit MMU |
-| Tested | GIC state from EL2 and EL3; the SW1 chain up to the L2; the stock kernel's interrupt counts per action |
-| Not tested | taking an interrupt on the CPU from bare-metal code |
+| Tested | GIC state from EL2 and EL3; the stock kernel's interrupt counts per action; **taking interrupts at EL2** from the EL2 timer (ID 26), UART0 receive (ID 102), SW1 and the IR remote (both ID 98 through the AON L2) |
+| Needed at EL2 | HCR_EL2.IMO = 1, GICC_PMR opened, DAIF.I clear, then per ID: enable, priority, target ("Taking interrupts at EL2") |
 
 ## Controllers (from the original DTB)
 
@@ -231,8 +231,8 @@ taken from the Linux driver and have not been written on this board.
 SW1 (AON GPIO bank 0 bit 14)
   → GPIO STAT & MASK      0xf0419c9c / 0xf0419c94            verified
   → AON L2 bit 3 "gio"    0xf0419c00                         verified
-  → GIC SPI 66 = ID 98    distributor 0xffd01000             not reachable under BOLT's MMU
-  → CPU IRQ
+  → GIC SPI 66 = ID 98    distributor 0xffd01000             verified from EL2 (not reachable under BOLT's MMU)
+  → CPU IRQ at EL2                                           verified ("Taking interrupts at EL2")
 ```
 
 Test from BOLT: `e -w 0xf0419c9c ffffffff` (clear GPIO STAT),
@@ -296,3 +296,50 @@ entry to a program started at EL3, `SCR_EL3` = `0x131`: NS = 1 (the lower except
 levels are non-secure) and RW = 0 (the level below EL3 runs AArch32). That
 matches BOLT's world being **non-secure AArch32** (inferred: this is the
 SCR state left by the EL3 monitor).
+
+## Taking interrupts at EL2 (tested)
+
+Tested on 2026-10-15 on the modified box with kmon's `irq` command
+([`../../mon/irq.c`](../../mon/irq.c), [`../../mon/README.md`](../../mon/README.md)), started with BOLT's `go -64`
+(EL2). The GIC is at `0xffd01000`/`0xffd02000` in kmon's identity map
+(Device memory).
+
+### What it takes
+
+| Step | Register | After BOLT | Set to |
+|---|---|---|---|
+| Vector table | `VBAR_EL2`; IRQ from the current EL on SP_EL2 = vector `+0x280` | garbage | the program's own |
+| Route IRQs to EL2 | `HCR_EL2` bit 4 (IMO) | `0` (`HCR_EL2` = `80000002`) | `1` |
+| CPU mask | `DAIF.I` | masked | cleared (`msr daifclr, #2`) |
+| CPU interface priority mask | `GICC_PMR` `0xffd02004` | **`00`: nothing gets through** | wrote `ff`, reads back `f0` |
+| CPU interface enable | `GICC_CTLR` | `1` (group 1 on) | left as it is |
+| Distributor, per ID | `ISENABLER`, `IPRIORITYR` byte, `ITARGETSR` byte (SPIs only) | disabled, priority `00`, target `00` | enabled, `a0` (reads back `a0`), `01` |
+| Handler | read `GICC_IAR` `0xffd0200c` (ID in bits 0–9), clear the source, write the same value to `GICC_EOIR` `0xffd02010` | | |
+
+- **IMO decides it.** With the timer pending in the GIC (`ISPENDR` bit set,
+  `GICC_HPPIR` = `1a` = ID 26), `GICC_PMR` open and `DAIF.I` clear, the CPU
+  did **not** take the interrupt while IMO was 0. Setting IMO = 1 made it
+  taken at once.
+- The `ITARGETSR` bytes for IDs 0–31 read `01`: the boot CPU is GIC CPU
+  interface 0, so SPIs are targeted at `01`.
+- `ICFGR` reads "level" for IDs 26, 98 and 102.
+- No spurious interrupts (ID 1023) were counted in any of the tests below.
+
+### Sources
+
+| Source | ID | Set-up | Clearing it in the handler | Result |
+|---|---|---|---|---|
+| EL2 physical timer (CNTHP) | 26 (PPI) | `CNTHP_CVAL_EL2` = now + period, `CNTHP_CTL_EL2` = 1 | `CNTHP_CVAL_EL2` += period | 10 ms period: exactly +100 per second for 5 s |
+| UART0 receive | 102 | UART `IER` (`0xf040c004`) bit 0 | read RBR until LSR bit 0 is 0 | one interrupt per byte. A 64 KB `kstb-send` arrived intact (CRC matched, 0 bytes dropped, 5.7 s, the same as polled); the CPU sleeps in WFI between bytes |
+| SW1 | 98 | AON GPIO EI bit 14, MASK bit 14; AON L2 `MASK_CLEAR` (`0xf0419c0c`) bit 3 | AON GPIO STAT bit 14 (write 1) | one interrupt on the press and one on the release |
+| IR remote (kbd1) | 98 | NEC set-up ([`ir.md`](ir.md)); AON L2 `MASK_CLEAR` bit 0 | write 0 to bit 0 of kbd1 STATUS `0xf0419900` | one interrupt per IR frame ([`ir.md`](ir.md)) |
+
+- The AON L2's `MASK_CLEAR` (`+0xc`) and `MASK_SET` (`+0x8`) work as in the
+  Linux driver: MASK_STATUS went from `7f` to `76` with bits 0 and 3
+  cleared, and to `77` with only bit 3 cleared.
+- **SW1 edge:** after BOLT the AON GPIO EC, EI and LEVEL registers
+  (`0xf0419c8c`, `0xf0419c90`, `0xf0419c98`) are all `0`. That gives one
+  interrupt per press and **none on release**: the handler only ever saw the
+  pin low, apart from bounce. Setting EI bit 14 (`0xf0419c90` = `00004000`)
+  gives both edges, as under stock Android.
+

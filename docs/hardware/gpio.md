@@ -25,7 +25,7 @@ Compatible `brcm,brcmstb-gpio`. The register layout matches Linux
 | `+0x00` | ODEN: open-drain enable |
 | `+0x04` | DATA: pin level (read), output value (write) |
 | `+0x08` | IODIR: 1 = input, 0 = output |
-| `+0x0c` / `+0x10` / `+0x18` | EC / EI / LEVEL: interrupt trigger type |
+| `+0x0c` / `+0x10` / `+0x18` | EC / EI / LEVEL: interrupt trigger type. All `0` after BOLT (AON bank 0): SW1 interrupts on the press only. EI bit set = both edges (tested on SW1, [`interrupts.md`](interrupts.md)) |
 | `+0x14` | MASK: interrupt enable |
 | `+0x1c` | STAT: interrupt status, latches changes even while masked, write-1-to-clear |
 
@@ -41,7 +41,7 @@ Compatible `brcm,brcmstb-gpio`. The register layout matches Linux
 | LED1 green (power) | AON bank 0 bit 18 | open-drain, active-low; output after BOLT |
 | LED1 red | AON bank 0 bit 17 | open-drain, active-low; output after BOLT. Green + red = orange |
 | LED3 blue | AON bank 0 bit 16 | active-low; **input after BOLT**. To use: set ODEN, set DATA (off), then clear IODIR |
-| SW1 (front standby button) | AON bank 0 bit 14 | input, active-low (reads 1 at rest). Stock Android: an interrupt on both edges (`nexus gpio`), standby/wake ([`interrupts.md`](interrupts.md)) |
+| SW1 (front standby button) | AON bank 0 bit 14 | input, active-low (reads 1 at rest). Stock Android: an interrupt on both edges (`nexus gpio`), standby/wake. Taken as an interrupt at EL2 through AON L2 bit 3 / GIC ID 98 (tested, [`interrupts.md`](interrupts.md)) |
 | SW4 (recovery / Bluetooth-pairing button) | AON bank 0 bit 7 | input, active-low (0 = pressed). Held at power-on, the stock BSU boots recovery. The stock DTB maps it as `gpio_keys_polled` `BT_PAIR` (key `0x18f`), and BOLT's env has `BT_PAIR upg_gio_aon 7`. Linux polls it: pressing it fires no interrupt (tested) |
 | unknown (claimed by Nexus) | AON bank 0 bits 4, 5 | stock `/proc/interrupts` lists them as `nexus gpio`; bit 4 fired 6 times around boot. Not HDMI hot-plug, USB or the buttons (tested) |
 | Wi-Fi power (`vreg-wifi-pwr`) | AON bank 0 bit 21 | from the DTB; input after BOLT |

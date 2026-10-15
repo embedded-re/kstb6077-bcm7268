@@ -183,16 +183,31 @@ Timing and behaviour:
 | `RED` | **always** sends `KEY_WAKEUP` (DOWN, UP 22–40 µs later) first, then `KEY_RED`, awake or in standby. No other key does |
 | `POWER` | standby, and wakes the box from standby |
 
+## As an interrupt (tested)
+
+Tested on 2026-10-15 with kmon's `irq ir on` / `irq watch` ([`interrupts.md`](interrupts.md),
+"Taking interrupts at EL2"). After the NEC set-up, unmasking AON L2 bit 0
+(`MASK_CLEAR` `0xf0419c0c` = `1`) and enabling GIC ID 98 gives one interrupt
+per IR frame. The handler reads DATA0, then writes STATUS with bit 0
+cleared, which drops the L2 bit.
+
+Timing on bare metal, from the CPU counter in the handler:
+
+| What | Seen |
+|---|---|
+| first repeat frame after a key's first frame | 53 ms |
+| repeats while held | every 108–109 ms |
+| a quick tap | the first frame and one repeat (STATUS bit 6 set only on the first) |
+
+Codes seen: `e31c0820` (1), `e21d0820` (2), `ea150820` (OK).
+
 ## Open questions
 
 Not tested yet:
 
 - kbd2 and kbd3: not enabled; it isn't known whether anything is wired to
   them.
-- The IR interrupt through the GIC (unmask L2 bit 0, then the AON L2 SPI).
 - The data filters (`+0x20`–`+0x34`) and FILTER1.
 - Other protocols (Nexus has timing tables for RC5, Sony, RC6 and others).
 - Whether reading CIR_DATA returns the parameter value: it was read only
   before the NEC values were written and after the restore, never in between.
-- Repeat timing on bare metal (no timestamps were taken there; under
-  Android, see above).

@@ -63,7 +63,7 @@ Bank 0 (28 pins). Bank 1 at `0xf0419ca0`. Main GPIO (4 banks) at `0xf040a500`.
 | `0xf0419c80` | ODEN | 1 = open-drain output. BOLT: `00060000` |
 | `0xf0419c84` | **DATA** | read: pin levels. Write: output values. BOLT: `001340b8` |
 | `0xf0419c88` | IODIR | 1 = input, 0 = output. BOLT: `0ff9ffff` |
-| `0xf0419c8c` / `90` / `98` | EC / EI / LEVEL | interrupt trigger type (not tested) |
+| `0xf0419c8c` / `90` / `98` | EC / EI / LEVEL | interrupt trigger type. BOLT: all `0` (one edge). EI bit 14 = SW1 on both edges (tested) |
 | `0xf0419c94` | MASK | interrupt enable (bit 14 set for SW1) |
 | `0xf0419c9c` | STAT | changes latched even while masked; **write 1 to clear** |
 
