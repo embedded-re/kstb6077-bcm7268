@@ -60,6 +60,7 @@ mmc dump lba                   hex dump of one sector
 mmc read lba count [addr]      sectors to RAM (default 0x02000000)
 mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
+irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
 led green|red|orange|blue|off  front LEDs
 wdt [seconds|off]              watchdog
 history                        reset    software reset back to BOLT
@@ -94,6 +95,49 @@ history and Tab completion of commands and names.
   `!` to the command to do it anyway: `w! …`, `md! …`.
 - The watchdog is not armed by the monitor. `wdt 60` arms it, `wdt off`
   stops it.
+
+## Interrupts (`irq`, [`irq.c`](irq.c))
+
+Interrupts at EL2 through the GIC-400, one step at a time (tested
+2026-10-15, details in [`../docs/hardware/interrupts.md`](../docs/hardware/interrupts.md), "Taking interrupts at
+EL2"). Off at start-up. Everything is switched off again (sources, IMO,
+DAIF.I) before `go` and after a crash, both tested, and before `doom` (same
+call, not tested there).
+
+```
+irq                    GIC, CPU and per-source state: enabled, pending, active, count
+irq on [noimo]         open GICC_PMR, set HCR_EL2.IMO, unmask IRQs (noimo: leave IMO at 0)
+irq off                every source off, IRQs masked, HCR_EL2 restored
+irq timer ms|off       EL2 physical timer, ID 26 (ms in decimal)
+irq uart on|off        UART0 receive, ID 102: the console reads a ring buffer, the CPU waits in WFI
+irq sw1 on|off         SW1 on both edges: AON GPIO 14 -> AON L2 bit 3 -> ID 98
+irq ir on|off          remote: kbd1 -> AON L2 bit 0 -> ID 98
+irq watch              print SW1 and IR events, and the timer count once a second
+irq clear              zero the counters
+```
+
+A source can be enabled before `irq on`: it then shows as pending in the GIC
+but isn't taken. `irq uart on` is refused until the timer has been taken
+(otherwise WFI might never wake), and the console falls back to polling if
+a received byte waits 100 ms without an interrupt.
+
+The IRQ vector ([`start.S`](start.S)) saves x0-x18, x29, x30, ELR and SPSR and calls
+`irq_handler`; `irq.c` is built with `-mgeneral-regs-only` so the handler
+never touches FP/SIMD registers.
+
+## Trying a new build without flashing (`mon-ram.bin`)
+
+`make -C mon` also builds `mon/build/mon-ram.bin`: [`reload.S`](reload.S), a copy stub,
+followed by `mon.bin`. From a running kmon:
+
+```
+tools/kstb-send --go mon/build/mon-ram.bin
+```
+
+`go` turns the MMU off and runs the stub at `0x01000000`. It copies the new
+monitor over the old one at `0x00100000` and starts it fresh (tested: 71 KB
+in about 6 s). The Doom image at `0x00140000` stays where it is, and nothing
+is written to flash: a reset brings back the stored build.
 
 ## eMMC (`mmc`, [`mmc.c`](mmc.c))
 

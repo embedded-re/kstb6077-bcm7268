@@ -10,6 +10,7 @@
 // vectors, FP/SIMD, then the same identity map as doom/start.S, and call
 // mon_main(how, status): how = 0 start, 1 program returned, 2 exception.
 //
+// IRQs (only after `irq on`, irq.c) go to irq_entry and return.
 // Exceptions: while `fault_armed` is set (safe_read / safe_write), a data
 // abort is recorded in `fault_esr` and the faulting load/store is skipped,
 // as in docs/evidence/periph/periph_probe.s (all aborts seen on this board
@@ -34,6 +35,7 @@ exc_restart:
 common:
         msr     daifset, #0xf
         bl      mmu_off
+        msr     spsel, #1                       // use SP_EL2, the stack exceptions switch to
         ldr     x0, =stack_top
         mov     sp, x0
         adr     x0, vectors
@@ -258,6 +260,11 @@ safe_write:
         b       exc_common
         .endm
 
+        .macro  vec_irq
+        .balign 128
+        b       irq_entry
+        .endm
+
         .balign 2048
 vectors:
         vec 0                                   // current EL, SP_EL0: sync
@@ -265,7 +272,7 @@ vectors:
         vec 2                                   //   FIQ
         vec 3                                   //   SError
         vec 0                                   // current EL, SP_ELx: sync
-        vec 1
+        vec_irq                                 //   IRQ: irq.c (the monitor runs here)
         vec 2
         vec 3
         vec 0                                   // lower EL, AArch64
@@ -294,6 +301,44 @@ exc_common:
         msr     elr_el2, x2
 2:      ldp     x1, x2, [x0]
         mrs     x0, tpidr_el2
+        eret
+
+// IRQ at EL2 on SP_EL2: save what a C call may clobber (x0-x18, x29, x30,
+// ELR, SPSR) on the interrupted code's stack, call irq_handler (irq.c, no
+// FP/SIMD), return to where it was. It doesn't touch exc_scratch, so an IRQ
+// during safe_read/safe_write is harmless.
+irq_entry:
+        sub     sp, sp, #192
+        stp     x0, x1, [sp, #0]
+        stp     x2, x3, [sp, #16]
+        stp     x4, x5, [sp, #32]
+        stp     x6, x7, [sp, #48]
+        stp     x8, x9, [sp, #64]
+        stp     x10, x11, [sp, #80]
+        stp     x12, x13, [sp, #96]
+        stp     x14, x15, [sp, #112]
+        stp     x16, x17, [sp, #128]
+        stp     x18, x29, [sp, #144]
+        mrs     x0, elr_el2
+        stp     x30, x0, [sp, #160]
+        mrs     x0, spsr_el2
+        str     x0, [sp, #176]
+        bl      irq_handler
+        ldr     x0, [sp, #176]
+        msr     spsr_el2, x0
+        ldp     x30, x0, [sp, #160]
+        msr     elr_el2, x0
+        ldp     x18, x29, [sp, #144]
+        ldp     x16, x17, [sp, #128]
+        ldp     x14, x15, [sp, #112]
+        ldp     x12, x13, [sp, #96]
+        ldp     x10, x11, [sp, #80]
+        ldp     x8, x9, [sp, #64]
+        ldp     x6, x7, [sp, #48]
+        ldp     x4, x5, [sp, #32]
+        ldp     x2, x3, [sp, #16]
+        ldp     x0, x1, [sp, #0]
+        add     sp, sp, #192
         eret
 
 // Unexpected: save everything in exc_frame, restart the monitor.

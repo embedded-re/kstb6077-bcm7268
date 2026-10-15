@@ -31,3 +31,15 @@ int safe_write(uint64_t addr, int size, uint64_t val);
 void run_program(uint64_t entry) __attribute__((noreturn));
 void dcache_flush_all(void);
 extern uint64_t exc_frame[37];
+
+// irq.c
+void irq_cmd(int argc, char **argv, int (*key)(void));
+void irq_off(void);
+int irq_uart_on(void);
+int irq_rx_ready(void);
+int irq_rx_get(void);
+void irq_wait_rx(void);
+int irq_ir_on(void);
+
+// mon.c
+void ir_setup(void);

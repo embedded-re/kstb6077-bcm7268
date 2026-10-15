@@ -23,16 +23,27 @@ void uart_putc(char c);
 
 // ---------------- console ----------------
 
+// With `irq uart on` the receive interrupt (irq.c) fills a ring buffer and the
+// console reads that; otherwise it polls the UART.
 static int uart_ready(void)
 {
-    return read32(UART0 + 0x14) & 1;            // LSR bit 0: byte received
+    if (irq_rx_ready())
+        return 1;
+    return !irq_uart_on() && (read32(UART0 + 0x14) & 1);   // LSR bit 0: byte received
+}
+
+static int uart_read(void)
+{
+    int c = irq_rx_get();
+    return c >= 0 ? c : (int)(read32(UART0) & 0xff);
 }
 
 static int uart_getc(void)
 {
     while (!uart_ready())
-        ;
-    return read32(UART0) & 0xff;
+        if (irq_uart_on())
+            irq_wait_rx();                      // sleep until the next interrupt
+    return uart_read();
 }
 
 // Wait up to ms for a byte; -1 if none came.
@@ -43,7 +54,7 @@ static int key_pressed(void)
 {
     if (!uart_ready())
         return 0;
-    (void)(read32(UART0) & 0xff);
+    (void)uart_read();
     return 1;
 }
 
@@ -70,7 +81,7 @@ static int uart_getc_timeout(uint32_t ms)
     uint64_t end = ticks() + (uint64_t)ms * TICKS_PER_MS;
     do {
         if (uart_ready())
-            return read32(UART0) & 0xff;
+            return uart_read();
     } while (ticks() < end);
     return -1;
 }
@@ -762,6 +773,7 @@ static void cmd_go(struct cmd *c)
     if (arg_num(c, 0, &a) < 0)
         return;
     printf("go %08lx (MMU off, like BOLT's go -64; a program returns by jumping to x2)\n", a);
+    irq_off();
     run_program(a);
 }
 
@@ -817,6 +829,7 @@ static void cmd_doom(struct cmd *c)
     }
     memcpy((void *)PROG_ADDR, bin, img->size);  // a fresh copy every time
     printf("starting Doom (%u bytes); quitting from its menu comes back here\n", img->size);
+    irq_off();
     run_program(PROG_ADDR);
 }
 
@@ -831,9 +844,8 @@ static const uint16_t nec_params[][2] = {
     {25, 0x000}, {26, 0x000}, {27, 0x000},
 };
 
-static void cmd_ir(struct cmd *c)
+void ir_setup(void)
 {
-    (void)c;
     write32(IR_BASE + 0x00, 0);
     write32(IR_BASE + 0x14, read32(IR_BASE + 0x14) | 0x20);
     write32(IR_BASE + 0x14, read32(IR_BASE + 0x14) | 0x10);
@@ -842,6 +854,16 @@ static void cmd_ir(struct cmd *c)
         write32(IR_BASE + 0x18, nec_params[i][0]);
         write32(IR_BASE + 0x1c, nec_params[i][1]);
     }
+}
+
+static void cmd_ir(struct cmd *c)
+{
+    (void)c;
+    if (irq_ir_on()) {
+        printf("the IR interrupt is on (irq ir on): use 'irq watch', or 'irq ir off' first\n");
+        return;
+    }
+    ir_setup();
     printf("IR (kbd1, NEC) on: press remote keys, any serial key stops\n");
     uint64_t t0 = ticks();
     while (!key_pressed()) {
@@ -907,6 +929,11 @@ static void cmd_wdt(struct cmd *c)
     uint32_t left = read32(0xf040a6ac);
     printf("watchdog: %u ticks left (%u.%03u s; a stopped watchdog also shows a count)\n",
            left, left / 27000000, left / 27000 % 1000);
+}
+
+static void cmd_irq(struct cmd *c)
+{
+    irq_cmd(c->argc, c->argv, key_pressed);
 }
 
 static void cmd_reset(struct cmd *c)
@@ -1143,6 +1170,7 @@ static const struct {
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
     { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
+    { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },
     { "led",     cmd_led,     "green|red|orange|blue|off",  "front LEDs" },
     { "wdt",     cmd_wdt,     "[seconds|off]",              "watchdog" },
     { "history", cmd_history, "",                           "command history" },
@@ -1153,7 +1181,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq",
     "led", "wdt", "history", "reset", NULL,
 };
 
@@ -1229,6 +1257,7 @@ void mon_main(int how, long status)
     static char line[LINE];
     struct cmd c;
 
+    irq_off();                                  // a crash or a program may have left them on
     if (how == 0)
         printf("\nkmon: KSTB6077 monitor, EL2. 'help' lists the commands.\n");
     else if (how == 1)
