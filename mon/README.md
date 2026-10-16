@@ -203,9 +203,18 @@ Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
 ## Network (`net`, `ping`, `tftp`, [`net.c`](net.c))
 
 The Ethernet port, with kmon's own GENET driver (polled; details and tests
-in [`../docs/hardware/ethernet.md`](../docs/hardware/ethernet.md)). Off at start; `net dhcp`,
-`net ip`, `ping` and `tftp` start it. It is stopped before `go`, `run` and
-`doom`, so its DMA doesn't write into a program's memory. On the PC,
+in [`../docs/hardware/ethernet.md`](../docs/hardware/ethernet.md)). At start-up kmon brings it up and runs
+DHCP (2 tries, at most ~8 s) when the PHY reports a link; without a cable it
+prints `net: no link; skipped DHCP` and `net dhcp` works later. The boot is
+confirmed to kboot before that, so DHCP doesn't count against kboot's
+watchdog. It is stopped before `go`, `run` and `doom`, so its DMA doesn't
+write into a program's memory, and started again with the same address
+when the program returns or crashes.
+
+Tested 2026-10-16: after a reset, `dhcp: 192.168.1.33 …` and the PC pings
+the box with nothing typed; after a program that returned (`status 7`) and
+after a crash (`call 0`), the PC still pinged it (2 of 2 each). Not tested:
+booting without a cable. On the PC,
 [`../tools/tftpd`](../tools/tftpd) serves files and receives `tftp put`.
 
 ```

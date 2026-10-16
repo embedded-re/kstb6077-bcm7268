@@ -1926,12 +1926,15 @@ void mon_main(int how, long status)
     }
     if (how == 0)
         printf("\nkmon: KSTB6077 monitor, EL2. 'help' lists the commands.\n");
-    if (how == 0)
-        boot_confirm();
     else if (how == 1)
         printf("\nkmon: program returned, status %ld\n", status);
     else
         show_exception();
+    if (how == 0) {
+        boot_confirm();
+        net_boot();
+    } else
+        net_resume();                           // a program returned or crashed: back on the network
 
     for (;;) {
         read_line("kmon> ", line);

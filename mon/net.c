@@ -648,6 +648,31 @@ static int dhcp_parse(uint32_t xid, uint32_t *yi, uint32_t *server, uint32_t *ma
 
 int net_dhcp(void)
 {
+    return net_dhcp_tries(4);
+}
+
+// At start-up: DHCP if the cable is in, else nothing (a later `net dhcp` works).
+void net_boot(void)
+{
+    if (net_up())
+        return;
+    if (!link_up()) {
+        printf("net: no link; skipped DHCP ('net dhcp' later)\n");
+        return;
+    }
+    net_dhcp_tries(2);
+}
+
+// After a program returned or crashed: the MAC was stopped for it; start
+// it again with the address it had.
+void net_resume(void)
+{
+    if (my_ip)
+        net_up();
+}
+
+int net_dhcp_tries(int tries)
+{
     static const uint8_t bcast[6] = { 255, 255, 255, 255, 255, 255 };
     static uint8_t b[400];
     uint32_t xid = (uint32_t)now() ^ 0x4b535442, yi = 0, server = 0, mask = 0, gw = 0, dn = 0;
@@ -655,7 +680,7 @@ int net_dhcp(void)
         return -1;
     my_ip = 0;
     udp_port = 68;
-    for (int attempt = 0; attempt < 4; attempt++) {
+    for (int attempt = 0; attempt < tries; attempt++) {
         udp_have = 0;
         int n = dhcp_packet(b, xid, 1, 0, 0);
         udp_send(0xffffffff, 68, 67, b, n, bcast);

@@ -6,6 +6,9 @@ void net_stop(void);                    // DMA and MAC off (before go/doom)
 void net_poll(void);                    // handle received frames (ARP, ping replies)
 void net_status(void);
 int  net_dhcp(void);                    // 0 = got an address
+int  net_dhcp_tries(int tries);         // each try waits up to 2 + 2 s
+void net_boot(void);                    // at start: DHCP if the link is up
+void net_resume(void);                  // after a program: MAC back on, same address
 void net_set_ip(uint32_t ip, uint32_t mask, uint32_t gw);
 int  net_ping(uint32_t ip, int count);
 int  net_mdio_read(int reg);

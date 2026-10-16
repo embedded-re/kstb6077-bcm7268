@@ -96,6 +96,13 @@ If the build is bad, the box comes back on golden after 3 watchdog resets
 (about 2 minutes). Once a build is good, `slot! golden` makes it the new
 fallback.
 
+## Current images
+
+Since 2026-10-16 golden and slot A both hold the network build (`kmon-net-dhcp`,
+844,800 bytes, CRC `49c3109b`): if slot A fails, the box comes back on
+golden and is still reachable over the network. Tested: slot A removed,
+reset → `golden (no valid image in slot A)`, CRC OK, DHCP, ping from the PC.
+
 ## Tests
 
 | Test | Result |
