@@ -164,7 +164,8 @@ OHCI1, the USB-A port's low/full-speed controller, polled (tested
 
 ```
 usb            controller and port state
-usb init       reset the controller and the port, enumerate the device, print its
+usb init       reset every USB host controller (USB_PM, not BOLT's state) and the port,
+               enumerate the device, print its
                descriptors; a boot-protocol keyboard is then polled
 usb kbd        print keyboard reports and the keys (US layout); any serial key stops
 usb stop       controller back to reset (also done before go/doom)

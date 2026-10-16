@@ -5,7 +5,8 @@
 // transfer descriptors (TD) in RAM by DMA. They live in a non-cacheable 2 MB
 // block (DMA_BASE, start.S), so no cache maintenance is needed.
 //
-//   usb_init()  controller reset, port power and reset, then enumeration:
+//   usb_init()  USB clocks on, every USB host controller reset by the
+//               control block (not BOLT's state), port power and reset, then enumeration:
 //               GET_DESCRIPTOR, SET_ADDRESS, configuration, boot protocol
 //   usb_kbd_poll()  one 8-byte report from the interrupt endpoint, if any
 //
@@ -20,6 +21,17 @@
 
 int usb_verbose = 1;                    // 0: print nothing (kmon starts it quietly)
 #define say(...) do { if (usb_verbose) printf(__VA_ARGS__); } while (0)
+
+// USB control block (docs/hardware/usb.md, "Our own USB start"). BOLT never
+// writes it; USB_PM bits 20/21/22 hold EHCI0+OHCI0 / EHCI1+OHCI1 / xHCI in
+// reset while 0 (bit 23, the device controller, stays in reset).
+#define USB_PM          0xf0b00234
+#define USB_PM_HC_RESETB 0x00700000
+// USB 2.0 clock gates (DTB sw_usb20): usb0_freerun (bit 0, 1 = off),
+// usb0_gisb (bit 0), sys_108/54/scb_usb20 (bits 0-2)
+#define CLK_USB_FREERUN 0xf04e049c
+#define CLK_USB_GISB    0xf04e04a4
+#define CLK_USB20       0xf04e04ac
 
 #define OHCI            0xf0b00600
 #define HC_CONTROL      (OHCI + 0x04)
@@ -176,6 +188,16 @@ static int get_descriptor(int addr, int type, int len, void *buf)
 
 static void hc_start(void)
 {
+    W(CLK_USB_FREERUN) &= ~1u;
+    W(CLK_USB_GISB) |= 1;
+    W(CLK_USB20) |= 7;
+    // All host controllers to their hardware reset state; nothing may read
+    // them while they are held (a read then hangs instead of aborting).
+    uint32_t pm = W(USB_PM);
+    W(USB_PM) = pm & ~USB_PM_HC_RESETB;
+    wait_ms(1);
+    W(USB_PM) = pm | USB_PM_HC_RESETB;
+    wait_ms(1);
     W(HC_CMDSTATUS) = 1;                        // HCR: controller reset
     wait_ms(1);
     memset((void *)DMA_BASE, 0, 0x1000);

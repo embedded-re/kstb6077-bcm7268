@@ -151,7 +151,9 @@ and put the bit back. Register names in quotes are from the Linux drivers
   configuration header. Bit 0 (Linux: PERST, the reset line to the card) was
   left set; the Wi-Fi chip's power (AON GPIO 21/26) wasn't touched.
 - **USB device controller (BDC)**: bit 23 of `0xf0b00234` holds it in reset
-  (0 = reset). Bits 20–22 (USB 2.0 and xHCI resets, Linux) are already 1.
+  (0 = reset). Bits 20–22 are already 1: they hold EHCI0+OHCI0, EHCI1+OHCI1
+  and the xHCI in reset when 0 (tested 2026-10-16, [`usb.md`](usb.md) "Our own USB
+  start").
   `0xf0b00290` ("USB_DEVICE_CTL1", port mode in bits 1:0) reads `00050500`:
   port mode 0 = host in Linux's naming.
 - Putting each bit back made the block abort again. The probe kept running
