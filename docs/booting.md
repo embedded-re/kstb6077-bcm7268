@@ -262,8 +262,25 @@ itself (`STARTUP`, below); Ctrl-C (above) still stops at `BOLT>`.
 
 ## Autostart of kmon (modified box)
 
-Since 2026-10-15 `STARTUP` runs **kboot**, which starts the golden kmon or
-the update in slot A and falls back to golden on its own
+Since 2026-10-16 `STARTUP` starts **kboot at EL3** from `flash0.DATA`, so
+kboot's own EL3 monitor replaces smm64 ("Our own EL3" above). If that file
+can't be loaded, the next two commands start kboot at EL2 from
+`flash0.splash` as before:
+
+```
+setenv -p STARTUP "boot -64 -el3 -raw -fatfs -addr=0x03000000 flash0.DATA:kboot.bin; load -raw -rawfs -offset=0x80000 -addr=0x03000000 -max=0x10000 flash0.splash; go -64 0x03000000"
+```
+
+Tested: a software reset → `boot -64 -el3` → kboot (EL3) → slot A → kmon,
+and kmon's SMC identifier call answered `4b423301` (kboot's monitor).
+With `kboot.bin` deleted from `flash0.DATA`: `Could not load kboot.bin:
+File not found`, then the EL2 path started kboot and kmon as before; after
+`slot! loader` wrote the file again, the next reset took the EL3 path.
+Not covered by the fallback: a `kboot.bin` that loads but is damaged would
+run at EL3 and could hang; `slot! loader` reads the file back to prevent
+that, and Ctrl-C at boot still reaches `BOLT>`.
+
+From 2026-10-15 to 2026-10-16 `STARTUP` ran kboot at EL2 only
 ([`../kboot/README.md`](../kboot/README.md)):
 
 ```

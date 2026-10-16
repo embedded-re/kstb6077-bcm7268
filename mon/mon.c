@@ -889,6 +889,8 @@ static void cmd_send(struct cmd *c)
 
 #define SLOT_SCRATCH 0x05000000             // read-back buffer for the checks
 
+static int fs_ready(void);
+
 static const char *const why_names[] = {
     "slot A", "button held", "no valid image in slot A", "slot A failed its check",
     "slot A did not confirm 3 times",
@@ -1046,7 +1048,7 @@ static void cmd_slot(struct cmd *c)
         printf("usage: slot                         show the images and the boot state\n"
                "       slot a [addr len] [name]     write slot A (default: the last load/fget)\n"
                "       slot! golden [addr len] [name]  write the golden image\n"
-               "       slot! loader [addr len]      write kboot.bin\n"
+               "       slot! loader [addr len]      write kboot.bin (splash +80000 and flash0.DATA:kboot.bin)\n"
                "       slot retry | clear           try slot A again | remove slot A\n");
         return;
     }
@@ -1081,8 +1083,17 @@ static void cmd_slot(struct cmd *c)
             printf("slot: write failed: %s\n", mmc_strerror(r));
         else if (!slot_check(LOADER_OFF, len, want, &got))
             printf("slot: loader read-back CRC %08x, expected %08x\n", got, want);
-        else
-            printf("slot: loader = %lu bytes, CRC %08x, read back OK\n", len, want);
+        else {
+            // the same file on flash0.DATA, for STARTUP's `boot -64 -el3 -fatfs`
+            uint32_t got_size = 0;
+            printf("slot: loader = %lu bytes at splash +%x, CRC %08x, read back OK\n", len, LOADER_OFF, want);
+            if (!fs_ready() || fat_write("kboot.bin", (const void *)a, len) ||
+                fat_read("kboot.bin", (void *)SLOT_SCRATCH, LOADER_MAX, &got_size) || got_size != len ||
+                crc32((const uint8_t *)SLOT_SCRATCH, len) != want)
+                printf("slot: flash0.DATA:kboot.bin NOT written correctly; fix it before the next boot\n");
+            else
+                printf("slot: flash0.DATA:kboot.bin = %lu bytes, CRC %08x, read back OK\n", len, want);
+        }
     }
 }
 

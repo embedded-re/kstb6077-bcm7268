@@ -17,8 +17,12 @@ replaces BOLT's EL3 monitor (smm64) with its own ([`el3.S`](el3.S)), then
 drops to EL2 and carries on the same way. Details and tests:
 [`../docs/booting.md`](../docs/booting.md), "Our own EL3". `kboot.bin` is kept in two places:
 `flash0.splash +0x80000` (the `go -64` path) and `flash0.DATA:kboot.bin`
-(the `boot -64 -el3` path, since `boot` has no `-offset`). Write both after
-a change: `slot! loader …` and `fput kboot.bin …`.
+(the `boot -64 -el3` path, since `boot` has no `-offset`). `slot! loader`
+writes both and reads both back (tested).
+
+Current images (2026-10-16): golden seq 13 and slot A seq 12, both
+`kmon-el3` (844,800 bytes, CRC `11fe7ab3`); `kboot.bin` 18,440 bytes, CRC
+`4bc30a6a`, in both places.
 
 ## Choosing an image
 
@@ -62,11 +66,18 @@ tested.
 
 ## Autostart
 
+Since 2026-10-16, EL3 first, EL2 if `flash0.DATA:kboot.bin` can't be loaded
+(tested both ways, [`../docs/booting.md`](../docs/booting.md)):
+
 ```
-setenv -p STARTUP "load -raw -rawfs -offset=0x80000 -addr=0x03000000 -max=0x10000 flash0.splash; go -64 0x03000000"
+setenv -p STARTUP "boot -64 -el3 -raw -fatfs -addr=0x03000000 flash0.DATA:kboot.bin; load -raw -rawfs -offset=0x80000 -addr=0x03000000 -max=0x10000 flash0.splash; go -64 0x03000000"
 ```
 
-Set on 2026-10-15. Back to starting golden directly, without kboot:
+EL2 only (2026-10-15 to 16):
+
+```
+setenv -p STARTUP "load -raw -rawfs -offset=0x80000 -addr=0x03000000 -max=0x10000 flash0.splash; go -64 0x03000000"
+``` Back to starting golden directly, without kboot:
 
 ```
 setenv -p STARTUP "load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0000 flash0.splash; go -64 0x00100000"
@@ -78,7 +89,8 @@ setenv -p STARTUP "load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0
 kmon> slot                                  show loader, golden, slot A (each CRC-checked), boot state
 kmon> slot a 0x02000000 #844800 my-build    write slot A from RAM (default: the last load/fget); tries = 0
 kmon> slot! golden 0x02000000 #844800 name  write golden (needs !)
-kmon> slot! loader 0x04000000 #12104        write kboot.bin (needs !)
+kmon> slot! loader 0x04000000 #18440        write kboot.bin to splash +0x80000 and flash0.DATA:kboot.bin,
+                                            each read back and CRC-checked (needs !)
 kmon> slot retry                            tries = 0: kboot tries slot A again
 kmon> slot clear                            remove slot A's header: kboot starts golden
 ```
