@@ -1,9 +1,16 @@
-// start.S - kboot entry (BOLT `go -64`: EL2, MMU and caches off).
+// start.S - kboot entry: BOLT `go -64` (EL2) or `boot -64 -el3` (EL3, el3.S
+// sets up EL3 and comes back here at EL2). MMU and caches off.
 
         .section .text.start, "ax"
-        .global _start, jump_to
+        .global _start, el2_entry, jump_to
 _start:
         msr     daifset, #0xf
+        mrs     x0, CurrentEL
+        cmp     x0, #0xc
+        b.eq    el3_entry
+        mov     x0, #0                          // x0 = 0: started at EL2
+el2_entry:
+        mov     x19, x0
         ldr     x0, =__bss_start
         ldr     x1, =__bss_end
 1:      cmp     x0, x1
@@ -12,6 +19,7 @@ _start:
         b       1b
 2:      ldr     x0, =stack_top
         mov     sp, x0
+        mov     x0, x19
         bl      kboot_main
 3:      wfe
         b       3b

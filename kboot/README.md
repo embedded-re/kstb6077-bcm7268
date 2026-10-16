@@ -12,6 +12,14 @@ which kmon uses too.
 
 Tested on the modified box on 2026-10-15/16 unless marked otherwise.
 
+**EL3:** started with `boot -64 -el3` instead of `go -64`, kboot first
+replaces BOLT's EL3 monitor (smm64) with its own ([`el3.S`](el3.S)), then
+drops to EL2 and carries on the same way. Details and tests:
+[`../docs/booting.md`](../docs/booting.md), "Our own EL3". `kboot.bin` is kept in two places:
+`flash0.splash +0x80000` (the `go -64` path) and `flash0.DATA:kboot.bin`
+(the `boot -64 -el3` path, since `boot` has no `-offset`). Write both after
+a change: `slot! loader …` and `fput kboot.bin …`.
+
 ## Choosing an image
 
 | Condition | Starts | Watchdog |

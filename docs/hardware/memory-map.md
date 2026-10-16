@@ -48,7 +48,7 @@ Probes and outputs: [`../evidence/ram/`](../evidence/ram/). All at EL2 on the mo
 | `0x00100000–0x00ffffff` | 15 MB | **free**, tested |
 | `0x01000000–0x011fffff` | 2 MB | your program (loaded at `0x01000000` by `kstb-run`) |
 | `0x01200000–0x063fffff` | 82 MB | **free**, tested |
-| `0x06400000–0x0640ffff` | 64 KB | **PSCI monitor: keep** (needed for `smc`, e.g. starting other cores) |
+| `0x06400000–0x0640ffff` | 64 KB | **PSCI monitor: keep** (needed for `smc`, e.g. starting other cores). When kboot was started at EL3, its own EL3 monitor is here instead ([`../booting.md`](../booting.md), "Our own EL3") |
 | `0x06500000–0x06efffff` | 10 MB | **free**, tested |
 | `0x06f00000–0x091fffff` | 35 MB | BOLT, **free after `go`**: overwritten completely (page table, code, heap, stack, the DTB at `0x07613000`) and PSCI still answered |
 | `0x09200000–0x7d9fffff` | 1,864 MB | **free**, tested (includes the second framebuffer `0x7d600000`) |

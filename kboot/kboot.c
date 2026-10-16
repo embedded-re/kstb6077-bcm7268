@@ -191,10 +191,11 @@ static const char *const why_text[] = {
     [WHY_A_FAILED] = "slot A did not confirm 3 times",
 };
 
-void kboot_main(void)
+void kboot_main(int via_el3)
 {
     uint32_t tries = 0, how = 0;
-    puts_("\nkboot: kmon loader\n");
+    puts_(via_el3 ? "\nkboot: kmon loader (EL3: own monitor at 06400000, smm64 replaced; now at EL2)\n"
+                  : "\nkboot: kmon loader\n");
     led(1, 1);                                  // orange while loading
     if (!bootst_get(&tries, &how))
         tries = 0;

@@ -8,7 +8,7 @@ CC      = clang
 CFLAGS  = --target=aarch64-none-elf -mcpu=cortex-a53 -O2 -g -Wall \
           -ffreestanding -nostdlibinc -I../libc/include -fno-stack-protector -fno-pic \
           -mgeneral-regs-only -mstrict-align -fno-builtin
-OBJS    = $(B)/start.o $(B)/kboot.o $(B)/mmc.o
+OBJS    = $(B)/start.o $(B)/el3.o $(B)/kboot.o $(B)/mmc.o
 
 $(B)/kboot.bin: $(B)/kboot.elf
 	llvm-objcopy -O binary $< $@
@@ -18,6 +18,10 @@ $(B)/kboot.elf: $(OBJS) link.ld
 	ld.lld -T link.ld $(OBJS) -o $@
 
 $(B)/start.o: start.S
+	@mkdir -p $(B)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(B)/el3.o: el3.S
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -c $< -o $@
 

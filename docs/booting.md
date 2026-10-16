@@ -14,6 +14,34 @@ boot ROM → secure first-stage loaders (BFW v4.2.5, BBL v3.1.1; AVS and DDR set
   → BOLT> prompt
 ```
 
+### Secure boot is on (boot log, every power-on)
+
+The secure stages print their fuse reads before BOLT's banner:
+
+```
+MemsysFW: OTP Decrypt 0x00000000 … OTP Secure Boot 0x00000001
+Memsys verify key 2 ok
+Verify/Decrypt Memsys OK!
+Sdram Scramble OTP = 0x00000001
+BFW key3 OK, BFW load OK
+BFW v4.2.5
+OTP Sec Boot 0x00000001
+SSBL verify key 1 OK
+Verify SSBL OK!                 ← SSBL = BOLT, checked before it runs
+```
+
+So the boot ROM's chain checks BOLT's signature, and DRAM scrambling is on.
+A changed or unsigned BOLT in the boot partition would not run: BOLT is the
+first code that can't be replaced, and everything after it is ours (kboot,
+kmon, and since kboot's EL3 entry, the EL3 monitor too).
+
+The stock firmware archive has a file `otp_result_file` whose lines read
+`0-DataSection_Read`, `0-PublicKey0Index`, `0-MarketId`, `0-DramScramble`,
+`0-Enable_Secure_Boot`, `0-AsymmetricCrLockEnable`. Its README reads that
+as "Secure Boot: DISABLED". The boot log above contradicts that; the file
+looks like a list of factory provisioning steps, each with result 0
+(inferred, not tested).
+
 BOLT's environment changes (`setenv`) are lost on reboot unless saved with
 `-p`, which writes NVRAM.
 
@@ -169,6 +197,50 @@ Consequences:
   At EL2 any exception jumps to a garbage address. At EL3 it would enter
   BOLT's PSCI monitor code.
 - There is no stack yet: set `sp` before calling code that pushes.
+
+## Our own EL3 (kboot, tested 2026-10-16)
+
+`boot -64 -el3` starts a program at EL3 through smm64 (`PSCI: Secure
+monitor entry @ …`). kboot ([`../kboot/README.md`](../kboot/README.md)) started this way
+replaces smm64: it copies its own small EL3 monitor to smm64's region
+`0x06400000`, points VBAR_EL3 at it, sets up EL3 and EL2 as smm64 does for
+`go -64`, and drops to EL2. Everything after that runs as before.
+
+What smm64 does before it starts an AArch64 program at EL2, read from its
+code (64 KB at `0x06400000`, copied with kmon `tftp put`, disassembled;
+addresses are smm64's) and repeated by kboot's [`el3.S`](../kboot/el3.S):
+
+| Where in smm64 | Register | Value |
+|---|---|---|
+| `0x064028b0` (core set-up) | ACTLR_EL3, ACTLR_EL2, ACTLR_EL1 | bit 1 set (lower ELs may access CPUECTLR) |
+| | CPUECTLR_EL1 (`S3_1_C15_C2_1`) | bit 6 SMPEN set |
+| `0x06400c98` | CNTFRQ_EL0 / CNTVOFF_EL2 | from `0xf0412020` / 0 |
+| `0x06402b10` (GIC) | GICD_CTLR (core 0), IGROUPR0–7, GICC_CTLR, GICC_PMR | `3`, all `ffffffff` (group 1), `3`, `0x80`; base from CBAR |
+| `0x0640251c` | SCR_EL3 | `0x531`: NS, HCE, RW (lower ELs AArch64) |
+| `0x064026f0` | CPACR_EL1, HCR_EL2, SCTLR_EL2 | `0x300000`, `0x80000000`, `30c50830` |
+| | CPTR_EL2, CPTR_EL3, HSTR_EL2, MDCR_EL2, MDSCR_EL1 | `& 7feffbff`, `0`, `0`, `0x1f`, `0` |
+| `0x064024a4` | CNTHCTL_EL2; CNTHP/CNTP/CNTV_CTL; VPIDR/VMPIDR_EL2 | `\|= 3`; enable 1, mask 0; = MIDR/MPIDR |
+| | SPSR_EL3, ELR_EL3 | `0x3c9` (EL2h, interrupts masked), the program's entry |
+
+kboot's monitor answers SMC from EL2: PSCI_VERSION → `2`, SYSTEM_RESET →
+software reset, `0x8600ff00` → `4b423301` ('KB3', to tell it from smm64,
+which answers `ffffffff`), anything else → `-1` (not supported). **CPU_ON is
+not implemented**: on the EL3 path cores 1–3 can't be started yet
+([`hardware/cpu-cores.md`](hardware/cpu-cores.md) uses smm64's).
+
+| Test | Result |
+|---|---|
+| `boot -64 -el3 -raw -tftp -addr=0x03000000 <PC>:kboot.bin` | `kboot: kmon loader (EL3: own monitor …)`, slot A, kmon confirmed, DHCP |
+| `boot -64 -el3 -raw -fatfs -addr=0x03000000 flash0.DATA:kboot.bin` (no network in BOLT) | the same |
+| SMC from kmon (`call` of `smc #0; ret`) | `0x8600ff00` → `4b423301`; PSCI_VERSION → `2`; CPU_ON → `-1`. On the smm64 path: `2` and `ffffffff` |
+| EL2 timer interrupt (kmon `irq timer 10`) | 412 interrupts in ~4 s |
+| SYSTEM_RESET by SMC | software reset (`RR:00000200`), the box came back by itself |
+| kboot through `go -64` (EL2) after the change | unchanged |
+
+BOLT reads files from `flash0.DATA` itself (`load`/`boot -fatfs
+flash0.DATA:file`, tested with a CRC). In a `;` list, BOLT runs the next
+command after one fails (tested: `File not found`, then the next command
+ran), so a STARTUP can try the EL3 path and fall back to the EL2 one.
 
 ## Safety net for experiments
 
