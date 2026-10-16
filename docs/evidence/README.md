@@ -55,6 +55,13 @@ them by folder.
 | `splash0_pixels_0x7db0b600.txt` | the RAM just before and at the start of the framebuffer |
 | `make_test_bmp.py` | generates the 1920 × 1080 test BMP used with `load -splash` |
 
+## `el3/`
+
+| File | What it is | Used in |
+|---|---|---|
+| `el3_read_probe.s`, `el3_read_probe_el3_output.txt`, `el3_read_probe_el2_output.txt` | system registers and single words (EL2 abort holes, OTP, GIC), the same binary at EL3 and EL2 | [What EL3 sees](../hardware/el3.md) |
+| `el3_dump_probe.s`, `el3_dump_probe_el3_output{,_2}.txt`, `el3_dump_probe_el2_output{,_2}.txt` | every word of the GIC distributor, BSP, memory controller and DTU, two runs at each level | [What EL3 sees](../hardware/el3.md) |
+
 ## `gpt/`
 
 The modified box's primary GPT, before and after the `splash` partition was

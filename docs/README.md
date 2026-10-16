@@ -30,6 +30,7 @@ explains the conventions used in every chapter.
 | Chapter | Block |
 |---|---|
 | [CPU cores](hardware/cpu-cores.md) | 4 × Brahma-B53; starting cores 1–3 with PSCI |
+| [What EL3 sees](hardware/el3.md) | EL3 vs EL2 reads of the same registers: only the GIC and the CPU's own registers differ |
 | [Interrupts](hardware/interrupts.md) | GIC-400, Broadcom L2 controllers, every interrupt by ID |
 | [System blocks](hardware/system-blocks.md) | temperature, wake timer, watchdog, chip ID, software reset, reset reason, straps, OTP, AON SRAM, generic timer |
 | [GPIO](hardware/gpio.md) | LEDs, buttons, pin mux |
