@@ -20,6 +20,8 @@
 #define PROG_ADDR   0x01000000      // where programs run (doom.bin, kstb-run/build-c programs)
 #define VIDEO_LISTS 0x7d9f8000      // our RDC display lists (video.c), 32 KB, non-cacheable, after the
 #define VIDEO_LISTS_LEN 0x8000      //   second framebuffer 0x7d600000-0x7d9f47ff
+#define AUDIO_RING  0x7da00000      // our audio ring buffer (audio_hw.c), 0.5 s, non-cacheable; used
+#define AUDIO_RING_LEN 0x2ee00     //   only when BOLT's splash didn't start the audio DMA
 #define WAD_ADDR    0x10000000      // the WAD's KWAD image (loaded by BOLT, or by `doom` itself)
 #define WAD_OFFSET  0x100000        // where it is in flash0.splash (docs/hardware/storage.md)
 #define BUNDLE_OFFSET 0xf00000      // the kmon bundle in flash0.splash

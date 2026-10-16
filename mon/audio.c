@@ -14,6 +14,7 @@
 
 #include "kstb.h"
 #include "audio.h"
+#include "video.h"
 
 #define RB_READ     0xf0ca0800      // ring buffer 0: read pointer (bit 31 flips every lap)
 #define RB_START    0xf0ca0808
@@ -48,24 +49,45 @@ int audio_ready(void)
     return ready;
 }
 
-int audio_init(int quiet)
+void audio_wait_ms(uint32_t ms)
 {
-    uint32_t start = read32(RB_START), end = read32(RB_END);
-    ready = 0;
-    if (start < 0x7d600000 || end >= 0x7e000000 || end <= start) {
-        if (!quiet)
-            printf("audio: ring buffer 0 not set up (%08x-%08x)\n", start, end);
-        return -1;
-    }
-    uint32_t r0 = read32(RB_READ);
-    uint64_t t = ticks() + 27000 * 5;       // 5 ms = 240 frames
+    uint64_t t = ticks() + 27000 * (uint64_t)ms;
     while (ticks() < t)
         ;
-    if (!(read32(AUD_DMA) & 1) || read32(RB_READ) == r0) {
+}
+
+static int dma_running(void)
+{
+    uint32_t start = read32(RB_START), end = read32(RB_END);
+    if (start < 0x7d600000 || end >= 0x7e000000 || end <= start || !(read32(AUD_DMA) & 1))
+        return 0;
+    uint32_t r0 = read32(RB_READ);
+    audio_wait_ms(5);                       // 240 frames
+    return read32(RB_READ) != r0;
+}
+
+// Use the audio DMA BOLT's splash started (pcm0); without it, and with the
+// display running (video.c), start the audio hardware ourselves.
+int audio_init(int quiet)
+{
+    ready = 0;
+    if (!dma_running()) {
+        if (video_running() != 1) {
+            if (!quiet)
+                printf("audio: DMA not running, and no display to send sound to ('video init')\n");
+            return -1;
+        }
+        memset((void *)AUDIO_RING, 0, AUDIO_RING_LEN);
+        audio_hw_start(AUDIO_RING, AUDIO_RING_LEN);
+        if (!dma_running()) {
+            if (!quiet)
+                printf("audio: started the audio hardware, but its DMA doesn't run\n");
+            return -1;
+        }
         if (!quiet)
-            printf("audio: DMA not running (no pcm0 in flash0.splash?)\n");
-        return -1;
+            printf("audio: started the audio hardware ourselves (BOLT's steps 1-10)\n");
     }
+    uint32_t start = read32(RB_START), end = read32(RB_END);
     ring_start = start;
     ring = (volatile uint32_t *)(uintptr_t)start;
     frames = (end + 1 - start) / 8;

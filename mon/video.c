@@ -24,8 +24,8 @@
 
 #define SPLASHDATA  0x07056f30      // in BOLT's RAM image
 #define SD_CHECK    0x07054318      // register table .. end of the last list's words
-#define SD_CHECK_LEN 0x5e30
-#define SD_CRC      0xb675673c      // of SD_CHECK, from the BOLT RAM image of 2026-10-16
+#define SD_CHECK_LEN 0x4c30
+#define SD_CRC      0xb8aa6b9e      // of SD_CHECK, from the BOLT RAM image of 2026-10-16
 
 #define FRAME_CNT   0xf0603484      // counts up once per frame while the display runs
 #define RDC_DESC    0xf0604000      // descriptor d: + d * 0x40
@@ -218,7 +218,9 @@ int video_init(int force)
         if (lists[i].trigger != 0xffffffff && !(lists[i].desc & 1))
             write32(RDC_DESC + lists[i].desc * 0x40 + 0x20, 1);
 
-    r = video_running();
+    uint64_t end = now_us() + 200000;           // the first frames take a moment
+    while ((r = video_running()) == 0 && now_us() < end)
+        ;
     printf("video: display %s\n", r > 0 ? "running (frame counter moves)" : "NOT running");
     return r > 0 ? 0 : -1;
 }

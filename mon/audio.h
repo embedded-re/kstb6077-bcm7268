@@ -10,3 +10,5 @@ void audio_put(int16_t l, int16_t r);   // one stereo frame
 void audio_quiet_tail(void);            // silence behind the written part
 int  audio_beep(uint32_t hz, uint32_t ms, int (*stop)(void));
 int  audio_play_wav(const uint8_t *buf, uint32_t len, int (*stop)(void));
+void audio_wait_ms(uint32_t ms);
+void audio_hw_start(uint32_t buf, uint32_t size);   // audio_hw.c: BOLT's audio start, own ring
