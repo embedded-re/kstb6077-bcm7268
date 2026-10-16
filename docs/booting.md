@@ -241,17 +241,26 @@ addresses are smm64's) and repeated by kboot's [`el3.S`](../kboot/el3.S):
 | `0x064024a4` | CNTHCTL_EL2; CNTHP/CNTP/CNTV_CTL; VPIDR/VMPIDR_EL2 | `\|= 3`; enable 1, mask 0; = MIDR/MPIDR |
 | | SPSR_EL3, ELR_EL3 | `0x3c9` (EL2h, interrupts masked), the program's entry |
 
-kboot's monitor answers SMC from EL2: PSCI_VERSION → `2`, SYSTEM_RESET →
-software reset, `0x8600ff00` → `4b423301` ('KB3', to tell it from smm64,
-which answers `ffffffff`), anything else → `-1` (not supported). **CPU_ON is
-not implemented**: on the EL3 path cores 1–3 can't be started yet
-([`hardware/cpu-cores.md`](hardware/cpu-cores.md) uses smm64's).
+kboot's monitor answers SMC from EL2: PSCI_VERSION → `2`, CPU_ON and
+AFFINITY_INFO (cores 1–3, since 2026-10-16, details and tests in
+[`hardware/cpu-cores.md`](hardware/cpu-cores.md) "Our own CPU_ON"),
+SYSTEM_RESET → software reset, `0x8600ff00` → `4b423302` ('KB3' version 2;
+version 1, without CPU_ON, answered `4b423301`; smm64 answers `ffffffff`),
+anything else → `-1` (not supported). It keeps `x4`–`x30`.
+
+| Where in our monitor | |
+|---|---|
+| `0x06400000` | vectors and code (about 3 KB) |
+| `0x06400914` | `el3_warm`: where cores 1–3 start |
+| `0x0640e000 + 32n` | core *n*: entry, context id, state |
+| below `0x06410000 - 1 KB·n` | core *n*'s EL3 stack |
 
 | Test | Result |
 |---|---|
 | `boot -64 -el3 -raw -tftp -addr=0x03000000 <PC>:kboot.bin` | `kboot: kmon loader (EL3: own monitor …)`, slot A, kmon confirmed, DHCP |
 | `boot -64 -el3 -raw -fatfs -addr=0x03000000 flash0.DATA:kboot.bin` (no network in BOLT) | the same |
 | SMC from kmon (`call` of `smc #0; ret`) | `0x8600ff00` → `4b423301`; PSCI_VERSION → `2`; CPU_ON → `-1`. On the smm64 path: `2` and `ffffffff` |
+| CPU_ON with kboot started by `boot -64 -el3 -raw -tftp` (2026-10-16) | `0x8600ff00` → `4b423302`; cores 1–3 started (`psci_cpu_on_probe.s`), [`hardware/cpu-cores.md`](hardware/cpu-cores.md) |
 | EL2 timer interrupt (kmon `irq timer 10`) | 412 interrupts in ~4 s |
 | SYSTEM_RESET by SMC | software reset (`RR:00000200`), the box came back by itself |
 | kboot through `go -64` (EL2) after the change | unchanged |
