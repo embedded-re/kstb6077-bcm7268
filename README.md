@@ -85,6 +85,7 @@ Details: [`docs/booting.md`](docs/booting.md), [`docs/hardware/memory-map.md`](d
 | [`docs/evidence/`](docs/evidence/README.md) | probe programs, their outputs and raw console captures |
 | [`boot/`](boot/) | device trees and the USB-stick autoboot script |
 | [`assembly/`](assembly/), [`c/`](c/) | a 32-bit UART monitor and a bare-metal C example |
+| [`kboot/`](kboot/README.md) | kboot, the loader BOLT autostarts: picks the golden kmon or the update in slot A, falls back to golden after 3 failed starts |
 | [`mon/`](mon/README.md) | kmon, the monitor (EL2), autostarted by BOLT: HDMI text console and USB keyboard, files on the eMMC, registers by name, abort-safe access, interrupts, serial upload, starts Doom |
 | [`doom/`](doom/README.md) | Doom (doomgeneric) on bare metal: HDMI video, sound effects, USB keyboard, IR remote |
 | [`libc/`](libc/), [`usb/`](usb/), [`fat/`](fat/) | code shared by kmon and Doom: a small C library, the OHCI/HID keyboard driver, the FAT32 driver |

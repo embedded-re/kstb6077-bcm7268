@@ -125,6 +125,7 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`../assembly/`](../assembly/) | 32-bit bare-metal UART monitor (`boot.s`), `build.sh`, built `bootstrap.bin` / `.elf` |
 | [`../c/`](../c/) | bare-metal C example (`main.c`) and its address header (`kstb.h`) |
 | [`../mon/`](../mon/README.md), [`../doom/`](../doom/README.md) | kmon, the monitor, and the Doom port |
+| [`../kboot/`](../kboot/README.md) | kboot, the loader `STARTUP` runs: golden or slot A, watchdog fallback |
 | [`../libc/`](../libc/), [`../usb/`](../usb/), [`../fat/`](../fat/) | shared by kmon and Doom: C library, OHCI1 + HID keyboard driver, FAT32 driver |
 | `stock/` | stock firmware files, downloaded by `tools/fetch-stock` (local only, not in git) |
 

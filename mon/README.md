@@ -27,7 +27,7 @@ or `tools/kstb-mon`, which also has BOLT load the WAD first. Without that,
 |---|---|
 | `tools/kstb-mon` | start from flash (the three lines above) |
 | `tools/kstb-mon --tftp` | start a new build over TFTP, without flashing |
-| `tools/kstb-mon --install` | TFTP the bundle, write it to `flash0.splash +0xf00000`, read it back, start |
+| `tools/kstb-mon --install` | TFTP the bundle, write it to `flash0.splash +0xf00000`, read it back, start. This overwrites the golden image without its kboot header: kboot then warns about a CRC mismatch. Use kmon `slot` instead ([`../kboot/README.md`](../kboot/README.md)) |
 | `tools/kstb-send [--addr A] [--go] file` | send a file to `kmon>` (`load`), optionally start it |
 
 `make -C mon` builds `mon/build/mon.bin` and the bundle `mon/build/kmon.img`
@@ -52,6 +52,7 @@ find[.b|.h|.w|.q] addr len value
 calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
 send addr len                  send RAM over serial (tools/kstb-recv)
+slot [a|golden|loader|retry|clear]  images for kboot: show (CRC-checked), write (../kboot/README.md)
 go [addr]                      start a program like BOLT's go -64 (default: last load)
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
 doom                           start Doom (loads the WAD from eMMC if needed); quitting returns here
@@ -230,6 +231,10 @@ kmon> crc 0x02000000 0x30c4          = 3fffa0ed
 ```
 
 ### Updating the stored bundle from kmon (tested)
+
+Since kboot, use `slot a` (an update to try) or `slot! golden` instead
+([`../kboot/README.md`](../kboot/README.md)): they also write the header kboot checks. The raw
+`mmc write` below leaves golden's header stale.
 
 No BOLT and no TFTP needed: send the new bundle over serial, write it to
 `flash0.splash +0xf00000` (= LBA `#15269888`), check the read-back.

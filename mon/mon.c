@@ -18,6 +18,7 @@
 #include "kstb.h"
 #include "mon.h"
 #include "mmc.h"
+#include "../kboot/slot.h"
 
 void uart_putc(char c);
 extern void (*libc_output_hook)(const char *s, size_t n);
@@ -882,6 +883,207 @@ static void cmd_send(struct cmd *c)
     printf("\nsend: done\n");
 }
 
+// ---------------- boot slots (kboot/README.md, ../kboot/slot.h) ----------------
+
+#define SLOT_SCRATCH 0x05000000             // read-back buffer for the checks
+
+static const char *const why_names[] = {
+    "slot A", "button held", "no valid image in slot A", "slot A failed its check",
+    "slot A did not confirm 3 times",
+};
+
+// Called once at start. When kboot started slot A, this start is good:
+// stop kboot's watchdog and clear the tries.
+static void boot_confirm(void)
+{
+    uint32_t tries, how;
+    if (!bootst_get(&tries, &how) || (how & BOOT_SEEN))
+        return;                             // not started by kboot, or already reported
+    if ((how & 0xff) == BOOT_A) {
+        write32(WDT_CMD, 0xee00);
+        write32(WDT_CMD, 0x00ee);
+        bootst_set(0, how | BOOT_SEEN);
+        printf("boot: slot A, try %u, confirmed; watchdog stopped\n", tries);
+    } else {
+        bootst_set(tries, how | BOOT_SEEN);
+        uint32_t why = how >> 8 & 0xff;
+        printf("boot: golden image (%s)\n", why < 5 ? why_names[why] : "?");
+    }
+}
+
+static uint8_t slot_sec[512] __attribute__((aligned(64)));
+
+// 1 = valid header, 0 = none, -1 = read error
+static int slot_hdr_read(uint32_t hdr, uint32_t max, struct slot_hdr *h)
+{
+    if (mmc_read(SPLASH_LBA + hdr / 512, 1, slot_sec))
+        return -1;
+    memcpy(h, slot_sec, sizeof *h);
+    return h->magic == SLOT_MAGIC && h->version == 1 && h->size && h->size <= max &&
+           h->hdr_crc == crc32((const uint8_t *)h, 60);
+}
+
+// Read an image back and compare its CRC; 1 = matches.
+static int slot_check(uint32_t off, uint32_t size, uint32_t want, uint32_t *got)
+{
+    if (mmc_read(SPLASH_LBA + off / 512, (size + 511) / 512, (void *)SLOT_SCRATCH))
+        return 0;
+    *got = crc32((const uint8_t *)SLOT_SCRATCH, size);
+    return *got == want;
+}
+
+static void slot_show(const char *name, uint32_t hdr, uint32_t off, uint32_t max)
+{
+    struct slot_hdr h;
+    uint32_t got = 0;
+    int r = slot_hdr_read(hdr, max, &h);
+    if (r < 0)
+        printf("  %-7s eMMC read error\n", name);
+    else if (!r)
+        printf("  %-7s no header (room: %u bytes at splash +%x)\n", name, max, off);
+    else {
+        int ok = slot_check(off, h.size, h.crc, &got);
+        printf("  %-7s seq %u, %u bytes at splash +%x, CRC %08x %s \"%.40s\"\n", name, h.seq,
+               h.size, off, h.crc, ok ? "OK" : "MISMATCH", h.name);
+        if (!ok)
+            printf("          read back: CRC %08x\n", got);
+    }
+}
+
+// Write an image: header removed, image written and read back, then the
+// header, so a write cut short leaves no valid header.
+static int slot_write(const char *what, uint32_t hdr, uint32_t off, uint32_t max,
+                      uint64_t a, uint64_t len, const char *name)
+{
+    struct slot_hdr h, o;
+    uint32_t got, seq = 0;
+    if (!len || len > max) {
+        printf("slot: %s holds 1 to %u bytes, not %lu\n", what, max, len);
+        return 0;
+    }
+    if (a + len > 0x7d600000 || !allowed(a, len, DANGER_R, 0))
+        return 0;
+    if (slot_hdr_read(GOLDEN_HDR, GOLDEN_MAX, &o) == 1)
+        seq = o.seq;
+    if (slot_hdr_read(SLOTA_HDR, SLOTA_MAX, &o) == 1 && o.seq > seq)
+        seq = o.seq;
+    memset(&h, 0, sizeof h);
+    h.magic = SLOT_MAGIC;
+    h.version = 1;
+    h.size = len;
+    h.crc = crc32((const uint8_t *)a, len);
+    h.seq = seq + 1;
+    if (name)
+        strncpy(h.name, name, sizeof h.name);
+    h.hdr_crc = crc32((const uint8_t *)&h, 60);
+
+    memset(slot_sec, 0, sizeof slot_sec);
+    int r = mmc_write(SPLASH_LBA + hdr / 512, 1, slot_sec, 0);
+    if (!r)
+        r = mmc_write(SPLASH_LBA + off / 512, (len + 511) / 512, (const void *)a, 0);
+    if (r) {
+        printf("slot: write failed: %s\n", mmc_strerror(r));
+        return 0;
+    }
+    if (!slot_check(off, len, h.crc, &got)) {
+        printf("slot: read-back CRC %08x, expected %08x; header not written\n", got, h.crc);
+        return 0;
+    }
+    memcpy(slot_sec, &h, sizeof h);
+    r = mmc_write(SPLASH_LBA + hdr / 512, 1, slot_sec, 0);
+    if (r || slot_hdr_read(hdr, max, &o) != 1 || o.crc != h.crc) {
+        printf("slot: header write failed\n");
+        return 0;
+    }
+    printf("slot: %s = seq %u, %lu bytes, CRC %08x, read back OK\n", what, h.seq, len, h.crc);
+    return 1;
+}
+
+static void cmd_slot(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    uint64_t a = load_addr, len = load_size;
+    uint32_t tries, how;
+
+    if (!*sub) {
+        if (mmc_init()) {
+            printf("slot: eMMC not ready\n");
+            return;
+        }
+        printf("kmon images in flash0.splash (kboot/README.md):\n");
+        uint32_t w;
+        int lr = mmc_read(SPLASH_LBA + LOADER_OFF / 512, 1, slot_sec);
+        memcpy(&w, slot_sec, 4);
+        printf("  loader  %s at splash +%x\n", lr ? "eMMC read error" : w ? "present" : "empty", LOADER_OFF);
+        slot_show("golden", GOLDEN_HDR, GOLDEN_OFF, GOLDEN_MAX);
+        slot_show("A", SLOTA_HDR, SLOTA_OFF, SLOTA_MAX);
+        if (bootst_get(&tries, &how)) {
+            uint32_t why = how >> 8 & 0xff;
+            printf("  boot state: started %s%s%s, slot A tries %u of %u\n",
+                   (how & 0xff) == BOOT_A ? "slot A" : "golden",
+                   (how & 0xff) == BOOT_A ? "" : ": ",
+                   (how & 0xff) == BOOT_A ? "" : why < 5 ? why_names[why] : "?", tries, BOOT_TRIES_MAX);
+        } else
+            printf("  boot state: none (not started by kboot since power-on)\n");
+        return;
+    }
+    if (!strcmp(sub, "retry") || !strcmp(sub, "clear")) {
+        if (!bootst_get(&tries, &how))
+            how = BOOT_GOLDEN | BOOT_SEEN;
+        bootst_set(0, how);
+        if (!strcmp(sub, "clear")) {
+            memset(slot_sec, 0, sizeof slot_sec);
+            int r = mmc_init() ? MMC_ENOCARD : mmc_write(SPLASH_LBA + SLOTA_HDR / 512, 1, slot_sec, 0);
+            printf(r ? "slot: write failed\n" : "slot A header removed: kboot starts golden\n");
+        } else
+            printf("slot A tries = 0: kboot starts slot A again\n");
+        return;
+    }
+    int isa = !strcmp(sub, "a"), isg = !strcmp(sub, "golden"), isl = !strcmp(sub, "loader");
+    if (!isa && !isg && !isl) {
+        printf("usage: slot                         show the images and the boot state\n"
+               "       slot a [addr len] [name]     write slot A (default: the last load/fget)\n"
+               "       slot! golden [addr len] [name]  write the golden image\n"
+               "       slot! loader [addr len]      write kboot.bin\n"
+               "       slot retry | clear           try slot A again | remove slot A\n");
+        return;
+    }
+    if ((isg || isl) && !c->force) {
+        printf("slot: '%s' replaces what the box falls back to; type slot! %s\n", sub, sub);
+        return;
+    }
+    if (arg_num(c, 1, &a) < 0 || arg_num(c, 2, &len) < 0)
+        return;
+    if (mmc_init()) {
+        printf("slot: eMMC not ready\n");
+        return;
+    }
+    const char *name = c->argc > 3 ? c->argv[3] : NULL;
+    if (isa) {
+        if (slot_write("slot A", SLOTA_HDR, SLOTA_OFF, SLOTA_MAX, a, len, name)) {
+            if (!bootst_get(&tries, &how))
+                how = BOOT_GOLDEN | BOOT_SEEN;
+            bootst_set(0, how);
+        }
+    } else if (isg)
+        slot_write("golden", GOLDEN_HDR, GOLDEN_OFF, GOLDEN_MAX, a, len, name);
+    else {
+        uint32_t got, want;
+        if (!len || len > LOADER_MAX || !allowed(a, len, DANGER_R, 0)) {
+            printf("slot: the loader is 1 to %u bytes\n", LOADER_MAX);
+            return;
+        }
+        want = crc32((const uint8_t *)a, len);
+        int r = mmc_write(SPLASH_LBA + LOADER_OFF / 512, (len + 511) / 512, (const void *)a, 0);
+        if (r)
+            printf("slot: write failed: %s\n", mmc_strerror(r));
+        else if (!slot_check(LOADER_OFF, len, want, &got))
+            printf("slot: loader read-back CRC %08x, expected %08x\n", got, want);
+        else
+            printf("slot: loader = %lu bytes, CRC %08x, read back OK\n", len, want);
+    }
+}
+
 static void cmd_go(struct cmd *c)
 {
     uint64_t a = load_addr;
@@ -1504,6 +1706,7 @@ static const struct {
     { "calc",    cmd_calc,    "expr",                       "evaluate a number/name expression" },
     { "load",    cmd_load,    "[addr]",                     "receive a file over serial (tools/kstb-send)" },
     { "send",    cmd_send,    "addr len",                   "send RAM over serial (tools/kstb-recv)" },
+    { "slot",    cmd_slot,    "[a|golden|loader|retry|clear]", "kmon images for kboot: show, write" },
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
@@ -1529,7 +1732,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 
@@ -1613,6 +1816,8 @@ void mon_main(int how, long status)
     }
     if (how == 0)
         printf("\nkmon: KSTB6077 monitor, EL2. 'help' lists the commands.\n");
+    if (how == 0)
+        boot_confirm();
     else if (how == 1)
         printf("\nkmon: program returned, status %ld\n", status);
     else

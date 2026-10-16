@@ -47,7 +47,7 @@ $(B)/irq.o: irq.c kstb.h mon.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -mgeneral-regs-only -c $< -o $@
 
-$(B)/%.o: %.c kstb.h mon.h mmc.h ../usb/usb.h ../fat/fat.h font.h
+$(B)/%.o: %.c kstb.h mon.h mmc.h ../usb/usb.h ../fat/fat.h ../kboot/slot.h font.h
 	@mkdir -p $(B)
 	$(CC) $(CFLAGS) -c $< -o $@
 

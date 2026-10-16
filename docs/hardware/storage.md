@@ -217,11 +217,14 @@ what the partition holds now.
 | Partition offset | Contents |
 |---|---|
 | `0x000000–0x07ffff` | splash container (`GZBR`…). BOLT reads exactly these 512 KB at boot. Since 2026-10-15 the container has a silent `pcm0` for the Doom port's sound ([`../../doom/README.md`](../../doom/README.md)): `0x30c4` bytes, CRC `0x3fffa0ed` (checked on read-back). Before that: `0x2f2e` bytes, first 12 KB CRC `0x985d62dc` |
-| `0x080000–0x0fffff` | unused (zeros) |
+| `0x080000–0x08ffff` | **kboot**, the kmon loader BOLT's `STARTUP` runs (12 KB used) ([`../../kboot/README.md`](../../kboot/README.md)) |
+| `0x090000–0x0fffff` | unused (zeros) |
 | `0x100000–0xec6fff` | **data image**: 512-byte `KWAD` header + file. Room: up to the kmon bundle at `0xf00000` (14,680,064 bytes). Now: a 14.4 MB file (below), image `0xdc7000` bytes |
-| `0xec7000–0xefffff` | unused |
-| `0xf00000–0xfccfff` | **kmon bundle** (since 2026-10-15): the monitor padded to 256 KB, then `doom.bin` in a `KWAD` header; `0xcd000` bytes, written and read back by `tools/kstb-mon --install` (CRC matched), and since then also from kmon itself with `mmc write` (CRC matched). Loaded to `0x00100000` ([`../../mon/README.md`](../../mon/README.md)) |
-| `0xfcd000–0x10cf5ff` | unused |
+| `0xec7000–0xeffdff` | unused |
+| `0xeffe00–0xefffff` | golden image header (kboot) |
+| `0xf00000–0xfdffff` | **golden kmon bundle**: the monitor padded to 256 KB, then `doom.bin` in a `KWAD` header; now 844,800 bytes, written with kmon `slot! golden` (CRC matched). Loaded to `0x00100000` ([`../../mon/README.md`](../../mon/README.md)). Before kboot: written by `tools/kstb-mon --install` or `mmc write` |
+| `0xfe0000–0xfe01ff` | slot A header (kboot) |
+| `0xfe0200–0x10cf5ff` | **slot A**: a kmon bundle under test, at most 979,968 bytes ([`../../kboot/README.md`](../../kboot/README.md)) |
 
 **Nothing else reads past 512 KB (tested: from BOLT's code).** The container
 reader `0x07011304` opens `flash0.splash` once, allocates `0x80000` bytes,

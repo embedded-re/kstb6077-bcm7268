@@ -190,8 +190,17 @@ itself (`STARTUP`, below); Ctrl-C (above) still stops at `BOLT>`.
 
 ## Autostart of kmon (modified box)
 
-BOLT runs the `STARTUP` variable after AUTOBOOT. On the modified box it is
-set in NVRAM to load kmon from `flash0.splash` and start it:
+Since 2026-10-15 `STARTUP` runs **kboot**, which starts the golden kmon or
+the update in slot A and falls back to golden on its own
+([`../kboot/README.md`](../kboot/README.md)):
+
+```
+setenv -p STARTUP "load -raw -rawfs -offset=0x80000 -addr=0x03000000 -max=0x10000 flash0.splash; go -64 0x03000000"
+```
+
+Tested after a software reset, a power-on and three watchdog resets. Before
+that, `STARTUP` started kmon directly (still works, golden is in the same
+place):
 
 ```
 setenv -p STARTUP "load -raw -rawfs -offset=0xf00000 -addr=0x00100000 -max=0x1c0000 flash0.splash; go -64 0x00100000"
