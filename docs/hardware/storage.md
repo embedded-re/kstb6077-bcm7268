@@ -11,6 +11,7 @@ in the DTB and Linux registers it as `mmc0`.
 |---|---|
 | eMMC | 7.28 GiB on SDHCI 1 (`0xf0200200`), 8-bit, 50 MHz |
 | SDHCI 0 | `0xf0200000`, removable-slot type, no card, no slot on the case |
+| Card set-up | **own** since 2026-10-16: kboot resets the host and card and sets them up at every boot; kmon `mmc init` does the same ("Our own eMMC init") |
 | From bare metal | **own driver** in kmon ([`../../mon/mmc.c`](../../mon/mmc.c)): read ~33 MB/s, write ~9 MB/s, PIO; or BOLT copies data into RAM before `go` (~15 MB/s) |
 | Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header ([`tools/make-wad-image`](../../tools/make-wad-image)) |
 | Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT; reading and writing from bare metal (kmon, 2026-10-15) |
@@ -111,11 +112,53 @@ FAT32 `DATA` partition ("The `DATA` partition" below):
 | 9 | 2242560 | 15239167 | **DATA** (6346 MB, FAT32) |
 | 10 | 15239168 | 15273594 | splash |
 
-Safety rules in the driver: it never sends CMD6 (SWITCH, which could change
-the boot or partition configuration), erase or lock commands, and
+Safety rules in the driver: it sends CMD6 (SWITCH, which could change the
+boot or partition configuration) only to write BUS_WIDTH [183] and HS_TIMING
+[185], and refuses any other byte; it never sends erase or lock commands; and
 `mmc_write()` refuses anything outside `flash0.splash` and `flash0.DATA`,
 and the splash container (its first 512 KB) unless forced (tested: LBA 100
 in `nvram` and the container's first sector were both refused).
+
+## Our own eMMC init (tested)
+
+Tested on the modified box on 2026-10-16: kmon `mmc init`
+(`mmc_reset_card()` in [`../../mon/mmc.c`](../../mon/mmc.c)), and kboot, which runs it at every
+boot instead of using BOLT's set-up ([`../../kboot/README.md`](../../kboot/README.md)). It takes the host
+and the card from reset to the state BOLT leaves:
+
+| Step | Host / command | Value |
+|---|---|---|
+| host reset | `+0x2c` bit 24 (software reset for all) | afterwards present `1fff0000`, control `00800000`, clock `0`; the card no longer answers CMD13 |
+| interrupt status enable | `+0x34` | `13ff063f` (BOLT's `13ff060f` + buffer read/write ready) |
+| power | `+0x29` | `0e` (3.3 V), then `0f` (on) |
+| clock | `+0x2c` | `000e7d01` (divider 125: 100 MHz / 250 = **400 kHz**), wait for bit 1, then SD clock on (bit 2); 10 ms wait |
+| CMD0 | GO_IDLE, no response | |
+| CMD1 | SEND_OP_COND `0x40ff8000` (sector mode, 2.7–3.6 V), R3 | repeated every 1 ms until bit 31 (powered up) |
+| CMD2 | ALL_SEND_CID, R2 | CID `00450100 44473430 303801e6 84a20e76`: manufacturer `0x45`, product "DG4008", revision `0x01`, serial `e684a20e`, date byte `0x76` |
+| CMD3 | SET_RELATIVE_ADDR `0x00020000` | RCA **2**, as BOLT |
+| CMD7 | SELECT, R1b | then CMD13 until state tran |
+| CMD6 | `0x03b90100`: write HS_TIMING [185] = 1 | then busy, CMD13 tran, no SWITCH_ERROR |
+| host | `+0x28` = `0f04` (high speed), clock `000e0107` (divider 1 = **50 MHz**) | |
+| CMD6 | `0x03b70200`: write BUS_WIDTH [183] = 2 (8-bit) | then busy, CMD13 tran |
+| host | `+0x28` = `0f24` (8-bit) | |
+
+Both EXT_CSD bytes are volatile: the card forgets them at power-off and at
+CMD0. No other CMD6 is ever sent (the driver refuses any other index).
+
+Results:
+
+| Test | Result |
+|---|---|
+| `mmc init` after BOLT (kmon from RAM) | 25 ms; present `1fff0000`, control `00000f24`, clock `000e0107`, interrupt enable `13ff063f`: **host registers `+0x20–0xff` and the cfg block `0xf0200300–0x35f` the same as BOLT's** (`+0x00–0x1f` hold the last command: address, block size, argument, response); CMD13 RCA 2: `00000900` (tran, ready for data); EXT_CSD HS_TIMING 1 |
+| reads after it | splash container CRC `3fffa0ed`; WAD image (28,216 sectors) CRC `81c4660f` in 428 ms = 33 MB/s, the same speed as on BOLT's set-up (so the 8-bit 50 MHz bus is in use) |
+| write after it | 128 sectors at `flash0.splash +0x90000` (LBA 15240320): written, read back identical, zeros written back (CRC `d7978eeb`) |
+| host wiped by hand (`mw.w 0xf020022c 0x01000000`) | `mmc`: no answer to CMD13; `mmc init`: 31 ms, everything back, FAT `ls` works |
+| 5 more `mmc init` in a row | 25–32 ms each, same CID; WAD CRC `81c4660f` afterwards |
+| kboot at every boot | from RAM 34 ms, from STARTUP (EL3) 25 ms; slot A loads and starts as before |
+
+Not tested: a real power-on of the card without BOLT (BOLT always reads the
+eMMC before STARTUP; CMD0 and the host reset are the closest we get), and
+other speed modes (HS200/DDR, DEVICE_TYPE `57` offers them).
 
 ## The `DATA` partition (modified box)
 
@@ -166,8 +209,9 @@ get the NT lowercase flags, so PCs show them as typed. Dates are fixed at
 ## Boot partitions and backups (modified box, tested 2026-10-15)
 
 BOLT read both eMMC boot partitions into RAM (`load -raw -rawfs
--max=0x400000 flash1` / `flash2`). kmon's driver can't read them itself: it
-never sends CMD6, which switching to a boot partition needs.
+-max=0x400000 flash1` / `flash2`). kmon's driver can't read them itself:
+switching to a boot partition needs a CMD6 to PARTITION_CONFIG [179], which
+the driver refuses.
 
 | | Contents | CRC32 (4 MB) |
 |---|---|---|

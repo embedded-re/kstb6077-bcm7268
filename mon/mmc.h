@@ -17,6 +17,7 @@
 #define MMC_EGUARD   (-5)
 
 int mmc_init(void);
+int mmc_reset_card(uint32_t cid[4]);
 int mmc_status(uint32_t rca, uint32_t *status);
 int mmc_read(uint32_t lba, uint32_t n, void *buf);
 int mmc_read_ext_csd(uint8_t *buf);

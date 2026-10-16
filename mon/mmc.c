@@ -2,14 +2,17 @@
 //
 // BOLT leaves the card initialised and selected, in the "tran" state, on an
 // 8-bit 50 MHz bus with 512-byte blocks and sector addressing, and `go -64`
-// keeps that state (docs/hardware/storage.md). So there is no card
-// initialisation here: only data commands, by programmed I/O through the
-// buffer data port.
+// keeps that state (docs/hardware/storage.md). mmc_init() uses that state
+// as it is (kboot depends on it); mmc_reset_card() (kmon `mmc init`) brings
+// the host and the card from reset to the same state itself. Data moves by
+// programmed I/O through the buffer data port.
 //
 // Safety:
-//   - only these commands are ever sent: CMD8 (read EXT_CSD), CMD13 (status),
-//     CMD17/18 (read), CMD24/25 (write). Never CMD6 (SWITCH: could change the
-//     boot or partition configuration), erase, or lock commands.
+//   - only these commands are ever sent: CMD0/1/2/3/7 (card identification,
+//     mmc_reset_card() only), CMD6 (SWITCH) to BUS_WIDTH [183] and HS_TIMING
+//     [185] only, CMD8 (read EXT_CSD), CMD13 (status), CMD17/18 (read),
+//     CMD24/25 (write). No other CMD6 (could change the boot or partition
+//     configuration), no erase or lock commands.
 //   - writes are refused outside flash0.splash and flash0.DATA, and in the
 //     first 512 KB of flash0.splash (the splash container) unless forced.
 
@@ -27,6 +30,7 @@
 #define R_RESP0     (HOST + 0x10)
 #define R_DATA      (HOST + 0x20)   // buffer data port
 #define R_PSTATE    (HOST + 0x24)   // b0 CMD inhibit, b1 DAT inhibit, b20 DAT0 level
+#define R_HOSTCTL   (HOST + 0x28)   // [7:0] host control 1, [15:8] power control
 #define R_CLK       (HOST + 0x2c)   // [15:0] clock, [23:16] timeout, [26:24] software reset
 #define R_INT       (HOST + 0x30)   // [15:0] normal, [31:16] error; write 1 to clear
 #define R_INT_EN    (HOST + 0x34)
@@ -38,7 +42,11 @@
 #define INT_ERROR       (1 << 15)
 
 // command register flags
+#define RSP_NONE    0x00
+#define RSP_R2      0x09            // 136-bit response, CRC checked
+#define RSP_R3      0x02            // 48-bit response, no checks (OCR)
 #define RSP_R1      0x1a            // 48-bit response, CRC and index checked
+#define RSP_R1B     0x1b            // the same, then busy on DAT0
 #define DATA        0x20            // data present
 
 // transfer mode
@@ -92,7 +100,7 @@ static int wait_int(uint32_t bits, uint32_t ms)
 static int send(int index, uint32_t arg, uint32_t flags, uint32_t mode, uint32_t *resp)
 {
     uint64_t end = ticks() + 100 * TICKS_PER_MS;
-    uint32_t busy = flags & DATA ? 3 : 1;           // CMD inhibit (+ DAT inhibit for data)
+    uint32_t busy = flags & DATA || (flags & 3) == 3 ? 3 : 1;   // CMD inhibit (+ DAT inhibit for data, busy)
     while (read32(R_PSTATE) & busy)
         if (ticks() > end) {
             last_int = read32(R_INT);
@@ -118,6 +126,107 @@ int mmc_init(void)
     write32(R_INT_EN, read32(R_INT_EN) | INT_READ_READY | INT_WRITE_READY);
     if (!(read32(R_PSTATE) & (1 << 16)))
         return MMC_ENOCARD;
+    return 0;
+}
+
+static void delay_ms(uint32_t ms)
+{
+    uint64_t end = ticks() + (uint64_t)ms * TICKS_PER_MS;
+    while (ticks() < end)
+        ;
+}
+
+// Card clock = 100 MHz base / (2 * n), 10-bit divider (spec 3.00); data
+// timeout field 0xe as BOLT leaves it.
+static int set_clock(uint32_t n)
+{
+    write32(R_CLK, 0);                              // SD clock off before the change
+    write32(R_CLK, 0xe0000 | (n & 0xff) << 8 | (n >> 8 & 3) << 6 | 1);
+    uint64_t end = ticks() + 100 * TICKS_PER_MS;
+    while (!(read32(R_CLK) & 2))                    // internal clock stable
+        if (ticks() > end)
+            return MMC_ETIMEOUT;
+    write32(R_CLK, read32(R_CLK) | 4);              // SD clock on
+    return 0;
+}
+
+// Wait for the end of a busy signal (R1b), then for the card in tran.
+static int wait_tran(uint32_t rca)
+{
+    uint64_t end = ticks() + 1000 * TICKS_PER_MS;
+    uint32_t st;
+    while (read32(R_PSTATE) & 2)                    // DAT inhibit: busy on DAT0
+        if (ticks() > end)
+            return MMC_EBUSY;
+    write32(R_INT, INT_XFER_DONE);
+    do {
+        int r = send(13, rca << 16, RSP_R1, 0, &st);
+        if (r)
+            return r;
+        if (st & 0xfdf98080)                        // error bits, SWITCH_ERROR (bit 7)
+            return last_int = st, MMC_EIO;
+        if (ticks() > end)
+            return MMC_ETIMEOUT;
+    } while ((st >> 9 & 0xf) != 4);
+    return 0;
+}
+
+// CMD6 SWITCH, write byte: only BUS_WIDTH [183] and HS_TIMING [185], both
+// volatile (back to their defaults at the next power-on or CMD0).
+static int mmc_switch(uint32_t index, uint32_t value, uint32_t rca)
+{
+    if (index != 183 && index != 185)
+        return MMC_EGUARD;
+    int r = send(6, 3u << 24 | index << 16 | (value & 0xff) << 8, RSP_R1B, 0, NULL);
+    return r ? r : wait_tran(rca);
+}
+
+int mmc_reset_card(uint32_t cid[4])
+{
+    const uint32_t rca = 2;                         // the address BOLT gives the card
+
+    // Host: software reset of everything, interrupt status as BOLT + buffer
+    // ready, 3.3 V power on, 1-bit bus, 400 kHz.
+    write32(R_CLK, 1u << 24);
+    uint64_t end = ticks() + 100 * TICKS_PER_MS;
+    while (read32(R_CLK) & (1u << 24))
+        if (ticks() > end)
+            return MMC_ETIMEOUT;
+    write32(R_INT_EN, 0x13ff063f);
+    write32(R_HOSTCTL, 0x0e00);                     // 3.3 V
+    write32(R_HOSTCTL, 0x0f00);                     // power on
+    int r = set_clock(125);
+    if (r)
+        return r;
+    delay_ms(10);                                   // power ramp, >= 74 clocks
+
+    // Card: idle, then CMD1 until powered up (sector addressing, 2.7-3.6 V).
+    if ((r = send(0, 0, RSP_NONE, 0, NULL)))
+        return r;
+    delay_ms(1);
+    uint32_t ocr = 0;
+    for (int i = 0; !(ocr & (1u << 31)); i++) {
+        if (i == 1000)
+            return MMC_ETIMEOUT;
+        if ((r = send(1, 0x40ff8000, RSP_R3, 0, &ocr)))
+            return r;
+        delay_ms(1);
+    }
+    if ((r = send(2, 0, RSP_R2, 0, NULL)))
+        return r;
+    for (int i = 0; i < 4; i++)
+        cid[i] = read32(R_RESP0 + 4 * i);
+    if ((r = send(3, rca << 16, RSP_R1, 0, NULL)) ||
+        (r = send(7, rca << 16, RSP_R1B, 0, NULL)) || (r = wait_tran(rca)))
+        return r;
+
+    // High speed at 50 MHz, then the 8-bit bus.
+    if ((r = mmc_switch(185, 1, rca)))
+        return r;
+    write32(R_HOSTCTL, 0x0f04);
+    if ((r = set_clock(1)) || (r = mmc_switch(183, 2, rca)))
+        return r;
+    write32(R_HOSTCTL, 0x0f24);
     return 0;
 }
 

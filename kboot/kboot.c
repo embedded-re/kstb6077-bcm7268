@@ -199,8 +199,16 @@ void kboot_main(int via_el3)
     led(1, 1);                                  // orange while loading
     if (!bootst_get(&tries, &how))
         tries = 0;
-    if (mmc_init())
-        halt("eMMC not ready");
+    // Own eMMC set-up from reset (host and card), not BOLT's; three tries.
+    uint32_t cid[4], t0 = ms();
+    int r = -1;
+    for (int i = 0; i < 3 && r; i++)
+        r = mmc_reset_card(cid) || mmc_init();
+    if (r)
+        halt("eMMC not ready (own card reset failed 3 times)");
+    puts_("kboot: eMMC reset and set up in ");
+    dec(ms() - t0);
+    puts_(" ms\n");
 
     struct slot_hdr g, a;
     int gok = read_hdr(GOLDEN_HDR, GOLDEN_MAX, &g);

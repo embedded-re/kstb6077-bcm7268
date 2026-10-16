@@ -7,7 +7,10 @@ then golden starts by itself, with no PC and no serial line needed.
 
 kboot runs at EL2 (AArch64) after `go -64 0x03000000`, with the MMU off. It
 uses kmon's eMMC driver ([`../mon/mmc.c`](../mon/mmc.c)) and no C library. `make` builds
-`build/kboot.bin` (12 KB). The layout and the boot state are in [`slot.h`](slot.h),
+`build/kboot.bin` (22 KB). Since 2026-10-16 kboot resets the eMMC host and
+card itself and sets them up again (`mmc_reset_card()`, up to 3 tries, then
+it stops) instead of using the card as BOLT left it:
+[`../docs/hardware/storage.md`](../docs/hardware/storage.md), "Our own eMMC init". The layout and the boot state are in [`slot.h`](slot.h),
 which kmon uses too.
 
 Tested on the modified box on 2026-10-15/16 unless marked otherwise.
@@ -24,11 +27,14 @@ The EL3 monitor also starts and stops cores 1–3 (PSCI CPU_ON, CPU_OFF,
 AFFINITY_INFO, since 2026-10-16:
 [`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md) "Our own CPU_ON and CPU_OFF").
 
-Current images (2026-10-16): golden seq 23 and slot A seq 22, both
-`kmon-cpu` (844,800 bytes, CRC `e8d1a898`); `kboot.bin` 19,976 bytes, CRC
-`1b25e9f9`, in both places. Tested after `slot! loader`: a software reset →
-STARTUP → kboot at EL3 → slot A, kmon's `cpu` showed `kboot's (4b423303)`,
-and the CPU_ON/CPU_OFF race test gave the same result as from RAM.
+Current images (2026-10-16): golden seq 25 and slot A seq 24, both
+`kmon-mmc-init` (844,800 bytes, CRC `73315587`); `kboot.bin` 21,704 bytes,
+CRC `a3fce739`, in both places. Tested after `slot! loader`: a software
+reset → STARTUP → kboot at EL3 → `kboot: eMMC reset and set up in 25 ms` →
+slot A → confirmed; kmon's `cpu` showed `kboot's (4b423303)` and `ls` read
+`flash0.DATA`. Before that the same kboot.bin ran from RAM (kmon `go
+0x03000000`, the EL2 entry): card reset in 34 ms, slot A read and checked
+in 568 ms (the same as on BOLT's card set-up), kmon confirmed.
 
 ## Choosing an image
 
@@ -48,7 +54,7 @@ kboot starts golden even when golden's CRC doesn't match its header,
 because it is the last resort; it prints a warning. Golden without a header
 is loaded unchecked (917,504 bytes). kboot sets the power LED orange while
 it loads, green when it starts an image, and red if it stops (eMMC not
-ready, golden unreadable); the colours haven't been checked by eye.
+ready after 3 own resets, golden unreadable); the colours haven't been checked by eye.
 
 ## Layout in `flash0.splash`
 
@@ -142,6 +148,7 @@ reset → `golden (no valid image in slot A)`, CRC OK, DHCP, ping from the PC.
 | slot A = a 4-byte image that loops (`b .`) | tries 1, 2, 3, each ended by a watchdog reset (`RR:00000040`), then `golden (slot A did not confirm 3 times)`; kmon printed the same reason |
 | power-on (`RR:00000003`) | STARTUP → kboot → slot A, try 1, confirmed |
 | SW1/SW4 held at boot | **not tested** |
+| own eMMC reset at every boot (`kboot.bin` CRC `a3fce739`), from RAM and from STARTUP | 34 ms (RAM, after kmon had used the card) and 25 ms (after BOLT); slot A CRC OK, confirmed |
 
 ## Recovery when kboot itself is broken
 

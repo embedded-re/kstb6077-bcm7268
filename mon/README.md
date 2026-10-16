@@ -65,6 +65,7 @@ go [addr]                      start a program like BOLT's go -64 (default: last
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
 doom                           start Doom (loads the WAD from eMMC if needed); quitting returns here
 mmc                            eMMC: card status
+mmc init                       reset the eMMC host and card, set them up again (8-bit, 50 MHz)
 mmc extcsd | part              the card's EXT_CSD fields | the GPT partition table
 mmc dump lba                   hex dump of one sector
 mmc read lba count [addr]      sectors to RAM (default 0x02000000)
@@ -309,17 +310,21 @@ is written to flash: a reset brings back the stored build.
 ## eMMC (`mmc`, [`mmc.c`](mmc.c))
 
 kmon has its own eMMC driver (tested, details and measurements in
-[`../docs/hardware/storage.md`](../docs/hardware/storage.md), "The eMMC driver"). It uses the card as
-BOLT left it (RCA 2, tran state, 8-bit, 50 MHz), so it needs no
-initialisation. It reads at ~33 MB/s and writes at ~9 MB/s. LBAs are 512-byte
+[`../docs/hardware/storage.md`](../docs/hardware/storage.md), "The eMMC driver"). Its commands use
+the card in the state it finds it: RCA 2, tran state, 8-bit, 50 MHz, which
+kboot sets up at every boot (and BOLT before it). `mmc init` does that set-up
+again from reset (host software reset, CMD0 … CMD7, two CMD6 writes; ~25 ms):
+after a host or card error, the eMMC works again without a reboot
+([`../docs/hardware/storage.md`](../docs/hardware/storage.md), "Our own eMMC init"). It reads at ~33 MB/s and writes at ~9 MB/s. LBAs are 512-byte
 sectors from the start of the user area; `flash0.splash` is LBA
 `#15239168`–`#15273594`, so `flash0.splash + offset` = `#15239168 + offset/512`.
 
 Writes are refused outside `flash0.splash` and `flash0.DATA` (LBA
 `#2242560`–`#15239167`, FAT32), and in splash's first 512 KB (the splash
 container BOLT reads at boot) unless the command is `mmc!`. The driver
-never sends CMD6, erase or lock commands, so it can't change the card's
-boot or partition setup.
+sends CMD6 only to BUS_WIDTH [183] and HS_TIMING [185] (refused for any
+other byte), and never erase or lock commands, so it can't change the
+card's boot or partition setup.
 
 ```
 kmon> mmc read #15239168 #25         the splash container to 0x02000000

@@ -1699,6 +1699,16 @@ static void cmd_mmc(struct cmd *c)
 
     if (!strcmp(sub, "")) {
         mmc_show_status();
+    } else if (!strcmp(sub, "init")) {
+        uint32_t cid[4];
+        uint64_t t = ticks();
+        r = mmc_reset_card(cid);
+        uint64_t us = (ticks() - t) / 27;
+        if (!mmc_ok(r))
+            return;
+        printf("card reset and set up in %lu ms, CID %08x %08x %08x %08x\n",
+               us / 1000, cid[3], cid[2], cid[1], cid[0]);
+        mmc_show_status();
     } else if (!strcmp(sub, "extcsd")) {
         mmc_show_ext_csd();
     } else if (!strcmp(sub, "part")) {
@@ -1742,7 +1752,7 @@ static void cmd_mmc(struct cmd *c)
                write ? "wrote" : "read", n, n / 2, lba, write ? "from" : "to", a,
                us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0);
     } else {
-        printf("usage: mmc [extcsd | part | dump lba | read lba count [addr] | write lba count addr]\n"
+        printf("usage: mmc [init | extcsd | part | dump lba | read lba count [addr] | write lba count addr]\n"
                "  lba/count in 512-byte sectors (hex, or #decimal). Writes only to\n"
                "  flash0.splash = LBA #%u-#%u (not its first 512 KB without 'mmc!')\n"
                "  and flash0.DATA = LBA #%u-#%u.\n",
@@ -1936,7 +1946,7 @@ static const struct {
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
-    { "mmc",     cmd_mmc,     "[extcsd|part|dump|read|write]", "eMMC: status, EXT_CSD, GPT, sectors" },
+    { "mmc",     cmd_mmc,     "[init|extcsd|part|dump|read|write]", "eMMC: status, reset, EXT_CSD, GPT, sectors" },
     { "fs",      cmd_fs,      "",                           "flash0.DATA: FAT32 size and free space" },
     { "ls",      cmd_ls,      "[dir]",                      "list a directory on flash0.DATA" },
     { "fget",    cmd_fget,    "path [addr]",                "read a file to RAM (default prog)" },
