@@ -168,10 +168,11 @@ prompt, so the reset has to be one uninterrupted sequence.
 | `usb init` after a bit-21 reset | keyboard enumerated again: port `00100303`, 59-byte configuration, boot keyboard ready |
 | Doom from kmon (its own `usb_init`) | `usb: keyboard ready`; quit through the menu over serial, back to kmon, keyboard up again |
 
-Not tested yet: key presses on the keyboard after the new start (nobody at
-the box; enumeration and the interrupt endpoint set-up worked), unplugging
-and replugging, and a start without BOLT's `usb init` (BOLT always runs it,
-for `waitusb` in its AUTOBOOT, before STARTUP).
+| key presses after the new start (`usb kbd`, by the user at the box) | the keys show up |
+| keyboard unplugged and plugged in again | comes back by itself (kmon's port check) |
+
+Not tested: a start without BOLT's `usb init` (BOLT always runs it, for
+`waitusb` in its AUTOBOOT, before STARTUP).
 
 ## OHCI1 from bare metal (tested: [`ohci_port_probe.s`](../evidence/usb/ohci_port_probe.s), keyboard plugged in)
 
