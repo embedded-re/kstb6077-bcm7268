@@ -33,6 +33,8 @@ the register says otherwise. From BOLT: `d -w <addr> 4` reads one word,
 | `0x06ffc000–0x09200000` | BOLT (page table `0x07000000`, code, heap, stack). **Free after `go -64`** |
 | `0x10000000…` | free RAM for programs (the stored data file is loaded here, [`storage.md`](storage.md)). All free RAM: [`memory-map.md`](memory-map.md), "RAM for a bare-metal program" (~2,000 MB, tested) |
 | `0x7d600000–0x7d9f47ff` | second framebuffer for double buffering (free `rmem`) |
+| `0x7d9f8000–0x7d9fffff` | kmon's own display lists (`video init`, [`display.md`](display.md)) |
+| `0x7da00000–0x7da2edff` | kmon's own audio ring buffer, only on a boot without BOLT's splash ([`audio.md`](audio.md)) |
 | `0x7db08000–0x7db0b6ff` | display lists: never write |
 | `0x7db0b700–0x7defffff` | **framebuffer**: pixel(x, y) = `0x7db0b700 + y × 3840 + x × 2`, RGB565 |
 | `0x7df00000–0x7dffffff` | BL31 (secure firmware): don't touch |

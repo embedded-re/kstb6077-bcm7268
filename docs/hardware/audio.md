@@ -334,14 +334,32 @@ on the TV: a 440 Hz tone, and WAV files (48 kHz 16-bit stereo, 22.05 kHz
 8-bit mono) played clean, also after the box booted through kboot at EL3
 ([`../booting.md`](../booting.md)). Commands in [`../../mon/README.md`](../../mon/README.md), "Sound".
 
+## Our own audio start (tested 2026-10-16)
+
+When BOLT's splash didn't run, kmon starts the audio hardware itself
+([`../../mon/audio_hw.c`](../../mon/audio_hw.c)), with its own 0.5 s ring buffer at `0x7da00000`.
+The sequence is BOLT's `0x070109cc` steps 1–10 (the table above). It was
+taken by running the routine in an emulator (Unicorn, Thumb-2) on BOLT's RAM
+image, with BOLT's low block `0x06ffc000–0x07007fff` (memory-controller info
+for step 6) and every register access logged. In the emulator the routine
+returns -1 at step 11, the same `failed starting audio -1` as on the board,
+so steps 12–13 never run. `audio_hw.c` produces the same 2260 writes in the
+same order. That was checked on the PC with register reads returning `0`,
+`ffffffff` and `12345678`, and with two buffer addresses, so the
+read-modify-writes and the ring addresses match too. Then kmon writes N/CTS
+as before.
+
+Tested on a boot without the splash (Ctrl-S, [`../booting.md`](../booting.md)), after
+kmon's own display start ([`display.md`](display.md)): the DMA runs (`0xf0ca00c0` = 1,
+the read pointer moves through `7da00000–7da2edff`), and `beep 440 1000` was
+heard on the TV.
+
 ## Open questions
 
 - Why the blop count by ear looked tied to buffer laps (see "The blop").
 - What latches after the 59.94 values are written (TV or box).
 - Whether the optical output carries the samples, and which port feeds it.
   Needs a receiver.
-- Setting up the audio block from scratch without BOLT's splash (the register
-  list above is the starting point), e.g. to choose the buffer address.
 - The meaning of the step 13 registers, and whether HDMI audio infoframes
   need them on other TVs.
 

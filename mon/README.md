@@ -52,6 +52,7 @@ find[.b|.h|.w|.q] addr len value
 calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
 send addr len                  send RAM over serial (tools/kstb-recv)
+video [init]                   HDMI video: status, set up the display ourselves (see below)
 audio [init|stop]              HDMI sound: status, start, silence (see below)
 beep [hz [ms]]                 a test tone (decimal; default 440 Hz, 500 ms)
 play [file.wav]                play a WAV from flash0.DATA, or the last load/fget/tftp get
@@ -201,12 +202,33 @@ kmon> run prog.bin                              # later, with no PC: read it and
 ```
 
 Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
-(`0x00600000–0x0082ffff`) and the heap are refused as `fget` targets.
+(`0x00600000–0x00831fff`) and the heap are refused as `fget` targets.
+
+## Video (`video`, [`video.c`](video.c))
+
+When BOLT skipped its boot splash, the HDMI output is dark and nothing runs
+the display. `video init` sets it up the way BOLT's splash does: it reads
+BOLT's display script from BOLT's RAM, writes its 1381 registers and starts
+the display lists from kmon's own memory (`0x7d9f8000`). At start-up kmon
+does this by itself when the frame counter stands still. With the splash,
+it leaves the display alone. Details:
+[`../docs/hardware/display.md`](../docs/hardware/display.md), "Our own display start".
+
+```
+kmon> video                 display running?, RDC descriptors, CRC of BOLT's script
+kmon> video init            refused while the display runs ('video! init' anyway)
+```
+
+Tested 2026-10-16 with `tools/kstb-nosplash`: at start-up `video: display
+running (frame counter moves)`, then the console on the TV and sound from
+`beep` (both checked on the TV).
 
 ## Sound (`audio`, `beep`, `play`, [`audio.c`](audio.c))
 
 HDMI audio the same way as Doom's: BOLT's boot splash starts the audio DMA
-(it needs a `pcm0` in `flash0.splash`), looping over a 0.5 s buffer; kmon
+(it needs a `pcm0` in `flash0.splash`), looping over a 0.5 s buffer. Without
+it (no splash, see "Video"), kmon starts the audio hardware itself with its
+own buffer at `0x7da00000` ([`audio_hw.c`](audio_hw.c), tested by ear). kmon
 sets HDMI N/CTS for 1080p59.94 at start-up and writes samples 60 ms ahead
 of the DMA with silence behind ([`../docs/hardware/audio.md`](../docs/hardware/audio.md)). After a program
 (Doom) returns, kmon takes the buffer back. `play` takes PCM WAV files,
@@ -322,9 +344,13 @@ exactly that once, and the CRC check caught it.
 | `0x00600000–0x007fffff` | DMA block, non-cacheable: USB descriptors and buffers |
 | `0x00800000–0x0081c7ff` | HDMI console scrollback (1024 lines) |
 | `0x00820000–0x0082ffff` | FAT32 work buffers (`FAT_BUF`) |
+| `0x00830000–0x00831fff` | command line history (32 lines) |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |
+| `0x07054318–0x07058f47` | read only: BOLT's display script (SplashData), used by `video init` |
 | `0x10000000–0x10dc6fff` | the WAD (`KWAD` image), loaded by BOLT |
+| `0x7d9f8000–0x7d9fffff` | kmon's display lists (`video init`) |
+| `0x7da00000–0x7da2edff` | kmon's audio ring buffer, when BOLT didn't start the audio |
 
 MMU and caches are on, with the same identity map as Doom
 ([`../doom/start.S`](../doom/start.S)) plus the DMA block: DRAM cached, `0x7d600000–0x7dffffff` (framebuffers,

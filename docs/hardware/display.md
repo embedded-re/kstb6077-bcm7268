@@ -312,13 +312,14 @@ bracketed by `0xf0605000`:
 From the decoded lists and the live values: descriptor 0 runs a 73-word list
 **every frame**. That list sets the compositor canvas and background, reloads
 the GFD surface address from `0xf0603488/8c`, and counts the frame counter
-`0xf0603484` up. BOLT keeps two identical copies of it, at `0x7db09ae0` and
-`0x7db09c60`. The copy at `0x7db09c60` has a tail, but a count of `0x48`
-stops just before it, so in the steady state the descriptor no longer
-changes. Descriptor 1 (config `06190000`) still points where its last tail
-left it (`0x7db09980`, count `0x55`) and doesn't seem to run at 1080p.
-Possibly its trigger is the second field of an interlaced mode; that is
-not tested.
+`0xf0603484` up. BOLT builds it twice, at `0x7db09c60` (the second-to-last
+list of the chain) and `0x7db09ae0` (the last one). The tail of `0x7db09c60`
+points the descriptor at `0x7db09ae0` with a count of `0x48`, and
+`0x7db09ae0` has no tail, so from then on it runs every frame and the
+descriptor no longer changes. (The bytes after it are left over from the
+allocation, not a tail: see "SplashData and the script runner".) Descriptor 1
+(config `06190000`) still points at its first list (`0x7db09980`, count
+`0x55`): BOLT never starts it, and its trigger doesn't fire at 1080p.
 
 **The list address register reads back the previously written value**, not
 the current one. In three switches, `0xf0604000` read `7db09c60` while BOLT's
@@ -434,7 +435,8 @@ BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
 
 ### Boot splash (`0x070107f4`, runs in `custom_early`, before the prompt)
 
-1. Skip if env `NO_SPLASH` is set, or if `SPLASH` isn't `ENABLE`.
+1. Skip if env `NO_SPLASH` is set, or if `SPLASH` isn't `ENABLE`, or if
+   Ctrl-S was received at boot (tested, [`../booting.md`](../booting.md)).
 2. Print `SPLASH: starting`.
 3. Get **SplashData**: a fixed table compiled into BOLT (at `0x07056f30`),
    holding the display set-up script (the register lists seen in front of the
@@ -473,9 +475,10 @@ The runner `0x07010374`, called at the end of the draw step `0x07011608`:
 2. For each display, writes the surface address to both of its registers as
    64-bit stores (`strd`, high word 0): the page-flip registers `0xf0603488`
    and `0xf060348c`.
-3. For each used list entry, builds RDC lists in memory from BMEM
-   (`0x070110dc`) and chains them (the rest of `0x07010374`, up to
-   `0x07010756`; not decoded yet).
+3. For each used list entry, builds its RDC lists in memory from BMEM and
+   chains them (`0x070103de–0x07010726`, below).
+4. Arms the even descriptors: writes `1` to descriptor + `0x20`
+   (`0xf0604020` for descriptor 0) (`0x07010726–0x07010756`).
 
 The register table by block (CPU addresses):
 
@@ -488,18 +491,76 @@ The register table by block (CPU addresses):
 | `0xf06f0000`, `0xf06f2000`, `0xf06f8000` | 33, 32, 8 | `0xf041a000` | 32 |
 | `0xf0080000`, `0xf0311000`, `0xf09a0000`, `0xf0c80000`, `0xf0d82000` | 32 each | others | 31 |
 
-The two list entries, `{trigger, field, count, offsets, words}`: list k is
-words `offsets[k]` to `offsets[k+1] − 1` of the word array (the runner
-subtracts neighbouring offsets).
+The two list entries, `{trigger, descriptor, count, offsets, words}`: list k
+is words `offsets[k]` to `offsets[k+1] − 1` of the word array (the runner
+subtracts neighbouring offsets). The second word is the RDC descriptor `d`;
+its registers are at `0xf0604000 + d × 0x40`.
 
-| Trigger | Field | Lists | Offsets at | Words at | List lengths (words) |
+| Trigger | Descriptor | Lists | Offsets at | Words at | List lengths (words) |
 |---|---|---|---|---|---|
 | `0x18` | 0 | 8 | `0x0705707c` | `0x070570bc` | 1036, 3, 68, 47, 29, 296, 73, 73 |
 | `0x19` | 1 | 6 | `0x070570a0` | `0x07058a20` | 68, 47, 29, 296, 73, 73 |
 
 The words are RDC commands as in "List format" above (`01000000 <reg>
-<value>`, `06000001 …`). The two 73-word lists have the length of the
+<value>`, `06000001 …`). The last 73-word list of descriptor 0 is the
 per-frame list BOLT runs from `0x7db09ae0` ("How BOLT's lists run").
+
+How the runner builds and starts the lists of one entry (decoded from
+`0x070103de–0x07010726`; the helpers it calls are trivial: `0x070110dc`
+allocates BMEM, 32-byte aligned; `0x070110ca`/`0x070110c4` return the address
+unchanged; `0x070110d0` flushes the cache; `0x0701b448` is `memcpy`):
+
+1. Every list k gets a buffer of `(len_k + 18) × 4` bytes and its words are
+   copied in.
+2. Every list but the last gets an 18-word tail that points the descriptor
+   at the next list. `count` is the next list's length + 18 − 1, or its
+   length − 1 if it is the last:
+   ```
+   01000000 f0605000+(d/2)*8 00000000
+   01000000 f0604000+d*0x40  <next list>
+   01000000 f0604010+d*0x40  06000000 | trigger << 16 | d/2     (config)
+   01000000 f0604008+d*0x40  count
+   01000000 f0604018+d*0x40  count
+   01000000 f0605000+(d/2)*8 00000001
+   ```
+   This is for display format 22 (this box). For other formats the code
+   leaves out the first or the last line (15 words); see `mon/video.c`.
+3. The last list has no tail: once reached, it runs every frame.
+4. The first list is started with direct writes in the same order:
+   `0xf0605000 = 0`, config, both counts (`len_0 + 18 − 1`), the list address
+   (64-bit store), `0xf0605000 = 1`.
+
+All tails in BOLT's running lists
+([`../evidence/display/splash0_rdc_lists_decoded.txt`](../evidence/display/splash0_rdc_lists_decoded.txt))
+match this word for word, and descriptor 1's counts are its list lengths
+68/47/29/296/73 + 18 − 1 and 73 − 1 for the last.
+
+### Our own display start: kmon `video init` (tested 2026-10-16)
+
+[`../../mon/video.c`](../../mon/video.c) replays the runner: it reads SplashData from
+BOLT's RAM at run time (nothing of Broadcom's is copied into the repo), writes
+the register table and the flip registers, builds the lists in its own
+memory at `0x7d9f8000` and starts them as above. The framebuffer stays
+BOLT's `0x7db0b700`. Before it starts, it checks the CRC of
+`0x07054318–0x07058f47` (register table to the end of the last list's
+words) = `b8aa6b9e`. That range is the same with and without the splash
+(compared on the board). The word after it, `0x07059348`, is the runner's
+own variable and differs (`ffffffff` when the splash didn't run).
+
+Tested on a boot where BOLT skipped its splash (Ctrl-S,
+[`../booting.md`](../booting.md)):
+
+| | Before | After `video init` |
+|---|---|---|
+| frame counter `0xf0603484` | standing | counts at ~60 Hz |
+| descriptor 0 config | `00000000` | `06180000` |
+| descriptor 0 list (reads back the previous write) | `7db09c60` (left from the last boot) | `7d9f9920` = our second-to-last list |
+| TV | dark | kmon's console (checked on the TV) |
+
+The 1381 register writes take 297 µs. The display needs a few frames after
+the last write before the frame counter moves. At start-up, kmon does this
+itself when the frame counter stands still, before it confirms the boot to
+kboot. With BOLT's splash running, it leaves the display alone (tested).
 
 ### `load -splash`
 

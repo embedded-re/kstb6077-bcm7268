@@ -62,6 +62,25 @@ stock box: from a power-cycle (`RR:00000003`) and with `--reset`
 autoboot / `STARTUP` step: BOLT's boot splash (and so HDMI) still runs before
 the prompt ([`hardware/display.md`](hardware/display.md)).
 
+### One boot without the splash (Ctrl-S)
+
+In the same check, Ctrl-S makes BOLT print `Splash screen disabled via
+Ctrl-S` and skip its boot splash, for this boot only: nothing is stored, the
+next boot has the splash again. Autostart still runs. Other keys in the same
+loop (from BOLT's code, not tried): Ctrl-E (`Ethernet disabled`, sets env
+`ETH_OFF`), Ctrl-U (`USB set to manual mode`, sets env `USBMODE`), Tab
+(`System initialization forced`). Don't send the two that set env variables.
+
+```
+tools/kstb-nosplash --reset      # from kmon>: reset, Ctrl-S during the boot
+tools/kstb-nosplash              # or: power-cycle the board now
+```
+
+Tested 2026-10-16 (three boots): Ctrl-S sent continuously from BOLT's `GO!`
+line on is always seen. Sending a few after `PSCI: v0.2` with one `kstb` call
+each was too late. kmon then sets up the display and the sound itself
+([`../mon/README.md`](../mon/README.md), "Video").
+
 ## Building the monitor
 
 ```
