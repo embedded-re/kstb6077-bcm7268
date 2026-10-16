@@ -360,8 +360,27 @@ heard on the TV.
 - What latches after the 59.94 values are written (TV or box).
 - Whether the optical output carries the samples, and which port feeds it.
   Needs a receiver.
-- The meaning of the step 13 registers, and whether HDMI audio infoframes
-  need them on other TVs.
+- The exact meaning of the step 13 registers. They are not needed for the
+  audio infoframe (below); whether other TVs need anything else is not tested.
+
+### Step 13 and the audio infoframe (2026-10-16)
+
+- **The box already sends an HDMI audio infoframe**, from BOLT's display
+  script, not from its audio code. The script writes the packet RAM at
+  `0xf06fac00` (one packet every `0x24` bytes): AVI (`0xf06fac24`, header
+  `000d0282`), **audio** (`0xf06fac48` = `000a0184`, `00000170`), SPD
+  (`0xf06fac6c`, "Broadcom Reference Board") and vendor-specific
+  (`0xf06fac90`, `00040181`). The board reads back the same words (tested).
+  The audio infoframe is version 1, length 10, checksum `0x70`, data byte 1 =
+  `01` (2 channels); coding type, sample rate and size are 0, "refer to stream
+  header".
+- Step 13's registers (`0xf06fa828`, `0x884/888/898`) lie in the
+  `0xf06fa800` block, which the display script drives like a PHY. It powers it up in
+  steps (`0x804`: `f` → `7` → `0`, `0x800` = `30`) and sets `0x808` = `0a0a0a0a`
+  and `0x80c` = `00094a58`. The script itself doesn't write `0x828/884/888/898`.
+  Reading (inferred): on this chip these are HDMI PHY/PLL registers, so
+  BOLT's audio code (written for a register layout where they were audio
+  packet set-up) changes the TMDS output and breaks the picture.
 
 ## State after testing
 

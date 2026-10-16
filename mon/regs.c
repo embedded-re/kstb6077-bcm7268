@@ -94,7 +94,7 @@ const struct danger dangers[] = {
     { 0x7df00000, 0x7fffffff, DANGER_R | DANGER_W, "BL31 / SRR secure memory" },
     { 0x06400000, 0x0640ffff, DANGER_W, "EL3 monitor (smm64, or kboot's)" },
     { 0x00100000, 0x0013ffff, DANGER_W, "the monitor itself" },
-    { 0x00600000, 0x00831fff, DANGER_W, "the monitor's USB DMA, console scrollback, FAT buffers, history" },
+    { 0x00600000, 0x0084ffff, DANGER_W, "the monitor's USB DMA, console scrollback, FAT buffers, history, display script, stack" },
     { 0x7d9f8000, 0x7d9fffff, DANGER_W, "kmon's own display lists (video init)" },
     { 0, 0, 0, NULL },
 };

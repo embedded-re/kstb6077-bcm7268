@@ -6,7 +6,7 @@
 #define UART0       0xf040c000      // serial console, 16550, registers 4 bytes apart
 
 // RAM layout (docs/hardware/memory-map.md: 0x00001000-0x063fffff is free after go)
-#define MON_ADDR    0x00100000      // the monitor (code, data, bss, stacks, page tables)
+#define MON_ADDR    0x00100000      // the monitor (code, data, bss, page tables)
 #define MON_MAX     0x00040000      //   at most 256 KB, checked by link.ld
 #define DOOM_IMG    0x00140000      // KWAD image of doom.bin, loaded with the monitor (the bundle)
 #define BUNDLE_END  0x00400000
@@ -15,6 +15,8 @@
 #define SCROLLBACK  0x00800000      // HDMI console scrollback (fbcon.c), 1024 lines x 114 = 114 KB
 #define FAT_BUF     0x00820000      // FAT32 work buffers (../fat), 64 KB
 #define HISTORY     0x00830000      // command line history (mon.c), 32 x 256 bytes = 8 KB
+#define SCRIPT_COPY 0x00832000      // copy of BOLT's display script (video.c), 0x5030 bytes, to 0x837fff
+#define STACK       0x00840000      // the monitor's stack, 64 KB, top 0x00850000 (start.S)
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
 #define HEAP_END    0x01000000
 #define PROG_ADDR   0x01000000      // where programs run (doom.bin, kstb-run/build-c programs)

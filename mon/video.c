@@ -3,8 +3,10 @@
 //
 // BOLT always runs before us, so its RAM image (with SplashData, the display
 // script compiled into it) is there even when its splash was skipped
-// (env NO_SPLASH). We read the script from BOLT's RAM at run time and replay
-// BOLT's runner 0x07010374:
+// (env NO_SPLASH). kmon copies the script out of BOLT's RAM at start-up
+// (video_keep_script) into its own SCRIPT_COPY, so a program that overwrites
+// BOLT's RAM doesn't take the display set-up with it. We replay BOLT's
+// runner 0x07010374:
 //   1. write the register table, in order, no delays;
 //   2. point each display's flip registers at the framebuffer;
 //   3. copy each list entry's RDC lists into our own memory, chain them with
@@ -23,10 +25,12 @@
 #include "video.h"
 
 #define SPLASHDATA  0x07056f30      // in BOLT's RAM image
-#define SD_CHECK    0x07054318      // register table .. end of the last list's words
-#define SD_CHECK_LEN 0x4c30
-#define SD_CRC      0xb8aa6b9e      // of SD_CHECK, from the BOLT RAM image of 2026-10-16
+#define SD_CHECK    0x07054318      // register table .. end of the last list's words (0x07059347)
+#define SD_CHECK_LEN 0x5030
+#define SD_CRC      0x0ed66aea      // of SD_CHECK, from the BOLT RAM image of 2026-10-16
 
+#define HDMI_HPD    0xf06fa1a8      // bit 0: hot-plug detect, 1 = a TV is connected (tested by replugging)
+#define HDMI_RXSENSE 0xf06fa86c     // 3 = the TV's receiver terminates the lines, 0 = not (tested)
 #define FRAME_CNT   0xf0603484      // counts up once per frame while the display runs
 #define RDC_DESC    0xf0604000      // descriptor d: + d * 0x40
 #define RDC_LOCK    0xf0605000      // + (d / 2) * 8: 0 while a descriptor pair is changed
@@ -37,9 +41,32 @@
 struct sd_display { uint32_t surface, format, flip0, flip1; };
 struct sd_list    { uint32_t trigger, desc, count, offsets, words; };
 
-static int words_in(uint32_t a, uint32_t n)     // n words at a lie in BOLT's RAM image
+// Pointers inside SplashData are BOLT addresses in SD_CHECK; the copy holds
+// the same bytes at SCRIPT_COPY.
+static int words_in(uint32_t a, uint32_t n)     // n words at a lie in the script
 {
-    return a >= 0x07008000 && a + n * 4 <= 0x0706c000 && !(a & 3);
+    return a >= SD_CHECK && a + n * 4 <= SD_CHECK + SD_CHECK_LEN && !(a & 3);
+}
+
+static const void *at(uint32_t a)               // a BOLT script address in our copy
+{
+    return (const void *)(uintptr_t)(a - SD_CHECK + SCRIPT_COPY);
+}
+
+static int copy_ok(void)
+{
+    return crc32((const uint8_t *)SCRIPT_COPY, SD_CHECK_LEN) == SD_CRC;
+}
+
+// Keep a copy of the script, if BOLT's RAM still holds it. 0 = copy good.
+int video_keep_script(void)
+{
+    if (copy_ok())
+        return 0;
+    if (crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN) != SD_CRC)
+        return -1;
+    memcpy((void *)SCRIPT_COPY, (const void *)SD_CHECK, SD_CHECK_LEN);
+    return copy_ok() ? 0 : -1;
 }
 
 static inline uint32_t reg(uint32_t bus)        // table addresses are bus addresses
@@ -88,6 +115,11 @@ void video_status(void)
         printf(", frame counter %08lx", v);
     }
     printf("\n");
+    uint64_t rx = 0;
+    int hpd = video_hdmi_connected();
+    safe_read(HDMI_RXSENSE, 4, &rx);
+    printf("  HDMI: %s (hot-plug %08x bit 0), receiver sense %lx\n",
+           hpd < 0 ? "unreadable" : hpd ? "TV connected" : "no TV", HDMI_HPD, rx);
     for (int d = 0; d < 2; d++) {
         uint64_t addr = 0, cnt = 0, cfg = 0;
         safe_read(RDC_DESC + d * 0x40, 4, &addr);
@@ -96,7 +128,30 @@ void video_status(void)
         printf("  RDC descriptor %d: list %08lx, count %lx, config %08lx\n", d, addr, cnt, cfg);
     }
     uint32_t crc = crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN);
-    printf("  SplashData in BOLT's RAM: CRC %08x (%s)\n", crc, crc == SD_CRC ? "as decoded" : "DIFFERENT");
+    printf("  SplashData in BOLT's RAM: CRC %08x (%s); our copy at %08x: %s\n", crc,
+           crc == SD_CRC ? "as decoded" : "DIFFERENT", SCRIPT_COPY, copy_ok() ? "good" : "missing");
+}
+
+// HDMI cable: 1 = TV connected, 0 = not, -1 = registers unreadable
+int video_hdmi_connected(void)
+{
+    uint64_t v;
+    return safe_read(HDMI_HPD, 4, &v) ? -1 : (int)(v & 1);
+}
+
+// Called from the console's idle loop: print a line when the TV comes or goes.
+void video_hdmi_poll(void)
+{
+    static int last = -2;
+    static uint64_t next;
+    uint64_t t = now_us();
+    if (t < next)
+        return;
+    next = t + 200000;
+    int c = video_hdmi_connected();
+    if (last != -2 && c != last && c >= 0)
+        printf("\nhdmi: TV %s\n", c ? "connected" : "disconnected");
+    last = c;
 }
 
 // Build and start the lists of one list entry, as BOLT's runner does.
@@ -104,8 +159,7 @@ void video_status(void)
 static int start_lists(const struct sd_list *e, uint32_t format, uint32_t *mem, uint32_t lim)
 {
     uint32_t d = e->desc, n = e->count;
-    const uint32_t *off = (const uint32_t *)(uintptr_t)e->offsets;
-    const uint32_t *words = (const uint32_t *)(uintptr_t)e->words;
+    const uint32_t *off = at(e->offsets);
 
     // The format check at 0x07010406: with these formats, descriptors -1..1
     // get the lock bracket (RDC_LOCK = 1) at the end of each tail.
@@ -134,7 +188,7 @@ static int start_lists(const struct sd_list *e, uint32_t format, uint32_t *mem, 
             return -2;
         list[k] = a;
         *mem = a + (len + extra) * 4;
-        memcpy((void *)(uintptr_t)a, words + off[k], len * 4);
+        memcpy((void *)(uintptr_t)a, at(e->words + off[k] * 4), len * 4);
     }
     // The tail at the end of list k-1 starts list k
     for (uint32_t k = 1; k < n; k++) {
@@ -168,13 +222,12 @@ static int start_lists(const struct sd_list *e, uint32_t format, uint32_t *mem, 
 
 int video_init(int force)
 {
-    const uint32_t *sd = (const uint32_t *)SPLASHDATA;
-    uint32_t crc = crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN);
-    if (crc != SD_CRC && !force) {
-        printf("video: SplashData in BOLT's RAM has CRC %08x, not %08x ('video! init' to try anyway)\n",
-               crc, SD_CRC);
+    if (video_keep_script()) {
+        printf("video: no good copy of BOLT's display script (BOLT's RAM: CRC %08x, not %08x)\n",
+               crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN), SD_CRC);
         return -1;
     }
+    const uint32_t *sd = at(SPLASHDATA);
     int r = video_running();
     if (r != 0 && !force) {
         printf("video: the display %s; not touching it ('video! init' to do it anyway)\n",
@@ -182,9 +235,9 @@ int video_init(int force)
         return -1;
     }
     uint32_t ndisp = sd[4], nlist = sd[6], nreg = sd[8];
-    const struct sd_display *disp = (const void *)(uintptr_t)sd[5];
-    const struct sd_list *lists = (const void *)(uintptr_t)sd[7];
-    const uint32_t *table = (const uint32_t *)(uintptr_t)sd[9];
+    const struct sd_display *disp = at(sd[5]);
+    const struct sd_list *lists = at(sd[7]);
+    const uint32_t *table = at(sd[9]);
     if (ndisp < 1 || ndisp > 4 || nlist > 16 || nreg > 4096 || !words_in(sd[5], ndisp * 4) ||
         !words_in(sd[7], nlist * 5) || !words_in(sd[9], nreg * 2)) {
         printf("video: SplashData doesn't look right (%u displays, %u lists, %u registers)\n",

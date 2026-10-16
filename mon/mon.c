@@ -120,6 +120,7 @@ static void kbd_poll(void)
 static int uart_ready(void)
 {
     kbd_poll();
+    video_hdmi_poll();                          // "hdmi: TV connected/disconnected"
     net_poll();                                 // answer ARP and ping while waiting
     if (kq_head != kq_tail || irq_rx_ready())
         return 1;
@@ -1735,8 +1736,9 @@ static void cmd_mmc(struct cmd *c)
             printf("usage: mmc %s lba count [addr]   (512-byte sectors; addr default 2000000)\n", sub);
             return;
         }
-        uint64_t end = a + n * 512;                 // RAM side: not the monitor, its heap, or non-RAM
-        if (a < 0x00001000 || end > 0x7d600000 || (a < DOOM_IMG && end > MON_ADDR) ||
+        uint64_t end = a + n * 512;                 // RAM side: not the monitor, its buffers and stack,
+        if (a < 0x00001000 || end > 0x7d600000 || (a < DOOM_IMG && end > MON_ADDR) ||   // its heap, or non-RAM
+            (a < STACK + 0x10000 && end > DMA_BASE) ||
             (a < HEAP_END && end > HEAP_BASE)) {
             printf("mmc: RAM %08lx + %lx refused\n", a, n * 512);
             return;
@@ -2058,6 +2060,7 @@ void mon_main(int how, long status)
     else
         show_exception();
     if (how == 0) {
+        video_keep_script();                    // before a program can overwrite BOLT's RAM
         if (video_running() == 0 && !video_init(0))   // BOLT's splash didn't run: our own display
             con_init();                         // (before boot_confirm: a hang here trips kboot's watchdog)
         boot_confirm();

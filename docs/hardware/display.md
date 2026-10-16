@@ -537,15 +537,27 @@ match this word for word, and descriptor 1's counts are its list lengths
 
 ### Our own display start: kmon `video init` (tested 2026-10-16)
 
-[`../../mon/video.c`](../../mon/video.c) replays the runner: it reads SplashData from
-BOLT's RAM at run time (nothing of Broadcom's is copied into the repo), writes
-the register table and the flip registers, builds the lists in its own
-memory at `0x7d9f8000` and starts them as above. The framebuffer stays
-BOLT's `0x7db0b700`. Before it starts, it checks the CRC of
-`0x07054318–0x07058f47` (register table to the end of the last list's
-words) = `b8aa6b9e`. That range is the same with and without the splash
-(compared on the board). The word after it, `0x07059348`, is the runner's
-own variable and differs (`ffffffff` when the splash didn't run).
+[`../../mon/video.c`](../../mon/video.c) replays the runner. It takes SplashData from
+BOLT's RAM (nothing of Broadcom's is copied into the repo), writes the
+register table and the flip registers, builds the lists in its own memory at
+`0x7d9f8000` and starts them as above. The framebuffer stays BOLT's
+`0x7db0b700`.
+
+**The script range is `0x07054318–0x07059347`** (`0x5030` bytes, CRC
+`0ed66aea`): register table, SplashData, list offsets, and the words of both
+list entries. List entry 9 (trigger `19`, 6 lists) has its words at
+`0x07058a20–0x07059347`. An earlier version of this section gave
+`0x07058f47` (CRC `b8aa6b9e` for `0x4c30` bytes), which leaves out the last
+1 KB. The full range is the same with and without the splash (compared on
+the board, both CRC `0ed66aea`).
+
+**kmon copies the range at start-up** to its own RAM at `0x00832000`
+(CRC-checked) and builds the lists from the copy, so a program that
+overwrites BOLT's RAM no longer breaks `video init`. Tested 2026-10-16:
+BOLT's range filled with zeros (CRC then `87a8018d`), then `video! init` with
+BOLT's splash lists running. kmon built 8 + 6 lists from its copy, and the
+display ran on them (descriptor 0 at `7d9f9920`, frame counter moving). On a
+boot without the splash, kmon started the display and audio from the copy.
 
 Tested on a boot where BOLT skipped its splash (Ctrl-S,
 [`../booting.md`](../booting.md)):
@@ -561,6 +573,30 @@ The 1381 register writes take 297 µs. The display needs a few frames after
 the last write before the frame counter moves. At start-up, kmon does this
 itself when the frame counter stands still, before it confirms the boot to
 kboot. With BOLT's splash running, it leaves the display alone (tested).
+
+### HDMI cable and TV (tested 2026-10-16)
+
+Two snapshots of every readable HDMI transmitter register (`0xf06fa000–
+0xf06fafff`, 571 words), with the cable in and out, differed only in the
+counters and these:
+
+| Register | Cable in | Cable out | Reading |
+|---|---|---|---|
+| `0xf06fa1a8` | `1` | `0` | **hot-plug detect**, bit 0 |
+| `0xf06fa86c` | `3` | `0` | receiver sense (the TV terminates the lines) |
+| `0xf06fa848` | `001a5a8f` | `001a5a80` | low 4 bits follow the cable (meaning unknown) |
+| `0xf06fa900`, `0xf06fa918` | `0061807c` | `0061807e`, then `…7f` after replugging | bit 1 set at unplug, bit 0 at plug: latched events (inferred: interrupt status, the source of GIC 59) |
+
+The display keeps running without a TV (frame counter moving), and nothing
+needs redoing when the TV comes back:
+
+| Test | Result |
+|---|---|
+| unplug, replug while kmon runs | console back on the TV by itself; kmon printed `hdmi: TV disconnected`, `hdmi: TV connected` |
+| boot with no TV, BOLT's splash | the splash starts the display anyway; `video`: `no TV`; TV plugged in: console shows |
+| boot with no TV, no splash (Ctrl-S) | kmon starts display and audio itself; TV plugged in: console shows, `beep` heard |
+
+Not tested: a TV that is switched off but still connected, and other TVs.
 
 ### `load -splash`
 

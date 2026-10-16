@@ -403,6 +403,5 @@ exc_frame:      .space 37 * 8                   // x0-x30, sp, elr, esr, type, f
 pt_l1:  .space  4096
 pt_l2:  .space  4096
 pt_l0g: .space  4096
-        .balign 16
-        .space  0x10000                         // 64 KB stack
-stack_top:
+        .set    stack_top, 0x00850000           // 64 KB stack 0x00840000-0x0084ffff, outside the
+                                                // monitor (kstb.h STACK)

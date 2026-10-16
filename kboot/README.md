@@ -27,9 +27,10 @@ The EL3 monitor also starts and stops cores 1–3 (PSCI CPU_ON, CPU_OFF,
 AFFINITY_INFO, since 2026-10-16:
 [`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md) "Our own CPU_ON and CPU_OFF").
 
-Current images (2026-10-16): golden seq 27 and slot A seq 26, both
-`kmon-usb-reset` (845,312 bytes, CRC `e8f60bf8`; own USB controller reset,
-[`../docs/hardware/usb.md`](../docs/hardware/usb.md) "Our own USB start"). Before that, `kmon-mmc-init`
+Current images (2026-10-16): golden seq 33 and slot A seq 32, both
+`kmon-hdmi-hpd` (845,312 bytes, CRC `02847314`; own copy of the display
+script, HDMI hot-plug). Before that, `kmon-usb-reset` (CRC `e8f60bf8`; own USB
+controller reset, [`../docs/hardware/usb.md`](../docs/hardware/usb.md) "Our own USB start"), and `kmon-mmc-init`
 (844,800 bytes, CRC `73315587`); `kboot.bin` 21,704 bytes,
 CRC `a3fce739`, in both places. Tested after `slot! loader`: a software
 reset → STARTUP → kboot at EL3 → `kboot: eMMC reset and set up in 25 ms` →

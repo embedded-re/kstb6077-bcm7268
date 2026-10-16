@@ -217,26 +217,35 @@ kmon> run prog.bin                              # later, with no PC: read it and
 ```
 
 Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
-(`0x00600000–0x00831fff`) and the heap are refused as `fget` targets.
+(`0x00600000–0x0084ffff`) and the heap are refused as `fget` targets.
 
 ## Video (`video`, [`video.c`](video.c))
 
 When BOLT skipped its boot splash, the HDMI output is dark and nothing runs
-the display. `video init` sets it up the way BOLT's splash does: it reads
-BOLT's display script from BOLT's RAM, writes its 1381 registers and starts
-the display lists from kmon's own memory (`0x7d9f8000`). At start-up kmon
+the display. `video init` sets it up the way BOLT's splash does: it takes
+BOLT's display script, writes its 1381 registers and starts the display
+lists from kmon's own memory (`0x7d9f8000`). kmon copies the script out of
+BOLT's RAM at start-up (to `0x00832000`, CRC-checked), so a program that
+overwrites BOLT's RAM doesn't break a later `video init`. At start-up kmon
 does this by itself when the frame counter stands still. With the splash,
 it leaves the display alone. Details:
 [`../docs/hardware/display.md`](../docs/hardware/display.md), "Our own display start".
 
 ```
-kmon> video                 display running?, RDC descriptors, CRC of BOLT's script
+kmon> video                 display running?, TV on the cable?, RDC descriptors, script copy
 kmon> video init            refused while the display runs ('video! init' anyway)
 ```
 
 Tested 2026-10-16 with `tools/kstb-nosplash`: at start-up `video: display
 running (frame counter moves)`, then the console on the TV and sound from
 `beep` (both checked on the TV).
+
+**HDMI cable / TV** (tested 2026-10-16): at the prompt kmon prints
+`hdmi: TV disconnected` and `hdmi: TV connected` when the cable is pulled or
+plugged in (hot-plug bit `0xf06fa1a8`). Nothing has to be redone: the output
+keeps running, and the console comes back on the TV by itself. Booting with
+no TV works too, with and without BOLT's splash; picture and sound appear when
+the cable goes in.
 
 ## Sound (`audio`, `beep`, `play`, [`audio.c`](audio.c))
 
@@ -358,15 +367,17 @@ exactly that once, and the CRC check caught it.
 
 | Range | Use |
 |---|---|
-| `0x00100000–0x0013ffff` | the monitor: code, data, 64 KB stack, page tables (≤ 256 KB, checked by `link.ld`) |
+| `0x00100000–0x0013ffff` | the monitor: code, data, page tables (≤ 256 KB, checked by `link.ld`; ends at `0x1307b0` since the stack moved out) |
 | `0x00140000–` | `doom.bin` in a `KWAD` header (from the bundle) |
 | `0x00600000–0x007fffff` | DMA block, non-cacheable: USB descriptors and buffers |
 | `0x00800000–0x0081c7ff` | HDMI console scrollback (1024 lines) |
 | `0x00820000–0x0082ffff` | FAT32 work buffers (`FAT_BUF`) |
 | `0x00830000–0x00831fff` | command line history (32 lines) |
+| `0x00832000–0x00837fff` | copy of BOLT's display script (`0x5030` bytes, `video init`) |
+| `0x00840000–0x0084ffff` | the monitor's stack (64 KB) |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |
-| `0x07054318–0x07058f47` | read only: BOLT's display script (SplashData), used by `video init` |
+| `0x07054318–0x07059347` | read only: BOLT's display script (SplashData), copied at start-up |
 | `0x10000000–0x10dc6fff` | the WAD (`KWAD` image), loaded by BOLT |
 | `0x7d9f8000–0x7d9fffff` | kmon's display lists (`video init`) |
 | `0x7da00000–0x7da2edff` | kmon's audio ring buffer, when BOLT didn't start the audio |
