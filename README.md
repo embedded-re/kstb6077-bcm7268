@@ -37,7 +37,7 @@ Each row links to the chapter that describes it.
 |---|---|---|
 | Serial console | UART0, 16550-compatible, 115200 8N1, at `0xf040c000`; 5-pin header on the PCB | [`docs/booting.md`](docs/booting.md) |
 | More UARTs | UART1 `0xf040d000`, UART2 `0xf040e000`: 16550, 81 MHz clock, working (loopback-tested), unused by BOLT; pins unknown | [`docs/hardware/uart.md`](docs/hardware/uart.md) |
-| Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s full duplex (10/100 PHY). After BOLT the MAC is idle with no address | [`docs/hardware/ethernet.md`](docs/hardware/ethernet.md) |
+| Ethernet | GENET v5 at `0xf0480000`, internal BCM7268 PHY (ID `0xae025091`), 100 Mbit/s full duplex (10/100 PHY). After BOLT the MAC is idle with no address. kmon has its own polled driver: DHCP, ping both ways, TFTP get/put at ~1.9 MB/s | [`docs/hardware/ethernet.md`](docs/hardware/ethernet.md) |
 | Wi-Fi | Broadcom **BCM43570** on PCIe (`14e4:aa31`, chip `0xaa32`); power switched by AON GPIO 21 and 26 | [`docs/stock-firmware.md`](docs/stock-firmware.md) |
 | Bluetooth | Broadcom USB adapter `0a5c:2045` | |
 | USB | 5 host controllers at `0xf0b00300–0xf0b01000` (2× EHCI, 2× OHCI, xHCI); one USB-A port = EHCI1/OHCI1, internal BT = EHCI0/OHCI0. Controllers are reset by `go`, PHY stays up: OHCI1 driven from EL2: control and interrupt transfers, a HID keyboard (kmon, Doom) and a USB stick enumerated | [`docs/hardware/usb.md`](docs/hardware/usb.md) |

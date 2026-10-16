@@ -19,6 +19,7 @@
 #include "mon.h"
 #include "mmc.h"
 #include "../kboot/slot.h"
+#include "net.h"
 
 void uart_putc(char c);
 extern void (*libc_output_hook)(const char *s, size_t n);
@@ -117,6 +118,7 @@ static void kbd_poll(void)
 static int uart_ready(void)
 {
     kbd_poll();
+    net_poll();                                 // answer ARP and ping while waiting
     if (kq_head != kq_tail || irq_rx_ready())
         return 1;
     return !irq_uart_on() && (read32(UART0 + 0x14) & 1);   // LSR bit 0: byte received
@@ -1084,6 +1086,108 @@ static void cmd_slot(struct cmd *c)
     }
 }
 
+// ---------------- network (net.c) ----------------
+
+static uint32_t tftp_server;
+
+static void cmd_net(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    uint32_t ip, mask = 0xffffff00, gw = 0;
+    if (!*sub)
+        net_status();
+    else if (!strcmp(sub, "up"))
+        net_up();
+    else if (!strcmp(sub, "stop")) {
+        net_stop();
+        printf("net: stopped\n");
+    } else if (!strcmp(sub, "dhcp"))
+        net_dhcp();
+    else if (!strcmp(sub, "ip") && c->argc >= 2 && parse_ip(c->argv[1], &ip) &&
+             (c->argc < 3 || parse_ip(c->argv[2], &mask)) && (c->argc < 4 || parse_ip(c->argv[3], &gw))) {
+        if (net_up())
+            return;
+        net_set_ip(ip, mask, gw);
+        net_status();
+    } else
+        printf("usage: net                       status\n"
+               "       net up | stop             start / stop the Ethernet MAC\n"
+               "       net dhcp                  get an address\n"
+               "       net ip a.b.c.d [mask [gateway]]   set one (mask default 255.255.255.0)\n");
+}
+
+static void cmd_ping(struct cmd *c)
+{
+    uint32_t ip;
+    uint64_t n = 4;
+    if (!c->argc || !parse_ip(c->argv[0], &ip) || arg_num(c, 1, &n) < 0) {
+        printf("usage: ping a.b.c.d [count]   (count in hex or #decimal)\n");
+        return;
+    }
+    if (!net_up())
+        net_ping(ip, n ? n : 1);
+}
+
+// host:file -> server address and file name; a file alone uses the last server
+static const char *tftp_target(const char *arg, uint32_t *server)
+{
+    static char host[32];
+    const char *colon = strchr(arg, ':');
+    if (!colon) {
+        *server = tftp_server;
+        return *server ? arg : NULL;
+    }
+    int n = colon - arg;
+    if (n >= (int)sizeof host)
+        return NULL;
+    memcpy(host, arg, n);
+    host[n] = 0;
+    if (!parse_ip(host, server))
+        return NULL;
+    tftp_server = *server;
+    return colon + 1;
+}
+
+static void cmd_tftp(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    uint32_t server;
+    const char *file = c->argc >= 2 ? tftp_target(c->argv[1], &server) : NULL;
+    if ((strcmp(sub, "get") && strcmp(sub, "put")) || !file || !*file) {
+        printf("usage: tftp get host:file [addr]       to RAM (default %08x); then go, fput, slot a\n"
+               "       tftp put host:file [addr len]   RAM to the server (default: the last load/fget)\n"
+               "       host is an IP address; it is remembered, so later 'file' alone works\n", PROG_ADDR);
+        return;
+    }
+    if (net_up())
+        return;
+    if (!strcmp(sub, "get")) {
+        uint64_t a = PROG_ADDR;
+        if (arg_num(c, 2, &a) < 0)
+            return;
+        uint64_t max = a < 0x06000000 ? 0x06000000 - a : 0;
+        if (!max || !allowed(a, max, DANGER_W, c->force) || (a < HEAP_END && a + max > HEAP_BASE)) {
+            printf("tftp: %08lx: use RAM above the monitor's heap and below 0x06000000\n", a);
+            return;
+        }
+        long n = tftp_get(server, file, (uint8_t *)a, max);
+        if (n > 0) {
+            load_addr = a, load_size = n;
+            printf("tftp: %ld bytes at %08lx, CRC %08x\n", n, a, crc32((const uint8_t *)a, n));
+        }
+    } else {
+        uint64_t a = load_addr, len = load_size;
+        if (arg_num(c, 2, &a) < 0 || arg_num(c, 3, &len) < 0)
+            return;
+        if (!len || a + len > 0x80000000 || !allowed(a, len, DANGER_R, c->force)) {
+            printf("tftp: nothing to send (give addr len)\n");
+            return;
+        }
+        printf("tftp: sending %lu bytes from %08lx, CRC %08x\n", len, a, crc32((const uint8_t *)a, len));
+        tftp_put(server, file, (const uint8_t *)a, len);
+    }
+}
+
 static void cmd_go(struct cmd *c)
 {
     uint64_t a = load_addr;
@@ -1092,6 +1196,7 @@ static void cmd_go(struct cmd *c)
     printf("go %08lx (MMU off, like BOLT's go -64; a program returns by jumping to x2)\n", a);
     irq_off();
     usb_stop();
+    net_stop();
     run_program(a);
 }
 
@@ -1149,6 +1254,7 @@ static void cmd_doom(struct cmd *c)
     printf("starting Doom (%u bytes); quitting from its menu comes back here\n", img->size);
     irq_off();
     usb_stop();
+    net_stop();
     run_program(PROG_ADDR);
 }
 
@@ -1641,6 +1747,7 @@ static void cmd_run(struct cmd *c)
         printf("go %08x\n", PROG_ADDR);
         irq_off();
         usb_stop();
+        net_stop();
         run_program(PROG_ADDR);
     }
 }
@@ -1706,6 +1813,9 @@ static const struct {
     { "calc",    cmd_calc,    "expr",                       "evaluate a number/name expression" },
     { "load",    cmd_load,    "[addr]",                     "receive a file over serial (tools/kstb-send)" },
     { "send",    cmd_send,    "addr len",                   "send RAM over serial (tools/kstb-recv)" },
+    { "net",     cmd_net,     "[up|stop|dhcp|ip a.b.c.d]",  "Ethernet: status, start, address" },
+    { "ping",    cmd_ping,    "a.b.c.d [count]",            "ICMP echo" },
+    { "tftp",    cmd_tftp,    "get|put host:file ...",      "TFTP: file to RAM, RAM to file" },
     { "slot",    cmd_slot,    "[a|golden|loader|retry|clear]", "kmon images for kboot: show, write" },
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
@@ -1732,7 +1842,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 

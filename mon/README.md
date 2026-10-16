@@ -52,6 +52,10 @@ find[.b|.h|.w|.q] addr len value
 calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
 send addr len                  send RAM over serial (tools/kstb-recv)
+net [up|stop|dhcp|ip a.b.c.d]  Ethernet: status, start/stop, DHCP or a fixed address (see below)
+ping a.b.c.d [count]           ICMP echo; kmon also answers pings while it waits at the prompt
+tftp get host:file [addr]      file from a TFTP server to RAM (default 0x01000000)
+tftp put host:file [addr len]  RAM to a file on the server (default: the last load/fget)
 slot [a|golden|loader|retry|clear]  images for kboot: show (CRC-checked), write (../kboot/README.md)
 go [addr]                      start a program like BOLT's go -64 (default: last load)
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
@@ -195,6 +199,28 @@ kmon> run prog.bin                              # later, with no PC: read it and
 
 Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
 (`0x00600000–0x0082ffff`) and the heap are refused as `fget` targets.
+
+## Network (`net`, `ping`, `tftp`, [`net.c`](net.c))
+
+The Ethernet port, with kmon's own GENET driver (polled; details and tests
+in [`../docs/hardware/ethernet.md`](../docs/hardware/ethernet.md)). Off at start; `net dhcp`,
+`net ip`, `ping` and `tftp` start it. It is stopped before `go`, `run` and
+`doom`, so its DMA doesn't write into a program's memory. On the PC,
+[`../tools/tftpd`](../tools/tftpd) serves files and receives `tftp put`.
+
+```
+kmon> net dhcp
+dhcp: 192.168.1.33, mask 255.255.255.0, gateway 192.168.1.1, from 192.168.1.1
+kmon> tftp get 192.168.1.38:kmon.img 0x02000000
+tftp: 844800 bytes in 420 ms (1963 KB/s, 512-byte blocks)
+tftp: 844800 bytes at 02000000, CRC cbc5f298
+kmon> slot a 0x02000000 #844800 my-build          an update, without the serial line
+kmon> tftp put 192.168.1.38:copy.bin 0x02000000 #844800
+```
+
+The server address is remembered: a later `tftp get kmon.img` uses it.
+Only IPv4 addresses, no DNS. Every received file is CRC-printed; compare it
+with the file on the PC.
 
 ## Trying a new build without flashing (`mon-ram.bin`)
 

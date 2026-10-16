@@ -72,6 +72,58 @@ PHY registers, read with BOLT's `mii read mdio0 1 <reg>` (cable in):
 Both sides advertise 100 full duplex, so that is the link speed (matches
 BOLT's `100 Mbps Full-Duplex` in [`../bolt/bolt.md`](../bolt/bolt.md)).
 
+## What BOLT's driver sets up (tested 2026-10-16)
+
+The same registers read with kmon's abort-safe `md`: once after a plain
+boot (BOLT's network never started), once after `ifconfig eth0 -auto` and
+a `ping`, with kmon started by `go -64 -noclose` so BOLT left the network
+open. The block layout is Linux `bcmgenet`'s for GENET v5 (RDMA at
+`+0x2000`, TDMA at `+0x4000`, 3 words per descriptor, 256 descriptors, ring
+registers after them, ring 16 = the default ring); every value below fits
+it.
+
+| Register | After a plain boot | After BOLT `ifconfig` | Meaning |
+|---|---|---|---|
+| `+0x004` SYS_PORT_CTRL | `0` | `0` | port mode 0 = internal EPHY |
+| `+0x300` RBUF_CTRL | `0000c040` | `0000c040` | no 64-byte receive status block, no 2-byte alignment |
+| `+0x808` UMAC_CMD | `010000d8` | `00000007` | TX + RX on, speed field 1 = 100 Mbit/s, full duplex, not promiscuous, CRC not forwarded |
+| `+0x80c` / `+0x810` MAC0 / MAC1 | `0` / `0` | `90f891e7` / `0000000a` | 90:f8:91:e7:00:0a |
+| `+0x3000` RX ring 16 | zeros | buffer size `00400800` (64 descriptors × 2048), end `0xbf` (= 64 × 3 − 1), producer `0x39`, consumer `0x1c` | 64 receive buffers at `0x0765xxxx` (BOLT's RAM) |
+| `+0x2000` RX descriptors | zeros | e.g. `003c7fc0`, `07651000`, `0`: 60 bytes, start + end of frame, broadcast | received frames arrive **without CRC** (a 60-byte ARP) |
+| `+0x5000` TX ring 16 | zeros | buffer size `00010800`: **1** descriptor, end `2`; producer = consumer = 9 | |
+| `+0x4000` TX descriptor | zeros | `002a6040`, `07672000`, `0`: 42 bytes, `SOP + EOP + append CRC` | BOLT sends short frames unpadded |
+| `+0x3040` / `+0x5040` RING_CFG, CTRL, STATUS, BURST | `00010000`, `0`, `0003ffff`, `10` | `00010000`, **`00020001`**, `0001fffe`, `10` | CTRL = DMA on + ring 16 |
+
+The MAC address is stored in the `macadr` partition (LBA 34), in binary at
+offset `0x0c` and repeated after it: `90 f8 91 e7 00 0a ff ff 90 f8 …`.
+
+## The kmon driver (tested 2026-10-16)
+
+[`../../mon/net.c`](../../mon/net.c): polled, ring 16 only, set up like BOLT's
+(above), with 64 receive and 4 transmit buffers of 2 KB in kmon's
+non-cacheable DMA block (`0x00700000`). Order: DMA off and wait for
+DMA_STATUS bit 0, UniMAC soft reset (UMAC_CMD bit 13, then
+SYS_RBUF_FLUSH_CTRL bit 1 toggled, as Linux does), UMAC_CMD = 100 Mbit/s,
+MAC address from `macadr`, descriptors and ring registers, DMA_CTRL =
+`00020001` on both, UMAC_CMD = `00000007`. Receive: frames between the
+software consumer index and RX ring `+0x08` (producer); the consumer index
+is written back to `+0x0c`. Transmit: the descriptor's length/status is
+written, then the producer index `+0x0c`; ring `+0x08` is the hardware's
+consumer index.
+
+| Test | Result |
+|---|---|
+| `net up` after a plain boot, and after BOLT's network was left open | MAC programmed, link up (PHY register 1), frames received |
+| DHCP | `192.168.1.33`, mask `255.255.255.0`, gateway `192.168.1.1` from the router; also after a reset with BOLT's network never started |
+| ping kmon → PC | 4 of 4, 0.17–0.24 ms |
+| ping PC → kmon (answered from the idle prompt) | 4 of 4, 0 % loss, 0.20 ms average |
+| TFTP get, 844,800 bytes from [`tools/tftpd`](../../tools/tftpd) | 420 ms (~1.9 MB/s, 512-byte blocks), CRC `cbc5f298` = the file |
+| TFTP put, the same 844,800 bytes | 421 ms, the PC's file has CRC `cbc5f298` |
+| `net stop` | both DMA_CTRL `0`, UMAC_CMD `4` (TX and RX off); `net up` again works |
+
 ## Open questions
 
-- A bare-metal driver: MAC address, DMA rings, sending and receiving frames.
+- Throughput with larger TFTP blocks: kmon asks for `blksize 1468`, but
+  [`tools/tftpd`](../../tools/tftpd) ignores options and answers with 512-byte blocks.
+  dnsmasq accepts the option (not tested).
+- Interrupts (GENET's INTRL2) instead of polling; more than one RX/TX ring.

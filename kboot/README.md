@@ -79,14 +79,18 @@ kmon> slot clear                            remove slot A's header: kboot starts
 it back and compares the CRC, then writes the header. A write cut short
 therefore leaves no valid header, and kboot starts golden.
 
-Trying a new kmon build:
+Trying a new kmon build, over the network (tested 2026-10-16):
 
 ```
-make -C mon
-tools/kstb-send --addr 0x02000000 mon/build/kmon.img     # ~73 s over serial
+make -C mon && cp mon/build/kmon.img doom/build/          # into the TFTP root
+kmon> net dhcp
+kmon> tftp get 192.168.1.38:kmon.img 0x02000000           # 0.4 s
 kmon> slot a 0x02000000 #844800 my-build
 kmon> reset                                               # kboot starts slot A
 ```
+
+Over serial instead: `tools/kstb-send --addr 0x02000000 mon/build/kmon.img`
+(~73 s; the serial line has dropped bytes, the CRC check catches it).
 
 If the build is bad, the box comes back on golden after 3 watchdog resets
 (about 2 minutes). Once a build is good, `slot! golden` makes it the new

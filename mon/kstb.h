@@ -11,6 +11,7 @@
 #define DOOM_IMG    0x00140000      // KWAD image of doom.bin, loaded with the monitor (the bundle)
 #define BUNDLE_END  0x00400000
 #define DMA_BASE    0x00600000      // 2 MB, mapped non-cacheable: USB descriptors and buffers
+#define NET_BUF     0x00700000      //   Ethernet frame buffers (net.c): 64 x 2 KB receive, 4 x 2 KB transmit
 #define SCROLLBACK  0x00800000      // HDMI console scrollback (fbcon.c), 1024 lines x 114 = 114 KB
 #define FAT_BUF     0x00820000      // FAT32 work buffers (../fat), 64 KB
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
