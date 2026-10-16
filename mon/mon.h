@@ -43,6 +43,7 @@ int irq_ir_on(void);
 
 // mon.c
 void ir_setup(void);
+uint32_t crc32(const uint8_t *p, unsigned long n);
 
 // fbcon.c
 void con_init(void);

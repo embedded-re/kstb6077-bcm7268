@@ -14,9 +14,12 @@
 #define NET_BUF     0x00700000      //   Ethernet frame buffers (net.c): 64 x 2 KB receive, 4 x 2 KB transmit
 #define SCROLLBACK  0x00800000      // HDMI console scrollback (fbcon.c), 1024 lines x 114 = 114 KB
 #define FAT_BUF     0x00820000      // FAT32 work buffers (../fat), 64 KB
+#define HISTORY     0x00830000      // command line history (mon.c), 32 x 256 bytes = 8 KB
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
 #define HEAP_END    0x01000000
 #define PROG_ADDR   0x01000000      // where programs run (doom.bin, kstb-run/build-c programs)
+#define VIDEO_LISTS 0x7d9f8000      // our RDC display lists (video.c), 32 KB, non-cacheable, after the
+#define VIDEO_LISTS_LEN 0x8000      //   second framebuffer 0x7d600000-0x7d9f47ff
 #define WAD_ADDR    0x10000000      // the WAD's KWAD image (loaded by BOLT, or by `doom` itself)
 #define WAD_OFFSET  0x100000        // where it is in flash0.splash (docs/hardware/storage.md)
 #define BUNDLE_OFFSET 0xf00000      // the kmon bundle in flash0.splash

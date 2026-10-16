@@ -21,6 +21,7 @@
 #include "../kboot/slot.h"
 #include "net.h"
 #include "audio.h"
+#include "video.h"
 
 void uart_putc(char c);
 extern void (*libc_output_hook)(const char *s, size_t n);
@@ -181,7 +182,7 @@ static int uart_getc_timeout(uint32_t ms)
 
 // ---------------- CRC32 ----------------
 
-static uint32_t crc32(const uint8_t *p, size_t n)
+uint32_t crc32(const uint8_t *p, size_t n)
 {
     static uint32_t table[256];
     if (table[1] == 0)
@@ -202,7 +203,7 @@ static uint32_t crc32(const uint8_t *p, size_t n)
 #define LINE    256
 #define HIST    32
 
-static char history[HIST][LINE];
+static char (*const history)[LINE] = (char (*)[LINE])HISTORY;     // HIST lines, outside the monitor
 static int hist_n;                              // lines stored (total, may exceed HIST)
 
 static const char *const commands[];            // for Tab completion, defined below
@@ -1119,6 +1120,18 @@ static void cmd_audio(struct cmd *c)
         audio_status();
 }
 
+static void cmd_video(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    if (!strcmp(sub, "init")) {
+        if (!video_init(c->force))
+            con_init();                         // the console into the new display
+    } else if (!*sub)
+        video_status();
+    else
+        printf("usage: video [init]   ('video! init' also when the display runs)\n");
+}
+
 static void cmd_beep(struct cmd *c)
 {
     uint32_t hz = 440, ms = 500;
@@ -1880,6 +1893,7 @@ static const struct {
     { "calc",    cmd_calc,    "expr",                       "evaluate a number/name expression" },
     { "load",    cmd_load,    "[addr]",                     "receive a file over serial (tools/kstb-send)" },
     { "send",    cmd_send,    "addr len",                   "send RAM over serial (tools/kstb-recv)" },
+    { "video",   cmd_video,   "[init]",                     "HDMI video: status, set up the display ourselves" },
     { "audio",   cmd_audio,   "[init|stop]",                "HDMI sound: status, start, silence" },
     { "beep",    cmd_beep,    "[hz [ms]]",                  "a test tone on the TV" },
     { "play",    cmd_play,    "[file.wav]",                 "play a WAV (PCM 8/16 bit, any rate)" },
