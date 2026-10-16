@@ -449,6 +449,58 @@ BOLT is built from Broadcom's splash app (`splash/BSEAV/app/splash/splashrun/`).
 Other strings in the same code: `Splash screen disabled via Ctrl-S` (a
 boot-time key), and the default file name `splash.bmp`.
 
+### SplashData and the script runner (reverse-engineered 2026-10-16)
+
+Read from BOLT's RAM image (`0x07008000–0x0706bfff`, sent to the PC with
+kmon `tftp put 192.168.1.38:bolt_ram.bin 0x07008000 0x64000`; code-section
+CRC `d4e64a5f`, the same as in [`../bolt/bolt.md`](../bolt/bolt.md) §11) and from BOLT's
+code, disassembled as Thumb-2. Addresses in the tables are bus addresses
+(`0x2xxxxxxx`); BOLT ORs in `0xd0000000`, so `0x206fa0c8` is `0xf06fa0c8`.
+
+SplashData at `0x07056f30`:
+
+| Offset | Value | Meaning |
+|---|---|---|
+| `+0x08` / `+0x0c` | `1` / `0x07056f68` | surfaces: `{…, 0x780, 0x438, pitch 0xf00, "splash.bmp"}`, entry `0x114` bytes |
+| `+0x10` / `+0x14` | `1` / `0x07056f58` | displays, 16 bytes each: `{surface 0, format 22, 0x20603488, 0x2060348c}` |
+| `+0x18` / `+0x1c` | `12` / `0x07056e40` | list entries, 20 bytes each; only two are used (below), the rest start with `ffffffff` |
+| `+0x20` / `+0x24` | `0x565` (1381) / `0x07054318` | register table: (address, value) pairs; it ends exactly at `0x07056e40` |
+
+The runner `0x07010374`, called at the end of the draw step `0x07011608`:
+
+1. Writes the 1381 register pairs in table order, one store each, no delays
+   or read-backs (`0x0701038e–0x070103a8`).
+2. For each display, writes the surface address to both of its registers as
+   64-bit stores (`strd`, high word 0): the page-flip registers `0xf0603488`
+   and `0xf060348c`.
+3. For each used list entry, builds RDC lists in memory from BMEM
+   (`0x070110dc`) and chains them (the rest of `0x07010374`, up to
+   `0x07010756`; not decoded yet).
+
+The register table by block (CPU addresses):
+
+| Block | Writes | Block | Writes |
+|---|---|---|---|
+| `0xf06fa000` (HDMI) | 571 | `0xf0410000` (AON) | 34 |
+| `0xf04e0000` / `0xf04e2000` / `0xf04e4000` (clocks) | 116 / 22 / 32 | `0xf0404000` (SUN_TOP) | 21 |
+| `0xf1103000` | 116 | `0xf0606000`, `0xf0607000`, `0xf0608000` | 32, 32, 6 |
+| `0xf0627000` | 65 | `0xf065f000` | 35 |
+| `0xf06f0000`, `0xf06f2000`, `0xf06f8000` | 33, 32, 8 | `0xf041a000` | 32 |
+| `0xf0080000`, `0xf0311000`, `0xf09a0000`, `0xf0c80000`, `0xf0d82000` | 32 each | others | 31 |
+
+The two list entries, `{trigger, field, count, offsets, words}`: list k is
+words `offsets[k]` to `offsets[k+1] − 1` of the word array (the runner
+subtracts neighbouring offsets).
+
+| Trigger | Field | Lists | Offsets at | Words at | List lengths (words) |
+|---|---|---|---|---|---|
+| `0x18` | 0 | 8 | `0x0705707c` | `0x070570bc` | 1036, 3, 68, 47, 29, 296, 73, 73 |
+| `0x19` | 1 | 6 | `0x070570a0` | `0x07058a20` | 68, 47, 29, 296, 73, 73 |
+
+The words are RDC commands as in "List format" above (`01000000 <reg>
+<value>`, `06000001 …`). The two 73-word lists have the length of the
+per-frame list BOLT runs from `0x7db09ae0` ("How BOLT's lists run").
+
 ### `load -splash`
 
 The `load` command loads the file, then (if `-splash` was given) calls the
