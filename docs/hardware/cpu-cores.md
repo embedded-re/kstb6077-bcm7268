@@ -4,7 +4,7 @@ The BCM7268 has four Brahma-B53 cores (MIDR `420f1000`). `go -64` starts
 only core 0 (MPIDR `80000000`). The other three are powered off until
 someone asks the PSCI monitor at EL3 (`0x06400000`) to start them: BOLT's
 `smm64` on the `go -64` path, kboot's own monitor on the `boot -64 -el3`
-path (["Our own CPU_ON"](#our-own-cpu_on-kboot-el3-tested-2026-10-16)).
+path (["Our own CPU_ON and CPU_OFF"](#our-own-cpu_on-and-cpu_off-kboot-el3-tested-2026-10-16)).
 
 Tested on the modified box on 2026-10-02 with
 [`../evidence/smp/psci_cpu_on_probe.s`](../evidence/smp/psci_cpu_on_probe.s) (output: [`psci_cpu_on_output.txt`](../evidence/smp/psci_cpu_on_output.txt)).
@@ -93,25 +93,44 @@ core 1: power switch `3a4819bb` (bit 31 clear, bits 28 and 29 set),
 `0xf020508c` = `000002fc`, boot address `00000000 06400914`. smm64's CPU_OFF
 path sets the reset bit again (`0x06401818`, not tested).
 
-## Our own CPU_ON (kboot EL3, tested 2026-10-16)
+## Our own CPU_ON and CPU_OFF (kboot EL3, tested 2026-10-16)
 
 kboot's EL3 monitor ([`../../kboot/el3.S`](../../kboot/el3.S),
-[`../booting.md`](../booting.md) "Our own EL3") answers CPU_ON and
-AFFINITY_INFO the same way, with the registers above. The new core starts in
-the monitor (`el3_warm`, `0x06400914`), takes its EL3 stack (1 KB per core
-below `0x06410000`), repeats core 0's set-up (CPUECTLR.SMPEN, CNTFRQ, its own
-GIC registers, SCR_EL3, the EL2 registers, the timers) and drops to EL2 at
-the entry. Per-core entry, context id and state are at `0x0640e000 + 32n`.
+[`../booting.md`](../booting.md) "Our own EL3") answers CPU_ON, CPU_OFF and
+AFFINITY_INFO with the registers above. kmon's `cpu` command uses them
+([`../../mon/README.md`](../../mon/README.md)).
+
+- **CPU_ON**: the new core starts in the monitor (`el3_warm`, `0x06400914`),
+  takes its EL3 stack (1 KB per core below `0x06410000`), repeats core 0's
+  set-up (CPUECTLR.SMPEN, CNTFRQ, its own GIC registers, SCR_EL3, the EL2
+  registers, the timers) and drops to EL2 at the entry, `x0` = context id.
+- **CPU_OFF** (`0x84000002`, called by the core that stops; doesn't return):
+  as smm64 (`0x06400de8`, `0x064029d4`), the core cleans and invalidates its
+  L1 data cache, clears SMPEN and waits in `wfi`. The next AFFINITY_INFO or
+  CPU_ON for it, from another core, powers it down (smm64 `0x06401fe8`:
+  power switch bits 6 and 7 set, bits 1, 0, 4 cleared, wait for bit 29 to
+  clear, bit 5 cleared, wait for bit 28 to clear) and sets its reset bit
+  again. Core 0 is refused (`-3` DENIED).
+- **Lock**: two cores in CPU_ON or AFFINITY_INFO at once are kept apart by a
+  bakery lock (plain loads and stores, because the monitor runs with its
+  MMU off, where exclusives can't be relied on).
+- Per-core data at `0x0640e000 + 32n`: entry, context id, state (0 off, 1
+  starting, 2 running, 3 stopped itself), lock ticket and flag.
 
 | Test | Result |
 |---|---|
 | [`psci_cpu_on_probe.s`](../evidence/smp/psci_cpu_on_probe.s), cores 1–3 | AFFINITY_INFO `1` → `0`, CPU_ON `0`; each core at EL2, MPIDR `8000000n`, SCTLR_EL2 `30c50830`; counter steps in 10 ms 19,750 / 15,509 / 11,470 (smm64: 19,693 / 15,494 / 11,472) |
 | `x0` at the entry | **the context id** (`1`, `2`, `3`, as the PSCI spec says); smm64 passes `0` |
-| from kmon (`call` of a stub), core 1 → a `wfe` loop | AFFINITY_INFO `1`, CPU_ON `0`, AFFINITY_INFO `0`, CPU_ON again `-4` (already on); kmon kept running |
-| core 0, core 4, MPIDR `0x100` | CPU_ON core 0 `-4`, AFFINITY_INFO core 0 `0`; core 4 and `0x100` `-2` |
+| CPU_ON again on a running core; core 0; core 4, MPIDR `0x100` | `-4`; `-4` (AFFINITY_INFO core 0 `0`); `-2` |
+| core 1 starts, counts once, calls CPU_OFF | CPU_OFF didn't return; `cpu` showed it off; power switch back to `c24819c8` (from `3a4819bb`), `0xf020508c` back to `2fe` |
+| the same core started again, then cores 2 and 3 the same way | each ran once (count 4 in all), all back to `c24819c8` / `2fe` |
+| CPU_OFF from core 0 | `-3` |
+| race ([`cpu_off_race.s`](../evidence/smp/cpu_off_race.s)): cores 1 and 2 each CPU_ON core 3 200 times at the same moment (core 3 counts once and calls CPU_OFF; each caller waits for AFFINITY_INFO = off) | 200 + 200 successes, no other results, no waits timed out; core 3 ran 400 times, so no start was counted twice |
 
-Not implemented: CPU_OFF, CPU_SUSPEND, MIGRATE. Two cores calling CPU_ON at
-the same moment aren't locked against each other.
+Not implemented: CPU_SUSPEND, MIGRATE, SYSTEM_OFF. In the race no `-5` (on
+pending) was seen: each CPU_ON found core 3 off, because its power-down
+happens inside the next call. The cores ran with their MMU off; caches on
+several cores at once are still open (below).
 
 ## Recipe
 
@@ -130,7 +149,6 @@ secondary:                            // runs on core 1, EL2, MMU off
 
 ## Open questions
 
-- Turning a core off again (`CPU_OFF` `0x84000002`, called by that core) and
-  restarting it.
+- Turning a core off with smm64's CPU_OFF (kboot's is tested, above).
 - Caches and the MMU on several cores at once (coherency).
 - Interrupts on the other cores (GIC CPU interfaces, `ITARGETSR`).

@@ -20,14 +20,15 @@ drops to EL2 and carries on the same way. Details and tests:
 (the `boot -64 -el3` path, since `boot` has no `-offset`). `slot! loader`
 writes both and reads both back (tested).
 
-The EL3 monitor also starts cores 1–3 (PSCI CPU_ON, since 2026-10-16:
-[`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md) "Our own CPU_ON").
+The EL3 monitor also starts and stops cores 1–3 (PSCI CPU_ON, CPU_OFF,
+AFFINITY_INFO, since 2026-10-16:
+[`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md) "Our own CPU_ON and CPU_OFF").
 
-Current images (2026-10-16): golden seq 20 and slot A seq 19, both
-`kmon-video-audio` (844,800 bytes, CRC `ccf53fdf`); `kboot.bin` 19,368
-bytes, CRC `faa6a0ea` (with CPU_ON), in both places. Tested after `slot!
-loader`: a software reset → STARTUP → kboot at EL3 → slot A, the monitor
-answered `4b423302`, the CPU_ON probe started cores 1–3.
+Current images (2026-10-16): golden seq 23 and slot A seq 22, both
+`kmon-cpu` (844,800 bytes, CRC `e8d1a898`); `kboot.bin` 19,976 bytes, CRC
+`1b25e9f9`, in both places. Tested after `slot! loader`: a software reset →
+STARTUP → kboot at EL3 → slot A, kmon's `cpu` showed `kboot's (4b423303)`,
+and the CPU_ON/CPU_OFF race test gave the same result as from RAM.
 
 ## Choosing an image
 

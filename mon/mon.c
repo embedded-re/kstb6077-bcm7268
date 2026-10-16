@@ -1436,6 +1436,38 @@ static void cmd_wdt(struct cmd *c)
            left, left / 27000000, left / 27000 % 1000);
 }
 
+// PSCI calls to the EL3 monitor: kboot's or smm64 (docs/hardware/cpu-cores.md)
+static int64_t smc(uint64_t f, uint64_t a1, uint64_t a2, uint64_t a3)
+{
+    register uint64_t x0 asm("x0") = f, x1 asm("x1") = a1, x2 asm("x2") = a2, x3 asm("x3") = a3;
+    asm volatile("smc #0" : "+r"(x0), "+r"(x1), "+r"(x2), "+r"(x3) : : "memory");
+    return x0;
+}
+
+static void cmd_cpu(struct cmd *c)
+{
+    uint64_t n, entry, ctx = 0;
+    if (c->argc >= 3 && !strcmp(c->argv[0], "on")) {
+        if (arg_num(c, 1, &n) < 1 || arg_num(c, 2, &entry) < 1 || arg_num(c, 3, &ctx) < 0)
+            return;
+        dcache_flush_all();             // the core starts with its MMU off: code must be in RAM
+        printf("CPU_ON core %lu at %lx, context %lx: %ld\n", n, entry, ctx,
+               (long)smc(0xc4000003, n, entry, ctx));
+        return;
+    }
+    if (c->argc) {
+        printf("usage: cpu [on core addr [context]]   (a core stops itself with CPU_OFF 0x84000002)\n");
+        return;
+    }
+    static const char *const state[] = { "on", "off", "on pending" };
+    uint32_t id = smc(0x8600ff00, 0, 0, 0);
+    printf("EL3 monitor: %s (%08x)\n", (id >> 8) == 0x4b4233 ? "kboot's" : "smm64", id);
+    for (n = 0; n < 4; n++) {
+        int64_t r = smc(0xc4000004, n, 0, 0);
+        printf("core %lu: %s\n", n, r >= 0 && r <= 2 ? state[r] : "?");
+    }
+}
+
 static void cmd_irq(struct cmd *c)
 {
     irq_cmd(c->argc, c->argv, key_pressed);
@@ -1915,6 +1947,7 @@ static const struct {
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
     { "usb",     cmd_usb,     "[init|kbd|stop]",            "USB-A port: OHCI1, keyboard" },
     { "con",     cmd_con,     "[on|off|clear]",             "text console on the HDMI screen" },
+    { "cpu",     cmd_cpu,     "[on core addr [context]]",   "cores 1-3: state, start (PSCI)" },
     { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },
     { "led",     cmd_led,     "green|red|orange|blue|off",  "front LEDs" },
     { "wdt",     cmd_wdt,     "[seconds|off]",              "watchdog" },
@@ -1926,7 +1959,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "audio", "beep", "play", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "audio", "beep", "play", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "cpu", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 

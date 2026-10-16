@@ -71,6 +71,7 @@ mmc read lba count [addr]      sectors to RAM (default 0x02000000)
 mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
 irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
+cpu [on core addr [context]]   cores 1-3: state, start one at addr (PSCI, see below)
 usb [init|kbd|stop]            USB-A port (see below)
 con [on|off|clear]             text console on the HDMI screen (see below)
 fs                             flash0.DATA: FAT32 size and free space
@@ -142,6 +143,18 @@ a received byte waits 100 ms without an interrupt.
 The IRQ vector ([`start.S`](start.S)) saves x0-x18, x29, x30, ELR and SPSR and calls
 `irq_handler`; `irq.c` is built with `-mgeneral-regs-only` so the handler
 never touches FP/SIMD registers.
+
+## Cores 1–3 (`cpu`)
+
+`cpu` asks the EL3 monitor (kboot's or smm64) for each core's state
+(AFFINITY_INFO) and which monitor it is. `cpu on 2 0x01000000 0x22` starts
+core 2 at `0x01000000` with `x0` = `0x22` (kboot's monitor; smm64 passes 0).
+The core starts at EL2 with its MMU and caches off, so `cpu on` cleans the
+data cache first: code just loaded through kmon's cache is then in RAM. Its
+writes go straight to RAM; to read them fresh from kmon, `call` any `ret`
+first (it cleans and invalidates the cache). A core stops itself with
+CPU_OFF (`0x84000002`, `smc #0`); `cpu` then shows it off. Details and
+tests: [`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md).
 
 ## USB keyboard (`usb`, [`usb.c`](usb.c))
 

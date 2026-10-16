@@ -10,12 +10,13 @@
 //
 // The monitor answers SMC calls from EL2 (SMCCC, x0 = function ID):
 //   PSCI_VERSION  (0x84000000) -> 0x00000002 (v0.2, as smm64)
+//   CPU_OFF       (0x84000002) on core 1-3: doesn't return; core 0 -> -3 DENIED
 //   CPU_ON        (0xc4000003) x1 = MPIDR (core 1-3), x2 = entry, x3 = context
 //                              -> 0, -2 bad core, -4 already on, -5 on pending,
 //                                 -6 power-up timed out
 //   AFFINITY_INFO (0xc4000004) x1 = MPIDR, x2 = 0 -> 0 on, 1 off, 2 on pending
 //   SYSTEM_RESET  (0x84000009) -> software reset (SUN_TOP_CTRL)
-//   0x8600ff00 (OEM range)     -> 0x4b423302 ('KB3', 2): "kboot's monitor is EL3"
+//   0x8600ff00 (OEM range)     -> 0x4b423303 ('KB3', 3): "kboot's monitor is EL3"
 //   anything else              -> -1 (NOT_SUPPORTED)
 // x4-x30 are kept. Any other exception taken to EL3 prints "kboot EL3:
 // exception" and stops.
@@ -24,6 +25,9 @@
 // up (CPU_PWR n), write el3_warm to its boot address, take it out of reset
 // (CPU_RESET bit n). The core starts at EL3 at el3_warm, sets itself up
 // like core 0 (el3_core) and drops to EL2 at the entry, x0 = context id.
+// CPU_OFF parks the core in wfi; the next AFFINITY_INFO or CPU_ON for it
+// powers it down and puts it back into reset, as smm64 does. A bakery lock
+// keeps cores apart in CPU_ON and AFFINITY_INFO.
 
 #define EL3_MON     0x06400000
 #define EL3_DATA    (EL3_MON + 0xe000)      // per core: entry, context, state (32 bytes)
@@ -225,9 +229,11 @@ el3_warm:
         eret
 
 el3_sync_lower:
-        stp     x4, x5, [sp, #-48]!
+        stp     x4, x5, [sp, #-80]!
         stp     x6, x7, [sp, #16]
-        stp     x8, x30, [sp, #32]
+        stp     x8, x9, [sp, #32]
+        stp     x10, x11, [sp, #48]
+        stp     x12, x30, [sp, #64]
         mrs     x4, esr_el3
         lsr     x4, x4, #26
         cmp     x4, #0x17                       // SMC from AArch64
@@ -237,7 +243,10 @@ el3_sync_lower:
         b.ne    1f
         mov     x0, #2                          // PSCI_VERSION: 0.2
         b       el3_ret
-1:      add     w5, w4, #9
+1:      add     w5, w4, #2                      // CPU_OFF
+        cmp     w0, w5
+        b.eq    psci_cpu_off
+        add     w5, w4, #9
         cmp     w0, w5
         b.ne    2f
         mov     x1, #0x4304                     // SYSTEM_RESET: SUN_TOP_CTRL software reset
@@ -258,19 +267,83 @@ el3_sync_lower:
         movk    w5, #0x8600, lsl #16
         cmp     w0, w5
         b.ne    4f
-        mov     x0, #0x3302                     // 'KB3', version 2 (CPU_ON)
+        mov     x0, #0x3303                     // 'KB3', version 3 (CPU_ON, CPU_OFF)
         movk    x0, #0x4b42, lsl #16
         b       el3_ret
 4:      mov     x0, #-1                         // NOT_SUPPORTED
 el3_ret:
-        ldp     x8, x30, [sp, #32]
+        ldp     x12, x30, [sp, #64]
+        ldp     x10, x11, [sp, #48]
+        ldp     x8, x9, [sp, #32]
         ldp     x6, x7, [sp, #16]
-        ldp     x4, x5, [sp], #48
+        ldp     x4, x5, [sp], #80
         eret
 
+// Per-core data at EL3_DATA + 32n: +0 entry, +8 context id, +16 state
+// (0 off, 1 starting, 2 running, 3 stopped itself with CPU_OFF and waits in
+// wfi to be powered down), +24 bakery ticket, +28 bakery "choosing".
+
+// bakery_lock / bakery_unlock: Lamport's bakery lock between the 4 cores
+// around CPU_ON and AFFINITY_INFO. Plain loads and stores: the monitor runs
+// with the MMU off, where exclusives (ldxr/stxr) can't be relied on. Uses x5-x12.
+bakery_lock:
+        mrs     x9, mpidr_el1
+        and     x9, x9, #0xff                   // i: this core
+        mov     x10, #0xe000
+        movk    x10, #0x0640, lsl #16           // EL3_DATA
+        add     x11, x10, x9, lsl #5
+        mov     w12, #1
+        str     w12, [x11, #28]                 // choosing[i] = 1
+        dsb     sy
+        mov     w12, #0
+        mov     x5, #0
+1:      add     x6, x10, x5, lsl #5
+        ldr     w6, [x6, #24]
+        cmp     w6, w12
+        csel    w12, w6, w12, hi                // highest ticket
+        add     x5, x5, #1
+        cmp     x5, #4
+        b.lo    1b
+        add     w12, w12, #1
+        str     w12, [x11, #24]                 // ticket[i] = highest + 1
+        dsb     sy
+        str     wzr, [x11, #28]                 // choosing[i] = 0
+        dsb     sy
+        mov     x5, #0                          // j
+2:      cmp     x5, x9
+        b.eq    5f
+        add     x6, x10, x5, lsl #5
+3:      ldr     w7, [x6, #28]                   // wait while j picks its ticket
+        cbnz    w7, 3b
+4:      ldr     w7, [x6, #24]                   // wait while j is ahead:
+        cbz     w7, 5f
+        cmp     w7, w12                         // lower ticket,
+        b.lo    4b
+        b.ne    5f
+        cmp     x5, x9                          // or the same ticket and a lower core number
+        b.lo    4b
+5:      add     x5, x5, #1
+        cmp     x5, #4
+        b.lo    2b
+        dsb     sy
+        ret
+
+bakery_unlock:
+        dsb     sy
+        mrs     x9, mpidr_el1
+        and     x9, x9, #0xff
+        mov     x10, #0xe000
+        movk    x10, #0x0640, lsl #16           // EL3_DATA
+        add     x10, x10, x9, lsl #5
+        str     wzr, [x10, #24]                 // ticket[i] = 0
+        dsb     sy
+        ret
+
 // core_state: x1 = MPIDR -> x4 = n (or -2 if not a core), x0 = PSCI state
-// (0 on, 1 off, 2 on pending). Uses x5, x6.
+// (0 on, 1 off, 2 on pending). A core that stopped itself with CPU_OFF is
+// powered down here (as smm64 does in AFFINITY_INFO). Uses x5-x9.
 core_state:
+        str     x30, [sp, #-16]!
         mov     x4, #-2
         and     x0, x1, #0xff
         cmp     x0, #3
@@ -278,7 +351,7 @@ core_state:
         tst     x1, #0xffff00
         b.ne    9f                              // aff1/aff2 not 0
         mov     x4, x0
-        mov     x0, #0                          // core 0 is on (it is calling)
+        mov     x0, #0                          // core 0 is on (CPU_OFF refuses it)
         cbz     x4, 9f
         mov     x5, #0x508c
         movk    x5, #0xf020, lsl #16
@@ -286,24 +359,126 @@ core_state:
         lsr     w5, w5, w4
         mov     x0, #1                          // in reset: off
         tbnz    w5, #0, 9f
-        mov     x5, #0xe000
-        movk    x5, #0x0640, lsl #16            // EL3_DATA
-        add     x5, x5, x4, lsl #5
-        ldr     x5, [x5, #16]
-        mov     x0, #0                          // out of reset and running: on
+        mov     x6, #0xe000
+        movk    x6, #0x0640, lsl #16            // EL3_DATA
+        add     x6, x6, x4, lsl #5
+        ldr     x5, [x6, #16]
+        mov     x0, #0                          // running: on
         cmp     x5, #2
         b.eq    9f
-        mov     x0, #2                          // out of reset, not yet running: pending
-9:      ret
+        mov     x0, #2                          // starting: on pending
+        cmp     x5, #3
+        b.ne    9f
+        bl      cpu_down                        // stopped itself: power it down now
+        mov     x0, #1
+9:      ldr     x30, [sp], #16
+        ret
+
+// cpu_down: x4 = n, a core waiting in wfi after CPU_OFF: power down (smm64
+// 0x06401fe8), hold it in reset (0x06400e24), state 0. Uses x5-x9.
+cpu_down:
+        str     x30, [sp, #-16]!
+        mrs     x8, cntpct_el0
+        add     x8, x8, #270                    // 10 us for it to reach wfi
+1:      mrs     x5, cntpct_el0
+        cmp     x5, x8
+        b.lo    1b
+        mov     x6, #0x50c4
+        movk    x6, #0xf020, lsl #16
+        add     x6, x6, x4, lsl #2              // CPU_PWR n
+        ldr     w5, [x6]
+        tbnz    w5, #31, 2f                     // already off
+        mov     w7, #0x40
+        bl      pwr_set
+        mov     w7, #0x80
+        bl      pwr_set
+        mov     w7, #2
+        bl      pwr_clr
+        mov     w7, #1
+        bl      pwr_clr
+        mov     w7, #0x10
+        bl      pwr_clr
+        mov     w7, #29                         // wait for bit 29 to clear
+        mov     w9, #0
+        bl      pwr_wait
+        mov     w7, #0x20
+        bl      pwr_clr
+        mov     w7, #28                         // wait for bit 28 to clear
+        mov     w9, #0
+        bl      pwr_wait
+2:      mov     x6, #0x508c
+        movk    x6, #0xf020, lsl #16
+        ldr     w5, [x6]
+        mov     w7, #1
+        lsl     w7, w7, w4
+        orr     w5, w5, w7                      // back into reset
+        str     w5, [x6]
+        dsb     sy
+        mov     x6, #0xe000
+        movk    x6, #0x0640, lsl #16            // EL3_DATA
+        add     x6, x6, x4, lsl #5
+        str     xzr, [x6, #16]                  // state 0: off
+        dsb     sy
+        ldr     x30, [sp], #16
+        ret
 
 psci_affinity:
         cbnz    x2, 1f                          // only level 0 (this core)
+        bl      bakery_lock
         bl      core_state
+        bl      bakery_unlock
         tbz     x4, #63, el3_ret
 1:      mov     x0, #-2                         // INVALID_PARAMETERS
         b       el3_ret
 
+// CPU_OFF, on the core that stops (smm64 0x06400de8, 0x064029d4): clean its
+// L1 data cache, leave coherency (SMPEN off), state 3, wfi until another
+// core's AFFINITY_INFO or CPU_ON powers it down. Core 0 is refused.
+psci_cpu_off:
+        mrs     x4, mpidr_el1
+        and     x4, x4, #0xff
+        mov     x0, #-3                         // DENIED
+        cbz     x4, el3_ret
+        bl      l1_clean
+        clrex
+        mrs     x5, S3_1_C15_C2_1               // CPUECTLR_EL1
+        bic     x5, x5, #0x40                   // SMPEN off
+        msr     S3_1_C15_C2_1, x5
+        isb
+        dsb     sy
+        mov     x6, #0xe000
+        movk    x6, #0x0640, lsl #16            // EL3_DATA
+        add     x6, x6, x4, lsl #5
+        mov     x5, #3
+        str     x5, [x6, #16]                   // state 3: stopped, waiting for power-down
+        dsb     sy
+1:      wfi
+        b       1b
+
+// l1_clean: clean and invalidate the L1 data cache by set/way. Uses x5-x12.
+l1_clean:
+        msr     csselr_el1, xzr                 // level 1, data
+        isb
+        mrs     x5, ccsidr_el1
+        and     x6, x5, #7
+        add     x6, x6, #4                      // log2(line size)
+        ubfx    x7, x5, #3, #10                 // ways - 1
+        ubfx    x8, x5, #13, #15                // sets - 1
+        clz     w9, w7                          // way field shift
+1:      mov     x10, x8
+2:      lsl     x11, x7, x9
+        lsl     x12, x10, x6
+        orr     x11, x11, x12
+        dc      cisw, x11
+        subs    x10, x10, #1
+        b.ge    2b
+        subs    x7, x7, #1
+        b.ge    1b
+        dsb     sy
+        ret
+
 psci_cpu_on:
+        bl      bakery_lock
         bl      core_state
         tbnz    x4, #63, 1f
         cmp     x0, #0
@@ -335,17 +510,17 @@ psci_cpu_on:
         mov     w7, #0x10
         bl      pwr_set
         mov     w7, #29                         // wait for bit 29
+        mov     w9, #1
         bl      pwr_wait
         cbnz    x0, 4f
         mov     w7, #1
         bl      pwr_set
         mov     w7, #28                         // wait for bit 28
+        mov     w9, #1
         bl      pwr_wait
         cbnz    x0, 4f
-        ldr     w5, [x6]
-        bic     w5, w5, #0x40
-        str     w5, [x6]
-        dsb     sy
+        mov     w7, #0x40
+        bl      pwr_clr
         mov     w7, #2
         bl      pwr_set
 
@@ -372,38 +547,46 @@ psci_cpu_on:
         dsb     sy
         isb
         mov     x0, #0                          // SUCCESS
-        b       el3_ret
+        b       8f
 1:      mov     x0, #-2                         // INVALID_PARAMETERS
-        b       el3_ret
+        b       8f
 2:      mov     x0, #-4                         // ALREADY_ON
-        b       el3_ret
+        b       8f
 3:      mov     x0, #-5                         // ON_PENDING
-        b       el3_ret
-4:      mov     x6, #0xe000
-        movk    x6, #0x0640, lsl #16            // power-up timed out: still off
+        b       8f
+4:      mov     x6, #0xe000                     // power-up timed out: still off
+        movk    x6, #0x0640, lsl #16
         add     x6, x6, x4, lsl #5
         str     xzr, [x6, #16]
         mov     x0, #-6                         // INTERNAL_FAILURE
+8:      bl      bakery_unlock
         b       el3_ret
 
-// pwr_set: [x6] |= w7. Uses w5.
+// pwr_set / pwr_clr: [x6] |= w7 / &= ~w7. Use w5.
 pwr_set:
         ldr     w5, [x6]
         orr     w5, w5, w7
-        str     w5, [x6]
+        b       1f
+pwr_clr:
+        ldr     w5, [x6]
+        bic     w5, w5, w7
+1:      str     w5, [x6]
         dsb     sy
         isb
         ret
 
-// pwr_wait: wait up to 0.5 s for bit w7 of [x6] -> x0 = 0, or 1 on timeout. Uses x5, x8.
+// pwr_wait: wait up to 0.5 s for bit w7 of [x6] to be w9 (0 or 1) -> x0 = 0,
+// or 1 on timeout. Uses x5, x8.
 pwr_wait:
         mrs     x8, cntpct_el0
         mrs     x0, cntfrq_el0
         add     x8, x8, x0, lsr #1
 1:      ldr     w5, [x6]
         lsr     w5, w5, w7
+        and     w5, w5, #1
         mov     x0, #0
-        tbnz    w5, #0, 2f
+        cmp     w5, w9
+        b.eq    2f
         mrs     x5, cntpct_el0
         mov     x0, #1
         cmp     x5, x8
