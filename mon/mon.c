@@ -20,6 +20,7 @@
 #include "mmc.h"
 #include "../kboot/slot.h"
 #include "net.h"
+#include "audio.h"
 
 void uart_putc(char c);
 extern void (*libc_output_hook)(const char *s, size_t n);
@@ -1097,6 +1098,61 @@ static void cmd_slot(struct cmd *c)
     }
 }
 
+// ---------------- sound (audio.c) ----------------
+
+#define PLAY_BUF 0x20000000                     // WAV files are read here (free RAM)
+
+static int key_stop(void)
+{
+    return key_pressed();
+}
+
+static void cmd_audio(struct cmd *c)
+{
+    const char *sub = c->argc ? c->argv[0] : "";
+    if (!strcmp(sub, "init"))
+        audio_init(0);
+    else if (!strcmp(sub, "stop")) {
+        audio_silence();
+        printf("audio: silent\n");
+    } else
+        audio_status();
+}
+
+static void cmd_beep(struct cmd *c)
+{
+    uint32_t hz = 440, ms = 500;
+    if (c->argc >= 1)
+        hz = strtol(c->argv[0], NULL, 10);
+    if (c->argc >= 2)
+        ms = strtol(c->argv[1], NULL, 10);
+    if (hz < 20 || hz > 20000 || ms < 1 || ms > 60000) {
+        printf("usage: beep [hz [ms]]   (decimal; default 440 Hz, 500 ms)\n");
+        return;
+    }
+    if (audio_beep(hz, ms, key_stop))
+        printf("audio: not ready ('audio init')\n");
+}
+
+static long fget(const char *path, uint64_t a, int force);
+
+static void cmd_play(struct cmd *c)
+{
+    uint64_t a = load_addr, len = load_size;
+    if (c->argc) {
+        if (!fs_ready())
+            return;
+        long n = fget(c->argv[0], PLAY_BUF, c->force);
+        if (n <= 0)
+            return;
+        a = PLAY_BUF, len = n;
+    } else if (!len) {
+        printf("usage: play [file.wav]   (without a name: the last load/fget/tftp get)\n");
+        return;
+    }
+    audio_play_wav((const uint8_t *)a, len, key_stop);
+}
+
 // ---------------- network (net.c) ----------------
 
 static uint32_t tftp_server;
@@ -1824,6 +1880,9 @@ static const struct {
     { "calc",    cmd_calc,    "expr",                       "evaluate a number/name expression" },
     { "load",    cmd_load,    "[addr]",                     "receive a file over serial (tools/kstb-send)" },
     { "send",    cmd_send,    "addr len",                   "send RAM over serial (tools/kstb-recv)" },
+    { "audio",   cmd_audio,   "[init|stop]",                "HDMI sound: status, start, silence" },
+    { "beep",    cmd_beep,    "[hz [ms]]",                  "a test tone on the TV" },
+    { "play",    cmd_play,    "[file.wav]",                 "play a WAV (PCM 8/16 bit, any rate)" },
     { "net",     cmd_net,     "[up|stop|dhcp|ip a.b.c.d]",  "Ethernet: status, start, address" },
     { "ping",    cmd_ping,    "a.b.c.d [count]",            "ICMP echo" },
     { "tftp",    cmd_tftp,    "get|put host:file ...",      "TFTP: file to RAM, RAM to file" },
@@ -1853,7 +1912,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "audio", "beep", "play", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 
@@ -1943,9 +2002,12 @@ void mon_main(int how, long status)
         show_exception();
     if (how == 0) {
         boot_confirm();
+        audio_init(0);
         net_boot();
-    } else
+    } else {
         net_resume();                           // a program returned or crashed: back on the network
+        audio_init(1);                          // and sound back in our hands (Doom leaves it silent)
+    }
 
     for (;;) {
         read_line("kmon> ", line);

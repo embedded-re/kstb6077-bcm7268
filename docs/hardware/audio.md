@@ -325,6 +325,15 @@ outputs (`NEXUS_AudioOutput count:9` in the boot log) and drives S/PDIF
 itself. So the shell can't tell which block feeds the optical output
 ([`../stock-firmware.md`](../stock-firmware.md)).
 
+## kmon (tested 2026-10-16)
+
+kmon's [`audio.c`](../../mon/audio.c) uses the same mechanism as Doom: at start-up it finds
+ring buffer 0, checks that the DMA moves, writes the 1080p59.94 N/CTS
+values and keeps the buffer filled 60 ms ahead of the read pointer. Heard
+on the TV: a 440 Hz tone, and WAV files (48 kHz 16-bit stereo, 22.05 kHz
+8-bit mono) played clean, also after the box booted through kboot at EL3
+([`../booting.md`](../booting.md)). Commands in [`../../mon/README.md`](../../mon/README.md), "Sound".
+
 ## Open questions
 
 - Why the blop count by ear looked tied to buffer laps (see "The blop").

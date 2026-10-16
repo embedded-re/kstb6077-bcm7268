@@ -52,6 +52,9 @@ find[.b|.h|.w|.q] addr len value
 calc expr                      e.g. calc fb+#3840
 load [addr]                    receive a file over serial (tools/kstb-send), default 0x01000000
 send addr len                  send RAM over serial (tools/kstb-recv)
+audio [init|stop]              HDMI sound: status, start, silence (see below)
+beep [hz [ms]]                 a test tone (decimal; default 440 Hz, 500 ms)
+play [file.wav]                play a WAV from flash0.DATA, or the last load/fget/tftp get
 net [up|stop|dhcp|ip a.b.c.d]  Ethernet: status, start/stop, DHCP or a fixed address (see below)
 ping a.b.c.d [count]           ICMP echo; kmon also answers pings while it waits at the prompt
 tftp get host:file [addr]      file from a TFTP server to RAM (default 0x01000000)
@@ -199,6 +202,29 @@ kmon> run prog.bin                              # later, with no PC: read it and
 
 Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
 (`0x00600000–0x0082ffff`) and the heap are refused as `fget` targets.
+
+## Sound (`audio`, `beep`, `play`, [`audio.c`](audio.c))
+
+HDMI audio the same way as Doom's: BOLT's boot splash starts the audio DMA
+(it needs a `pcm0` in `flash0.splash`), looping over a 0.5 s buffer; kmon
+sets HDMI N/CTS for 1080p59.94 at start-up and writes samples 60 ms ahead
+of the DMA with silence behind ([`../docs/hardware/audio.md`](../docs/hardware/audio.md)). After a program
+(Doom) returns, kmon takes the buffer back. `play` takes PCM WAV files,
+8 or 16 bit, mono or stereo, at any rate (linear interpolation to 48 kHz);
+it blocks, and any key stops it.
+
+```
+kmon> beep 440 1000
+kmon> play scale48.wav              from flash0.DATA
+kmon> tftp get 192.168.1.38:x.wav 0x02000000
+kmon> play                          the file just fetched
+```
+
+Tested 2026-10-16, by ear on the TV: `beep 440 1000` clean; a 3 s C-major
+scale, 48 kHz 16-bit stereo, clean, panning left to right; the same scale as
+22.05 kHz 8-bit mono, smoother with interpolation than with the nearest
+sample (some hiss from the 8 bits remains). Both files are on
+`flash0.DATA` (`scale48.wav`, `scale22.wav`).
 
 ## Network (`net`, `ping`, `tftp`, [`net.c`](net.c))
 
