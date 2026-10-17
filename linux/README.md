@@ -63,17 +63,44 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | Ethernet | `ethernet@f0480000` (`brcm,genet-v5`), MDIO, PHY at 1 | `Broadcom BCM7268 PHY revision: 0x01`, `Link is Up - 100Mbps/Full`, DHCP from the router (192.168.1.33), ping to the PC 0.25 ms |
 | eMMC | `mmc@f0200200` (`brcm,sdhci-brcmstb`, 8-bit, `no-1-8-v`) | `mmcblk0: mmc0:0001 DG4008 7.28 GiB`, p1–p10, `boot0`/`boot1`, `rpmb`; `DATA` (p9, FAT32) mounted read-only and listed (`kboot.bin` 21,704 bytes, `doom1.wad`, …); read ~43 MB/s (256 MB in 5.9 s). Nothing was written |
 | Watchdog | `watchdog@f040a6a8` (`brcm,bcm7038-wdt`, no clock: driver default 27 MHz) | registered as `watchdog0`. The driver doesn't notice a watchdog that kmon left running; `echo V > /dev/watchdog` (start, then magic close) stopped it: still up at 164 s with kmon's 150 s armed |
-| USB | `usb-phy@f0b00200` (`brcm,brcmstb-usb-phy`, `ctrl` only, `brcm,has-eohci`, ipp/ioc 1), EHCI0/1 (`brcm,bcm7445-ehci`), OHCI0/1 (`generic-ohci`) | all four controllers start with `ehci-brcm` / `ohci-platform`, no clocks in the tree. USB-A port: hub `0bda:5411` (high speed), behind it the SanDisk Ultra `0781:558a` as `sda` (250 GB, read 35.6 MB/s) and the keyboard `0461:0010` (low speed, through the hub's transaction translator on EHCI1) as `input0`–`input2`. Internal port: Bluetooth `0a5c:2045` on OHCI0 (no driver built) |
-| HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; a getty on `tty1`. **Not checked on the TV yet** |
+| USB | `usb-phy@f0b00200` (`brcm,brcmstb-usb-phy`, `ctrl` only, `brcm,has-eohci`, ipp/ioc 1), EHCI0/1 (`brcm,bcm7445-ehci`), OHCI0/1 (`generic-ohci`) | all four controllers start with `ehci-brcm` / `ohci-platform`, no clocks in the tree. USB-A port: hub `0bda:5411` (high speed), behind it the SanDisk Ultra `0781:558a` as `sda` (250 GB, read 35.6 MB/s) and the keyboard `0461:0010` (low speed, through the hub's transaction translator on EHCI1) as `input0`–`input2`; typing into the HDMI shell works (checked by the user, "Keyboard behind the hub" below). Internal port: Bluetooth `0a5c:2045` on OHCI0 (no driver built) |
+| HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
 backup GPT at the end of the eMMC still describes the old layout
 ([`../docs/hardware/display.md`](../docs/hardware/display.md)). The partitions come from the primary
 table (p10 = `splash` is there).
 
+## Two consoles
+
+The serial line and the TV each have their own shell (`inittab`): `ttyS0`
+for the serial line, `tty1` for the HDMI console and the USB keyboard. Kernel
+messages go to both (`console=tty0 console=ttyS0`), but what is typed on
+one shell doesn't show on the other.
+
+## Keyboard behind the hub
+
+The first builds left the keyboard dead: every key press ended in
+`usb 2-1.4: reset low-speed USB device`. usbmon showed its interrupt-IN
+transfers completing with `-71`; a debug print of the qTD token gave
+`00008d44`: Halted + Missed Micro-Frame, PID IN, 0 bytes left (the 8-byte
+report had arrived). The QH in `/sys/kernel/debug/usb/ehci/f0b00500.usb/periodic`
+was `qh8-0601`: start-split in microframe 0, complete-splits in 1 and 2 only.
+
+Cause: `allnoconfig` turns off `CONFIG_USB_EHCI_TT_NEWSCHED` (default `y`).
+The old scheduler puts the complete-splits at Y+1 and Y+2, too early for a
+low-speed device behind the hub's TT. With it on, the QH is `qh8-1c01`
+(complete-splits at Y+2, Y+3, Y+4): no missed microframes and no resets,
+typing works. `kstb.config` now sets it, and `USB_DEFAULT_PERSIST` (also
+default `y`). The other default-`y` options `allnoconfig` drops in the
+drivers used here are PS/2 keyboard/mouse (`SERIO`), legacy ttys and eMMC
+power-sequence helpers, none of which this box needs.
+
+`kstb.config` also turns on `DEBUG_FS`, `USB_MON` and `DYNAMIC_DEBUG`;
+`kstb-rc` mounts debugfs.
+
 ## Not done
 
-- The keyboard behind the hub logs `usb 2-1.4: reset low-speed USB device` again and again (8 times in 170 s); cause not looked at.
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 - HDMI audio, the IR receiver, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
 - A root file system on the eMMC: everything is in the initramfs, nothing persists.
