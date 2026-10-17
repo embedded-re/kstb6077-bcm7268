@@ -80,6 +80,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | PCIe | `pcie@f0460000` (`brcm,bcm7445-pcie`: the driver's generic STB layout), MSI through the controller (SPI 51), INTA–INTD SPIs 46–49, outbound `0xc0000000–0xdfffffff`, inbound 2 GB at 0 | `link up, 2.5 GT/s PCIe x1`, root port `14e4:7268`, Wi-Fi `14e4:aa31` on bus 1 ([`../docs/hardware/peripherals.md`](../docs/hardware/peripherals.md)) |
 | Wi-Fi | `pci@0,0/wifi@0,0` (`brcm,bcm4329-fmac`: the stock MAC `90:f8:91:e7:1b:65`); `brcmfmac` and `cfg80211` as modules | BCM43570 r2, firmware 7.124.22 from `linux-firmware-brcm`, the stock board file. Scan: 2.4 and 5 GHz networks. WPA2 with `wpa_supplicant`: associated at 2462 MHz, −65 dBm, DHCP lease from the router, ping to the Internet over `wlan0` 13 ms, 4.0 MB download in 1.00 s with Ethernet down (rx rate 72.2 Mbit/s). "Wi-Fi" below |
 | Bluetooth | (USB, OHCI0) `btusb` + `btbcm` as modules | BCM43569A2, patched with the stock `BCM43569.hcd` (build 0000 → 0172). `UP RUNNING`; BLE scan (`hcitool lescan`, 12 s): 86 advertisements from 3 devices; classic inquiry: 2 devices. The patch is offered once per boot ("Bluetooth" below) |
+| xHCI | `usb@f0b01000` (`brcm,bcm7445-xhci`, `generic-xhci`), `brcm,has-xhci` on the PHY, ID 124 | `Host supports USB 3.0 SuperSpeed`, a USB 3 root hub with 2 ports (no USB 2 ports). A SuperSpeed-capable stick straight in the USB-A port still came up on EHCI1 at high speed; the xHCI ports stayed in RxDetect: nothing is wired to them ([`../docs/hardware/usb.md`](../docs/hardware/usb.md)) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -295,9 +296,11 @@ rounds before the file was removed). `kstb-rc` therefore keeps the patch
 outside the firmware path (`/lib/firmware/kstb/BCM43569.hcd`) and offers it
 for one probe: copy it to `brcm/BCM-0a5c-2045.kaon,kstb6077.hcd` (the first
 name btbcm tries), reload `btusb`, wait for the chip to leave USB, delete
-the copy. Tested from `KRN` with kmon's `linux`: one patch at 2.77 s, the
-chip back at 14.2 s as build 0172 (btbcm first waits 10 s for a reset reply
-from the chip that has gone), no further patch. The BD address is the
+the copy. The modalias loop skips this adapter, so `bt_patch` does the
+only load (a reload in the middle of the first probe cost 11 s). Tested
+from `KRN` with kmon's `linux`: one patch at 3.3 s, the chip back at
+15.1 s as build 0172 (btbcm first waits 10 s for a reset reply from the
+chip that has gone), no further patch. The BD address is the
 chip's default (`43:56:9A:20:1F:AC`).
 
 ## Registers from Linux: `kstb-reg`
@@ -345,7 +348,6 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 - HDMI audio, the GPU (`brcm,7268-v3d` exists in mainline, not tried).
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.

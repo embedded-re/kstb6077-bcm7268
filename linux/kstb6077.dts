@@ -534,7 +534,6 @@
 		// USB control/PHY block (Broadcom family 7271A0 in phy-brcm-usb-init.c;
 		// ipp/ioc as in the stock tree) and the EHCI/OHCI pairs
 		// (docs/hardware/usb.md): 0 = internal Bluetooth, 1 = the USB-A port.
-		// xHCI not described yet.
 		usbphy: usb-phy@f0b00200 {
 			compatible = "brcm,brcmstb-usb-phy";
 			reg = <0xf0b00200 0x100>;
@@ -543,7 +542,18 @@
 			brcm,ipp = <1>;
 			brcm,ioc = <1>;
 			brcm,has-eohci;
+			brcm,has-xhci;
 			dr_mode = "host";
+		};
+
+		// xHCI (docs/hardware/usb.md): v1.0, 2 ports, ID 124; which connector
+		// its ports serve is unknown
+		usb@f0b01000 {
+			compatible = "brcm,bcm7445-xhci", "generic-xhci";
+			reg = <0xf0b01000 0x1000>;
+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usbphy 1>;
+			phy-names = "usb";
 		};
 
 		usb@f0b00300 {

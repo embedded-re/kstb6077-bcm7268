@@ -17,7 +17,7 @@ Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../
 |---|---|
 | Controllers | EHCI0 `0xf0b00300`, OHCI0 `0xf0b00400`, EHCI1 `0xf0b00500`, OHCI1 `0xf0b00600`, xHCI `0xf0b01000`; device controller (BDC) `0xf0b02000`, held in reset |
 | Control / PHY | `0xf0b00200`; **BOLT never writes it** (its values are the hardware's, "Our own USB start"); `USB_PM` `+0x34` bits 20/21/22 reset the controller pairs |
-| Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; xHCI ports unknown |
+| Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; the xHCI's two SuperSpeed ports reach nothing (tested with a USB 3 stick) |
 | State after `go -64` | every controller reset and stopped, still clocked |
 | Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard and mouse reports from interrupt endpoints, a hub with a keyboard, a mouse and a stick behind it, plugging and unplugging behind the hub (kmon `usb`) |
 | Not tested | bulk transfers, EHCI, xHCI, interrupts from the USB controllers |
@@ -45,7 +45,7 @@ GIC IDs = SPI + 32: EHCI0 122, OHCI0 123, xHCI 124, EHCI1 126, OHCI1 127
 |---|---|---|
 | **EHCI0 + OHCI0** | internal **Bluetooth** adapter `0a5c:2045` (full speed) | at `BOLT>`: EHCI0 PORTSC `00003000` (owner = companion), OHCI0 port `00000103` (connected, enabled) |
 | **EHCI1 + OHCI1** | the **USB-A port** | with a low-speed USB keyboard (`0461:0010`) plugged in: OHCI1 port `00000303` (connected, enabled, low speed); EHCI1 handed it over (`00003000`) |
-| xHCI ports 1–2 | unknown | `000002a0` (powered, RxDetect, empty) with and without the keyboard. A SanDisk stick `0781:558a` on the USB-A port came up as `New high speed device connected to bus 1` (EHCI1), not on the xHCI. Caution: If that stick is USB 3 (not checked), the port's USB 3 lines don't reach the xHCI, or BOLT doesn't use them |
+| xHCI ports 1–2 | nothing (Linux, "The xHCI in Linux") | `000002a0` (powered, RxDetect, empty) with and without the keyboard. A SanDisk stick `0781:558a` on the USB-A port came up as `New high speed device connected to bus 1` (EHCI1), not on the xHCI. Caution: If that stick is USB 3 (not checked), the port's USB 3 lines don't reach the xHCI, or BOLT doesn't use them |
 
 Confirmed under stock Android (2026-10-04, [`interrupts.md`](interrupts.md)): plugging the
 keyboard into the USB-A port fired EHCI1 (ID 126) first, then OHCI1 (ID
@@ -79,6 +79,17 @@ at full speed. Read by Linux's `btusb`/`btbcm` ([`../../linux/README.md`](../../
 | Patch | the stock `BCM43569.hcd`: 290 × Write RAM (`fc4c`), then Launch RAM (`fc4e`, `ffffffff`); afterwards build 0172 |
 | After Launch RAM | the chip **drops off USB and enumerates again** (0.65 s later), already patched |
 | BD address | `43:56:9A:20:1F:AC`, a default made of the chip's name; the box's own address is not known |
+
+## The xHCI in Linux (tested 2026-10-17)
+
+Mainline `xhci-plat` (`brcm,bcm7445-xhci`, the PHY with `brcm,has-xhci`)
+starts it: `Host supports USB 3.0 SuperSpeed`, `USB2 root hub has no
+ports`, so it has only the two SuperSpeed ports and the USB 2 side of the
+port goes to EHCI1/OHCI1. **Nothing on this board reaches its ports**: the
+SanDisk stick, which can do SuperSpeed (its BOS descriptor: "can operate at
+SuperSpeed (5Gbps)"), plugged straight into the USB-A port, came up at high
+speed on EHCI1; both xHCI PORTSC (`0xf0b01420`, `0xf0b01430`) stayed
+`0a0002a0` (powered, RxDetect, nothing connected).
 
 ## What BOLT does (from its code, [`../bolt/bolt.md`](../bolt/bolt.md) §11)
 
@@ -322,7 +333,6 @@ before and after.
 
 - EHCI1 for high-speed devices (the stick at USB 2.0 speed).
 - The OHCI1 interrupt (ID 127) instead of polling.
-- Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).
 - The `0xf0b00200` control block: read in full ([`peripherals.md`](peripherals.md)), but
   only `USB_PM` (`+0x34`, bits 20–23 tested) and `USB_DEVICE_CTL1` (`+0x90`)

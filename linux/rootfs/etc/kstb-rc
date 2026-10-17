@@ -33,6 +33,7 @@ hostname kstb6077
 # modules (kstb-modules): load the ones whose devices are there (device tree,
 # PCI, USB), by their modalias
 for a in $(sort -u /sys/bus/*/devices/*/modalias 2>/dev/null); do
+	case $a in usb:v0A5Cp2045*) continue ;; esac	# Bluetooth: bt_patch below
 	modprobe -q "$a"
 done
 # Bluetooth (BCM43569A2 on USB, 0a5c:2045): btbcm sends the patch at every
@@ -49,7 +50,7 @@ bt_patch() {
 	[ -n "$d" ] && [ -f "$src" ] || return 0
 	modprobe -r btusb
 	cp "$src" "$fw"
-	modprobe btusb
+	modprobe btusb || { rm -f "$fw"; return 0; }
 	i=0
 	while [ -e "$d" ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
 	rm -f "$fw"
