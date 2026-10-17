@@ -1,0 +1,248 @@
+// kstb6077.dts - device tree for arm64 Linux on the KSTB6077 (BCM7268 B0).
+//
+// Written by hand from the tested chapters in docs/ (no BCM7268 tree exists
+// upstream). Only what has been checked is described; more nodes are added
+// as each driver is tried. INITRD_START/INITRD_END come from the Makefile.
+
+/dts-v1/;
+
+#define GIC_SPI 0
+#define GIC_PPI 1
+#define IRQ_TYPE_LEVEL_HIGH 4
+#define IRQ_TYPE_LEVEL_LOW 8
+#define PPI_ALL_CPUS (0xf << 8)
+
+/ {
+	model = "KaonMedia KSTB6077";
+	compatible = "kaon,kstb6077", "brcm,bcm7268";
+	#address-cells = <2>;
+	#size-cells = <2>;
+	interrupt-parent = <&gic>;
+
+	aliases {
+		serial0 = &uart0;
+	};
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		// earlycon without a baud rate: it keeps BOLT's divisor (44, 115200)
+		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 rdinit=/sbin/init";
+		stdout-path = "serial0:115200n8";
+		linux,initrd-start = <0x0 INITRD_START>;
+		linux,initrd-end = <0x0 INITRD_END>;
+
+		// BOLT's splash framebuffer, which kmon keeps on screen at 1080p59.94
+		// (docs/hardware/display.md); the display keeps scanning it out
+		framebuffer@7db0b700 {
+			compatible = "simple-framebuffer";
+			reg = <0x0 0x7db0b700 0x0 0x3f4800>;
+			width = <1920>;
+			height = <1080>;
+			stride = <3840>;
+			format = "r5g6b5";
+		};
+	};
+
+	// 2 GB at 0 (docs/hardware/memory-map.md). Linux gets everything below
+	// the display and audio buffers at 0x7d600000; above that the display
+	// keeps scanning out and the secure regions (BL31, SRR) start at 0x7df00000.
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x7d600000>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		// DTB reserved-nodma
+		nodma@0 {
+			reg = <0x0 0x0 0x0 0x1000>;
+			no-map;
+		};
+
+		// kboot's EL3 monitor (or BOLT's smm64): PSCI, cores' EL3 stacks
+		el3-monitor@6400000 {
+			reg = <0x0 0x06400000 0x0 0x10000>;
+			no-map;
+		};
+	};
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "brcm,brahma-b53", "arm,cortex-a53";
+			reg = <0x0>;
+			enable-method = "psci";
+			next-level-cache = <&l2>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "brcm,brahma-b53", "arm,cortex-a53";
+			reg = <0x1>;
+			enable-method = "psci";
+			next-level-cache = <&l2>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "brcm,brahma-b53", "arm,cortex-a53";
+			reg = <0x2>;
+			enable-method = "psci";
+			next-level-cache = <&l2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "brcm,brahma-b53", "arm,cortex-a53";
+			reg = <0x3>;
+			enable-method = "psci";
+			next-level-cache = <&l2>;
+		};
+
+		l2: l2-cache {
+			compatible = "cache";
+			cache-level = <2>;
+			cache-unified;
+			cache-size = <0x100000>;
+		};
+	};
+
+	// IDs 29, 30, 27, 26 (docs/hardware/interrupts.md); CNTFRQ (27 MHz) is
+	// set at EL3 by kboot or smm64
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <GIC_PPI 13 (PPI_ALL_CPUS | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 14 (PPI_ALL_CPUS | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 11 (PPI_ALL_CPUS | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (PPI_ALL_CPUS | IRQ_TYPE_LEVEL_LOW)>;
+	};
+
+	soc@0 {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0x0 0x0 0x0 0xffffffff>;
+
+		// GIC-400: distributor and CPU interface
+		gic: interrupt-controller@ffd01000 {
+			compatible = "arm,gic-400";
+			#interrupt-cells = <3>;
+			interrupt-controller;
+			reg = <0xffd01000 0x1000>,
+			      <0xffd02000 0x2000>;
+		};
+
+		// UART0: 16550, 32-bit registers, 81 MHz clock (docs/hardware/uart.md), ID 102
+		uart0: serial@f040c000 {
+			compatible = "ns16550a";
+			reg = <0xf040c000 0x20>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+			clock-frequency = <81000000>;
+			interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		// watchdog (BCM7038 type, 27 MHz); Linux only starts it when opened
+		watchdog@f040a6a8 {
+			compatible = "brcm,bcm7038-wdt";
+			reg = <0xf040a6a8 0x8>;
+		};
+
+		// eMMC: SDHCI 1, host 0xf0200200, cfg 0xf0200300 (docs/hardware/storage.md), ID 70
+		mmc@f0200200 {
+			compatible = "brcm,bcm7425-sdhci", "brcm,sdhci-brcmstb";
+			reg = <0xf0200200 0x100>, <0xf0200300 0x100>;
+			reg-names = "host", "cfg";
+			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+			bus-width = <8>;
+			non-removable;
+			no-1-8-v;
+		};
+
+		// GENET 0 and the internal 10/100 PHY at MDIO 1 (docs/hardware/ethernet.md),
+		// IDs 129 and 130; the MAC is the one in flash0.macadr
+		ethernet@f0480000 {
+			compatible = "brcm,genet-v5";
+			reg = <0xf0480000 0xfc4c>;
+			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+			local-mac-address = [90 f8 91 e7 00 0a];
+			phy-mode = "internal";
+			phy-handle = <&phy1>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			mdio@e14 {
+				compatible = "brcm,genet-mdio-v5";
+				reg = <0xe14 0x8>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				phy1: ethernet-phy@1 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <1>;
+					max-speed = <100>;
+				};
+			};
+		};
+		// USB control/PHY block (Broadcom family 7271A0 in phy-brcm-usb-init.c;
+		// ipp/ioc as in the stock tree) and the EHCI/OHCI pairs
+		// (docs/hardware/usb.md): 0 = internal Bluetooth, 1 = the USB-A port.
+		// xHCI not described yet.
+		usbphy: usb-phy@f0b00200 {
+			compatible = "brcm,brcmstb-usb-phy";
+			reg = <0xf0b00200 0x100>;
+			reg-names = "ctrl";
+			#phy-cells = <1>;
+			brcm,ipp = <1>;
+			brcm,ioc = <1>;
+			brcm,has-eohci;
+			dr_mode = "host";
+		};
+
+		usb@f0b00300 {
+			compatible = "brcm,bcm7445-ehci";
+			reg = <0xf0b00300 0xa8>;
+			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usbphy 0>;
+			phy-names = "usbphy";
+		};
+
+		usb@f0b00400 {
+			compatible = "brcm,bcm7445-ohci", "generic-ohci";
+			reg = <0xf0b00400 0x58>;
+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usbphy 0>;
+			phy-names = "usb";
+		};
+
+		usb@f0b00500 {
+			compatible = "brcm,bcm7445-ehci";
+			reg = <0xf0b00500 0xa8>;
+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usbphy 0>;
+			phy-names = "usbphy";
+		};
+
+		usb@f0b00600 {
+			compatible = "brcm,bcm7445-ohci", "generic-ohci";
+			reg = <0xf0b00600 0x58>;
+			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+			phys = <&usbphy 0>;
+			phy-names = "usb";
+		};
+	};
+};

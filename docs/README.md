@@ -127,6 +127,7 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`../c/`](../c/) | bare-metal C example (`main.c`) and its address header (`kstb.h`) |
 | [`../mon/`](../mon/README.md), [`../doom/`](../doom/README.md) | kmon, the monitor, and the Doom port |
 | [`../kboot/`](../kboot/README.md) | kboot, the loader `STARTUP` runs: golden or slot A, watchdog fallback |
+| [`../linux/`](../linux/README.md) | mainline arm64 Linux 6.18 with a busybox initramfs, started from kmon: 4 cores, Ethernet, eMMC, USB, watchdog |
 | [`../libc/`](../libc/), [`../usb/`](../usb/), [`../fat/`](../fat/) | shared by kmon and Doom: C library, OHCI1 + HID keyboard driver, FAT32 driver |
 | `stock/` | stock firmware files, downloaded by `tools/fetch-stock` (local only, not in git) |
 
@@ -137,6 +138,7 @@ and change them with read-modify-write unless the chapter says otherwise.
 | [`tools/kstb-run`](../tools/kstb-run) | uploads a binary over the BOLT serial console, CRC-checks it, runs it (`go` / `go -64`) |
 | [`tools/kstb-bolt`](../tools/kstb-bolt) | gets the board to `BOLT>` by sending Ctrl-C during boot (power-cycle or `--reset`) |
 | [`tools/kstb-mon`](../tools/kstb-mon) | starts kmon, the monitor (WAD + bundle from flash, `go -64`); `--install` writes a new bundle ([`../mon/README.md`](../mon/README.md)) |
+| [`tools/kstb-linux`](../tools/kstb-linux) | boots Linux from kmon: four files by TFTP, CRC check, `go` ([`../linux/README.md`](../linux/README.md)) |
 | [`tools/kstb-send`](../tools/kstb-send) | sends a file to kmon over the serial line (`load`, ~11.5 KB/s) |
 | [`tools/kstb-recv`](../tools/kstb-recv) | receives RAM or a `DATA` file from kmon over the serial line (`send`, CRC-checked); for small files |
 | [`tools/tftpd`](../tools/tftpd) | TFTP server that serves files and receives BOLT's `save` (RAM to the PC) ([`booting.md`](booting.md)) |

@@ -1,0 +1,6 @@
+# busybox init: root shells on the serial console and on the HDMI console (tty1)
+::sysinit:/etc/kstb-rc
+ttyS0::respawn:/sbin/getty -n -l /bin/sh 115200 ttyS0 vt100
+tty1::respawn:/sbin/getty -n -l /bin/sh 38400 tty1 linux
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r

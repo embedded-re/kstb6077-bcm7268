@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Boot Linux (linux/) from kmon over TFTP.
+
+    kstb-linux                    load the four files, check their CRCs, go
+    kstb-linux --watchdog 150     arm kmon's watchdog first (resets into kmon if Linux hangs)
+    kstb-linux --listen 30        print the board's output for 30 s after go
+
+The board must be at the `kmon>` prompt with the network up, and the TFTP
+root must hold linux-Image, linux-initramfs.cpio.gz, linux-kstb6077.dtb and
+linux-boot.bin (`make -C linux tftp`). The load addresses come from
+linux/layout.h. Each `tftp get` waits for the prompt before the next: kmon
+polls the UART, and a line sent while it is busy gets mixed up.
+Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
+"""
+import argparse, os, re, socket, sys, time, zlib
+
+SOCK = os.environ.get("KSTB_SOCK", "/tmp/kstb.sock")
+here = os.path.dirname(os.path.abspath(__file__))
+LINUX = os.path.join(here, "..", "linux")
+TFTP_ROOT = os.path.join(here, "..", "doom", "build")
+FILES = [("Image", "KERNEL_ADDR"), ("initramfs.cpio.gz", "INITRD_ADDR"),
+         ("kstb6077.dtb", "DTB_ADDR"), ("boot.bin", "BOOT_ADDR")]
+
+
+def layout():
+    text = open(os.path.join(LINUX, "layout.h")).read()
+    return {m.group(1): int(m.group(2), 16) for m in re.finditer(r"#define (\w+)\s+(0x[0-9a-fA-F]+)", text)}
+
+
+def read_until(s, pattern, timeout):
+    buf, end = b"", time.time() + timeout
+    while time.time() < end:
+        try:
+            chunk = s.recv(4096)
+            if not chunk:
+                raise SystemExit("bridge closed the connection")
+            buf += chunk
+            m = re.search(pattern, buf)
+            if m:
+                return buf, m
+        except socket.timeout:
+            pass
+    raise SystemExit(f"timeout waiting for {pattern!r}; got:\n{buf.decode('latin1')[-400:]}")
+
+
+def cmd(s, line, pattern, timeout):
+    s.sendall(f"{line}\r".encode())
+    out, m = read_until(s, pattern, timeout)
+    if pattern != rb"kmon> " and b"kmon> " not in out[m.end():]:
+        read_until(s, rb"kmon> ", 5)
+    return m
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--server", default="192.168.1.38", help="TFTP server address")
+    ap.add_argument("--watchdog", type=int, metavar="S", help="arm kmon's watchdog before go")
+    ap.add_argument("--listen", type=float, default=15, help="seconds of output to print after go")
+    a = ap.parse_args()
+
+    addr = layout()
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(SOCK)
+    s.settimeout(0.05)
+    try:                                    # drop old output
+        while s.recv(4096):
+            pass
+    except socket.timeout:
+        pass
+    cmd(s, "", rb"kmon> ", 3)
+
+    for name, key in FILES:
+        data = open(os.path.join(TFTP_ROOT, f"linux-{name}"), "rb").read()
+        crc = zlib.crc32(data)
+        m = cmd(s, f"tftp get {a.server}:linux-{name} 0x{addr[key]:08x}",
+                rb"tftp: (\d+) bytes at [0-9a-f]+, CRC ([0-9a-f]{8})|tftp: [^\r\n]*(?:fail|error|timeout|use RAM)[^\r\n]*", 120)
+        if not m.group(2) or int(m.group(2), 16) != crc or int(m.group(1)) != len(data):
+            raise SystemExit(f"{name}: {m.group(0).decode('latin1')} (file: {len(data)} bytes, CRC {crc:08x})")
+        print(f"ok: {name}, {len(data)} bytes at {addr[key]:08x}, CRC {crc:08x}")
+
+    if a.watchdog:
+        cmd(s, f"wdt {a.watchdog}", rb"watchdog armed[^\r\n]*", 5)
+        print(f"ok: watchdog {a.watchdog} s")
+
+    s.sendall(f"go 0x{addr['BOOT_ADDR']:08x}\r".encode())
+    end = time.time() + a.listen
+    while time.time() < end:
+        try:
+            chunk = s.recv(4096)
+            if chunk:
+                sys.stdout.write(chunk.decode("latin1"))
+                sys.stdout.flush()
+        except socket.timeout:
+            pass
+    print()
+
+
+if __name__ == "__main__":
+    main()

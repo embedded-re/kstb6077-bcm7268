@@ -1,0 +1,13 @@
+#!/bin/sh
+# kstb-rc - mounts for the initramfs, then the shell from inittab
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mkdir -p /dev/pts && mount -t devpts devpts /dev/pts
+mount -t tmpfs tmpfs /tmp
+hostname kstb6077
+echo "kstb6077: $(uname -r), $(grep -c ^processor /proc/cpuinfo) cores, $(sed -n 's/MemTotal: *//p' /proc/meminfo)"
+ip link set lo up
+if ip link set eth0 up 2>/dev/null; then
+	udhcpc -i eth0 -b -q -t 5 >/dev/null 2>&1 && echo "eth0: $(ip -4 -o addr show eth0 | awk '{print $4}')"
+fi
