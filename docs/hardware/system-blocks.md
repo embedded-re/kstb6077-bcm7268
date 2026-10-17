@@ -18,6 +18,24 @@ Temperature (m°C) = `410040 − code × 487` (28 nm constants).
 Example: `00000dd8` → code 748 → 45.8 °C, matching BOLT's own reading
 (`T=+45.277C`).
 
+Read from Linux on 2026-10-17 (`kstb-reg`, `linux/README.md`), with the
+mainline driver running:
+
+| Offset | Register (Linux names) | Read |
+|---|---|---|
+| `+0x00` | STATUS | `00000db7`: code 731, 54.0 °C |
+| `+0x04` | EN_OVERTEMP_RESET | `1`: the over-temperature reset is on |
+| `+0x08` | RESET_THRESH | `0000047e`: code 575, about 130 °C |
+| `+0x0c` | | **aborts** (SIGBUS in user space) |
+| `+0x10` | INT_IDLE_TIME | `00000040` |
+| `+0x14` | EN_TEMP_INT_SRCS | `2`: high-temperature interrupt on, low off |
+| `+0x18` | INT_THRESH | `050c05de`: high code 646 = 95.4 °C (the first trip), low code 751 |
+| `+0x1c`–`+0x24` | TEMP_INT_CODE, TP_TEST_ENABLE, … | `0` |
+
+The interrupt reaches the AVS L2 `0xf04d1200` bit 6 (tested: with the
+high threshold set to 54.5 °C, one interrupt when a load on all four cores
+heated the chip past it; 53.1 → 62.8 °C in 90 s).
+
 ## Wake timer
 
 | Offset | Register |
@@ -39,7 +57,15 @@ The DTB routes the wake timer to the AON L2 controller `0xf0410640`
 (`sys_pm`) bit 4. With that controller fully masked (mask `007fffff`, as
 after BOLT), its status register stayed `0` while EVENT was set, so status
 there is not visible while masked (unlike the AON UPG controller
-`0xf0419c00`, [`interrupts.md`](interrupts.md)). Unmasking it was not tried.
+`0xf0419c00`, [`interrupts.md`](interrupts.md)).
+
+Unmasked from Linux (2026-10-17, the mainline RTC driver; MASK_STATUS
+`007fffef`): an alarm set EVENT to `1`, but the controller's STATUS stayed
+`0` and no interrupt came. Bit 4 is a wake-up source only; a running system
+sees no alarm interrupt there.
+
+The counter does not survive a reset: set to the date from Linux, it read
+44 s at `kmon>` after `reboot` (PSCI reset, BOLT, kboot, kmon).
 
 ## Watchdog
 

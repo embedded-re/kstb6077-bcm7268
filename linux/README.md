@@ -73,6 +73,9 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | Front LEDs | `leds` (`gpio-leds`): `green:power` AON 18, `red:power` AON 17, `blue:status` AON 16, all active-low, open-drain | `/sys/class/leds/*/brightness`: blue on, red on, green off, then back (seen on the box by the user). Green keeps BOLT's state (on) at boot, blue starts off. Triggers `timer`, `heartbeat`, `default-on` and `mmc0` are built in |
 | Buttons | `keys` (`gpio-keys`): SW1 AON 14 → `KEY_POWER`; `keys-polled` (`gpio-keys-polled`, 100 ms): SW4 AON 7 → `KEY_BLUETOOTH` | `evtest`: SW1 4 presses → 4 × `KEY_POWER` 1/0 and 8 interrupts (one per edge); SW4 3 presses → 3 × `KEY_BLUETOOTH` 1/0. Polled as in the stock DTB. Nothing acts on the keys yet |
 | I2C | `i2c@f040a300`, `@f0419a80`, `@f0419b00`, `@f0419b80`, `@f040a400` (`brcm,brcmstb-i2c`, 97.5 kHz), interrupts on the BSC L2s as Nexus pairs them | `iica`…`iice registered in interrupt mode`, `/dev/i2c-0`…`4` (`i2c-tools` from apk). `i2cdetect -r`: bus 0 `0x30 0x3a 0x50` (HDMI DDC), bus 3 `0x67`, bus 2 nothing, the same as the bare-metal scan ([`../docs/hardware/i2c.md`](../docs/hardware/i2c.md)); one interrupt per address on `iica`, `iicc`, `iicd` (112 per scan). Buses 1 and 4: every transfer `Operation timed out`, no interrupt. EDID read from bus 0 (below) |
+| UART1, UART2 | `serial@f040d000`, `@f040e000` (`ns16550a`, as UART0), IDs 103, 104 | `ttyS1`, `ttyS2` (`base_baud = 5062500`). Internal loopback (`TIOCM_LOOP`) at 115200: 1052 bytes each way, intact, with their interrupts counting. Pins unknown ([`../docs/hardware/uart.md`](../docs/hardware/uart.md)) |
+| Temperature | `thermal@f04d1500` (`brcm,avs-tmon`, 28 nm constants) on the AVS L2 `interrupt-controller@f04d1200` (`brcm,l2-intc`, SPI 25) bit 6; `thermal-zones` with the stock trips (95, 110 °C passive) and 125 °C critical | `/sys/class/thermal/thermal_zone0/temp`: 53.1 °C idle, 62.8 °C after 90 s with all 4 cores busy. Interrupt tested: trip 0 set to 54.5 °C, one `brcmstb_thermal` interrupt when the load crossed it. No cooling device (no cpufreq yet) |
+| RTC | `waketimer@f041a080` (`brcm,brcmstb-waketimer`, 27 MHz) on the `sys_pm` L2 `interrupt-controller@f0410640` (`brcm,l2-intc`, SPI 61) bit 4 | `rtc0`; `hwclock -w` / `-r` work. Only an uptime clock: the counter restarts at every reset (the date written before `reboot` read 44 s at `kmon>`), and an alarm sets the timer's EVENT bit but raises no interrupt while running (the L2 bit is a wake-up source). Time comes from NTP (`kstb-rc`) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -170,7 +173,7 @@ wget http://<PC>:<port>/rootfs-overlay.tar && tar xf rootfs-overlay.tar -C /mnt/
 umount /mnt/root
 ```
 
-Alpine's busybox has no `tftp` applet; the 10 KB overlay came from a
+Alpine's busybox has no `tftp` applet (`busybox-extras` has one); the 10 KB overlay came from a
 short-lived `python3 -m http.server` on the PC (SHA-256 checked on both
 sides). `UUID 435cda17-99fa-492f-ba47-d04cc34286ea`.
 
@@ -193,6 +196,21 @@ timing 1920×1080 at 60 Hz (148.5 MHz); CTA-861 block with 1080p50 as the
 native VIC 31, then 1080p60/24/25/30, 1080i, 720p50, basic audio, YCbCr
 4:4:4 and 4:2:2. Reading the DDC left the picture alone (kmon's HDMI
 set-up doesn't use the bus).
+
+## Registers from Linux: `kstb-reg`
+
+[`rootfs/usr/sbin/kstb-reg`](rootfs/usr/sbin/kstb-reg) (needs `apk add python3`) reads and writes
+32-bit registers through `/dev/mem`, like kmon's `md` / `w`:
+
+```
+kstb-reg f04d1500 3            # 3 words
+kstb-reg -w f0419c94 4000      # write, read back
+```
+
+A read of an abort hole kills only the program (`Bus error`, SIGBUS), not
+Linux: `kstb-reg f04d1500 10` died at TMON `+0x0c`, the system kept
+running. Small files from the PC: `apk add busybox-extras`, then
+`busybox-extras tftp -g -r <file> 192.168.1.38` from the TFTP root.
 
 ## Two consoles
 

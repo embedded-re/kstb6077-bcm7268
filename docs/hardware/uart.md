@@ -96,6 +96,14 @@ e -w 0xf040d010 00000000     loopback off
 UART1 returned `55` and `a3`; UART2 returned `55`. Both blocks are clocked
 and functional.
 
+## Linux (tested 2026-10-17)
+
+Mainline arm64 Linux drives both as `ns16550a` like UART0
+([`../../linux/README.md`](../../linux/README.md)): `ttyS1`, `ttyS2`. With the
+8250 driver's internal loopback (`TIOCM_LOOP` = MCR bit 4) at 115200 8N1,
+1052 bytes came back intact on each, using their interrupts (IDs 103 and
+104 counted 136 and 135).
+
 ## Stock kernel
 
 The stock Linux kernel registers all three: `ttyS0` (IRQ 102), `ttyS1`

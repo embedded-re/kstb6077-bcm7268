@@ -68,7 +68,7 @@ list names them (`bvn_*`, `hvd0`, `m2mc_0–2`, `raaga`, `aud_aio`, `v3d`,
 | `0xf04a0000` | GENET 1 (disabled) | DTB | `06000000` | clocked, unused |
 | `0xf04c4000` | AVS CPU data memory | DTB | `0` | |
 | `0xf04d1100` / `1200` | AVS L2 interrupt / L2 controller | DTB | `0` / `04000000` | |
-| `0xf04d1500` | temperature sensor | DTB | | [`system-blocks.md`](system-blocks.md) |
+| `0xf04d1500` | temperature sensor | DTB | `00000db7` | [`system-blocks.md`](system-blocks.md) (`+0x0c` aborts) |
 | `0xf04e0000–0xf04e7fff` | clock generator (PLLs, dividers, gates, muxes) | DTB (≈100 clock nodes), Nexus | `+0` = `00000016` | full read: [`clkgen_dump_output.txt`](../evidence/periph/clkgen_dump_output.txt) (418 words answer, 7,774 abort) |
 | `0xf0603000`, `0xf0604000` | display RDC (register DMA) | BOLT | | [`display.md`](display.md) (frame counter, flip) |
 | `0xf0641000` | display GFD (graphics feeder) | BOLT | | [`display.md`](display.md) (`+0x5c` aborts) |
