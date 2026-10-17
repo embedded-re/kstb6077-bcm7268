@@ -2,3 +2,4 @@
 obj-m += kstb-ir.o
 obj-m += kstb-audio.o
 obj-m += kstb-v3d-power.o
+obj-m += kstb-drm.o

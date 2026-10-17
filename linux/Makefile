@@ -82,7 +82,12 @@ $(OUT)/boot.bin: boot.S layout.h
 	ld.lld -Ttext=$(call addr,BOOT_ADDR) -o build/boot.elf build/boot.o
 	llvm-objcopy -O binary build/boot.elf $@
 
+# Kbuild doesn't rebuild our external modules when the kernel config changes
+# (CONFIG_DMA_CMA grew struct device by 8 bytes and kstb-ir, built before,
+# failed to probe): start them over whenever auto.conf differs from their build's
 modules: $(OUT)/Image FORCE
+	cmp -s $(KOUT)/include/config/auto.conf build/drivers/auto.conf || \
+		{ rm -rf build/drivers && mkdir -p build/drivers && cp $(KOUT)/include/config/auto.conf build/drivers/; }
 	$(KMAKE) M=$(CURDIR)/drivers MO=$(CURDIR)/build/drivers modules
 	rm -rf build/modroot
 	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/build/modroot INSTALL_MOD_STRIP=1 modules_install

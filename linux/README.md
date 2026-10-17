@@ -90,7 +90,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | HDMI audio | `hdmi-audio@f0ca0000` (`kaon,kstb6077-hdmi-audio`, our own driver [`drivers/kstb-audio.c`](drivers/kstb-audio.c), a module) | ALSA card 0 `KSTB6077 HDMI`, 48 kHz, S32_LE, stereo. `aplay -d 30` took 30.00 s, also with 5 ms periods, no underrun; the default device converts other rates and formats (`plug`). Underrun, `rmmod`/`modprobe` and the load at boot from `KRN` tested. **Not yet heard**: nobody listened to the TV ("HDMI audio" below) |
 | GPU (V3D 3.3) | `gpu@f1200000` (`brcm,7268-v3d`, mainline `v3d`, built in), hub/core interrupts SPI 78/77; power island `clock-controller@f041d020` (our module [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c)) | `[drm] Initialized v3d 1.0.0`, `/dev/dri/card0`, `renderD128`; IDs `000e1133` / `03443356`. Binner + render jobs through the GPU MMU and both interrupts: clear and triangle pixel-exact ([`rootfs/usr/sbin/kstb-v3d-test`](rootfs/usr/sbin/kstb-v3d-test)). OpenGL ES 3.0 through Mesa 23.3.6 with our patch: a coloured and a textured triangle exact ("GPU" below) |
 | GISB arbiter | `gisb-arb@f0400000` (`brcm,gisb-arb`, mainline `brcmstb_gisb`) on the sys L2 `interrupt-controller@f0403000` (`brcm,l2-intc`, SPI 59) bits 0 and 2 | a read of an abort hole is reported: `kstb-reg f04d150c` gave `GISB: target abort at 0xf04d150c [R ], core: cpu_0` and one TEA interrupt (and the program's `Bus error`) |
-| HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
+| HDMI display (KMS) | `display@f0603484` (`kaon,kstb6077-display`, our own driver [`drivers/kstb-drm.c`](drivers/kstb-drm.c), a module), vblank on the BVNF_0 L2 `interrupt-controller@f0606000` (`brcm,l2-intc`, SPI 17) bit 0; until it loads, `chosen/framebuffer@7db0b700` (`simple-framebuffer`) | `/dev/dri/card1` `kstb-drm`: 1920 × 1080 at 59.94 Hz, RGB565, page flips at vsync (59.94 per second, none missed), the console on its fbdev emulation, scanout buffers from CMA; Mesa renders straight into them (kmsro). Seen on the TV by the user ("Display" below). Before it loads, simplefb shows the boot log on BOLT's buffer; the console and the USB keyboard on `tty1` work on both |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
 backup GPT at the end of the eMMC still describes the old layout
@@ -234,6 +234,13 @@ each `/sys/bus/*/devices/*/modalias`: device tree, PCI, USB). Tested: after
 were loaded without the PC. Fetch the modules with every kernel: they must
 come from the same build, and nothing checks it (no `MODVERSIONS`).
 
+Kbuild doesn't rebuild external modules when the kernel config changes. After
+CMA was turned on (`DMA_CMA` adds a pointer to `struct device`), the old
+`kstb-ir.ko` stored its `rc_dev` fields 8 bytes too low and failed to probe
+(`-22`), and `kstb-audio` and `kstb-v3d-power` ran with the old layout too.
+`make modules` now starts `build/drivers` over whenever the kernel's
+`auto.conf` differs from the one it was built with.
+
 ### `kstb-ir`: the IR receiver
 
 [`drivers/kstb-ir.c`](drivers/kstb-ir.c) sets up channel kbd1 as Nexus does
@@ -366,6 +373,51 @@ picture stays intact (these are the writes kmon makes with the picture
 fine, but the TV wasn't watched). Before the first listening test, keep the
 TV volume low.
 
+## Display: `kstb-drm`
+
+[`drivers/kstb-drm.c`](drivers/kstb-drm.c) is a small atomic KMS driver for the
+HDMI output BOLT's splash (or kmon's `video init`) leaves running
+([`../docs/hardware/display.md`](../docs/hardware/display.md)). It doesn't set the display up; it only
+changes what it scans out:
+
+| | |
+|---|---|
+| Mode | one, fixed: 1920 × 1080 at 59.94 Hz (CEA VIC 16 timings, 148.352 MHz); one CRTC, an HDMI-A connector (always connected, EDID not read) |
+| Plane | primary only, `RG16` (RGB565), linear; the pitch must be 3840 (the display lists write it every frame) and the source x 0 |
+| Buffers | DMA GEM from CMA (`CMA_SIZE_MBYTES=64`, placed at `0x77000000`); dumb buffers, PRIME export |
+| Page flip | the buffer's address into `0xf0603488` and `0xf060348c`; the RDC loads it into the GFD at the next frame |
+| Vblank | BVNF_0 L2 bit 0, one per frame; a flip's event goes out at the first one after `0xf0641048` (the GFD's surface address) reads the new buffer |
+| Plane or CRTC off | BOLT's buffer `0x7db0b700` is shown again, and the driver waits until the GFD has it before a buffer is freed |
+| Console | fbdev emulation (`DRM_FBDEV_EMULATION`); at probe it removes simplefb (`aperture_remove_conflicting_devices` on BOLT's buffer) |
+
+The DRM helpers it needs (DMA GEM, KMS helpers, the in-kernel clients) are
+hidden Kconfig symbols an external module can't select:
+[`patches/0002-drm-kconfig-helpers-for-kstb-drm.patch`](patches/0002-drm-kconfig-helpers-for-kstb-drm.patch) adds `DRM_KSTB`, which
+selects them, and `kstb.config` turns it on.
+
+The interrupt stays unmasked all the time: the L2 bit latches every frame
+even while masked, so masking it while vblank is off and unmasking it on
+demand fired at once for a frame long past. The first page flip after a
+mode set then failed with `EBUSY` (the mode set's event had gone out a frame
+late). Kept unmasked: 60 interrupts a second, and none of that.
+
+Tested (2026-10-17/18, kernel over TFTP, then from `KRN`):
+
+| Test | Result |
+|---|---|
+| probe | `Initialized kstb-drm 1.0.0`, `fb0: kstb-drmdrmfb frame buffer device`, scanning out `0x77500000`; simplefb gone; console seen on the TV by the user |
+| `modetest -M kstb-drm -c -p` (Alpine `libdrm-tests`) | connector `HDMI-A-1` connected, the one mode, plane formats `RG16` |
+| `modetest -M kstb-drm -s 37@35:1920x1080@RG16 -v` | `freq: 59.94Hz`; the console back afterwards |
+| [`drm/kstb-flip-test.c`](drm/kstb-flip-test.c) (CPU-drawn white bar, 16 pixels per frame, two dumb buffers, page flip per frame) | `1199 flips in 20.00 s: 59.94 per second, 0 frames missed`; smooth, no tearing (the user, on the TV) |
+| `rmmod kstb_drm` / `insmod` | GFD back on `0x7db0b700` after `rmmod`, no warning; console back after `insmod` |
+| GPU straight to the screen ("Mesa" below) | spinning triangle at 59.94 Hz, seen by the user |
+
+```
+# in the Alpine 3.19 chroot (libdrm-dev):
+gcc -O2 -o kstb-flip-test kstb-flip-test.c -I/usr/include/libdrm -ldrm
+./kstb-flip-test 20
+```
+
 ## GPU
 
 The V3D 3.3 runs with mainline's `v3d` driver (DRM render node, no
@@ -485,6 +537,35 @@ timeout`, `v3d` logs `Resetting GPU for hang` (bin, then render), no
 Oops; the next `kstb-v3d-gl` and `kstb-gles-test` print `OK`. Twice in a
 row on one boot.
 
+#### GPU straight to the screen: kmsro and `kstb-drm`
+
+For a KMS device the DRI loader opens `<kernel driver name>_dri.so`;
+for a display-only driver that is Mesa's kmsro, which pairs it with the
+render GPU. [`mesa/kmsro-kstb-drm.patch`](mesa/kmsro-kstb-drm.patch) adds `kstb-drm` to kmsro's
+names and entry points, and `build-mesa.sh` builds `-Dgallium-drivers=v3d,kmsro`
+(rebuilt on the box: `kstb-drm_dri.so` in `/opt/mesa/lib/dri`). For a
+`SCANOUT` resource v3d asks `kstb-drm` for a dumb buffer big enough
+(1024 × 32 bpp × n rows), imports it through PRIME and renders into it linear
+(raster): stride 1920 × 2 = 3840, what the display needs. `kstb-drm`
+waits for the GPU's fence before it flips (`drm_gem_plane_helper_prepare_fb`).
+
+[`drm/kstb-kms-gles.c`](drm/kstb-kms-gles.c): GBM on `kstb-drm`'s card, an RGB565 EGL window
+surface, a red/green/blue triangle spinning on dark blue, one page flip per
+frame, no CPU copy.
+
+```
+gcc -O2 -o kstb-kms-gles kstb-kms-gles.c -I/usr/include/libdrm -I/opt/mesa/include \
+	-L/opt/mesa/lib -lEGL -lGLESv2 -lgbm -ldrm -lm
+LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-kms-gles 20
+```
+
+Result (2026-10-18): two GBM buffers from `kstb-drm`, `stride 3840, format
+RG16`; `1200 flips in 20.09 s`, the only late flip the last one (its
+`glReadPixels` waits for the GPU: `late flips: 1199`); the centre pixel
+`GPU 82,85,82` and in the buffer the display scans out `52aa` = 80,84,80
+(the same colour in RGB565). Seen on the TV by the user: smooth and
+correct. Same from `KRN`.
+
 #### `kstb-v3d-gl`: a GL shader record without Mesa
 
 [`mesa/kstb-v3d-gl`](mesa/kstb-v3d-gl) builds the whole job by hand (python3, raw
@@ -552,7 +633,8 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- OpenGL ES: only the test triangle so far, Mesa in a chroot on `ROOT` (not installed system-wide); HDMI audio not yet heard.
+- OpenGL ES: test triangles only (offscreen and on the screen through `kstb-drm`); Mesa in a chroot on `ROOT` (not installed system-wide); HDMI audio not yet heard.
+- Display: RGB565 at 1080p59.94 only (no other formats or modes, no EDID, no hot-plug, no overlay planes).
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.

@@ -1,0 +1,23 @@
+drm: a Kconfig entry that builds in the helpers kstb-drm needs
+
+kstb-drm (linux/drivers/kstb-drm.c) is an external module, so it can't select
+the hidden DRM helper symbols itself. DRM_KSTB selects them: DMA GEM, KMS
+helpers and the in-kernel clients (fbdev emulation for the console).
+
+--- a/drivers/gpu/drm/tiny/Kconfig
++++ b/drivers/gpu/drm/tiny/Kconfig
+@@ -215,3 +215,14 @@
+ 	  * 4.40" Sharp Memory LCD (LS044Q7DH01)
+ 
+ 	  If M is selected the module will be called sharp_memory.
++
++config DRM_KSTB
++	bool "Helpers for the KSTB6077 display driver (an external module)"
++	depends on DRM && OF
++	select DRM_CLIENT_SELECTION
++	select DRM_GEM_DMA_HELPER
++	select DRM_KMS_HELPER
++	help
++	  kstb-drm, the KSTB6077's HDMI display driver, is built outside the
++	  tree (linux/drivers/kstb-drm.c). This builds the DRM helpers it uses
++	  (DMA GEM, KMS, fbdev emulation) into the kernel.

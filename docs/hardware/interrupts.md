@@ -49,9 +49,9 @@ numbers in `/proc/interrupts` are the GIC IDs themselves.
 | 36–39 | | CPU 0–3 performance monitors (PMU) | | DTB |
 | 45 | `AIO` | audio input/output (FMM) | yes | tested |
 | 46 | `GFX` | M2MC 2D graphics | yes | tested |
-| 47 | `VEC` | video encoder (display timing) | yes | tested |
+| 47 | `VEC` | video encoder (display timing); L2 `0xf06e7800` (`nexus.ko`'s map), all 15 sources masked under kmon | yes | tested |
 | 48, 55 | `BVNB_0`, `BVNB_1` | video network back-end | | tested |
-| 49–53 | `BVNF_0`, `_1`, `_5`, `_9`, `_16` | video network front-end | `BVNF_0` | tested |
+| 49–53 | `BVNF_0`, `_1`, `_5`, `_9`, `_16` | video network front-end; L2s `0xf0606000`, `+0x100`, `+0x500`, `+0x900`, `0xf0607000` (`nexus.ko`'s map). `BVNF_0` bit 0 = one per display frame, Linux's vblank ([`display.md`](display.md), "Frame interrupt") | `BVNF_0` | tested |
 | 54 | `BVNM_0` | video network middle | | tested |
 | 56 | `CLKGEN` | clock generator | | tested |
 | 57 | | AVS L2 `0xf04d1200` | | kernel log |

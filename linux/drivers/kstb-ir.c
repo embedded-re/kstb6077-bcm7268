@@ -123,10 +123,10 @@ static int kstb_ir_probe(struct platform_device *pdev)
 	kstb_ir_stop(ir);
 	ret = devm_request_irq(dev, irq, kstb_ir_irq, 0, "kstb-ir", ir);
 	if (ret)
-		return ret;
+		return dev_err_probe(dev, ret, "interrupt %d\n", irq);
 	ret = devm_rc_register_device(dev, ir->rc);
 	if (ret)
-		return ret;
+		return dev_err_probe(dev, ret, "rc device\n");
 	kstb_ir_start(ir);
 	return 0;
 }

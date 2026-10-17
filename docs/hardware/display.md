@@ -24,9 +24,10 @@ and keep the display running after `go -64` (tested). Raw captures are in
 | Surface register | GFD `0xf0641048` (read it instead of hard-coding the address) |
 | Frame counter | `0xf0603484`, one step per frame (16,683 µs) |
 | Page flip | write the buffer address to `0xf0603488` and `0xf060348c`; takes effect at the next frame |
+| Frame interrupt | BVNF_0 L2 `0xf0606000` bit 0, GIC 49: latches once per frame (also while masked) |
 | Display lists | RDC lists at `0x7db08000–0x7db0b6ff`: **never overwrite**. Running a copy of BOLT's list from free RAM is tested |
 | State after `go -64` | still running |
-| Tested | drawing, timing with and without the MMU, double buffering, a custom RDC list, compositor background, window size and position, GFD source width |
+| Tested | drawing, timing with and without the MMU, double buffering, a custom RDC list, compositor background, window size and position, GFD source width, the frame interrupt, scanout from Linux RAM (KMS driver `kstb-drm`) |
 | Not understood | the GFD scaler, part of the compositor registers |
 
 ## Bringing up HDMI from the BOLT prompt
@@ -216,6 +217,40 @@ swap front and back
   writes both.
 - At the end the probe flips back to BOLT's buffer `0x7db0b700`. Nothing in
   the display lists is written.
+
+### Frame interrupt (tested 2026-10-17, from Linux)
+
+The stock `nexus.ko`'s interrupt map (`bint_map`: L1 bit, L2 register,
+name) puts the two display interrupts the stock kernel counts
+([`interrupts.md`](interrupts.md)) in front of standard Broadcom L2
+controllers (`+0` status, `+4` set, `+8` clear, `+0x0c` mask status,
+`+0x10` mask set, `+0x14` mask clear):
+
+| GIC ID | Name | L2 controller | Read under kmon's/BOLT's set-up |
+|---|---|---|---|
+| 47 | `VEC` | `0xf06e7800` | status `0`, mask `00007fff` (15 sources, all masked); nothing latches |
+| 49 | `BVNF_0` | `0xf0606000` | status `00000001`, mask `ffffffff` |
+
+**BVNF_0 bit 0 latches once per frame, at the frame counter's step.**
+Polled through `/dev/mem` for 100 ms, clearing the bit (`1` to
+`0xf0606008`) each time it was set: it came back 6 times, 16.68 ms apart,
+each time in the same poll in which `0xf0603484` stepped. Neither block
+aborted on reads. The bit latches while masked too: unmasking it after a
+pause fires at once for a frame long past (seen as a page flip reported
+done one frame early, before the GFD had the new address). So a driver
+should keep it unmasked, or clear it before unmasking. Under Linux it is
+mainline's `brcm,l2-intc` (edge, acked through `+8`) on GIC SPI 17, used
+by `kstb-drm` as its vblank interrupt (`linux/README.md`, "Display").
+
+### Scanout from Linux RAM (tested 2026-10-17)
+
+The display reads buffers anywhere tested so far, not only in `rmem`:
+Linux's CMA area at `0x77000000` (scanned out: `0x77500000` and others
+`kstb-drm` allocated), RGB565, pitch 3840. The flip registers take the
+address as above, and `0xf0641048` reads it back from the next frame.
+Seen on the TV by the user: the text console, a CPU-drawn bar moving 16
+pixels per frame (59.94 flips per second, no tearing) and a GPU-rendered
+spinning triangle, each from buffers in that range.
 
 ### The minimal MMU set-up used (EL2, tested)
 
