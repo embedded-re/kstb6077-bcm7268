@@ -380,6 +380,19 @@
 			interrupts-extended = <&upg_aon_l2 0>;
 		};
 
+		// HDMI audio (docs/hardware/audio.md): our own driver drivers/kstb-audio.c.
+		// FMM (ring buffers), output ports, HDMI N/CTS + enable, audio PLL,
+		// a clock gate, the memory controller's audio reset bit
+		hdmi-audio@f0ca0000 {
+			compatible = "kaon,kstb6077-hdmi-audio";
+			reg = <0xf0ca0000 0x8000>,
+			      <0xf0cb0000 0x1000>,
+			      <0xf06fa0c0 0x24>,
+			      <0xf04e2800 0x20>,
+			      <0xf04e0314 0x4>,
+			      <0xf11005c0 0x4>;
+		};
+
 		// main GPIO (banks of 32, 32, 19, 2), interrupt through UPG main L2 bit 0
 		gpio: gpio@f040a500 {
 			compatible = "brcm,bcm7268-gpio", "brcm,brcmstb-gpio";

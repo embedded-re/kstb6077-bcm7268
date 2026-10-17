@@ -81,6 +81,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | Wi-Fi | `pci@0,0/wifi@0,0` (`brcm,bcm4329-fmac`: the stock MAC `90:f8:91:e7:1b:65`); `brcmfmac` and `cfg80211` as modules | BCM43570 r2, firmware 7.124.22 from `linux-firmware-brcm`, the stock board file. Scan: 2.4 and 5 GHz networks. WPA2 with `wpa_supplicant`: associated at 2462 MHz, −65 dBm, DHCP lease from the router, ping to the Internet over `wlan0` 13 ms, 4.0 MB download in 1.00 s with Ethernet down (rx rate 72.2 Mbit/s). "Wi-Fi" below |
 | Bluetooth | (USB, OHCI0) `btusb` + `btbcm` as modules | BCM43569A2, patched with the stock `BCM43569.hcd` (build 0000 → 0172). `UP RUNNING`; BLE scan (`hcitool lescan`, 12 s): 86 advertisements from 3 devices; classic inquiry: 2 devices. The patch is offered once per boot ("Bluetooth" below) |
 | xHCI | `usb@f0b01000` (`brcm,bcm7445-xhci`, `generic-xhci`), `brcm,has-xhci` on the PHY, ID 124 | `Host supports USB 3.0 SuperSpeed`, a USB 3 root hub with 2 ports (no USB 2 ports). A SuperSpeed-capable stick straight in the USB-A port still came up on EHCI1 at high speed; the xHCI ports stayed in RxDetect: nothing is wired to them ([`../docs/hardware/usb.md`](../docs/hardware/usb.md)) |
+| HDMI audio | `hdmi-audio@f0ca0000` (`kaon,kstb6077-hdmi-audio`, our own driver [`drivers/kstb-audio.c`](drivers/kstb-audio.c), a module) | ALSA card 0 `KSTB6077 HDMI`, 48 kHz, S32_LE, stereo. `aplay -d 30` took 30.00 s, also with 5 ms periods, no underrun; the default device converts other rates and formats (`plug`). Underrun, `rmmod`/`modprobe` and the load at boot from `KRN` tested. **Not yet heard**: nobody listened to the TV ("HDMI audio" below) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -303,6 +304,51 @@ from `KRN` with kmon's `linux`: one patch at 3.3 s, the chip back at
 chip that has gone), no further patch. The BD address is the
 chip's default (`43:56:9A:20:1F:AC`).
 
+## HDMI audio
+
+```
+apk add alsa-utils
+aplay -D hw:0 -f S32_LE -r 48000 -c 2 file.raw    # the hardware format
+aplay file.wav                                     # anything else, converted by alsa-lib
+```
+
+[`drivers/kstb-audio.c`](drivers/kstb-audio.c) starts the audio block itself, with the
+same register writes as kmon's [`../mon/audio_hw.c`](../mon/audio_hw.c) (BOLT's
+splash routine, steps 1–10 in [`../docs/hardware/audio.md`](../docs/hardware/audio.md)), then
+writes the HDMI N/CTS for 1080p59.94 (5824 / 140625), the only mode kmon
+sets up. It doesn't depend on what kmon left running: it stops the DMA
+first.
+
+Ring buffer 0 plays a buffer in DRAM in a loop and ignores the write
+pointer, so the ALSA buffer is the ring itself. At START the driver stops
+the DMA, sets read = write = start = the ALSA buffer and end = start +
+size − 1, and starts it again (the same steps that were tested from
+`BOLT>`); the read pointer (bit 31 = wrap flag) is the position. No audio
+interrupt is known, so an hrtimer calls `snd_pcm_period_elapsed` once per
+period. At STOP, and whenever nothing plays, the ring loops over a 4 KB
+buffer of zeros. The buffers come from `dma_alloc_coherent` in Linux's RAM:
+the DMA reaches it (DMA mask 31 bits, bit 31 being the wrap flag).
+Buffer up to 256 KB, periods from 1 KB, all multiples of 256 bytes (the
+ring lengths tried before).
+
+Tested on the box (ring registers read with `kstb-reg`):
+
+| Test | Result |
+|---|---|
+| Probe | DMA on, ring 0 = `01868000–01868fff` (the zeros, in Linux's RAM), read pointer moving; `f06fa0c8–d0` = `040016c0 00022551 00022551` |
+| `aplay -D hw:0 … -d 5 /dev/zero` | 5.02 s; ring `03440000–0346efff` (24064 frames), `hw_ptr` 100096 after ~2.1 s; afterwards back on the zeros |
+| 30 s with `-B 20000 -F 5000` (5 ms periods) | 30.00 s, no underrun |
+| default device, 44.1 kHz mono S16 | `plug`: rate and route conversion to 48 kHz stereo S32, mmap access; 3.02 s for 3 s |
+| underrun (input stalled 2 s) | `underrun!!!`, the ring on the zeros during the gap, playback resumed |
+| `speaker-test -D plughw:0 -t sine -f 440` | ran to the end |
+| `rmmod` / `modprobe` | DMA off after `rmmod`; full start again at `modprobe` |
+| boot from `KRN` | `kstb_audio` loaded by `kstb-rc` at 2.45 s, `aplay` 3 s in 3.05 s |
+
+Not checked yet: the sound on the TV (nobody listened), and that the
+picture stays intact (these are the writes kmon makes with the picture
+fine, but the TV wasn't watched). Before the first listening test, keep the
+TV volume low.
+
 ## Registers from Linux: `kstb-reg`
 
 [`rootfs/usr/sbin/kstb-reg`](rootfs/usr/sbin/kstb-reg) (needs `apk add python3`) reads and writes
@@ -348,7 +394,7 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- HDMI audio, the GPU (`brcm,7268-v3d` exists in mainline, not tried).
+- The GPU (`brcm,7268-v3d` exists in mainline, not tried). HDMI audio not yet heard.
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.

@@ -354,6 +354,16 @@ kmon's own display start ([`display.md`](display.md)): the DMA runs (`0xf0ca00c0
 the read pointer moves through `7da00000–7da2edff`), and `beep 440 1000` was
 heard on the TV.
 
+## Linux (tested 2026-10-17, not yet heard)
+
+Linux has its own ALSA driver, [`../../linux/drivers/kstb-audio.c`](../../linux/drivers/kstb-audio.c): the same
+start as `audio_hw.c`, then the 1080p59.94 N/CTS, and ring buffer 0 pointed
+at the ALSA buffer while a stream plays (a 4 KB buffer of zeros otherwise).
+Both buffers are in Linux's RAM (`dma_alloc_coherent`), which shows the
+audio DMA reads low DRAM as well (read pointer moving through `01868000–01868fff`
+and `03440000–0346efff`). Playback runs at 48,000 frames/s (30 s of audio in
+30.00 s). Details and tests: [`../../linux/README.md`](../../linux/README.md), "HDMI audio".
+
 ## Open questions
 
 - Why the blop count by ear looked tied to buffer laps (see "The blop").
