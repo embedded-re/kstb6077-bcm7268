@@ -150,6 +150,7 @@ reset → `golden (no valid image in slot A)`, CRC OK, DHCP, ping from the PC.
 | STARTUP set, software reset | `Executing STARTUP...` → kboot → slot A → confirmed |
 | slot A = a 4-byte image that loops (`b .`) | tries 1, 2, 3, each ended by a watchdog reset (`RR:00000040`), then `golden (slot A did not confirm 3 times)`; kmon printed the same reason |
 | power-on (`RR:00000003`) | STARTUP → kboot → slot A, try 1, confirmed |
+| power-on without an Ethernet cable (2026-10-17) | the same; kmon skips DHCP (`net: no link`), `net dhcp` works once the cable is in |
 | SW1/SW4 held at boot | **not tested** |
 | own eMMC reset at every boot (`kboot.bin` CRC `a3fce739`), from RAM and from STARTUP | 34 ms (RAM, after kmon had used the card) and 25 ms (after BOLT); slot A CRC OK, confirmed |
 

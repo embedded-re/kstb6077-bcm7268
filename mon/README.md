@@ -285,8 +285,10 @@ when the program returns or crashes.
 
 Tested 2026-10-16: after a reset, `dhcp: 192.168.1.33 …` and the PC pings
 the box with nothing typed; after a program that returned (`status 7`) and
-after a crash (`call 0`), the PC still pinged it (2 of 2 each). Not tested:
-booting without a cable. On the PC,
+after a crash (`call 0`), the PC still pinged it (2 of 2 each). Tested
+2026-10-17, power-on without a cable (`RR:00000003`): slot A confirmed,
+`net: GENET up, … link DOWN`, `net: no link; skipped DHCP`, kmon prompt;
+cable plugged in, `net dhcp` → `dhcp: 192.168.1.33 …`. On the PC,
 [`../tools/tftpd`](../tools/tftpd) serves files and receives `tftp put`.
 
 ```
