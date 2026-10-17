@@ -25,7 +25,7 @@ all: $(OUT)/Image $(OUT)/initramfs.cpio.gz $(OUT)/kstb6077.dtb $(OUT)/kstb6077-r
 
 $(KOUT)/.config: kstb.config
 	mkdir -p $(KOUT)
-	$(KMAKE) allnoconfig KCONFIG_ALLCONFIG=$(CURDIR)/kstb.config
+	$(KMAKE) alldefconfig KCONFIG_ALLCONFIG=$(CURDIR)/kstb.config
 
 $(OUT)/Image: $(KOUT)/.config FORCE
 	$(KMAKE) Image scripts

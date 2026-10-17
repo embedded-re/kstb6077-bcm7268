@@ -1,8 +1,29 @@
 #!/bin/sh
 # kstb-rc - start-up for both the initramfs and the root file system on ROOT
 # (mmcblk0p8), then the shells from inittab
-mount -o remount,rw / 2>/dev/null
 mountpoint -q /proc || mount -t proc proc /proc
+# On ROOT the kernel mounts / read-only (kstb6077-root.dtb: ro): check it
+# first, fsck -p repairs what is safe (after a reset without unmounting).
+# If it changed anything, reboot (to kmon) rather than run on it.
+root=
+for a in $(cat /proc/cmdline); do
+	case $a in root=*) root=${a#root=} ;; esac
+done
+if [ -b "$root" ] && [ -x /sbin/fsck.ext4 ]; then
+	# /proc/mounts names it /dev/root: without that node e2fsck doesn't see
+	# that it is mounted read-only, opens it exclusively and fails (busy)
+	[ -e /dev/root ] || ln -s "${root#/dev/}" /dev/root
+	fsck.ext4 -p "$root"
+	r=$?
+	if [ $r -ge 4 ]; then
+		echo "kstb-rc: fsck.ext4 -p $root: exit $r, not repaired: boot the initramfs and run fsck.ext4 -f -y $root"
+	elif [ $r -ge 2 ]; then
+		echo "kstb-rc: fsck repaired $root; rebooting"
+		sleep 2
+		reboot -f
+	fi
+fi
+mount -o remount,rw / 2>/dev/null
 mountpoint -q /sys || mount -t sysfs sysfs /sys
 mountpoint -q /dev || mount -t devtmpfs devtmpfs /dev
 mkdir -p /dev/pts && mount -t devpts devpts /dev/pts

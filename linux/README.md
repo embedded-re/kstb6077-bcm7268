@@ -10,7 +10,7 @@ Tested on the modified box on 2026-10-17 unless marked otherwise.
 | | |
 |---|---|
 | Kernel | Linux 6.18.57 (LTS), `ARCH=arm64`, built with clang 23 / ld.lld (`LLVM=1`), no gcc |
-| Config | `allnoconfig` + [`kstb.config`](kstb.config): everything built in, no modules; Image 7.9 MB |
+| Config | `alldefconfig` (upstream defaults) + [`kstb.config`](kstb.config): everything built in, no modules; Image 10.5 MB ("Kernel config base" below) |
 | Device tree | [`kstb6077.dts`](kstb6077.dts) (no BCM7268 tree exists upstream) |
 | Userspace | Alpine 3.24.2 aarch64 (busybox, musl, apk): on `ROOT` (mmcblk0p8, ext4), or the minirootfs as a 4 MB initramfs; [`rootfs/`](rootfs/) adds `inittab`, `kstb-rc` and `fstab` |
 | Boot | from `kmon>`: **`linux`**, kernel and DTB from the eMMC (`KRN`, `DTB`), root on `ROOT`; or over TFTP for testing ([`../tools/kstb-linux`](../tools/kstb-linux)) |
@@ -47,7 +47,7 @@ Load addresses ([`layout.h`](layout.h), all below `0x06000000`, kmon's
 |---|---|
 | `0x02000000` | `Image`; the kernel runs in place (header: text offset 0, image size `0x7d0000`) |
 | `0x04800000` | `initramfs.cpio.gz` (the DTB's `linux,initrd-end` is set from its size at build time) |
-| `0x05e00000` | `kstb6077.dtb` (initramfs), or `kstb6077-root.dtb` (`root=/dev/mmcblk0p8 rootwait rw`, no initrd) |
+| `0x05e00000` | `kstb6077.dtb` (initramfs), or `kstb6077-root.dtb` (`root=/dev/mmcblk0p8 rootwait ro`, no initrd; `kstb-rc` checks it, then mounts it read-write) |
 | `0x05f00000` | `boot.bin`: `x0` = DTB, `x1`–`x3` = 0, jump to the Image |
 
 kmon's `go` already leaves the MMU and caches off with the data cache
@@ -100,9 +100,52 @@ still allows only `splash` and `DATA`. Linux updates its own kernel with
 `kstb-flash-kernel` (in `/usr/sbin`).
 
 Tested: `linux info` showed both headers; `linux` read the 8.5 MB Image in
-289 ms, CRCs matched, Linux mounted `ROOT` and got DHCP. First from RAM,
-then from slot A (seq 45, `kmon-linux`) after a reset. Golden (seq 44) has
-no `linux` command yet.
+289 ms (the 10.5 MB `alldefconfig` one in 389 ms), CRCs matched, Linux
+mounted `ROOT` and got DHCP. First from RAM, then from slot A (seq 45) after
+a reset. Slot A seq 45 and golden seq 46 both hold `kmon-linux` (CRC
+`ad98d6b1`). Starting Linux stays manual: `linux` at `kmon>` (the user's
+choice).
+
+## `ROOT` checked at every boot
+
+The kernel mounts `ROOT` read-only (`ro` in `kstb6077-root.dtb`).
+`kstb-rc` runs `fsck.ext4 -p` on it, then remounts it read-write. If fsck
+repaired something (exit 2–3) it reboots to kmon instead of running on it;
+if it can't (exit ≥ 4) it says so: boot the initramfs (`kstb-linux`) and
+run `fsck.ext4 -f -y /dev/mmcblk0p8`. `e2fsprogs` is installed on `ROOT`.
+
+Two things had to be in place, both tested:
+
+- `/dev/root` as a link to the real device: `/proc/mounts` lists the root
+  as `/dev/root`, which has no node, and e2fsck then doesn't see that the
+  device is the read-only root. `kstb-rc` creates the link.
+- `CONFIG_BLK_DEV_WRITE_MOUNTED=y` (default `y`): without it the kernel
+  refuses to open a mounted block device for writing, so `fsck -p` failed
+  with `Resource busy` even on the read-only root. `allnoconfig` had turned
+  it off; see "Kernel config base".
+
+Tests: `ROOT: clean, 619/344064 files` at a normal boot. Unclean reset: an
+8 MB file written and synced, a small file written without `sync`, then
+`reboot -f`. Next boot: `EXT4-fs: recovery required on readonly
+filesystem … recovery complete`, `ROOT: clean`, read-write; the 8 MB file's
+MD5 unchanged and the small file there. Before this, the same kind of reset
+had left orphaned inodes that needed `e2fsck -f -y` by hand. A full
+`e2fsck -f -n` from the initramfs after that repair: clean.
+
+## Kernel config base
+
+The first builds used `allnoconfig`: every option off unless
+`kstb.config` turns it on. That silently dropped options whose upstream
+default is `y`, and two of them broke things here: `USB_EHCI_TT_NEWSCHED`
+(the keyboard behind the hub, below) and `BLK_DEV_WRITE_MOUNTED` (fsck of
+the root). A scan also found inotify, swap, compaction, namespaces, the
+deadline I/O scheduler, PAN and others off. Since then the base is
+`alldefconfig`: upstream defaults, then `kstb.config`. 982 options on
+instead of about 600; Image 10.5 MB instead of 7.9 MB. Re-tested on it: 4
+cores, USB with the keyboard behind the hub (`qh8-1c01`), Ethernet, eMMC,
+watchdog, framebuffer, the initramfs path. `CONFIG_SUSPEND` is on, but our
+EL3 monitor offers no PSCI suspend, so Linux has no sleep state to use;
+CPU hotplug uses PSCI CPU_OFF, which it has.
 
 ## Root file system on `ROOT` (2026-10-17)
 
@@ -149,7 +192,7 @@ transfers completing with `-71`; a debug print of the qTD token gave
 report had arrived). The QH in `/sys/kernel/debug/usb/ehci/f0b00500.usb/periodic`
 was `qh8-0601`: start-split in microframe 0, complete-splits in 1 and 2 only.
 
-Cause: `allnoconfig` turns off `CONFIG_USB_EHCI_TT_NEWSCHED` (default `y`).
+Cause: `allnoconfig` (the config base then) turns off `CONFIG_USB_EHCI_TT_NEWSCHED` (default `y`).
 The old scheduler puts the complete-splits at Y+1 and Y+2, too early for a
 low-speed device behind the hub's TT. With it on, the QH is `qh8-1c01`
 (complete-splits at Y+2, Y+3, Y+4): no missed microframes and no resets,

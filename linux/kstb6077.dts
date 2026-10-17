@@ -28,9 +28,10 @@
 		#size-cells = <2>;
 		ranges;
 		// earlycon without a baud rate: it keeps BOLT's divisor (44, 115200).
-		// ROOTFS: root on ROOT (mmcblk0p8), else the initramfs
+		// ROOTFS: root on ROOT (mmcblk0p8), read-only until kstb-rc has checked
+		// it with fsck; else the initramfs
 #ifdef ROOTFS
-		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p8 rootfstype=ext4 rootwait rw";
+		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p8 rootfstype=ext4 rootwait ro";
 #else
 		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 rdinit=/sbin/init";
 #endif
