@@ -285,11 +285,16 @@ behind the hub, at full speed.
 | Speed | 4 MB from LBA 2048 in 4,417 ms (927 KB/s), the same CRC `8c6400c2` twice; a 7.8 MB file in 8.3 s |
 | Integrity | `hi_kernel.uImage` read through FAT32 and sent to the PC: uImage header CRC `eb841e71` and data CRC `f03a70da` both correct |
 
-Writing (WRITE(10)) is in the code but not tested.
+Writing (WRITE(10), tested 2026-10-17 through kmon's FAT32 code): a 4 MB
+file written in 6.5 s (about 650 KB/s) and read back with the same CRC; after
+deleting it, the partition's first 2,088 blocks (boot sector, both FATs,
+root directory) differed from a copy taken before only in FSInfo (free
+count and hint `ffffffff`) and in one root directory slot that was free
+before and after.
 
 ## Open questions
 
-- Writing to the USB stick (WRITE(10)), and EHCI1 for high-speed devices.
+- EHCI1 for high-speed devices (the stick at USB 2.0 speed).
 - The OHCI1 interrupt (ID 127) instead of polling.
 - Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).

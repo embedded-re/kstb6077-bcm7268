@@ -253,9 +253,20 @@ kmon> fget usb:/hi_kernel.uImage 0x03000000
 
 That file, sent to the PC with `tftp put`, has a good uImage header and data
 CRC; `usb:/boot.bin` has the CRC of the same file on the PC (`0082c7e8`).
-About 0.95 MB/s (USB full speed). Writing to the stick (`fput`, `rm`,
-`mkdir` with `usb:`) is in the code, limited to that FAT32 partition, but
-**not tested yet**.
+About 0.95 MB/s (USB full speed). Writing (`fput`, `rm`, `mkdir` with
+`usb:`) stays inside that FAT32 partition: a block outside it is refused.
+Tested 2026-10-17: `mkdir usb:/kmontest`, `fput` of 4 MB (6.5 s, about
+650 KB/s), `fget` back with the same CRC `d55a7cab`, an old file unchanged,
+then `rm` of both; compared with a copy taken before, both FATs were the
+same, the root directory's entry slot was free again, and FSInfo's free
+count was `ffffffff` (unknown; a PC counts again).
+
+Copying a file from the stick to `DATA`, without the PC:
+
+```
+kmon> fget usb:/doom1.wad 0x02000000
+kmon> fput doom1.wad                 # the last fget
+```
 
 ## Video (`video`, [`video.c`](video.c))
 
