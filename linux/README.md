@@ -454,7 +454,13 @@ green and blue corners: 18432 lit pixels (its area), corners
 draws in one process all exact; the same with a texture lookup
 (`KSTB_TEX=1`); a constant colour (`KSTB_FLAT=1`) too. 100 frames at
 1920×1080 in 0.163–0.197 s. No MMU error, no kernel message. The test
-copies its 256×256 picture to `/dev/fb0` at (832,412). Mesa's shader
+copies its 256×256 picture to `/dev/fb0`, centred at (832,412): seen on
+the TV by the user, centred, corners right (2026-10-17). simplefb's
+buffer starts inside a page (`0x7db0b700`) and an `mmap` of `/dev/fb0`
+starts at the page, so pixel (0,0) is `smem_start & 0xfff` = `0x700`
+bytes in; without that the picture landed 896 pixels early, wrapped
+from the left edge to the right. The test only writes its own square:
+`cat /dev/zero > /dev/fb0` clears the screen. Mesa's shader
 cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
 `MESA_SHADER_CACHE_DISABLE=true` while changing the compiler.
 
