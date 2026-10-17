@@ -1,3 +1,4 @@
 # our own drivers, built as external modules: make -C linux modules
 obj-m += kstb-ir.o
 obj-m += kstb-audio.o
+obj-m += kstb-v3d-power.o

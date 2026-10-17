@@ -20,8 +20,8 @@ Sources:
 | Address | hub `0xf1200000`, bridge `0xf1204000`, GCA `0xf1204100`, core `0xf1208000` |
 | State after BOLT | power island off: every access aborts. Power up through `0xf041d020` |
 | GPU MMU | off after reset; jobs use physical addresses |
-| Tested | power, reset, a TFU job, render jobs into the framebuffer, a binner + render job drawing a triangle, a custom fragment shader |
-| Not tested | the GPU MMU, interrupts, textures, vertex shaders, frames larger than one tile |
+| Tested | power, reset, a TFU job, render jobs into the framebuffer, a binner + render job drawing a triangle, a custom fragment shader; under Linux (mainline `v3d`): the GPU MMU and the interrupts |
+| Not tested | textures, vertex shaders, frames larger than one tile (bare metal) |
 
 ## Configuration (tested, from the ID registers)
 
@@ -416,7 +416,7 @@ and `PTB_BPCA` `0xf1208300` = `04003000` (12 KB of tile memory used).
 
 | Bytes | Packet |
 |---|---|
-| `78 12 00 10 04 01 10 00 00` | tile binning mode config: tile state array `0x04100000` (4 KB, zeroed) with auto-init, initial block 64 bytes, block 128 bytes; **width 1, height 1 tiles**; 1 render target, 32 bpp |
+| `78 12 00 10 04 01 10 00 00` | tile binning mode config: tile state array `0x04100000` (4 KB, zeroed) with auto-init, initial block 64 bytes, block 128 bytes; **width 1, height 1 tiles**; 0 render targets (see below), 32 bpp |
 | `13`, `06` | clear VCD cache, start tile binning |
 | `0e 00`, `5c 00000000` | wait transform feedback 0, occlusion query counter off (as libGLES) |
 | `6b 0000 0000 4000 4000` | clip window (0,0) 64×64 |
@@ -433,6 +433,15 @@ The tile counts in the config are **counts, not minus one**: libGLES computes
 `((pixels - 1) >> shift) + 1`. A first run with `00 00 00` there read its
 whole list, but `FLDONE` never came, `PTB_BPCA` moved by `0xaa000` and no
 triangle was drawn ([`v3d_tri_scr_output_run1_tiles0.txt`](../evidence/v3d/v3d_tri_scr_output_run1_tiles0.txt)).
+
+**Render target count.** The last byte holds `Number of Render Targets`
+in its low 4 bits, which Mesa's `v3d_packet_v33.xml` doesn't encode minus
+one ("Must be >= 1" in Mesa's `v3dx_draw.c`). With `00` there, as above, the
+binner also **writes to address 0**. With the MMU off this went unnoticed;
+under Linux, with the GPU MMU on, every such job gives `MMU error from
+client ? (0x40) at 0x0, write violation, pte invalid` (tested
+2026-10-17, "Under Linux" below). With `01` the error is gone and the
+picture is the same (1000 jobs, no error).
 
 **NV shader record** (60 bytes, 32-byte aligned; values from libGLES
 `v3d_create_nv_shader_record`, layout from `v3d_unpack_shadrec_gl_main` /
@@ -514,6 +523,31 @@ So `fxcd`/`fycd` give the integer pixel coordinates as floats. A shader can
 write the tile buffer with `tlbu` (config from the uniform stream) followed
 by `tlb`, and the load immediate works as a full 32-bit move into a magic
 register.
+
+## Under Linux (tested 2026-10-17)
+
+Mainline Linux's `v3d` driver (`brcm,7268-v3d`) runs this GPU
+([`../../linux/README.md`](../../linux/README.md), "GPU"). Our module `kstb-v3d-power` switches the
+power island (the sequence above) as the driver's clock. What that adds to
+the bare-metal results:
+
+- **The GPU MMU works.** `v3d` turns it on with its own page table;
+  buffers get GPU addresses from `0x1000` up. The bare-metal clear and
+  triangle jobs, with those addresses, give the same pixels as before
+  (`linux/rootfs/usr/sbin/kstb-v3d-test`).
+- **The interrupts work**: GIC 109 (`V3D_INT`, SPI 77) for bin/render done,
+  GIC 110 (`V3D_HUB_INT`, SPI 78) for the hub (MMU errors). One binner +
+  render job raised the core count by 2 (1606 → 1608) and the hub count by
+  1 (its MMU error).
+- **An MMU violation names the culprit**: `MMU_VIO_ADDR` and `MMU_VIO_ID`.
+  That showed the binner's write to address 0 ("Render target count"
+  above). Linux only knows AXI IDs for V3D 4.1+, where `0x40` is the PSE;
+  the name of `0x40` on V3D 3.3 is not known.
+- Speed: the triangle job pair (binner + render, 64×64) took 0.20 ms per
+  submission, measured from Python including the ioctls (1000 in 0.196 s).
+- OpenGL ES through Mesa doesn't work yet: Mesa dropped V3D 3.3 in 24.0;
+  23.3 needed four fixes to compile and run shaders here, and vertex
+  positions are still wrong (`linux/README.md`, "Mesa").
 
 ## QPU instructions
 

@@ -1,0 +1,87 @@
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -1970,7 +1970,17 @@
+                 vir_VPM_WRITE_indirect(c, val,
+                                        vir_uniform_ui(c, vpm_index), true);
+         } else {
+-                /* XXX: v3d33_vir_vpm_write_setup(c); */
++                /* V3D 3.3 writes through a VPM write setup, emitted before
++                 * the first write (emit_vert_end() did it up to Mesa 19).
++                 */
++                bool setup = true;
++                vir_for_each_inst_inorder(inst, c) {
++                        if (inst->dst.file == QFILE_MAGIC &&
++                            inst->dst.index == V3D_QPU_WADDR_VPM)
++                                setup = false;
++                }
++                if (setup)
++                        v3d33_vir_vpm_write_setup(c);
+                 vir_MOV_dest(c, vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_VPM), val);
+         }
+ }
+@@ -4556,8 +4566,9 @@
+                 *restore_last_thrsw = c->last_thrsw;
+         }
+ 
+-        assert(c->last_thrsw);
+-        c->last_thrsw->is_last_thrsw = true;
++        /* V3D 3.3 with one thread (no TMU ops) has no THRSW at all */
++        if (c->last_thrsw)
++                c->last_thrsw->is_last_thrsw = true;
+ }
+ 
+ static void
+--- a/src/broadcom/compiler/qpu_schedule.c
++++ b/src/broadcom/compiler/qpu_schedule.c
+@@ -696,6 +696,13 @@
+                           struct choose_scoreboard *scoreboard,
+                           const struct v3d_qpu_instr *inst)
+ {
++        /* V3D 3.3 with one thread (no TMU ops) has no THRSW: the shader
++         * owns the scoreboard from the start, only not in its first
++         * instruction.
++         */
++        if (!c->last_thrsw)
++                return qpu_inst_is_tlb(inst) && scoreboard->tick == 0;
++
+         return qpu_inst_is_tlb(inst) &&
+                !scoreboard_is_locked(scoreboard,
+                                      c->lock_scoreboard_on_first_thrsw);
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -57,6 +57,17 @@
+                 return CLASS_BITS_PHYS;
+ }
+ 
++/* A new ldunif's destination: before V3D 4.x a uniform can only be loaded
++ * to r5 (there is no ldunifrf).
++ */
++static uint8_t
++ldunif_class_bits(const struct v3d_device_info *devinfo)
++{
++        if (devinfo->ver < 40)
++                return CLASS_BITS_R5;
++        return get_class_bit_any(devinfo);
++}
++
+ static uint8_t
+ filter_class_bits(const struct v3d_device_info *devinfo, uint8_t class_bits)
+ {
+@@ -477,7 +488,7 @@
+          */
+         assert(c->disable_ldunif_opt);
+         struct qreg offset = vir_uniform_ui(c, spill_offset);
+-        add_node(c, offset.index, get_class_bit_any(c->devinfo));
++        add_node(c, offset.index, ldunif_class_bits(c->devinfo));
+ 
+         /* We always enable per-quad on spills/fills to ensure we spill
+          * any channels involved with helper invocations.
+@@ -691,7 +702,7 @@
+                                          * we can use any register class for it.
+                                          */
+                                         add_node(c, unif.index,
+-                                                 get_class_bit_any(c->devinfo));
++                                                 ldunif_class_bits(c->devinfo));
+                                 } else if (spill_type == SPILL_TYPE_RECONSTRUCT) {
+                                         struct qreg temp =
+                                                 reconstruct_temp(c, reconstruct_op);

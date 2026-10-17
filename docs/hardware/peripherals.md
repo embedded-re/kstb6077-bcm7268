@@ -218,6 +218,13 @@ fails, the arbiter records it. After the probe's four aborts:
 | `0xf04007e4` | `00000000` | |
 | `0xf0400008` | `000278d0` | probably the GISB timeout |
 
+Under Linux (tested 2026-10-17) mainline's `brcmstb_gisb` driver reads
+them: they are its `bcm7445` layout (`+0x7e4` clear, `+0x7e8` high
+address, `+0x7ec` address, `+0x7f4` status, `+0x7f8` master), with the
+interrupts on the sys L2 `0xf0403000` bits 0 (timeout) and 2 (target
+abort). A read of `0xf04d150c` from user space logged `GISB: target abort
+at 0xf04d150c [R ], core: cpu_0` ([`../../linux/README.md`](../../linux/README.md)).
+
 BOLT prints these as `GISB Address`, `GISB Data`, `GISB Master` (its code at
 `0x07023354`). So after a crash, `d -w 0xf04007ec 4` in BOLT should show
 which address caused it, if the board can be brought back without power loss

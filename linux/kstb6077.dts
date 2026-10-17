@@ -300,8 +300,31 @@
 			      <0xffd02000 0x2000>;
 		};
 
-		// edge-type L2 controllers (docs/hardware/interrupts.md): sys_pm
-		// (wake-up sources: wake timer bit 4) and AVS (TMON bit 6)
+		// edge-type L2 controllers (docs/hardware/interrupts.md): sys (GISB
+		// timeout bit 0, target abort bit 2), sys_pm (wake-up sources: wake
+		// timer bit 4) and AVS (TMON bit 6)
+		sys_l2: interrupt-controller@f0403000 {
+			compatible = "brcm,l2-intc";
+			reg = <0xf0403000 0x48>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		// GISB arbiter (docs/hardware/peripherals.md): reports every failed
+		// register access (address, master); capture registers at +0x7e4..0x7f8,
+		// mainline's bcm7445 layout. Master names and mask from the stock DTB
+		gisb-arb@f0400000 {
+			compatible = "brcm,gisb-arb";
+			reg = <0xf0400000 0x800>;
+			interrupts-extended = <&sys_l2 0>, <&sys_l2 2>;
+			interrupt-names = "gisb_timeout", "gisb_tea";
+			brcm,gisb-arb-master-mask = <0x18a0fc3>;
+			brcm,gisb-arb-master-names = "bsp_0", "scpu_0", "cpu_0", "webcpu_0",
+				"jtag_0", "ssp_0", "rdc_0", "hvd_0", "raaga_0", "pcie_0",
+				"bbsi_spi", "avs_0";
+		};
+
 		sys_pm_l2: interrupt-controller@f0410640 {
 			compatible = "brcm,l2-intc";
 			reg = <0xf0410640 0x30>;
@@ -378,6 +401,28 @@
 			compatible = "brcm,bcm7268-kbd";
 			reg = <0xf0419900 0x38>;
 			interrupts-extended = <&upg_aon_l2 0>;
+		};
+
+		// V3D's power island (docs/hardware/gpu.md), offered as a clock gate by our
+		// drivers/kstb-v3d-power.c: mainline v3d enables its clock before touching
+		// the GPU, whose registers abort while the island is off
+		v3d_power: clock-controller@f041d020 {
+			compatible = "kaon,kstb6077-v3d-power";
+			reg = <0xf041d020 0x4>;
+			#clock-cells = <0>;
+		};
+
+		// V3D 3.3 GPU (mainline v3d); interrupts V3D_HUB_INT (GIC 110), V3D_INT (109)
+		gpu@f1200000 {
+			compatible = "brcm,7268-v3d";
+			reg = <0xf1200000 0x4000>,
+			      <0xf1208000 0x4000>,
+			      <0xf1204100 0x100>,
+			      <0xf1204000 0x100>;
+			reg-names = "hub", "core0", "gca", "bridge";
+			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&v3d_power>;
 		};
 
 		// HDMI audio (docs/hardware/audio.md): our own driver drivers/kstb-audio.c.

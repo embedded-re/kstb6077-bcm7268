@@ -54,6 +54,19 @@ bt_patch() {
 	i=0
 	while [ -e "$d" ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
 	rm -f "$fw"
+	# the box's own BD address (BOLT's BOARD_BTMAC; the chip's default is
+	# 43:56:9A:20:1F:AC) once the patched chip is back as hci0: Broadcom's
+	# Write_BD_ADDR (OGF 0x3f, OCF 0x001, address bytes reversed) needs hci0
+	# up; the kernel reads the address back at the next up. hci0 ends down,
+	# as before. (btmgmt hangs without a terminal.)
+	command -v hcitool >/dev/null || return 0
+	i=0
+	until hciconfig hci0 up 2>/dev/null; do
+		[ $i -lt 60 ] || return 0
+		sleep 0.5; i=$((i + 1))
+	done
+	hcitool -i hci0 cmd 0x3f 0x001 0x0c 0x00 0xe7 0x91 0xf8 0x90 </dev/null >/dev/null
+	hciconfig hci0 down; hciconfig hci0 up; hciconfig hci0 down
 }
 (bt_patch &)
 echo "kstb6077: $(uname -r), $(grep -c ^processor /proc/cpuinfo) cores, $(sed -n 's/MemTotal: *//p' /proc/meminfo), root $(awk '$2 == "/" {print $1}' /proc/mounts | tail -1)"

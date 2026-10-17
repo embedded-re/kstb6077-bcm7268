@@ -10,7 +10,7 @@ Tested on the modified box on 2026-10-17 unless marked otherwise.
 | | |
 |---|---|
 | Kernel | Linux 6.18.57 (LTS), `ARCH=arm64`, built with clang 23 / ld.lld (`LLVM=1`), no gcc |
-| Config | `alldefconfig` (upstream defaults) + [`kstb.config`](kstb.config): everything built in, no modules; Image 10.5 MB ("Kernel config base" below) |
+| Config | `alldefconfig` (upstream defaults) + [`kstb.config`](kstb.config): built in, except our drivers and those that load files from ROOT (modules, below); Image 13.1 MB with ALSA and DRM ("Kernel config base" below) |
 | Device tree | [`kstb6077.dts`](kstb6077.dts) (no BCM7268 tree exists upstream) |
 | Userspace | Alpine 3.24.2 aarch64 (busybox, musl, apk): on `ROOT` (mmcblk0p8, ext4), or the minirootfs as a 4 MB initramfs; [`rootfs/`](rootfs/) adds `inittab`, `kstb-rc` and `fstab` |
 | Boot | from `kmon>`: **`linux`**, kernel and DTB from the eMMC (`KRN`, `DTB`), root on `ROOT`; or over TFTP for testing ([`../tools/kstb-linux`](../tools/kstb-linux)) |
@@ -79,9 +79,11 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | IR receiver | `ir@f0419900` (`brcm,bcm7268-kbd`, our own driver [`drivers/kstb-ir.c`](drivers/kstb-ir.c), a module) on the AON L2 bit 0 | `rc0`, input device "KSTB6077 IR receiver", key map `rc-kaon-kstb6077` (the stock one, 45 keys). The Kaon remote, checked by the user: 1, 2, 3, OK, VOL+ held, RED each gave its scancode (`MSC_SCAN 20081c` = `KEY_1` …) and key; one interrupt per IR frame, repeats every 108.7 ms. The keys type into the TV's shell. Loaded at boot by `kstb-rc` ("Our own drivers" below) |
 | PCIe | `pcie@f0460000` (`brcm,bcm7445-pcie`: the driver's generic STB layout), MSI through the controller (SPI 51), INTA–INTD SPIs 46–49, outbound `0xc0000000–0xdfffffff`, inbound 2 GB at 0 | `link up, 2.5 GT/s PCIe x1`, root port `14e4:7268`, Wi-Fi `14e4:aa31` on bus 1 ([`../docs/hardware/peripherals.md`](../docs/hardware/peripherals.md)) |
 | Wi-Fi | `pci@0,0/wifi@0,0` (`brcm,bcm4329-fmac`: the stock MAC `90:f8:91:e7:1b:65`); `brcmfmac` and `cfg80211` as modules | BCM43570 r2, firmware 7.124.22 from `linux-firmware-brcm`, the stock board file. Scan: 2.4 and 5 GHz networks. WPA2 with `wpa_supplicant`: associated at 2462 MHz, −65 dBm, DHCP lease from the router, ping to the Internet over `wlan0` 13 ms, 4.0 MB download in 1.00 s with Ethernet down (rx rate 72.2 Mbit/s). "Wi-Fi" below |
-| Bluetooth | (USB, OHCI0) `btusb` + `btbcm` as modules | BCM43569A2, patched with the stock `BCM43569.hcd` (build 0000 → 0172). `UP RUNNING`; BLE scan (`hcitool lescan`, 12 s): 86 advertisements from 3 devices; classic inquiry: 2 devices. The patch is offered once per boot ("Bluetooth" below) |
+| Bluetooth | (USB, OHCI0) `btusb` + `btbcm` as modules | BCM43569A2, patched with the stock `BCM43569.hcd` (build 0000 → 0172), the box's own BD address `90:F8:91:E7:00:0C`. `UP RUNNING`; BLE scan (`hcitool lescan`, 12 s): 86 advertisements from 3 devices; classic inquiry: 2 devices. The patch is offered once per boot ("Bluetooth" below) |
 | xHCI | `usb@f0b01000` (`brcm,bcm7445-xhci`, `generic-xhci`), `brcm,has-xhci` on the PHY, ID 124 | `Host supports USB 3.0 SuperSpeed`, a USB 3 root hub with 2 ports (no USB 2 ports). A SuperSpeed-capable stick straight in the USB-A port still came up on EHCI1 at high speed; the xHCI ports stayed in RxDetect: nothing is wired to them ([`../docs/hardware/usb.md`](../docs/hardware/usb.md)) |
 | HDMI audio | `hdmi-audio@f0ca0000` (`kaon,kstb6077-hdmi-audio`, our own driver [`drivers/kstb-audio.c`](drivers/kstb-audio.c), a module) | ALSA card 0 `KSTB6077 HDMI`, 48 kHz, S32_LE, stereo. `aplay -d 30` took 30.00 s, also with 5 ms periods, no underrun; the default device converts other rates and formats (`plug`). Underrun, `rmmod`/`modprobe` and the load at boot from `KRN` tested. **Not yet heard**: nobody listened to the TV ("HDMI audio" below) |
+| GPU (V3D 3.3) | `gpu@f1200000` (`brcm,7268-v3d`, mainline `v3d`, built in), hub/core interrupts SPI 78/77; power island `clock-controller@f041d020` (our module [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c)) | `[drm] Initialized v3d 1.0.0`, `/dev/dri/card0`, `renderD128`; IDs `000e1133` / `03443356`. Binner + render jobs through the GPU MMU and both interrupts: clear and triangle pixel-exact ([`rootfs/usr/sbin/kstb-v3d-test`](rootfs/usr/sbin/kstb-v3d-test)). OpenGL ES through Mesa: not working yet ("GPU" below) |
+| GISB arbiter | `gisb-arb@f0400000` (`brcm,gisb-arb`, mainline `brcmstb_gisb`) on the sys L2 `interrupt-controller@f0403000` (`brcm,l2-intc`, SPI 59) bits 0 and 2 | a read of an abort hole is reported: `kstb-reg f04d150c` gave `GISB: target abort at 0xf04d150c [R ], core: cpu_0` and one TEA interrupt (and the program's `Bus error`) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -301,8 +303,17 @@ the copy. The modalias loop skips this adapter, so `bt_patch` does the
 only load (a reload in the middle of the first probe cost 11 s). Tested
 from `KRN` with kmon's `linux`: one patch at 3.3 s, the chip back at
 15.1 s as build 0172 (btbcm first waits 10 s for a reset reply from the
-chip that has gone), no further patch. The BD address is the
-chip's default (`43:56:9A:20:1F:AC`).
+chip that has gone), no further patch.
+
+**BD address.** The chip starts with its default `43:56:9A:20:1F:AC`. The
+box's own address is in BOLT's environment, `BOARD_BTMAC 90:F8:91:E7:00:0C`
+([`../docs/evidence/rescue.txt`](../docs/evidence/rescue.txt)). Once the patched chip is back, `kstb-rc`
+brings `hci0` up, sends Broadcom's Write_BD_ADDR (`hcitool cmd 0x3f
+0x001` with the address bytes reversed; the same command btbcm's
+`set_bdaddr` uses), then down and up so the kernel reads it back, and
+leaves `hci0` down. Tested from `KRN`: `BD Address: 90:F8:91:E7:00:0C` at
+21 s, and an LE scan still finds devices with it. (`btmgmt public-addr`
+does the same, but hangs when it has no terminal, as in `kstb-rc`.)
 
 ## HDMI audio
 
@@ -349,6 +360,93 @@ picture stays intact (these are the writes kmon makes with the picture
 fine, but the TV wasn't watched). Before the first listening test, keep the
 TV volume low.
 
+## GPU
+
+The V3D 3.3 runs with mainline's `v3d` driver (DRM render node, no
+display). After BOLT its power island is off and every GPU register
+aborts ([`../docs/hardware/gpu.md`](../docs/hardware/gpu.md), "Power island"). Mainline has no power
+domain for it, and `PM_GENERIC_DOMAINS` can't be turned on without an
+in-tree driver that selects it. But `v3d` enables its optional clock before
+its first register access, so [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c) offers the
+island as a clock: prepare = Nexus's power-up (`0x1d00` to `0xf041d020`,
+wait for `0x34000000` under mask `0x74000000`), unprepare = power-down.
+The GPU node's `clocks` points at it; `v3d` defers until `kstb-rc` has
+loaded the module, then probes (`island off (424e0908)`, then
+`Initialized v3d 1.0.0 for f1200000.gpu on minor 0`).
+
+`kstb-v3d-test` (python3, raw DRM ioctls) runs the bare-metal jobs from
+`gpu.md` through the driver: buffers from `CREATE_BO` (GPU addresses from
+`0x1000`, through the GPU MMU), the clear job, then the binner + render
+triangle, `SUBMIT_CL`, `WAIT_BO`.
+
+```
+kstb-v3d-test             # IDs, clear, triangle; OK
+kstb-v3d-test -n 1000     # 1000 triangle jobs: 0.196 s, 0.20 ms each
+```
+
+Results: the clear gave 4096 × `ff00ff00` and nothing outside the tile;
+the triangle 1152 blue pixels with the bare-metal spans (row 8: x 8–55,
+row 54: 31–32). Interrupts: GIC 109 (core) counts 2 per job (bin and
+render done), GIC 110 (hub) the MMU errors. The bare-metal binning list
+had `Number of Render Targets` = 0, which makes the binner write to
+address 0: with the MMU on, `v3d` reported `MMU error from client ?
+(0x40) at 0x0, write violation, pte invalid` for every such job; with 1
+(as Mesa writes it) there is none ([`../docs/hardware/gpu.md`](../docs/hardware/gpu.md)).
+`v3d` also prints `drm_sched_entity_init: called with uninitialized
+scheduler` twice per open: it sets up a scheduler entity for every queue,
+including the compute queue V3D 3.3 doesn't have. Harmless.
+
+### Mesa (OpenGL ES): not working yet
+
+Mesa removed V3D 3.3 (and 4.1) in 24.0, when V3D 7.1 support came in
+(MR 25851). The last Mesa with it is 23.3; Alpine 3.24's Mesa can't drive
+this GPU. Tried, on the box, in chroots on `ROOT` so the system's
+packages stay as they are:
+
+| Mesa | Where | Result |
+|---|---|---|
+| 23.3.6 (Alpine 3.19 package) | `/opt/alpine319` | `GL_RENDERER V3D 3.3`, `OpenGL ES 3.0 Mesa 23.3.6`, then a segfault compiling the first shader |
+| 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | shaders compile, jobs run, no MMU error; fragments are drawn; **vertex positions wrong**: see below |
+| 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` | hangs in the driver (no kernel message); no debug symbols packaged |
+
+The four fixes in the patch, all for code paths only V3D 3.3 takes, each
+found by a crash or hang on the box:
+
+1. `vir_emit_last_thrsw`: a shader without texture lookups runs single
+   threaded on 3.3 and has no THRSW; the code then dereferences
+   `c->last_thrsw` = NULL (segfault in `v3d_nir_to_vir`).
+2. `pixel_scoreboard_too_soon`: tile-buffer writes waited for a "last
+   THRSW" that a single-segment shader never has; the scheduler padded
+   NOPs until memory ran out (1.9 GB, OOM kill). Now such a shader may
+   write the tile buffer from its second instruction, as the tested
+   bare-metal shaders do.
+3. Register allocation: uniform loads re-created for a spill got class
+   "any"; on 3.3 a uniform can only be loaded to `r5` (there is no
+   `ldunifrf`), so packing failed: `Failed to pack instruction 13: nop
+   t22; ldunifrf (vp_x_scale)`.
+4. The VPM write setup for 3.3 vertex/coordinate shaders: since Mesa 20
+   it is a comment (`/* XXX: v3d33_vir_vpm_write_setup(c); */`); Mesa 19
+   emitted it in `emit_vert_end`. Now emitted before the first output
+   write; plus a scheduler rule that keeps it 3 instructions away from an
+   `ldvpm`.
+
+With these, a 256×256 FBO is cleared correctly (every pixel the clear
+colour, alpha 255) and a constant-colour fragment shader fills pixels;
+100 frames at 1920×1080 took 0.176 s. But the triangle comes out wrong:
+always confined to the 64×64 tile around the centre (2,2), often the
+whole tile, and the result is stable within one process but changes
+between processes (`KSTB_REPEAT`, `KSTB_VERTS` in
+[`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c)). Reading: the coordinate shader's screen
+coordinates come out near 0, so the binner puts the triangle only in the
+centre tile, and the shaders read VPM rows that hold leftovers from
+earlier runs. A vertical instead of horizontal VPM read setup drew
+nothing. Not solved.
+
+```
+# on the box; mesa/ch319 is the chroot helper (in /usr/local/bin there)
+ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
+```
+
 ## Registers from Linux: `kstb-reg`
 
 [`rootfs/usr/sbin/kstb-reg`](rootfs/usr/sbin/kstb-reg) (needs `apk add python3`) reads and writes
@@ -394,7 +492,7 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- The GPU (`brcm,7268-v3d` exists in mainline, not tried). HDMI audio not yet heard.
+- OpenGL ES on the GPU: Mesa dropped V3D 3.3 in 24.0, and 23.3 needs fixes; with them the vertex positions are still wrong ("GPU" below). HDMI audio not yet heard.
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.
