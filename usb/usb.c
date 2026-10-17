@@ -9,8 +9,10 @@
 //               control block (not BOLT's state), port power and reset, then enumeration:
 //               GET_DESCRIPTOR, SET_ADDRESS, configuration; a hub's ports are
 //               powered, reset and enumerated in turn (addresses 1, 2, ...);
-//               the first boot keyboard found gets boot protocol and is polled
-//   usb_kbd_poll()  one 8-byte report from the interrupt endpoint, if any
+//               the first boot keyboard and the first boot mouse found get
+//               boot protocol and are polled
+//   usb_kbd_poll()  one 8-byte report from the keyboard's interrupt endpoint, if any
+//   usb_mouse_poll()  the same for a boot-protocol mouse (buttons, x, y)
 //   usb_msc_*() a bulk-only mass storage device (a USB stick): SCSI
 //               INQUIRY, TEST UNIT READY, READ CAPACITY(10), READ(10), WRITE(10)
 //   usb_port_changed()  1 when the root port changed (enumerate again); a hub
@@ -63,11 +65,12 @@ int usb_verbose = 1;                    // 0: print nothing (kmon starts it quie
 // DMA area layout (all uncached)
 #define HCCA            (DMA_BASE + 0x000)      // 256 bytes, 256-aligned
 #define ED_CTRL         (DMA_BASE + 0x100)
-#define ED_INTR         (DMA_BASE + 0x110)
+#define ED_INTR         (DMA_BASE + 0x110)      // keyboard; its NextED is the mouse's
+#define ED_MOUSE        (DMA_BASE + 0x140)
 #define TD_POOL         (DMA_BASE + 0x200)      // 16 TDs of 16 bytes
 #define SETUP_BUF       (DMA_BASE + 0x400)
 #define DATA_BUF        (DMA_BASE + 0x800)      // 256 bytes
-#define REPORT_BUF      (DMA_BASE + 0xc00)      // 2 x 16 bytes
+#define REPORT_BUF      (DMA_BASE + 0xc00)      // keyboard 2 x 16 bytes, mouse 2 x 16 at +0x20
 #define ED_BULK_OUT     (DMA_BASE + 0x120)      // mass storage: bulk OUT and IN endpoints
 #define ED_BULK_IN      (DMA_BASE + 0x130)
 #define BULK_TD         (DMA_BASE + 0x1000)     // 2 x 32 TDs
@@ -120,7 +123,7 @@ struct dev {
     int addr, lowspeed, mps0;           // addr 0: free slot
     int parent, port;                   // hub's device index and port (parent -1: the root port)
     uint16_t vid, pid;
-    uint8_t cls;                        // 09 hub, 03 keyboard, 08 mass storage, 0 other
+    uint8_t cls;                        // 09 hub, 03 keyboard, 02 mouse, 08 mass storage, 0 other
     int nports;                         // hubs: number of ports
     int bulk_in, bulk_out, bulk_mps;    // mass storage (bulk-only) endpoints, interface
     int msc_iface;
@@ -130,11 +133,18 @@ static int ndev;                        // slots used so far (some may be free a
 static int next_addr;
 static struct dev *cur;                 // the device control() talks to
 
-static int up;                          // a keyboard is enumerated and polled
-static int kbd_dev, kbd_ep, kbd_mps, kbd_iface, kbd_interval;
-static int intr_err;                    // the keyboard's endpoint failed last time (print once)
-static uint32_t intr_td, intr_dummy;    // the interrupt endpoint's TD and tail
-static int report_n;
+// A HID boot device's interrupt IN endpoint: one ED on the periodic list
+// (all 32 HCCA slots -> keyboard ED -> mouse ED), sKipped while unused; two
+// TDs swapped as the active one and the tail.
+struct hid {
+    const char *what;
+    uint32_t ed, td_a, td_b, buf;
+    int dev, ep, mps, iface, interval;  // dev -1: none found
+    int up, err, n;                     // polled; failed last time (print once); reports
+    uint32_t td, dummy;
+};
+static struct hid kbd = { "keyboard", ED_INTR, TD_POOL + 64, TD_POOL + 80, REPORT_BUF, -1 };
+static struct hid mouse = { "mouse", ED_MOUSE, TD_POOL + 96, TD_POOL + 112, REPORT_BUF + 0x20, -1 };
 static int hub_poll_dev, hub_poll_port; // usb_port_changed: the next hub port to check
 static int msc_dev = -1;                // the first mass storage device found
 static int msc_ready;                   // usb_msc_init() done for it
@@ -289,17 +299,20 @@ static void parse_config(struct dev *dv, const uint8_t *c, int n)
             kind = 0;
             if (c[i + 5] == 9)
                 kind = 9, dv->cls = 9;
-            else if (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 1 && kbd_dev < 0 && !dv->cls)
-                kind = 3, dv->cls = 3, kbd_iface = c[i + 2], kbd_ep = 0;
+            else if (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 1 && kbd.dev < 0)
+                kind = 3, dv->cls = dv->cls ? dv->cls : 3, kbd.iface = c[i + 2], kbd.ep = 0;
+            else if (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 2 && mouse.dev < 0)
+                kind = 2, dv->cls = dv->cls ? dv->cls : 2, mouse.iface = c[i + 2], mouse.ep = 0;
             else if (c[i + 5] == 8 && c[i + 6] == 6 && c[i + 7] == 0x50 && !dv->cls)
                 kind = 8, dv->cls = 8, dv->msc_iface = c[i + 2];
         } else if (c[i + 1] == 5) {             // endpoint
             int ea = c[i + 2], type = c[i + 3] & 3, mps = c[i + 4] | c[i + 5] << 8;
             say("usb:     endpoint %02x: type %d, max packet %d, interval %d ms\n",
                    ea, type, mps, c[i + 6]);
-            if (kind == 3 && !kbd_ep && (ea & 0x80) && type == 3) {
-                kbd_ep = ea & 0xf, kbd_mps = mps, kbd_interval = c[i + 6];
-                kbd_dev = idx;
+            struct hid *h = kind == 3 ? &kbd : kind == 2 ? &mouse : NULL;
+            if (h && !h->ep && (ea & 0x80) && type == 3) {
+                h->ep = ea & 0xf, h->mps = mps, h->interval = c[i + 6];
+                h->dev = idx;
             } else if (kind == 8 && type == 2) {
                 if (ea & 0x80)
                     dv->bulk_in = ea & 0xf;
@@ -311,18 +324,18 @@ static void parse_config(struct dev *dv, const uint8_t *c, int n)
     }
 }
 
-static void intr_queue(void)
+static void intr_queue(struct hid *h)
 {
     // The TD the controller just finished becomes the new tail; the old tail
     // gets the next IN request (the standard OHCI tail swap).
-    uint32_t td = intr_dummy, dummy = intr_td;
-    uint32_t buf = REPORT_BUF + (td == TD_POOL + 64 ? 0 : 16);
+    uint32_t td = h->dummy, dummy = h->td;
+    uint32_t buf = h->buf + (td == h->td_a ? 0 : 16);
     td_fill(dummy, 0, 0, 0, 0);
-    td_fill(td, TD_IN | TD_R | TD_NOINT, buf, kbd_mps > 16 ? 16 : kbd_mps, dummy);
+    td_fill(td, TD_IN | TD_R | TD_NOINT, buf, h->mps > 16 ? 16 : h->mps, dummy);
     // toggle: from the ED's carry (T = 0x)
     __asm__ volatile("dsb sy" ::: "memory");
-    intr_td = td, intr_dummy = dummy;
-    W(ED_INTR + 4) = dummy;
+    h->td = td, h->dummy = dummy;
+    W(h->ed + 4) = dummy;
 }
 
 // ---------------- hubs ----------------
@@ -385,10 +398,12 @@ static void forget(int i)
     for (int j = 0; j < ndev; j++)
         if (devs[j].addr && devs[j].parent == i)
             forget(j);
-    if (i == kbd_dev) {
-        W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_PLE;
-        up = 0, kbd_dev = -1;
-    }
+    struct hid *hs[2] = { &kbd, &mouse };
+    for (int k = 0; k < 2; k++)
+        if (i == hs[k]->dev) {
+            W(hs[k]->ed + 0) |= 1u << 14;       // sKip: off the periodic list in effect
+            hs[k]->up = 0, hs[k]->dev = -1;
+        }
     if (i == msc_dev) {
         W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_BLE;
         msc_dev = -1, msc_ready = 0;
@@ -397,7 +412,7 @@ static void forget(int i)
     devs[i].addr = 0;
 }
 
-static int kbd_start_polling(void);
+static int hid_start(struct hid *h);
 
 static int hub_init(int hub, int depth)
 {
@@ -488,52 +503,64 @@ static int enumerate(int lowspeed, int parent, int port, int depth)
     return i;
 }
 
-static int kbd_start_polling(void)
+// The periodic list: every HCCA slot -> keyboard ED -> mouse ED, both
+// sKipped until a device is polled on them.
+static void periodic_start(void)
 {
-    cur = &devs[kbd_dev];
-    if (control(0x21, 0x0b, 0, kbd_iface, 0, NULL) < 0)    // SET_PROTOCOL: boot
-        return -1;
-    control(0x21, 0x0a, 0, kbd_iface, 0, NULL);             // SET_IDLE 0: reports on change (may STALL)
-
-    // Interrupt endpoint: one ED hung from all 32 HCCA slots (polled every frame)
-    intr_td = TD_POOL + 64, intr_dummy = TD_POOL + 80;
-    td_fill(intr_dummy, 0, 0, 0, 0);
-    td_fill(intr_td, TD_IN | TD_R | TD_NOINT, REPORT_BUF, kbd_mps > 16 ? 16 : kbd_mps, intr_dummy);
-    W(ED_INTR + 0) = ed_d0(cur, kbd_ep, kbd_mps) | (2u << 11);  // direction IN
-    W(ED_INTR + 4) = intr_dummy;
-    W(ED_INTR + 8) = intr_td;
-    W(ED_INTR + 12) = 0;
+    W(ED_INTR + 0) = 1u << 14, W(ED_INTR + 4) = 0, W(ED_INTR + 8) = 0, W(ED_INTR + 12) = ED_MOUSE;
+    W(ED_MOUSE + 0) = 1u << 14, W(ED_MOUSE + 4) = 0, W(ED_MOUSE + 8) = 0, W(ED_MOUSE + 12) = 0;
     for (int i = 0; i < 32; i++)
         W(HCCA + i * 4) = ED_INTR;
     __asm__ volatile("dsb sy" ::: "memory");
     W(HC_CONTROL) = W(HC_CONTROL) | CTL_PLE;
-    report_n = 0;
-    intr_err = 0;
-    up = 1;
-    say("usb: keyboard ready (device %d, interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
-           cur->addr, kbd_iface, kbd_ep, kbd_mps, kbd_interval);
+    kbd.up = mouse.up = 0;
+    kbd.dev = mouse.dev = -1;
+}
+
+// Boot protocol for a found keyboard or mouse, then poll its endpoint.
+static int hid_start(struct hid *h)
+{
+    cur = &devs[h->dev];
+    if (control(0x21, 0x0b, 0, h->iface, 0, NULL) < 0)     // SET_PROTOCOL: boot
+        return -1;
+    control(0x21, 0x0a, 0, h->iface, 0, NULL);              // SET_IDLE 0: reports on change (may STALL)
+
+    W(h->ed + 0) |= 1u << 14;                               // sKip while editing
+    wait_ms(1);
+    h->td = h->td_a, h->dummy = h->td_b;
+    td_fill(h->dummy, 0, 0, 0, 0);
+    td_fill(h->td, TD_IN | TD_R | TD_NOINT, h->buf, h->mps > 16 ? 16 : h->mps, h->dummy);
+    W(h->ed + 4) = h->dummy;
+    W(h->ed + 8) = h->td;
+    __asm__ volatile("dsb sy" ::: "memory");
+    W(h->ed + 0) = ed_d0(cur, h->ep, h->mps) | (2u << 11);  // direction IN, sKip off
+    h->n = 0, h->err = 0, h->up = 1;
+    say("usb: %s ready (device %d, interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
+           h->what, cur->addr, h->iface, h->ep, h->mps, h->interval);
     return 0;
 }
 
 int usb_init(void)
 {
-    up = 0;
+    kbd.up = mouse.up = 0;
     ndev = 0;
     next_addr = 1;
     msc_dev = -1, msc_ready = 0;
-    kbd_dev = -1;
     hub_poll_dev = hub_poll_port = 0;
     hc_start();
+    periodic_start();
     int ls = port_reset();
     if (ls < 0)
         return -1;
     if (enumerate(ls, -1, 1, 0) < 0)
         return -1;
-    if (kbd_dev < 0) {
+    if (mouse.dev >= 0)
+        hid_start(&mouse);
+    if (kbd.dev < 0) {
         say("usb: no boot-protocol keyboard\n");
-        return -1;
+        return mouse.up ? 0 : -1;
     }
-    return kbd_start_polling();
+    return hid_start(&kbd) && !mouse.up ? -1 : 0;
 }
 
 // 1 when something was plugged into or out of the USB-A port (its
@@ -548,7 +575,7 @@ int usb_port_changed(int *connected)
     if (ps & (1u << 16)) {
         W(HC_PORT1) = 1u << 16;
         if (!*connected)
-            up = 0, ndev = 0, msc_dev = -1, msc_ready = 0;
+            kbd.up = mouse.up = 0, kbd.dev = mouse.dev = -1, ndev = 0, msc_dev = -1, msc_ready = 0;
         return 1;
     }
     if (!*connected)
@@ -583,15 +610,17 @@ int usb_port_changed(int *connected)
             }
             usb_verbose = 0;
             int j = hub_port_reset(hub, p, depth_of(hub));
-            if (j >= 0 && !up && kbd_dev >= 0)
-                kbd_start_polling();
+            if (j >= 0 && !kbd.up && kbd.dev >= 0)
+                hid_start(&kbd);
+            if (j >= 0 && !mouse.up && mouse.dev >= 0)
+                hid_start(&mouse);
             usb_verbose = v;
             if (j < 0)
                 say("usb: hub %d port %d: device plugged in, enumeration failed\n", h->addr, p);
             else
                 say("usb: hub %d port %d: device %d (%04x:%04x)%s\n", h->addr, p, devs[j].addr,
                     devs[j].vid, devs[j].pid, devs[j].cls == 9 ? ", hub" : devs[j].cls == 3 ?
-                    ", keyboard" : devs[j].cls == 8 ? ", mass storage" : "");
+                    ", keyboard" : devs[j].cls == 2 ? ", mouse" : devs[j].cls == 8 ? ", mass storage" : "");
         }
         return 0;
     }
@@ -600,37 +629,59 @@ int usb_port_changed(int *connected)
 
 int usb_kbd_up(void)
 {
-    return up;
+    return kbd.up;
 }
 
-int usb_kbd_poll(uint8_t *r)
+// One finished report of h copied to r (8 bytes): 1; nothing yet: 0; error: -1.
+static int hid_poll(struct hid *h, uint8_t *r)
 {
-    if (!up)
+    if (!h->up)
         return -1;
-    uint32_t head = W(ED_INTR + 8);
-    if ((head & ~0xfu) != intr_dummy && !(head & 1))
+    uint32_t head = W(h->ed + 8);
+    if ((head & ~0xfu) != h->dummy && !(head & 1))
         return 0;                               // still waiting
-    uint32_t d0 = W(intr_td);
-    uint32_t cc = TD_CC(d0);
-    uint32_t buf = REPORT_BUF + (intr_td == TD_POOL + 64 ? 0 : 16);
+    uint32_t cc = TD_CC(W(h->td));
+    uint32_t buf = h->buf + (h->td == h->td_a ? 0 : 16);
     int ok = cc == 0 || cc == 9;
     if (ok)
         memcpy(r, (void *)(uintptr_t)buf, 8);
     if (head & 1) {                             // halted: report (once), clear, retry
-        if (!intr_err)
-            say("usb: interrupt endpoint: %s\n", cc_names[cc]);
-        W(ED_INTR + 8) = intr_dummy & ~1u;
+        if (!h->err)
+            say("usb: %s interrupt endpoint: %s\n", h->what, cc_names[cc]);
+        W(h->ed + 8) = h->dummy & ~1u;
     }
-    intr_err = !ok;
-    intr_queue();
+    h->err = !ok;
+    intr_queue(h);
     if (ok)
-        report_n++;
+        h->n++;
     return ok ? 1 : -1;
+}
+
+int usb_kbd_poll(uint8_t *r)
+{
+    return hid_poll(&kbd, r);
+}
+
+int usb_mouse_up(void)
+{
+    return mouse.up;
+}
+
+// A boot mouse report: buttons (bit 0 left, 1 right, 2 middle) and the
+// movement since the last one (x right, y down). 1 = new report.
+int usb_mouse_poll(int *buttons, int *dx, int *dy)
+{
+    uint8_t r[8];
+    int n = hid_poll(&mouse, r);
+    if (n != 1)
+        return n;
+    *buttons = r[0] & 7, *dx = (int8_t)r[1], *dy = (int8_t)r[2];
+    return 1;
 }
 
 void usb_stop(void)
 {
-    up = 0;
+    kbd.up = mouse.up = 0;
     W(HC_CONTROL) = 0;                          // UsbReset: no more DMA
 }
 
@@ -649,11 +700,13 @@ void usb_status(void)
             printf("on the USB-A port");
         else
             printf("on hub %d port %d", devs[d->parent].addr, d->port);
-        printf("%s\n", d->cls == 9 ? ", hub" : d->cls == 3 ? ", keyboard" :
+        printf("%s\n", d->cls == 9 ? ", hub" : d->cls == 3 ? ", keyboard" : d->cls == 2 ? ", mouse" :
                         d->cls == 8 ? ", mass storage" : "");
     }
-    if (up)
-        printf("keyboard (device %d) up, %d reports\n", devs[kbd_dev].addr, report_n);
+    if (kbd.up)
+        printf("keyboard (device %d) up, %d reports\n", devs[kbd.dev].addr, kbd.n);
+    if (mouse.up)
+        printf("mouse (device %d) up, %d reports\n", devs[mouse.dev].addr, mouse.n);
     if (msc_ready && msc_dev >= 0)
         printf("mass storage (device %d) ready, %u blocks of %u bytes\n", devs[msc_dev].addr,
                msc_blocks, msc_bsize);

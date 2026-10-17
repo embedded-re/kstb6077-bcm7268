@@ -162,8 +162,8 @@ tests: [`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md).
 OHCI1, the USB-A port's low/full-speed controller, polled (tested
 2026-10-15, details in [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 A hub in the USB-A port works (tested 2026-10-17, up to 8 devices, hubs 2
-deep): every device on it is enumerated, the first boot keyboard is
-polled, and devices plugged into or out of the hub are found and
+deep): every device on it is enumerated, the first boot keyboard and the
+first boot mouse are polled (tested with a Dell mouse `413c:301a`), and devices plugged into or out of the hub are found and
 forgotten while kmon runs (one line each). The first USB stick (bulk-only
 mass storage) can be read: blocks with `usb read`, files with a `usb:` path
 ([files](#files-on-flash0data-and-the-usb-stick-fat32-fat)).
@@ -174,6 +174,7 @@ usb init       reset every USB host controller (USB_PM, not BOLT's state) and th
                enumerate the device (and behind a hub, every device), print the
                descriptors; a boot-protocol keyboard is then polled
 usb kbd        print keyboard reports and the keys (US layout); any serial key stops
+usb mouse      print mouse reports: buttons, movement, running sum; any key stops
 usb stop       controller back to reset (also done before go/doom)
 usb disk       set up the USB stick (INQUIRY, wait until ready, READ CAPACITY), print its partitions
 usb read lba count [addr]   blocks of the stick to RAM (default 0x02000000), speed and CRC

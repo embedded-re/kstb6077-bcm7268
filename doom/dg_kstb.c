@@ -20,6 +20,7 @@
 #include "doomgeneric/doomgeneric/doomgeneric.h"
 #include "doomgeneric/doomgeneric/doomkeys.h"
 #include "doomgeneric/doomgeneric/i_video.h"
+#include "doomgeneric/doomgeneric/d_event.h"
 
 void file_register(const char *name, void *data, size_t size);
 void uart_putc(char c);
@@ -374,13 +375,55 @@ static void usb_poll(void)
     memcpy(usb_prev, r, 8);
 }
 
+// USB mouse (boot protocol, on the hub or the port): movement summed over
+// a tic and posted as one ev_mouse when the tic's key loop ends (Doom keeps
+// only the last event's movement per tic). x turns (strafes with the strafe
+// key); y is ignored ("novert": by the user's choice, moving the mouse
+// shouldn't walk); buttons left fire, right strafe, middle forward.
+// Movement over 10 counts per tic counts double (Chocolate Doom's default
+// acceleration).
+static int mouse_x, mouse_y, mouse_buttons, mouse_posted_buttons;
+
+static void mouse_poll(void)
+{
+    int b, dx, dy;
+    while (usb_mouse_poll(&b, &dx, &dy) == 1)
+        mouse_x += dx, mouse_y += dy, mouse_buttons = b;
+}
+
+static int accelerate(int v)
+{
+    if (v > 10)
+        return (v - 10) * 2 + 10;
+    if (v < -10)
+        return (v + 10) * 2 - 10;
+    return v;
+}
+
+static void mouse_post(void)
+{
+    if (!mouse_x && mouse_buttons == mouse_posted_buttons) {
+        mouse_y = 0;
+        return;
+    }
+    event_t ev = { ev_mouse, mouse_buttons, accelerate(mouse_x), 0, 0 };   // y: novert
+    D_PostEvent(&ev);
+    mouse_x = mouse_y = 0;
+    mouse_posted_buttons = mouse_buttons;
+}
+
 int DG_GetKey(int *pressed, unsigned char *key)
 {
     uart_poll();
     ir_poll();
     usb_poll();
-    if (q_tail == q_head)
+    if (usb_up)
+        mouse_poll();
+    if (q_tail == q_head) {
+        if (usb_up)
+            mouse_post();
         return 0;
+    }
     *key = queue[q_tail % QUEUE].key;
     *pressed = queue[q_tail % QUEUE].pressed;
     q_tail++;
@@ -565,7 +608,7 @@ int main(void)
     if (wad == NULL)
         return 1;
     ir_init();
-    usb_up = usb_init() == 0;                   // a keyboard on the USB-A port, if any
+    usb_up = usb_init() == 0;                   // a keyboard and/or mouse on the USB-A port or a hub
 
     static char *argv[] = { "doom", "-iwad", NULL, "-mb", "32", NULL, NULL, NULL };
     int argc = 5;

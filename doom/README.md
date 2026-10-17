@@ -2,8 +2,8 @@
 
 [doomgeneric](https://github.com/ozkl/doomgeneric) (git submodule, unmodified)
 running without an OS, started from BOLT with `go -64`. Video goes to HDMI,
-sound effects to HDMI audio, and input comes from a USB keyboard, the IR
-remote or the serial console.
+sound effects to HDMI audio, and input comes from a USB keyboard and mouse,
+the IR remote or the serial console.
 
 Tested on the modified box on 2026-10-15: the game runs, picture and sound
 effects are fine, and the IR remote controls it.
@@ -117,7 +117,24 @@ W, A, S, D, E and F reach Doom as game keys, not as letters, so they can't
 be typed (e.g. in a savegame name; not tested).
 
 Keys are mapped as a US layout. The keyboard is polled once per `DG_GetKey`
-call; a rollover report (too many keys) is ignored.
+call; a rollover report (too many keys) is ignored. The keyboard also works
+behind a USB hub (tested 2026-10-17).
+
+USB mouse (boot protocol, on the USB-A port or a hub; tested 2026-10-17 with
+a Dell `413c:301a` behind the hub, "turning feels fine"):
+
+| Mouse | Doom |
+|---|---|
+| left / right | turn (strafe while the strafe key or the right button is held) |
+| forward / back | **nothing** ("novert", the user's choice: it walked the player by accident) |
+| left button | fire |
+| right button | strafe |
+| middle button | forward |
+
+The movement of all reports in one tic is summed and posted as one
+`ev_mouse` at the end of the tic's key loop (Doom keeps only the last mouse
+event per tic). Over 10 counts per tic counts double, as Chocolate Doom's
+default acceleration. Options → Mouse Sensitivity scales it.
 
 Neither the remote nor the serial terminal reports key releases. A key counts
 as held while its repeats keep arriving. It is released 150 ms (remote) or

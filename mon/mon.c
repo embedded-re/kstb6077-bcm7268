@@ -1550,6 +1550,31 @@ static int usb_ram_ok(uint64_t a, uint64_t len)  // as for mmc read: not the mon
              (a < STACK + 0x10000 && end > DMA_BASE) || (a < HEAP_END && end > HEAP_BASE));
 }
 
+// USB mouse: print each report (buttons, movement) and the running sum
+static void usb_mouse(void)
+{
+    if (!usb_mouse_up()) {
+        printf("usb: no mouse ('usb init' with one plugged in)\n");
+        return;
+    }
+    printf("USB mouse: buttons (L R M) and movement; any key (serial or USB keyboard) stops\n");
+    long x = 0, y = 0;
+    int last = -1;
+    uint64_t t0 = ticks();
+    uint8_t k[8];
+    while (!key_pressed() && !(usb_kbd_poll(k) == 1 && k[2])) {
+        int b, dx, dy;
+        int n = usb_mouse_poll(&b, &dx, &dy);
+        if (n < 0)
+            return;
+        if (n == 0 || (!dx && !dy && b == last))
+            continue;
+        x += dx, y += dy, last = b;
+        printf("%7lu ms: buttons %c%c%c  dx %4d dy %4d  x %6ld y %6ld\n", (ticks() - t0) / TICKS_PER_MS,
+               b & 1 ? 'L' : '-', b & 2 ? 'R' : '-', b & 4 ? 'M' : '-', dx, dy, x, y);
+    }
+}
+
 static void cmd_usb(struct cmd *c)
 {
     const char *w = c->argc ? c->argv[0] : "";
@@ -1559,6 +1584,8 @@ static void cmd_usb(struct cmd *c)
         usb_init();
     else if (!strcmp(w, "kbd"))
         usb_kbd();
+    else if (!strcmp(w, "mouse"))
+        usb_mouse();
     else if (!strcmp(w, "stop"))
         usb_stop();
     else if (!strcmp(w, "disk"))
@@ -1583,7 +1610,7 @@ static void cmd_usb(struct cmd *c)
                n, n / 2, lba, a, us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0,
                crc32((const uint8_t *)a, n * 512));
     } else
-        printf("usage: usb [init|kbd|stop|disk|read lba count [addr]]\n");
+        printf("usage: usb [init|kbd|mouse|stop|disk|read lba count [addr]]\n");
 }
 
 static void cmd_con(struct cmd *c)
@@ -2087,7 +2114,7 @@ static const struct {
     { "mkdir",   cmd_mkdir,   "path",                       "make a directory" },
     { "run",     cmd_run,     "path",                       "fget a program and go" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
-    { "usb",     cmd_usb,     "[init|kbd|stop|disk|read]",  "USB-A port: OHCI1, hub, keyboard, stick" },
+    { "usb",     cmd_usb,     "[init|kbd|mouse|stop|disk|read]", "USB-A port: hub, keyboard, mouse, stick" },
     { "con",     cmd_con,     "[on|off|clear]",             "text console on the HDMI screen" },
     { "cpu",     cmd_cpu,     "[on core addr [context]]",   "cores 1-3: state, start (PSCI)" },
     { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },

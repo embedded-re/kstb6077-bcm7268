@@ -19,7 +19,7 @@ Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../
 | Control / PHY | `0xf0b00200`; **BOLT never writes it** (its values are the hardware's, "Our own USB start"); `USB_PM` `+0x34` bits 20/21/22 reset the controller pairs |
 | Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; xHCI ports unknown |
 | State after `go -64` | every controller reset and stopped, still clocked |
-| Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard reports from an interrupt endpoint, a hub with a keyboard and a stick behind it, plugging and unplugging behind the hub (kmon `usb`) |
+| Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard and mouse reports from interrupt endpoints, a hub with a keyboard, a mouse and a stick behind it, plugging and unplugging behind the hub (kmon `usb`) |
 | Not tested | bulk transfers, EHCI, xHCI, interrupts from the USB controllers |
 
 ## Blocks (stock DTB [`boot/stock_dtb.dts`](../../boot/stock_dtb.dts), capability registers read)
@@ -263,6 +263,19 @@ and the keyboard plugged into it. The hub runs at full speed on OHCI1.
   Tested by the user: keyboard out and in again on the hub (`device 3
   (0461:0010) gone`, `hub 1 port 4: device 4 (0461:0010), keyboard`), the
   stick out and in, the hub out and in; typing worked after each.
+
+## A mouse on OHCI1 (tested)
+
+Tested 2026-10-17: a Dell mouse `413c:301a` (USB 2.00, low speed, ep0 8
+bytes) behind the hub. One interface, HID boot mouse (class 03, subclass 01,
+protocol 02), interrupt endpoint `81`, 4 bytes, 10 ms. After `SET_PROTOCOL`
+0 (boot) and `SET_IDLE` 0, each report is byte 0 = buttons (bit 0 left,
+bit 1 right, bit 2 middle), byte 1 = x movement, byte 2 = y movement
+(signed, right and down positive); kmon `usb mouse`, and Doom used it.
+
+Its ED sits after the keyboard's on the periodic list (HCCA slots →
+keyboard ED → mouse ED). Each ED is sKipped (bit 14) while no device is
+polled on it, so either can come and go alone.
 
 ## A USB stick on OHCI1: bulk-only mass storage (tested)
 
