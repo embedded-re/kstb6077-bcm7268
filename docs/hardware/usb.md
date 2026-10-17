@@ -264,9 +264,32 @@ and the keyboard plugged into it. The hub runs at full speed on OHCI1.
   (0461:0010) gone`, `hub 1 port 4: device 4 (0461:0010), keyboard`), the
   stick out and in, the hub out and in; typing worked after each.
 
+## A USB stick on OHCI1: bulk-only mass storage (tested)
+
+Tested 2026-10-17 with kmon (`usb disk`, `usb read`, `usb:` paths;
+[`../../usb/usb.c`](../../usb/usb.c)): the SanDisk Ultra `0781:558a`
+behind the hub, at full speed.
+
+| What | How |
+|---|---|
+| Bulk list | two EDs (OUT, then IN) on the bulk list (`HcBulkHeadED` `+0x28`, written with `HcControl` BLE bit 5 off), BLE on; a transfer is started with `HcCommandStatus` BLF (bit 2). The data toggle stays in each ED (HeadP bit 1) from one transfer to the next |
+| TDs | at most 4 KB each, never across a 4 KB page; up to 64 KB per transfer. Only the last IN TD has buffer rounding: a short packet earlier halts the ED (DATAUNDERRUN), which ends the transfer; the ED is then restarted at its tail with the toggle kept |
+| Bulk-only transport | 31-byte CBW (`USBC`, tag, length, direction, LUN 0, the SCSI command) on bulk OUT; the data; 13-byte CSW (`USBS`, same tag, status) on bulk IN. A STALL: `CLEAR_FEATURE` ENDPOINT_HALT and the toggle back to DATA0 |
+| SCSI | INQUIRY (36 bytes), TEST UNIT READY (with REQUEST SENSE when not ready), READ CAPACITY(10), READ(10) and WRITE(10) of up to 128 blocks |
+
+| Seen | |
+|---|---|
+| INQUIRY | `SanDisk Ultra 1.00`, peripheral type 0, removable |
+| READ CAPACITY | 488,374,272 blocks of 512 bytes (238,464 MB) |
+| Block 0 (MBR) | partition 1 type `0c` (FAT32) at LBA 2048, 512 MB; partition 2 type `83` |
+| Speed | 4 MB from LBA 2048 in 4,417 ms (927 KB/s), the same CRC `8c6400c2` twice; a 7.8 MB file in 8.3 s |
+| Integrity | `hi_kernel.uImage` read through FAT32 and sent to the PC: uImage header CRC `eb841e71` and data CRC `f03a70da` both correct |
+
+Writing (WRITE(10)) is in the code but not tested.
+
 ## Open questions
 
-- Bulk transfers (the USB stick) and EHCI1 for high-speed devices.
+- Writing to the USB stick (WRITE(10)), and EHCI1 for high-speed devices.
 - The OHCI1 interrupt (ID 127) instead of polling.
 - Which connector, if any, the xHCI ports serve (a USB stick test).
 - EHCI1 with a high-speed device (USB stick).

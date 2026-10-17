@@ -1,4 +1,4 @@
-// usb.h - OHCI1 + HID boot keyboard (usb.c), shared by mon/ and doom/.
+// usb.h - OHCI1, hubs, HID boot keyboard, mass storage (usb.c), shared by mon/ and doom/.
 // The program's kstb.h must define DMA_BASE: 2 MB mapped non-cacheable.
 #include <stdint.h>
 
@@ -10,3 +10,7 @@ int usb_port_changed(int *connected);  // 1 = plugged/unplugged since the last c
 int usb_kbd_up(void);
 extern int usb_verbose;                 // 0 = print nothing (default 1)                    // controller back to reset: no more DMA
 void usb_status(void);
+int usb_msc_init(void);                 // the first mass storage device: 0 = ready
+int usb_msc_info(uint32_t *blocks, uint32_t *bsize);   // 0 = ready
+int usb_msc_read(uint32_t lba, uint32_t n, void *buf);         // 512-byte blocks; 0 = ok
+int usb_msc_write(uint32_t lba, uint32_t n, const void *buf);  // 0 = ok

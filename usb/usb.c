@@ -11,6 +11,8 @@
 //               powered, reset and enumerated in turn (addresses 1, 2, ...);
 //               the first boot keyboard found gets boot protocol and is polled
 //   usb_kbd_poll()  one 8-byte report from the interrupt endpoint, if any
+//   usb_msc_*() a bulk-only mass storage device (a USB stick): SCSI
+//               INQUIRY, TEST UNIT READY, READ CAPACITY(10), READ(10), WRITE(10)
 //   usb_port_changed()  1 when the root port changed (enumerate again); a hub
 //               port (one per call) is handled here: a new device is
 //               enumerated, a removed one (and what hung below it) forgotten
@@ -45,6 +47,8 @@ int usb_verbose = 1;                    // 0: print nothing (kmon starts it quie
 #define HC_HCCA         (OHCI + 0x18)
 #define HC_CTRLHEAD     (OHCI + 0x20)
 #define HC_CTRLCUR      (OHCI + 0x24)
+#define HC_BULKHEAD     (OHCI + 0x28)
+#define HC_BULKCUR      (OHCI + 0x2c)
 #define HC_FMINTERVAL   (OHCI + 0x34)
 #define HC_FMNUMBER     (OHCI + 0x3c)
 #define HC_PERIODSTART  (OHCI + 0x40)
@@ -53,6 +57,7 @@ int usb_verbose = 1;                    // 0: print nothing (kmon starts it quie
 
 #define CTL_PLE         (1u << 2)       // periodic (interrupt) list on
 #define CTL_CLE         (1u << 4)       // control list on
+#define CTL_BLE         (1u << 5)       // bulk list on
 #define CTL_OPER        (2u << 6)       // HCFS = Operational
 
 // DMA area layout (all uncached)
@@ -63,6 +68,14 @@ int usb_verbose = 1;                    // 0: print nothing (kmon starts it quie
 #define SETUP_BUF       (DMA_BASE + 0x400)
 #define DATA_BUF        (DMA_BASE + 0x800)      // 256 bytes
 #define REPORT_BUF      (DMA_BASE + 0xc00)      // 2 x 16 bytes
+#define ED_BULK_OUT     (DMA_BASE + 0x120)      // mass storage: bulk OUT and IN endpoints
+#define ED_BULK_IN      (DMA_BASE + 0x130)
+#define BULK_TD         (DMA_BASE + 0x1000)     // 2 x 32 TDs
+#define CBW_BUF         (DMA_BASE + 0x1800)     // 31-byte command block wrapper
+#define CSW_BUF         (DMA_BASE + 0x1840)     // 13-byte command status wrapper
+#define SENSE_BUF       (DMA_BASE + 0x1880)
+#define BULK_BUF        (DMA_BASE + 0x10000)    // 64 KB data, page-aligned
+#define BULK_MAX        0x10000
 
 #define W(a)            (*(volatile uint32_t *)(uintptr_t)(a))
 
@@ -123,6 +136,9 @@ static int intr_err;                    // the keyboard's endpoint failed last t
 static uint32_t intr_td, intr_dummy;    // the interrupt endpoint's TD and tail
 static int report_n;
 static int hub_poll_dev, hub_poll_port; // usb_port_changed: the next hub port to check
+static int msc_dev = -1;                // the first mass storage device found
+static int msc_ready;                   // usb_msc_init() done for it
+static uint32_t msc_blocks, msc_bsize, msc_tag;
 
 static void td_fill(uint32_t td, uint32_t d0, uint32_t buf, uint32_t len, uint32_t next)
 {
@@ -373,6 +389,10 @@ static void forget(int i)
         W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_PLE;
         up = 0, kbd_dev = -1;
     }
+    if (i == msc_dev) {
+        W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_BLE;
+        msc_dev = -1, msc_ready = 0;
+    }
     say("usb: device %d (%04x:%04x) gone\n", devs[i].addr, devs[i].vid, devs[i].pid);
     devs[i].addr = 0;
 }
@@ -458,6 +478,8 @@ static int enumerate(int lowspeed, int parent, int port, int depth)
     parse_config(dv, d, n);
     if (control(0x00, 9, config, 0, 0, NULL) < 0)          // SET_CONFIGURATION
         return -1;
+    if (dv->cls == 8 && msc_dev < 0 && dv->bulk_in && dv->bulk_out)
+        msc_dev = i, msc_ready = 0;
     if (dv->cls == 9)
         hub_init(i, depth);
     else if (dv->cls == 8)
@@ -498,6 +520,7 @@ int usb_init(void)
     up = 0;
     ndev = 0;
     next_addr = 1;
+    msc_dev = -1, msc_ready = 0;
     kbd_dev = -1;
     hub_poll_dev = hub_poll_port = 0;
     hc_start();
@@ -525,7 +548,7 @@ int usb_port_changed(int *connected)
     if (ps & (1u << 16)) {
         W(HC_PORT1) = 1u << 16;
         if (!*connected)
-            up = 0, ndev = 0;
+            up = 0, ndev = 0, msc_dev = -1, msc_ready = 0;
         return 1;
     }
     if (!*connected)
@@ -631,6 +654,284 @@ void usb_status(void)
     }
     if (up)
         printf("keyboard (device %d) up, %d reports\n", devs[kbd_dev].addr, report_n);
+    if (msc_ready && msc_dev >= 0)
+        printf("mass storage (device %d) ready, %u blocks of %u bytes\n", devs[msc_dev].addr,
+               msc_blocks, msc_bsize);
+}
+
+// ---------------- mass storage (bulk-only transport, SCSI) ----------------
+
+static uint32_t be32(const uint8_t *p) { return (uint32_t)p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3]; }
+
+// ED for a bulk endpoint, empty (HeadP = TailP = its dummy), toggle DATA0.
+static void bulk_ed(uint32_t ed, uint32_t dummy, int ep, int in)
+{
+    const struct dev *d = &devs[msc_dev];
+    td_fill(dummy, 0, 0, 0, 0);
+    W(ed + 0) = ed_d0(d, ep, d->bulk_mps) | (in ? 2u : 1u) << 11;
+    W(ed + 4) = dummy;
+    W(ed + 8) = dummy;
+}
+
+// One bulk transfer of len bytes (up to BULK_MAX) from/to the DMA buffer
+// buf. TDs of at most 4 KB, each within one page; a short IN packet ends
+// the transfer. Returns the bytes moved, or -1 - CC (-5 = STALL).
+#define BULK_POOL       32                      // TDs per direction
+static int bulk(int in, uint32_t buf, uint32_t len, uint32_t timeout_ms)
+{
+    uint32_t ed = in ? ED_BULK_IN : ED_BULK_OUT;
+    uint32_t pool = BULK_TD + (in ? 0 : BULK_POOL * 16);
+    uint32_t first = W(ed + 4);                         // the idle ED's tail: our first TD
+    uint32_t td[18], start[17], size[17], n = 0, k = 0;
+    uint32_t a = buf, left = len;
+    if (len > BULK_MAX)
+        return -1;
+    td[0] = first;
+    do {                                                // TD n covers one page's part
+        uint32_t chunk = 0x1000 - (a & 0xfff);
+        if (chunk > left)
+            chunk = left;
+        uint32_t next;
+        do
+            next = pool + 16 * (k++ % BULK_POOL);
+        while (next == first);
+        td[n + 1] = next;
+        td_fill(next, 0, 0, 0, 0);                      // the next TD, or the new tail
+        int last = chunk == left;
+        td_fill(td[n], (in ? TD_IN : TD_OUT) | TD_NOINT | (last && in ? TD_R : 0), a, chunk, next);
+        start[n] = a, size[n] = chunk;
+        n++;
+        a += chunk, left -= chunk;
+    } while (left);
+    uint32_t tail = td[n];
+    __asm__ volatile("dsb sy" ::: "memory");
+    W(ed + 4) = tail;                                   // the controller may start now
+    W(HC_CMDSTATUS) = 1u << 2;                          // BLF: bulk list filled
+
+    uint64_t end = now() + (uint64_t)timeout_ms * TICKS_PER_MS;
+    while ((W(ed + 8) & ~0xfu) != tail && !(W(ed + 8) & 1))
+        if (now() > end) {
+            say("usb: bulk %s %u bytes: timeout\n", in ? "IN" : "OUT", len);
+            W(ed + 0) |= 1u << 14;                      // sKip while we drop the TDs
+            wait_ms(1);
+            W(ed + 8) = tail | (W(ed + 8) & 2);
+            W(ed + 0) &= ~(1u << 14);
+            return -1;
+        }
+    int moved = 0, cc = 0;
+    for (uint32_t i = 0; i < n; i++) {
+        uint32_t c = TD_CC(W(td[i]));
+        if (c == 0xf || c == 0xe)
+            break;                                      // not reached
+        uint32_t cbp = W(td[i] + 4);
+        moved += cbp ? cbp - start[i] : size[i];
+        if (c != 0 && !(c == 9 && in)) {                // underrun (short IN) is fine
+            cc = c;
+            break;
+        }
+        if (cbp)
+            break;                                      // short packet: done
+    }
+    if (W(ed + 8) & 1)                                  // halted: drop the rest, keep the toggle
+        W(ed + 8) = tail | (W(ed + 8) & 2);
+    if (cc) {
+        say("usb: bulk %s: %s\n", in ? "IN" : "OUT", cc_names[cc]);
+        return -1 - (int)cc;
+    }
+    return moved;
+}
+
+static int clear_halt(int ep_addr)
+{
+    cur = &devs[msc_dev];
+    int r = control(0x02, 1, 0, ep_addr, 0, NULL);      // CLEAR_FEATURE ENDPOINT_HALT
+    uint32_t ed = ep_addr & 0x80 ? ED_BULK_IN : ED_BULK_OUT;
+    W(ed + 8) = W(ed + 8) & ~3u;                        // toggle back to DATA0
+    return r;
+}
+
+// Bulk-only mass storage reset and both endpoints' halts cleared.
+static void msc_reset(void)
+{
+    const struct dev *d = &devs[msc_dev];
+    cur = &devs[msc_dev];
+    control(0x21, 0xff, 0, d->msc_iface, 0, NULL);
+    clear_halt(0x80 | d->bulk_in);
+    clear_halt(d->bulk_out);
+}
+
+// One SCSI command: CBW, data (in or out, up to BULK_MAX at BULK_BUF), CSW.
+// Returns 0 = good, 1 = command failed (CSW status 1: REQUEST SENSE), -1 = transport error.
+static int scsi(const uint8_t *cdb, int cdb_len, int in, uint32_t len)
+{
+    const struct dev *d = &devs[msc_dev];
+    uint8_t *cbw = (uint8_t *)CBW_BUF;
+    memset(cbw, 0, 31);
+    uint32_t tag = ++msc_tag;
+    cbw[0] = 'U', cbw[1] = 'S', cbw[2] = 'B', cbw[3] = 'C';
+    memcpy(cbw + 4, &tag, 4);
+    memcpy(cbw + 8, &len, 4);
+    cbw[12] = in ? 0x80 : 0;
+    cbw[13] = 0;                                        // LUN 0
+    cbw[14] = cdb_len;
+    memcpy(cbw + 15, cdb, cdb_len);
+    if (bulk(0, CBW_BUF, 31, 1000) != 31) {
+        msc_reset();
+        return -1;
+    }
+    if (len) {
+        int r = bulk(in, BULK_BUF, len, 5000);
+        if (r == -5)                                    // STALL: clear it, the CSW follows
+            clear_halt(in ? 0x80 | d->bulk_in : d->bulk_out);
+        else if (r < 0) {
+            msc_reset();
+            return -1;
+        }
+    }
+    int r = bulk(1, CSW_BUF, 13, 2000);
+    if (r == -5) {
+        clear_halt(0x80 | d->bulk_in);
+        r = bulk(1, CSW_BUF, 13, 2000);
+    }
+    const uint8_t *csw = (const uint8_t *)CSW_BUF;
+    uint32_t t;
+    memcpy(&t, csw + 4, 4);
+    if (r != 13 || csw[0] != 'U' || csw[1] != 'S' || csw[2] != 'B' || csw[3] != 'S' || t != tag) {
+        say("usb: mass storage: bad status block (%d bytes)\n", r);
+        msc_reset();
+        return -1;
+    }
+    if (csw[12] == 2) {                                 // phase error
+        msc_reset();
+        return -1;
+    }
+    return csw[12] ? 1 : 0;
+}
+
+static void request_sense(uint8_t *key, uint8_t *asc)
+{
+    static const uint8_t cdb[6] = { 0x03, 0, 0, 0, 18, 0 };
+    *key = *asc = 0xff;
+    if (scsi(cdb, 6, 1, 18) == 0) {
+        const uint8_t *b = (const uint8_t *)BULK_BUF;
+        *key = b[2] & 0xf, *asc = b[12];
+    }
+}
+
+// Set up the first mass storage device: bulk endpoints, INQUIRY, wait until
+// it is ready, READ CAPACITY. 0 = ready.
+int usb_msc_init(void)
+{
+    msc_ready = 0;
+    if (msc_dev < 0) {
+        say("usb: no mass storage device\n");
+        return -1;
+    }
+    const struct dev *d = &devs[msc_dev];
+    W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_BLE;           // list pointers only with BLE off
+    wait_ms(1);
+    bulk_ed(ED_BULK_OUT, BULK_TD + BULK_POOL * 16, d->bulk_out, 0);
+    bulk_ed(ED_BULK_IN, BULK_TD, d->bulk_in, 1);
+    W(ED_BULK_OUT + 12) = ED_BULK_IN;
+    W(ED_BULK_IN + 12) = 0;
+    __asm__ volatile("dsb sy" ::: "memory");
+    W(HC_BULKHEAD) = ED_BULK_OUT;
+    W(HC_BULKCUR) = 0;
+    W(HC_CONTROL) = W(HC_CONTROL) | CTL_BLE;
+
+    static const uint8_t inquiry[6] = { 0x12, 0, 0, 0, 36, 0 };
+    if (scsi(inquiry, 6, 1, 36) != 0) {
+        say("usb: mass storage: INQUIRY failed\n");
+        return -1;
+    }
+    const char *b = (const char *)BULK_BUF;
+    say("usb: mass storage device %d: %.8s %.16s %.4s, type %02x%s\n", d->addr, b + 8, b + 16,
+        b + 32, b[0] & 0x1f, b[1] & 0x80 ? ", removable" : "");
+    static const uint8_t tur[6] = { 0 };
+    int ok = 0;
+    for (int i = 0; i < 30 && !ok; i++) {               // up to ~3 s: a stick may spin up
+        int r = scsi(tur, 6, 0, 0);
+        if (r == 0)
+            ok = 1;
+        else {
+            uint8_t key, asc;
+            if (r > 0)
+                request_sense(&key, &asc);
+            wait_ms(100);
+        }
+    }
+    if (!ok) {
+        say("usb: mass storage: not ready\n");
+        return -1;
+    }
+    static const uint8_t cap[10] = { 0x25 };
+    if (scsi(cap, 10, 1, 8) != 0) {
+        say("usb: mass storage: READ CAPACITY failed\n");
+        return -1;
+    }
+    const uint8_t *c = (const uint8_t *)BULK_BUF;
+    msc_blocks = be32(c) + 1, msc_bsize = be32(c + 4);
+    say("usb: mass storage: %u blocks of %u bytes (%u MB)\n", msc_blocks, msc_bsize,
+        (uint32_t)((uint64_t)msc_blocks * msc_bsize >> 20));
+    if (msc_bsize != 512) {
+        say("usb: mass storage: only 512-byte blocks are supported\n");
+        return -1;
+    }
+    msc_ready = 1;
+    return 0;
+}
+
+int usb_msc_info(uint32_t *blocks, uint32_t *bsize)
+{
+    if (!msc_ready || msc_dev < 0)
+        return -1;
+    *blocks = msc_blocks, *bsize = msc_bsize;
+    return 0;
+}
+
+static int rw10(int write, uint32_t lba, uint32_t n)
+{
+    uint8_t cdb[10] = { write ? 0x2a : 0x28, 0, lba >> 24, lba >> 16, lba >> 8, lba, 0, n >> 8, n, 0 };
+    int r = scsi(cdb, 10, !write, n * 512);
+    if (r > 0) {
+        uint8_t key, asc;
+        request_sense(&key, &asc);
+        say("usb: mass storage: %s at %u failed, sense key %x, ASC %02x\n",
+            write ? "WRITE(10)" : "READ(10)", lba, key, asc);
+    }
+    return r;
+}
+
+// n blocks of 512 bytes from lba into buf (any RAM). 0 = ok.
+int usb_msc_read(uint32_t lba, uint32_t n, void *buf)
+{
+    if (!msc_ready || msc_dev < 0 || lba + n > msc_blocks || lba + n < lba)
+        return -1;
+    uint8_t *p = buf;
+    while (n) {
+        uint32_t k = n > BULK_MAX / 512 ? BULK_MAX / 512 : n;
+        if (rw10(0, lba, k))
+            return -1;
+        memcpy(p, (const void *)BULK_BUF, k * 512);
+        p += k * 512, lba += k, n -= k;
+    }
+    return 0;
+}
+
+// n blocks of 512 bytes from buf to lba. 0 = ok.
+int usb_msc_write(uint32_t lba, uint32_t n, const void *buf)
+{
+    if (!msc_ready || msc_dev < 0 || lba + n > msc_blocks || lba + n < lba)
+        return -1;
+    const uint8_t *p = buf;
+    while (n) {
+        uint32_t k = n > BULK_MAX / 512 ? BULK_MAX / 512 : n;
+        memcpy((void *)BULK_BUF, p, k * 512);
+        if (rw10(1, lba, k))
+            return -1;
+        p += k * 512, lba += k, n -= k;
+    }
+    return 0;
 }
 
 // ---------------- HID boot keyboard -> characters ----------------

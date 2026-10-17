@@ -1517,6 +1517,39 @@ static void usb_kbd(void)
     }
 }
 
+// The USB stick: set it up, print its partition table (MBR in block 0)
+static void usb_disk(void)
+{
+    if (usb_msc_init())
+        return;
+    uint8_t *b = (uint8_t *)SLOT_SCRATCH;
+    if (usb_msc_read(0, 1, b)) {
+        printf("usb: block 0 unreadable\n");
+        return;
+    }
+    if (b[510] != 0x55 || b[511] != 0xaa) {
+        printf("block 0: no partition table (no 55 aa)\n");
+        return;
+    }
+    for (int i = 0; i < 4; i++) {
+        const uint8_t *e = b + 446 + 16 * i;
+        uint32_t start = e[8] | e[9] << 8 | e[10] << 16 | (uint32_t)e[11] << 24;
+        uint32_t len = e[12] | e[13] << 8 | e[14] << 16 | (uint32_t)e[15] << 24;
+        if (!e[4])
+            continue;
+        printf("partition %d: type %02x%s, LBA #%u, #%u blocks (%u MB)%s\n", i + 1, e[4],
+               e[4] == 0x0b || e[4] == 0x0c ? " (FAT32)" : e[4] == 0x07 ? " (NTFS/exFAT)" :
+               e[4] == 0xee ? " (GPT)" : "", start, len, len >> 11, e[0] & 0x80 ? ", active" : "");
+    }
+}
+
+static int usb_ram_ok(uint64_t a, uint64_t len)  // as for mmc read: not the monitor, its buffers, heap
+{
+    uint64_t end = a + len;
+    return !(a < 0x00001000 || end > 0x7d600000 || (a < DOOM_IMG && end > MON_ADDR) ||
+             (a < STACK + 0x10000 && end > DMA_BASE) || (a < HEAP_END && end > HEAP_BASE));
+}
+
 static void cmd_usb(struct cmd *c)
 {
     const char *w = c->argc ? c->argv[0] : "";
@@ -1528,8 +1561,29 @@ static void cmd_usb(struct cmd *c)
         usb_kbd();
     else if (!strcmp(w, "stop"))
         usb_stop();
-    else
-        printf("usage: usb [init|kbd|stop]\n");
+    else if (!strcmp(w, "disk"))
+        usb_disk();
+    else if (!strcmp(w, "read")) {
+        uint64_t lba, n, a = 0x02000000;
+        if (arg_num(c, 1, &lba) <= 0 || arg_num(c, 2, &n) <= 0 || arg_num(c, 3, &a) < 0 || n == 0) {
+            printf("usage: usb read lba count [addr]   (512-byte blocks; addr default 2000000)\n");
+            return;
+        }
+        if (!usb_ram_ok(a, n * 512)) {
+            printf("usb: RAM %08lx + %lx refused\n", a, n * 512);
+            return;
+        }
+        uint64_t t = ticks();
+        if (usb_msc_read(lba, n, (void *)a)) {
+            printf("usb: read failed ('usb disk' first?)\n");
+            return;
+        }
+        uint64_t us = (ticks() - t) / 27;
+        printf("read %lu blocks (%lu KB) LBA %lu to %08lx in %lu ms (%lu KB/s), CRC %08x\n",
+               n, n / 2, lba, a, us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0,
+               crc32((const uint8_t *)a, n * 512));
+    } else
+        printf("usage: usb [init|kbd|stop|disk|read lba count [addr]]\n");
 }
 
 static void cmd_con(struct cmd *c)
@@ -1762,20 +1816,80 @@ static void cmd_mmc(struct cmd *c)
     }
 }
 
-// ---------------- files on flash0.DATA (FAT32, ../fat) ----------------
+// ---------------- files on flash0.DATA or the USB stick (FAT32, ../fat) ----------------
+//
+// A path starting with "usb:" is on the USB stick (its first FAT32
+// partition, or the whole stick without a partition table); any other path
+// is on flash0.DATA.
+
+static int fs_usb;                              // the mounted drive: 0 = DATA, 1 = USB stick
+static uint32_t usb_part_first, usb_part_last;  // the stick's FAT32 partition (writes stay in it)
 
 int fat_blk_read(uint32_t lba, uint32_t n, void *buf)
 {
-    return mmc_read(lba, n, buf);
+    return fs_usb ? usb_msc_read(lba, n, buf) : mmc_read(lba, n, buf);
 }
 
 int fat_blk_write(uint32_t lba, uint32_t n, const void *buf)
 {
+    if (fs_usb) {                               // only inside the stick's FAT32 partition
+        if (lba < usb_part_first || lba + n - 1 > usb_part_last || lba + n < lba)
+            return -1;
+        return usb_msc_write(lba, n, buf);
+    }
     return mmc_write(lba, n, buf, 0);          // the driver allows only DATA (and splash)
 }
 
-static int fs_ready(void)
+// The USB stick's FAT32 partition: the first MBR entry of type 0b/0c, or
+// block 0 itself when it is a FAT32 boot sector (no partition table).
+static int usb_fat_part(void)
 {
+    uint32_t blocks, bsize;
+    if (usb_msc_info(&blocks, &bsize) && usb_msc_init()) {
+        printf("usb: no USB stick ready\n");
+        return -1;
+    }
+    usb_msc_info(&blocks, &bsize);
+    uint8_t *b = (uint8_t *)SLOT_SCRATCH;
+    if (usb_msc_read(0, 1, b))
+        return -1;
+    if (b[510] != 0x55 || b[511] != 0xaa)
+        return -1;
+    if (b[82] == 'F' && b[83] == 'A' && b[84] == 'T' && b[85] == '3' && b[86] == '2') {
+        usb_part_first = 0, usb_part_last = blocks - 1;
+        return 0;
+    }
+    for (int i = 0; i < 4; i++) {
+        const uint8_t *e = b + 446 + 16 * i;
+        uint32_t start = e[8] | e[9] << 8 | e[10] << 16 | (uint32_t)e[11] << 24;
+        uint32_t len = e[12] | e[13] << 8 | e[14] << 16 | (uint32_t)e[15] << 24;
+        if ((e[4] == 0x0b || e[4] == 0x0c) && len && start + len <= blocks) {
+            usb_part_first = start, usb_part_last = start + len - 1;
+            return 0;
+        }
+    }
+    printf("usb: no FAT32 partition on the stick\n");
+    return -1;
+}
+
+// Mount the drive *path names ("usb:" prefix: the stick) and strip the prefix.
+static int fs_ready_path(const char **path)
+{
+    int usb = path && !strncmp(*path, "usb:", 4);
+    if (usb) {
+        *path += 4;
+        if (!**path)
+            *path = "/";
+    }
+    fs_usb = usb;
+    if (usb) {
+        if (usb_fat_part())
+            return 0;
+        int r = fat_mount(usb_part_first);
+        if (r)
+            printf("usb: %s\n", fat_strerror(r));
+        return r == 0;
+    }
     int r = mmc_init();
     if (r) {
         printf("eMMC: %s\n", mmc_strerror(r));
@@ -1785,6 +1899,11 @@ static int fs_ready(void)
     if (r)
         printf("flash0.DATA: %s\n", fat_strerror(r));
     return r == 0;
+}
+
+static int fs_ready(void)
+{
+    return fs_ready_path(NULL);
 }
 
 static int fs_fail(const char *what, const char *path, int r)
@@ -1811,19 +1930,21 @@ static void cmd_ls(struct cmd *c)
 {
     const char *path = c->argc ? c->argv[0] : "/";
     int n = 0;
-    if (fs_ready() && !fs_fail("ls", path, fat_list(path, ls_cb, &n)))
+    if (fs_ready_path(&path) && !fs_fail("ls", path, fat_list(path, ls_cb, &n)))
         printf("%d entries\n", n);
 }
 
 static void cmd_fs(struct cmd *c)
 {
-    (void)c;
+    const char *path = c->argc ? c->argv[0] : "";
     uint32_t cb, total, avail;
-    if (!fs_ready() || fs_fail("fs", "flash0.DATA", fat_info(&cb, &total, &avail)))
+    if (!fs_ready_path(&path) || fs_fail("fs", fs_usb ? "usb:" : "flash0.DATA",
+                                         fat_info(&cb, &total, &avail)))
         return;
-    printf("flash0.DATA (LBA #%u-#%u): FAT32, %u clusters of %u KB, %u MB free of %u MB\n",
-           DATA_FIRST, DATA_LAST, total, cb / 1024, (uint32_t)((uint64_t)avail * cb >> 20),
-           (uint32_t)((uint64_t)total * cb >> 20));
+    printf("%s (LBA #%u-#%u): FAT32, %u clusters of %u KB, %u MB free of %u MB\n",
+           fs_usb ? "USB stick" : "flash0.DATA", fs_usb ? usb_part_first : DATA_FIRST,
+           fs_usb ? usb_part_last : DATA_LAST, total, cb / 1024,
+           (uint32_t)((uint64_t)avail * cb >> 20), (uint32_t)((uint64_t)total * cb >> 20));
 }
 
 // Read a file to RAM: the same checks as `load`. Returns its size, or -1.
@@ -1857,8 +1978,9 @@ static void cmd_fget(struct cmd *c)
         printf("usage: fget path [addr]   (default %08x; then `go` runs it)\n", PROG_ADDR);
         return;
     }
-    if (fs_ready())
-        fget(c->argv[0], a, c->force);
+    const char *path = c->argv[0];
+    if (fs_ready_path(&path))
+        fget(path, a, c->force);
 }
 
 static void cmd_run(struct cmd *c)
@@ -1867,7 +1989,8 @@ static void cmd_run(struct cmd *c)
         printf("usage: run path   (fget to %08x, then go)\n", PROG_ADDR);
         return;
     }
-    if (fs_ready() && fget(c->argv[0], PROG_ADDR, c->force) >= 0) {
+    const char *path = c->argv[0];
+    if (fs_ready_path(&path) && fget(path, PROG_ADDR, c->force) >= 0) {
         printf("go %08x\n", PROG_ADDR);
         irq_off();
         usb_stop();
@@ -1884,10 +2007,11 @@ static void cmd_fput(struct cmd *c)
                load_size, load_addr);
         return;
     }
-    if (!fs_ready())
+    const char *path = c->argv[0];
+    if (!fs_ready_path(&path))
         return;
     uint64_t t = ticks();
-    if (fs_fail("fput", c->argv[0], fat_write(c->argv[0], (const void *)a, len)))
+    if (fs_fail("fput", path, fat_write(path, (const void *)a, len)))
         return;
     uint64_t us = (ticks() - t) / 27;
     printf("%s: %lu bytes from %08lx, CRC %08x, %lu ms\n", c->argv[0], len, a,
@@ -1898,16 +2022,22 @@ static void cmd_rm(struct cmd *c)
 {
     if (!c->argc)
         printf("usage: rm path   (a file or an empty directory)\n");
-    else if (fs_ready())
-        fs_fail("rm", c->argv[0], fat_remove(c->argv[0]));
+    else {
+        const char *path = c->argv[0];
+        if (fs_ready_path(&path))
+            fs_fail("rm", path, fat_remove(path));
+    }
 }
 
 static void cmd_mkdir(struct cmd *c)
 {
     if (!c->argc)
         printf("usage: mkdir path\n");
-    else if (fs_ready())
-        fs_fail("mkdir", c->argv[0], fat_mkdir(c->argv[0]));
+    else {
+        const char *path = c->argv[0];
+        if (fs_ready_path(&path))
+            fs_fail("mkdir", path, fat_mkdir(path));
+    }
 }
 
 typedef void (*cmd_fn)(struct cmd *);
@@ -1949,15 +2079,15 @@ static const struct {
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
     { "mmc",     cmd_mmc,     "[init|extcsd|part|dump|read|write]", "eMMC: status, reset, EXT_CSD, GPT, sectors" },
-    { "fs",      cmd_fs,      "",                           "flash0.DATA: FAT32 size and free space" },
-    { "ls",      cmd_ls,      "[dir]",                      "list a directory on flash0.DATA" },
+    { "fs",      cmd_fs,      "[usb:]",                     "FAT32 size and free space (DATA; usb: the stick)" },
+    { "ls",      cmd_ls,      "[dir]",                      "list a directory (DATA; usb:/dir on the stick)" },
     { "fget",    cmd_fget,    "path [addr]",                "read a file to RAM (default prog)" },
     { "fput",    cmd_fput,    "path [addr len]",            "write RAM to a file (default: last load)" },
     { "rm",      cmd_rm,      "path",                       "delete a file or empty directory" },
     { "mkdir",   cmd_mkdir,   "path",                       "make a directory" },
     { "run",     cmd_run,     "path",                       "fget a program and go" },
     { "ir",      cmd_ir,      "",                           "show IR remote codes" },
-    { "usb",     cmd_usb,     "[init|kbd|stop]",            "USB-A port: OHCI1, keyboard" },
+    { "usb",     cmd_usb,     "[init|kbd|stop|disk|read]",  "USB-A port: OHCI1, hub, keyboard, stick" },
     { "con",     cmd_con,     "[on|off|clear]",             "text console on the HDMI screen" },
     { "cpu",     cmd_cpu,     "[on core addr [context]]",   "cores 1-3: state, start (PSCI)" },
     { "irq",     cmd_irq,     "[on|off|timer|uart|sw1|ir|watch]", "interrupts: GIC, EL2 timer, sources" },

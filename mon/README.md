@@ -73,10 +73,10 @@ mmc write lba count addr       RAM to sectors: flash0.splash only (see below)
 ir                             live IR remote codes with key names
 irq [on|off|timer|uart|sw1|ir|watch|clear]   interrupts (see below)
 cpu [on core addr [context]]   cores 1-3: state, start one at addr (PSCI, see below)
-usb [init|kbd|stop]            USB-A port (see below)
+usb [init|kbd|stop|disk|read]  USB-A port: devices, keyboard, the USB stick (see below)
 con [on|off|clear]             text console on the HDMI screen (see below)
-fs                             flash0.DATA: FAT32 size and free space
-ls [dir]                       list a directory on flash0.DATA
+fs [usb:]                      FAT32 size and free space: flash0.DATA, or the USB stick
+ls [dir]                       list a directory; a path with usb: is on the USB stick
 fget path [addr]               read a file to RAM (default 0x01000000); then `go` runs it
 fput path [addr len]           write RAM to a file, create or replace (default: the last load/fget)
 rm path / mkdir path           delete a file or empty directory / make a directory
@@ -164,8 +164,9 @@ OHCI1, the USB-A port's low/full-speed controller, polled (tested
 A hub in the USB-A port works (tested 2026-10-17, up to 8 devices, hubs 2
 deep): every device on it is enumerated, the first boot keyboard is
 polled, and devices plugged into or out of the hub are found and
-forgotten while kmon runs (one line each). A mass-storage stick is
-enumerated and listed; reading it is not done yet.
+forgotten while kmon runs (one line each). The first USB stick (bulk-only
+mass storage) can be read: blocks with `usb read`, files with a `usb:` path
+([files](#files-on-flash0data-and-the-usb-stick-fat32-fat)).
 
 ```
 usb            controller and port state, the devices and where they are
@@ -174,6 +175,18 @@ usb init       reset every USB host controller (USB_PM, not BOLT's state) and th
                descriptors; a boot-protocol keyboard is then polled
 usb kbd        print keyboard reports and the keys (US layout); any serial key stops
 usb stop       controller back to reset (also done before go/doom)
+usb disk       set up the USB stick (INQUIRY, wait until ready, READ CAPACITY), print its partitions
+usb read lba count [addr]   blocks of the stick to RAM (default 0x02000000), speed and CRC
+```
+
+```
+kmon> usb disk
+usb: mass storage device 2: SanDisk Ultra 1.00, type 00, removable
+usb: mass storage: 488374272 blocks of 512 bytes (238464 MB)
+partition 1: type 0c (FAT32), LBA #2048, #1048576 blocks (512 MB)
+partition 2: type 83, LBA #1050624, #487323648 blocks (237951 MB)
+kmon> usb read #2048 #8192
+read 8192 blocks (4096 KB) LBA 2048 to 02000000 in 4417 ms (927 KB/s), CRC 8c6400c2
 ```
 
 ```
@@ -208,7 +221,7 @@ instead takes 98 ms, because the framebuffer is uncached and reading it is
 slow. The screen is updated before the serial line, so a host tool waiting
 for a prompt (`kstb-send`) never sends while the screen is still busy.
 
-## Files on `flash0.DATA` (FAT32, [`../fat/`](../fat/))
+## Files on `flash0.DATA` and the USB stick (FAT32, [`../fat/`](../fat/))
 
 The eMMC's 6.3 GB `DATA` partition ([`../docs/hardware/storage.md`](../docs/hardware/storage.md)) holds
 files. Paths are `/`-separated from the root, names match without regard to
@@ -223,6 +236,26 @@ kmon> run prog.bin                              # later, with no PC: read it and
 
 Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
 (`0x00600000–0x0084ffff`) and the heap are refused as `fget` targets.
+
+**The USB stick:** a path that starts with `usb:` is on the stick's first
+FAT32 partition (MBR type `0b`/`0c`), or on the whole stick when block 0 is
+itself a FAT32 boot sector. `fs`, `ls`, `fget` and `run` work on it; the
+stick is set up on first use. Tested 2026-10-17 (SanDisk Ultra behind a hub,
+full speed on OHCI1):
+
+```
+kmon> fs usb:
+USB stick (LBA #2048-#1050623): FAT32, 130811 clusters of 4 KB, 439 MB free of 510 MB
+kmon> ls usb:/
+kmon> fget usb:/hi_kernel.uImage 0x03000000
+/hi_kernel.uImage: 7860224 bytes at 03000000, CRC 44757325, 8300 ms
+```
+
+That file, sent to the PC with `tftp put`, has a good uImage header and data
+CRC; `usb:/boot.bin` has the CRC of the same file on the PC (`0082c7e8`).
+About 0.95 MB/s (USB full speed). Writing to the stick (`fput`, `rm`,
+`mkdir` with `usb:`) is in the code, limited to that FAT32 partition, but
+**not tested yet**.
 
 ## Video (`video`, [`video.c`](video.c))
 
