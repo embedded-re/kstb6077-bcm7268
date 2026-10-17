@@ -5,6 +5,8 @@
 #   make tftp     -> copies them into the TFTP root (doom/build), as linux-*
 # kstb6077.dtb boots the initramfs, kstb6077-root.dtb the root file system on
 # ROOT (mmcblk0p8); rootfs-overlay.tar is rootfs/ for installing onto ROOT.
+#   make modules  -> build/out/modules/*.ko: our own drivers in drivers/, built as
+#                    external modules against this kernel (the tree stays stock)
 #   make slots    -> build/out/{krn.img,dtb.img}: Image and kstb6077-root.dtb behind a
 #                    KSLT header, for the KRN and DTB partitions (kstb-flash-kernel on
 #                    the box writes them; kmon's `linux` starts them)
@@ -28,7 +30,7 @@ $(KOUT)/.config: kstb.config
 	$(KMAKE) alldefconfig KCONFIG_ALLCONFIG=$(CURDIR)/kstb.config
 
 $(OUT)/Image: $(KOUT)/.config FORCE
-	$(KMAKE) Image scripts
+	$(KMAKE) Image modules scripts
 	mkdir -p $(OUT) && cp $(KOUT)/arch/arm64/boot/Image $@
 
 # Alpine's busybox and musl, our inittab and kstb-rc on top, /dev/console as a node
@@ -62,6 +64,12 @@ $(OUT)/boot.bin: boot.S layout.h
 	ld.lld -Ttext=$(call addr,BOOT_ADDR) -o build/boot.elf build/boot.o
 	llvm-objcopy -O binary build/boot.elf $@
 
+modules: $(OUT)/Image FORCE
+	$(KMAKE) M=$(CURDIR)/drivers MO=$(CURDIR)/build/drivers modules
+	rm -rf $(OUT)/modules && mkdir -p $(OUT)/modules
+	cp build/drivers/*.ko $(KOUT)/modules.builtin $(KOUT)/modules.builtin.modinfo $(OUT)/modules/
+	cd $(OUT)/modules && ls > ../modules.list && mv ../modules.list .
+
 slots: $(OUT)/krn.img $(OUT)/dtb.img
 
 $(OUT)/krn.img: $(OUT)/Image
@@ -70,8 +78,9 @@ $(OUT)/krn.img: $(OUT)/Image
 $(OUT)/dtb.img: $(OUT)/kstb6077-root.dtb
 	../tools/make-kslt "kstb6077-root.dtb $$(date +%F)" $< $@
 
-tftp: all slots
+tftp: all slots modules
 	for f in Image initramfs.cpio.gz kstb6077.dtb kstb6077-root.dtb rootfs-overlay.tar boot.bin krn.img dtb.img; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
+	for f in $(OUT)/modules/*; do cp $$f $(TFTP)/linux-$$(basename $$f); done
 
 FORCE:
-.PHONY: all slots tftp FORCE
+.PHONY: all slots modules tftp FORCE

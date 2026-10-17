@@ -319,6 +319,15 @@
 			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
 		};
 
+		// IR receiver, channel kbd1 (docs/hardware/ir.md): NEC decoded in
+		// hardware, one interrupt per frame on AON L2 bit 0. Our own driver,
+		// drivers/kstb-ir.c (no mainline one)
+		ir@f0419900 {
+			compatible = "brcm,bcm7268-kbd";
+			reg = <0xf0419900 0x38>;
+			interrupts-extended = <&upg_aon_l2 0>;
+		};
+
 		// main GPIO (banks of 32, 32, 19, 2), interrupt through UPG main L2 bit 0
 		gpio: gpio@f040a500 {
 			compatible = "brcm,bcm7268-gpio", "brcm,brcmstb-gpio";

@@ -21,7 +21,7 @@ only happens once software turns it on.
 | Mode | NEC, set up with the Nexus sequence and 27 timing parameters |
 | Remote | Kaon remote, custom code `0x0820`; all 41 received codes are in the stock key map |
 | Reading a code | poll STATUS `+0x00` bit 0, read DATA0 `+0x10`, write STATUS back with bit 0 cleared |
-| Interrupt | AON L2 `0xf0419c00` bit 0 (tested up to the L2, not through the GIC) |
+| Interrupt | AON L2 `0xf0419c00` bit 0 → GIC ID 98 (tested, in kmon and in Linux) |
 | Register names | roles from the stock Nexus driver (`BKIR_*`), not Broadcom's names |
 
 ## Where the register names come from
@@ -200,6 +200,16 @@ Timing on bare metal, from the CPU counter in the handler:
 | a quick tap | the first frame and one repeat (STATUS bit 6 set only on the first) |
 
 Codes seen: `e31c0820` (1), `e21d0820` (2), `ea150820` (OK).
+
+## Linux (tested 2026-10-17)
+
+Our own driver, `linux/drivers/kstb-ir.c` ([`../../linux/README.md`](../../linux/README.md)), does the NEC
+set-up above and takes the interrupt through the AON L2 bit 0 and GIC ID
+98. That completes the GIC side: one interrupt per IR frame (29 for six
+presses, one of them held for about 1.6 s). Repeat frames came every
+108.7 ms, the first one 52.7 ms after the first frame, as on bare metal.
+Keys go out as Linux input events (the stock key map, scancode `0x2008cc`
+for command byte `cc`), and they type into the TV's console.
 
 ## Open questions
 

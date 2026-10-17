@@ -76,6 +76,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | UART1, UART2 | `serial@f040d000`, `@f040e000` (`ns16550a`, as UART0), IDs 103, 104 | `ttyS1`, `ttyS2` (`base_baud = 5062500`). Internal loopback (`TIOCM_LOOP`) at 115200: 1052 bytes each way, intact, with their interrupts counting. Pins unknown ([`../docs/hardware/uart.md`](../docs/hardware/uart.md)) |
 | Temperature | `thermal@f04d1500` (`brcm,avs-tmon`, 28 nm constants) on the AVS L2 `interrupt-controller@f04d1200` (`brcm,l2-intc`, SPI 25) bit 6; `thermal-zones` with the stock trips (95, 110 °C passive) and 125 °C critical | `/sys/class/thermal/thermal_zone0/temp`: 53.1 °C idle, 62.8 °C after 90 s with all 4 cores busy. Interrupt tested: trip 0 set to 54.5 °C, one `brcmstb_thermal` interrupt when the load crossed it. No cooling device (no cpufreq yet) |
 | RTC | `waketimer@f041a080` (`brcm,brcmstb-waketimer`, 27 MHz) on the `sys_pm` L2 `interrupt-controller@f0410640` (`brcm,l2-intc`, SPI 61) bit 4 | `rtc0`; `hwclock -w` / `-r` work. Only an uptime clock: the counter restarts at every reset (the date written before `reboot` read 44 s at `kmon>`), and an alarm sets the timer's EVENT bit but raises no interrupt while running (the L2 bit is a wake-up source). Time comes from NTP (`kstb-rc`) |
+| IR receiver | `ir@f0419900` (`brcm,bcm7268-kbd`, our own driver [`drivers/kstb-ir.c`](drivers/kstb-ir.c), a module) on the AON L2 bit 0 | `rc0`, input device "KSTB6077 IR receiver", key map `rc-kaon-kstb6077` (the stock one, 45 keys). The Kaon remote, checked by the user: 1, 2, 3, OK, VOL+ held, RED each gave its scancode (`MSC_SCAN 20081c` = `KEY_1` …) and key; one interrupt per IR frame, repeats every 108.7 ms. The keys type into the TV's shell. Loaded at boot by `kstb-rc` ("Our own drivers" below) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -197,6 +198,43 @@ native VIC 31, then 1080p60/24/25/30, 1080i, 720p50, basic audio, YCbCr
 4:4:4 and 4:2:2. Reading the DDC left the picture alone (kmon's HDMI
 set-up doesn't use the bus).
 
+## Our own drivers: external modules
+
+Blocks with no mainline driver get one in [`drivers/`](drivers/), built as an
+external module against this kernel, so the kernel tree stays as
+downloaded and a driver can be reloaded without a reboot (`rmmod`,
+`modprobe`). Everything else stays built in: `kstb.config` turns on
+`MODULES` and `MODULE_UNLOAD`, and turns off the few options that would
+otherwise become `=m` (`HW_RANDOM`, `BCM2712_MIP`, `EFIVAR_FS`).
+
+```
+make -C linux tftp       # also build/out/modules/: *.ko, modules.builtin*, modules.list
+kstb-modules             # on the box: fetch them over TFTP into /lib/modules/<release>, depmod
+```
+
+`kstb-rc` loads at boot every module whose device is in the device tree
+(`modprobe` of each `/sys/bus/platform/devices/*/modalias`). Tested: after
+`kstb-flash-kernel` and `reboot`, kmon's `linux` started the kernel from
+`KRN`, and `kstb_ir` was loaded at 1.67 s without the PC. Rebuild and fetch
+the modules with every kernel: they must come from the same build.
+
+### `kstb-ir`: the IR receiver
+
+[`drivers/kstb-ir.c`](drivers/kstb-ir.c) sets up channel kbd1 as Nexus does
+(interrupt enable, CIR on, the 27 NEC timing parameters,
+[`../docs/hardware/ir.md`](../docs/hardware/ir.md)) and registers an rc-core scancode device. Per
+interrupt it reads STATUS and DATA0 and writes STATUS back with bit 0
+clear. A frame with STATUS bit 6 (the first of a press) becomes
+`rc_keydown()`, any other `rc_repeat()`. The Kaon remote sends extended NEC
+with address bytes `20 08`, so DATA0 `e31c0820` is scancode `0x20081c`
+(rc-core's NECX form); the key map is the stock `kaon_301rcu_6077` with
+the 42 codes received in `ir.md` plus TUNER, PLAY and PREVIOUSSONG from the
+stock file. Unloading turns the decoder off (CMD bits 4, 5 cleared).
+
+Before the driver first ran, kbd1 already read CMD `37`, CIR_ADDR `1b`:
+set up earlier (the block is in the always-on part of the chip); what set
+it was not checked.
+
 ## Registers from Linux: `kstb-reg`
 
 [`rootfs/usr/sbin/kstb-reg`](rootfs/usr/sbin/kstb-reg) (needs `apk add python3`) reads and writes
@@ -243,7 +281,7 @@ power-sequence helpers, none of which this box needs.
 ## Not done
 
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
-- HDMI audio, the IR receiver, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
+- HDMI audio, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.
 - KVM and KASLR are off; nothing tested them.
