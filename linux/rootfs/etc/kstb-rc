@@ -35,6 +35,26 @@ hostname kstb6077
 for a in $(sort -u /sys/bus/*/devices/*/modalias 2>/dev/null); do
 	modprobe -q "$a"
 done
+# Bluetooth (BCM43569A2 on USB, 0a5c:2045): btbcm sends the patch at every
+# probe, but Launch RAM makes this chip drop off USB and come back already
+# patched, so it would be patched again, endlessly. Offer the patch file for
+# one probe only: in place, reload btusb, wait for the chip to leave, remove it.
+bt_patch() {
+	src=/lib/firmware/kstb/BCM43569.hcd
+	fw=/lib/firmware/brcm/BCM-0a5c-2045.kaon,kstb6077.hcd
+	for d in /sys/bus/usb/devices/*; do
+		[ "$(cat $d/idVendor 2>/dev/null):$(cat $d/idProduct 2>/dev/null)" = 0a5c:2045 ] && break
+		d=
+	done
+	[ -n "$d" ] && [ -f "$src" ] || return 0
+	modprobe -r btusb
+	cp "$src" "$fw"
+	modprobe btusb
+	i=0
+	while [ -e "$d" ] && [ $i -lt 50 ]; do sleep 0.1; i=$((i + 1)); done
+	rm -f "$fw"
+}
+(bt_patch &)
 echo "kstb6077: $(uname -r), $(grep -c ^processor /proc/cpuinfo) cores, $(sed -n 's/MemTotal: *//p' /proc/meminfo), root $(awk '$2 == "/" {print $1}' /proc/mounts | tail -1)"
 ip link set lo up
 if ip link set eth0 up 2>/dev/null; then

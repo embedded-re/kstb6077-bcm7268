@@ -54,14 +54,18 @@ $(OUT)/kstb6077-root.dtb: kstb6077.dts $(OUT)/Image
 	cpp -P -nostdinc -undef -x assembler-with-cpp -DROOTFS kstb6077.dts > build/kstb6077-root.pp.dts
 	$(KOUT)/scripts/dtc/dtc -I dts -O dtb -o $@ build/kstb6077-root.pp.dts
 
-# our files for ROOT, owned by root, extracted over Alpine's minirootfs; plus the
-# Wi-Fi chip's board file from the stock firmware, under the name brcmfmac looks for
+# our files for ROOT, owned by root, extracted over Alpine's minirootfs; plus from
+# the stock firmware the Wi-Fi chip's board file (under the name brcmfmac looks
+# for) and the Bluetooth patch (kstb-rc offers it to btbcm once per boot)
 NVRAM = ../stock/release/firmware/broadcom/dhd/nvrams/nvm.txt
-$(OUT)/rootfs-overlay.tar: $(shell find rootfs -type f) $(NVRAM)
+BTPATCH = ../stock/release/firmware/BCM43569.hcd
+$(OUT)/rootfs-overlay.tar: $(shell find rootfs -type f) $(NVRAM) $(BTPATCH)
 	mkdir -p $(OUT)
 	tar -C rootfs --owner=0 --group=0 --numeric-owner -cf $@ .
 	tar -C $(dir $(NVRAM)) --owner=0 --group=0 --numeric-owner --mode=644 \
 		--transform 's|^nvm.txt$$|./lib/firmware/brcm/brcmfmac43570-pcie.kaon,kstb6077.txt|' -rf $@ nvm.txt
+	tar -C $(dir $(BTPATCH)) --owner=0 --group=0 --numeric-owner --mode=644 \
+		--transform 's|^BCM43569.hcd$$|./lib/firmware/kstb/BCM43569.hcd|' -rf $@ BCM43569.hcd
 
 $(OUT)/boot.bin: boot.S layout.h
 	mkdir -p $(OUT)

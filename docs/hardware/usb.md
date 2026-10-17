@@ -67,6 +67,19 @@ BOLT's bus numbers in `show usb` (inferred from its reset messages; bus 1 =
 EHCI1 confirmed by the high-speed stick): 0 = EHCI0, 1 = EHCI1, 2 = OHCI0 (BT), 3 = OHCI1 (USB-A low/full speed), 4 = xHCI.
 BOLT's own keyboard driver picks up a keyboard (`USBHID: Keyboard Configured.`).
 
+## The Bluetooth adapter (tested 2026-10-17, Linux)
+
+`0a5c:2045` is the Bluetooth side of the Wi-Fi/BT combo chip, on OHCI0
+at full speed. Read by Linux's `btusb`/`btbcm` ([`../../linux/README.md`](../../linux/README.md)):
+
+| | |
+|---|---|
+| Chip | **BCM43569A2** ("USB 40 MHz fcbga_BU" once patched), chip id 108, features `0x2f` |
+| ROM | LMP subversion 001.003.004, build 0000 after every reset |
+| Patch | the stock `BCM43569.hcd`: 290 × Write RAM (`fc4c`), then Launch RAM (`fc4e`, `ffffffff`); afterwards build 0172 |
+| After Launch RAM | the chip **drops off USB and enumerates again** (0.65 s later), already patched |
+| BD address | `43:56:9A:20:1F:AC`, a default made of the chip's name; the box's own address is not known |
+
 ## What BOLT does (from its code, [`../bolt/bolt.md`](../bolt/bolt.md) §11)
 
 - **Start-up** (`usb init`, `0x0703a4c2`): reads the DTB nodes (`usb-phy@`,
