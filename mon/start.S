@@ -199,6 +199,21 @@ run_program:
         mov     x3, #0
         br      x19
 
+// void run_linux(uint64_t entry, uint64_t dtb): the arm64 boot protocol
+// (Documentation/arch/arm64/booting.rst): MMU and caches off as for `go`,
+// x0 = the DTB, x1-x3 = 0. Linux doesn't come back.
+        .global run_linux
+run_linux:
+        msr     daifset, #0xf
+        mov     x19, x0
+        mov     x20, x1
+        bl      mmu_off
+        mov     x0, x20
+        mov     x1, #0
+        mov     x2, #0
+        mov     x3, #0
+        br      x19
+
 // ---------------- safe memory access ----------------
 
 // int safe_read(uint64_t addr, int size, uint64_t *val)

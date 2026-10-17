@@ -1,0 +1,27 @@
+#!/bin/sh
+# kstb-flash-kernel KRN.IMG DTB.IMG - write the kernel and the DTB slot images
+# (linux/Makefile `slots`: a KSLT header sector, then the Image or the DTB)
+# into the KRN and DTB partitions, which kmon's `linux` starts from.
+# Checks each partition's GPT name, the KSLT magic and the size first, and
+# compares what it wrote with the file.
+set -e
+[ $# = 2 ] || { echo "usage: kstb-flash-kernel krn.img dtb.img" >&2; exit 2; }
+part() {	# name -> /dev/mmcblk0pN, from the GPT names the kernel shows
+	for u in /sys/class/block/mmcblk0p*/uevent; do
+		grep -qx "PARTNAME=$1" "$u" && { echo /dev/$(basename $(dirname "$u")); return; }
+	done
+	echo "no partition named $1" >&2; exit 1
+}
+for pair in "KRN $1" "DTB $2"; do
+	set -- $pair
+	dev=$(part "$1")
+	[ "$(head -c 4 "$2")" = KSLT ] || { echo "$2: no KSLT header" >&2; exit 1; }
+	size=$(stat -c %s "$2")
+	max=$(( $(cat /sys/class/block/$(basename $dev)/size) * 512 ))
+	[ "$size" -le "$max" ] || { echo "$2: $size bytes, $1 has $max" >&2; exit 1; }
+	dd if="$2" of="$dev" bs=512 conv=fsync 2>/dev/null
+	sync
+	echo 3 > /proc/sys/vm/drop_caches
+	cmp -n "$size" "$2" "$dev" || { echo "$1: read-back differs" >&2; exit 1; }
+	echo "$1 ($dev): $size bytes written and read back"
+done

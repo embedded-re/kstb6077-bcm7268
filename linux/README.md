@@ -13,7 +13,7 @@ Tested on the modified box on 2026-10-17 unless marked otherwise.
 | Config | `allnoconfig` + [`kstb.config`](kstb.config): everything built in, no modules; Image 7.9 MB |
 | Device tree | [`kstb6077.dts`](kstb6077.dts) (no BCM7268 tree exists upstream) |
 | Userspace | Alpine 3.24.2 aarch64 (busybox, musl, apk): on `ROOT` (mmcblk0p8, ext4), or the minirootfs as a 4 MB initramfs; [`rootfs/`](rootfs/) adds `inittab`, `kstb-rc` and `fstab` |
-| Boot | from `kmon>`: four files over TFTP, then `go` to [`boot.S`](boot.S) ([`../tools/kstb-linux`](../tools/kstb-linux)) |
+| Boot | from `kmon>`: **`linux`**, kernel and DTB from the eMMC (`KRN`, `DTB`), root on `ROOT`; or over TFTP for testing ([`../tools/kstb-linux`](../tools/kstb-linux)) |
 | Time to init | `Run /sbin/init` at 0.44 s (serial only) and 0.93 s (all drivers below) after the kernel starts |
 
 ## Build and boot
@@ -75,9 +75,39 @@ backup GPT at the end of the eMMC still describes the old layout
 ([`../docs/hardware/display.md`](../docs/hardware/display.md)). The partitions come from the primary
 table (p10 = `splash` is there).
 
+## Starting without the PC: `KRN`, `DTB` and kmon's `linux` (2026-10-17)
+
+`KRN` (p6, 64 MB) and `DTB` (p7, 4 MB) held the old 32-bit port's Android
+boot image and DTB. Each now holds a `KSLT` header sector (kboot's format,
+[`../kboot/slot.h`](../kboot/slot.h): magic, size, CRC32, a sequence number, a name) and
+then the raw data: the kernel `Image`, and `kstb6077-root.dtb`.
+
+```
+make -C linux tftp                     # also build/out/krn.img and dtb.img (tools/make-kslt)
+# in Linux on the box, with the two files fetched (wget):
+kstb-flash-kernel krn.img dtb.img      # checks GPT names, KSLT magic, size; dd; reads back
+# at kmon>:
+linux info                             # both headers
+linux                                  # read both, check the CRCs, start the kernel
+```
+
+kmon finds `KRN` and `DTB` in the GPT by name, reads them to `0x02000000`
+and `0x05e00000`, checks the CRCs, the Image's `ARM\x64` magic and the
+DTB's `d00dfeed`, stops interrupts, USB and the network, and starts the
+kernel with the MMU off, `x0` = the DTB, `x1`–`x3` = 0 (`run_linux` in
+[`../mon/start.S`](../mon/start.S)). kmon only reads these partitions; its write guard
+still allows only `splash` and `DATA`. Linux updates its own kernel with
+`kstb-flash-kernel` (in `/usr/sbin`).
+
+Tested: `linux info` showed both headers; `linux` read the 8.5 MB Image in
+289 ms, CRCs matched, Linux mounted `ROOT` and got DHCP. First from RAM,
+then from slot A (seq 45, `kmon-linux`) after a reset. Golden (seq 44) has
+no `linux` command yet.
+
 ## Root file system on `ROOT` (2026-10-17)
 
-`ROOT` (mmcblk0p8, 1 GiB) held no file system, only an old swap header
+`ROOT` (mmcblk0p8, 1 GiB then; 5290 MiB since the repartitioning,
+[`../docs/hardware/storage.md`](../docs/hardware/storage.md)) held no file system, only an old swap header
 labelled `SWAP`. It was installed from the initramfs Linux, on the box:
 
 ```
@@ -136,5 +166,5 @@ power-sequence helpers, none of which this box needs.
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 - HDMI audio, the IR receiver, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
 - Logins and SSH: both consoles are root shells without a password.
-- Starting Linux without the PC (from `DATA` or a kboot slot).
+- Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.
 - KVM and KASLR are off; nothing tested them.

@@ -5,6 +5,9 @@
 #   make tftp     -> copies them into the TFTP root (doom/build), as linux-*
 # kstb6077.dtb boots the initramfs, kstb6077-root.dtb the root file system on
 # ROOT (mmcblk0p8); rootfs-overlay.tar is rootfs/ for installing onto ROOT.
+#   make slots    -> build/out/{krn.img,dtb.img}: Image and kstb6077-root.dtb behind a
+#                    KSLT header, for the KRN and DTB partitions (kstb-flash-kernel on
+#                    the box writes them; kmon's `linux` starts them)
 # The kernel source and the Alpine tarball are fetched into build/dl first
 # (see README.md); build/ is not tracked.
 
@@ -29,7 +32,7 @@ $(OUT)/Image: $(KOUT)/.config FORCE
 	mkdir -p $(OUT) && cp $(KOUT)/arch/arm64/boot/Image $@
 
 # Alpine's busybox and musl, our inittab and kstb-rc on top, /dev/console as a node
-$(OUT)/initramfs.cpio.gz: build/dl/$(ALPINE) $(wildcard rootfs/*/*) $(OUT)/Image
+$(OUT)/initramfs.cpio.gz: build/dl/$(ALPINE) $(shell find rootfs -type f) $(OUT)/Image
 	rm -rf build/rootfs && mkdir -p build/rootfs
 	tar xzf build/dl/$(ALPINE) -C build/rootfs
 	cp -r rootfs/. build/rootfs/
@@ -49,7 +52,7 @@ $(OUT)/kstb6077-root.dtb: kstb6077.dts $(OUT)/Image
 	$(KOUT)/scripts/dtc/dtc -I dts -O dtb -o $@ build/kstb6077-root.pp.dts
 
 # our files for ROOT, owned by root, extracted over Alpine's minirootfs
-$(OUT)/rootfs-overlay.tar: $(wildcard rootfs/*/*)
+$(OUT)/rootfs-overlay.tar: $(shell find rootfs -type f)
 	mkdir -p $(OUT)
 	tar -C rootfs --owner=0 --group=0 --numeric-owner -cf $@ .
 
@@ -59,8 +62,16 @@ $(OUT)/boot.bin: boot.S layout.h
 	ld.lld -Ttext=$(call addr,BOOT_ADDR) -o build/boot.elf build/boot.o
 	llvm-objcopy -O binary build/boot.elf $@
 
-tftp: all
-	for f in Image initramfs.cpio.gz kstb6077.dtb kstb6077-root.dtb rootfs-overlay.tar boot.bin; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
+slots: $(OUT)/krn.img $(OUT)/dtb.img
+
+$(OUT)/krn.img: $(OUT)/Image
+	../tools/make-kslt "linux-$(KVER)-kstb $$(date +%F)" $< $@
+
+$(OUT)/dtb.img: $(OUT)/kstb6077-root.dtb
+	../tools/make-kslt "kstb6077-root.dtb $$(date +%F)" $< $@
+
+tftp: all slots
+	for f in Image initramfs.cpio.gz kstb6077.dtb kstb6077-root.dtb rootfs-overlay.tar boot.bin krn.img dtb.img; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
 
 FORCE:
-.PHONY: all tftp FORCE
+.PHONY: all slots tftp FORCE

@@ -1771,6 +1771,81 @@ static void mmc_show_part(void)
     }
 }
 
+// linux [info]: start arm64 Linux from the eMMC (linux/README.md). The KRN
+// and DTB partitions (found in the GPT by name) each hold a KSLT header
+// sector (as kboot's slots, ../kboot/slot.h) and then the raw kernel Image
+// or the DTB. Linux writes them (linux/Makefile, `make slots`); kmon only reads.
+#define LINUX_KERNEL 0x02000000         // as linux/layout.h: 2 MB aligned, runs in place
+#define LINUX_DTB    0x05e00000
+
+static int linux_slot(const char *part, uint64_t addr, uint32_t max, int load, struct slot_hdr *h)
+{
+    uint32_t first, last;
+    int r = mmc_find_part(part, &first, &last);
+    if (r) {
+        printf("%s: %s\n", part, mmc_strerror(r));
+        return -1;
+    }
+    if (!mmc_ok(mmc_read(first, 1, sector)))
+        return -1;
+    memcpy(h, sector, sizeof *h);
+    if (h->magic != SLOT_MAGIC || h->version != 1 || crc32(sector, 60) != h->hdr_crc) {
+        printf("%s (LBA #%u): no KSLT header\n", part, first);
+        return -1;
+    }
+    uint32_t sectors = (h->size + 511) / 512;
+    if (h->size == 0 || h->size > max || first + sectors > last) {
+        printf("%s: size %u doesn't fit\n", part, h->size);
+        return -1;
+    }
+    char name[41];
+    memcpy(name, h->name, 40);
+    name[40] = 0;
+    printf("%s: seq %u, %u bytes, CRC %08x, \"%s\"\n", part, h->seq, h->size, h->crc, name);
+    if (!load)
+        return 0;
+    uint64_t t = ticks();
+    if (!mmc_ok(mmc_read(first + 1, sectors, (void *)addr)))
+        return -1;
+    uint32_t crc = crc32((const uint8_t *)addr, h->size);
+    uint64_t ms = (ticks() - t) / 27000;
+    if (crc != h->crc) {
+        printf("  read to %08lx: CRC %08x, wrong\n", addr, crc);
+        return -1;
+    }
+    printf("  read to %08lx and checked in %lu ms\n", addr, ms);
+    return 0;
+}
+
+static void cmd_linux(struct cmd *c)
+{
+    int info = c->argc && !strcmp(c->argv[0], "info");
+    if (c->argc && !info) {
+        printf("usage: linux [info]\n");
+        return;
+    }
+    if (!mmc_ok(mmc_init()))
+        return;
+    struct slot_hdr k, d;
+    if (linux_slot("KRN", LINUX_KERNEL, LINUX_DTB - LINUX_KERNEL - 0x800000, !info, &k) ||
+        linux_slot("DTB", LINUX_DTB, 0x100000, !info, &d) || info)
+        return;
+    const uint8_t *img = (const uint8_t *)LINUX_KERNEL;
+    if (img[56] != 'A' || img[57] != 'R' || img[58] != 'M' || img[59] != 0x64) {
+        printf("KRN: not an arm64 Image (no 'ARM\\x64' at +56)\n");
+        return;
+    }
+    if (*(const uint32_t *)LINUX_DTB != 0xedfe0dd0) {
+        printf("DTB: not a device tree (no d00dfeed)\n");
+        return;
+    }
+    printf("starting Linux: Image at %08x, DTB at %08x\n", LINUX_KERNEL, LINUX_DTB);
+    irq_off();
+    usb_stop();
+    net_stop();
+    run_linux(LINUX_KERNEL, LINUX_DTB);
+}
+
 static void cmd_mmc(struct cmd *c)
 {
     const char *sub = c->argc ? c->argv[0] : "";
@@ -2116,6 +2191,7 @@ static const struct {
     { "go",      cmd_go,      "[addr]",                     "start a program like BOLT's go -64" },
     { "call",    cmd_call,    "addr [x0] [x1]",             "call code as a function, keep the MMU" },
     { "doom",    cmd_doom,    "",                           "start Doom; quitting returns here" },
+    { "linux",   cmd_linux,   "[info]",                     "start Linux from the KRN and DTB partitions" },
     { "mmc",     cmd_mmc,     "[init|extcsd|part|dump|read|write]", "eMMC: status, reset, EXT_CSD, GPT, sectors" },
     { "fs",      cmd_fs,      "[usb:]",                     "FAT32 size and free space (DATA; usb: the stick)" },
     { "ls",      cmd_ls,      "[dir]",                      "list a directory (DATA; usb:/dir on the stick)" },
@@ -2139,7 +2215,7 @@ static const struct {
 
 static const char *const commands[NCMD + 1] = {
     "help", "info", "regs", "r", "w", "md", "mw", "setb", "clrb", "togb", "watch",
-    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "audio", "beep", "play", "net", "ping", "tftp", "slot", "go", "call", "doom", "mmc", "ir", "irq", "cpu", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
+    "fill", "cp", "cmp", "crc", "find", "calc", "load", "send", "audio", "beep", "play", "net", "ping", "tftp", "slot", "go", "call", "doom", "linux", "mmc", "ir", "irq", "cpu", "usb", "con", "fs", "ls", "fget", "fput", "rm", "mkdir", "run",
     "led", "wdt", "history", "reset", NULL,
 };
 

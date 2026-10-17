@@ -29,6 +29,7 @@ extern const struct irkey irkeys[];
 int safe_read(uint64_t addr, int size, uint64_t *val);
 int safe_write(uint64_t addr, int size, uint64_t val);
 void run_program(uint64_t entry) __attribute__((noreturn));
+void run_linux(uint64_t entry, uint64_t dtb) __attribute__((noreturn));
 void dcache_flush_all(void);
 extern uint64_t exc_frame[37];
 

@@ -107,8 +107,8 @@ a 1 GB `ROOT` and a 6346 MB `DATA`, "The `DATA` partition" below):
 | 3 | 163 | 2046 | bsu |
 | 4 | 2048 | 4095 | misc |
 | 5 | 4096 | 6143 | hwcfg |
-| 6 | 6144 | 137215 | KRN |
-| 7 | 137216 | 145407 | DTB |
+| 6 | 6144 | 137215 | KRN (arm64 kernel Image behind a `KSLT` header sector, kmon `linux`) |
+| 7 | 137216 | 145407 | DTB (`kstb6077-root.dtb` behind a `KSLT` header sector) |
 | 8 | 145408 | 10979327 | **ROOT** (5290 MiB, ext4: Alpine for [`../../linux/`](../../linux/README.md)) |
 | 9 | 10979328 | 15239167 | **DATA** (2080 MiB, FAT32) |
 | 10 | 15239168 | 15273594 | splash |

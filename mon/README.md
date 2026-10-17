@@ -64,6 +64,7 @@ slot [a|golden|loader|retry|clear]  images for kboot: show (CRC-checked), write 
 go [addr]                      start a program like BOLT's go -64 (default: last load)
 call addr [x0] [x1]            call code as a function with the monitor's MMU on
 doom                           start Doom (loads the WAD from eMMC if needed); quitting returns here
+linux [info]                   start arm64 Linux from the KRN and DTB partitions (../linux/README.md)
 mmc                            eMMC: card status
 mmc init                       reset the eMMC host and card, set them up again (8-bit, 50 MHz)
 mmc extcsd | part              the card's EXT_CSD fields | the GPT partition table

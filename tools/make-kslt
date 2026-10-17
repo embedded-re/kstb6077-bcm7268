@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""Put a KSLT header sector in front of a file, for the KRN and DTB partitions.
+
+    make-kslt NAME IN OUT
+
+The header is kboot's (kboot/slot.h): 'KSLT', version 1, size, CRC32 (zlib)
+of the data, a sequence number (here the Unix time, to tell builds apart),
+a 40-byte name, the CRC32 of the 60 bytes before it; the rest of the sector
+is zeros. The data follows from the second sector, padded to 512 bytes.
+kmon's `linux` reads these partitions (linux/README.md).
+"""
+import struct, sys, time, zlib
+
+name, src, dst = sys.argv[1:4]
+data = open(src, "rb").read()
+hdr = struct.pack("<IIIII40s", 0x544c534b, 1, len(data), zlib.crc32(data),
+                  int(time.time()) & 0xffffffff, name.encode()[:40])
+hdr += struct.pack("<I", zlib.crc32(hdr))
+pad = -len(data) % 512
+open(dst, "wb").write(hdr.ljust(512, b"\0") + data + b"\0" * pad)
+print(f"{dst}: {name!r}, {len(data)} bytes, CRC {zlib.crc32(data):08x}")
