@@ -73,6 +73,7 @@ table (p10 = `splash` is there).
 
 ## Not done
 
+- The keyboard behind the hub logs `usb 2-1.4: reset low-speed USB device` again and again (8 times in 170 s); cause not looked at.
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 - HDMI audio, the IR receiver, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
 - A root file system on the eMMC: everything is in the initramfs, nothing persists.
