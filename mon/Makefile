@@ -8,7 +8,7 @@ B       = build
 CC      = clang
 CFLAGS  = --target=aarch64-none-elf -mcpu=cortex-a53 -O2 -g -Wall \
           -nostdlibinc -I../libc/include -I../usb -I../fat -I. -fno-stack-protector -fno-pic
-OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/mmc.o $(B)/net.o $(B)/audio.o $(B)/audio_hw.o $(B)/video.o $(B)/irq.o $(B)/usb.o $(B)/fat.o $(B)/fbcon.o $(B)/libc.o
+OBJS    = $(B)/start.o $(B)/mon.o $(B)/regs.o $(B)/mmc.o $(B)/net.o $(B)/audio.o $(B)/audio_hw.o $(B)/video.o $(B)/script.o $(B)/irq.o $(B)/usb.o $(B)/fat.o $(B)/fbcon.o $(B)/libc.o
 DOOMBIN = ../doom/build/doom.bin
 
 all: $(B)/kmon.img $(B)/mon-ram.bin
@@ -37,6 +37,10 @@ $(B)/reload.o: reload.S
 
 $(B)/mon.elf: $(OBJS) link.ld
 	ld.lld -T link.ld $(OBJS) -o $@
+
+$(B)/script.o: script.S bolt_splashdata.dat
+	@mkdir -p $(B)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(B)/start.o: start.S
 	@mkdir -p $(B)

@@ -15,7 +15,6 @@
 #define SCROLLBACK  0x00800000      // HDMI console scrollback (fbcon.c), 1024 lines x 114 = 114 KB
 #define FAT_BUF     0x00820000      // FAT32 work buffers (../fat), 64 KB
 #define HISTORY     0x00830000      // command line history (mon.c), 32 x 256 bytes = 8 KB
-#define SCRIPT_COPY 0x00832000      // copy of BOLT's display script (video.c), 0x5030 bytes, to 0x837fff
 #define STACK       0x00840000      // the monitor's stack, 64 KB, top 0x00850000 (start.S)
 #define HEAP_BASE   0x00f00000      // malloc (libc), 1 MB
 #define HEAP_END    0x01000000

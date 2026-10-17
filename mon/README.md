@@ -224,21 +224,25 @@ Measured: 14.4 MB written in 1.2 s, read in 0.44 s. kmon's own RAM areas
 When BOLT skipped its boot splash, the HDMI output is dark and nothing runs
 the display. `video init` sets it up the way BOLT's splash does: it takes
 BOLT's display script, writes its 1381 registers and starts the display
-lists from kmon's own memory (`0x7d9f8000`). kmon copies the script out of
-BOLT's RAM at start-up (to `0x00832000`, CRC-checked), so a program that
-overwrites BOLT's RAM doesn't break a later `video init`. At start-up kmon
+lists from kmon's own memory (`0x7d9f8000`). The script is built into kmon
+([`script.S`](script.S), [`bolt_splashdata.dat`](bolt_splashdata.dat): BOLT's
+RAM `0x07054318–0x07059347`, CRC `0ed66aea`, checked before use), so kmon
+doesn't read BOLT's RAM for it. At start-up kmon
 does this by itself when the frame counter stands still. With the splash,
 it leaves the display alone. Details:
 [`../docs/hardware/display.md`](../docs/hardware/display.md), "Our own display start".
 
 ```
-kmon> video                 display running?, TV on the cable?, RDC descriptors, script copy
+kmon> video                 display running?, TV on the cable?, RDC descriptors, built-in script
 kmon> video init            refused while the display runs ('video! init' anyway)
 ```
 
 Tested 2026-10-16 with `tools/kstb-nosplash`: at start-up `video: display
 running (frame counter moves)`, then the console on the TV and sound from
-`beep` (both checked on the TV).
+`beep` (both checked on the TV). Tested 2026-10-17 with the built-in script
+(slot A "kmon-script-builtin"): BOLT's copy `0x07054318–0x07059347` zeroed,
+then `video! init` → `display running (frame counter moves)`; a boot with
+`tools/kstb-nosplash` → kmon started video and audio itself, slot A confirmed; console on the TV and `beep` heard (checked by the user). Golden seq 35 = slot A seq 34 = this build, CRC `5e2c98cf`.
 
 **HDMI cable / TV** (tested 2026-10-16): at the prompt kmon prints
 `hdmi: TV disconnected` and `hdmi: TV connected` when the cable is pulled or
@@ -375,7 +379,6 @@ exactly that once, and the CRC check caught it.
 | `0x00800000–0x0081c7ff` | HDMI console scrollback (1024 lines) |
 | `0x00820000–0x0082ffff` | FAT32 work buffers (`FAT_BUF`) |
 | `0x00830000–0x00831fff` | command line history (32 lines) |
-| `0x00832000–0x00837fff` | copy of BOLT's display script (`0x5030` bytes, `video init`) |
 | `0x00840000–0x0084ffff` | the monitor's stack (64 KB) |
 | `0x00f00000–0x00ffffff` | the monitor's heap |
 | `0x01000000–` | programs: `load`/`go` default, Doom runs here |

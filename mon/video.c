@@ -1,12 +1,9 @@
 // video.c - bring up HDMI video ourselves, the way BOLT's boot splash does
 // (docs/hardware/display.md, "SplashData and the script runner").
 //
-// BOLT always runs before us, so its RAM image (with SplashData, the display
-// script compiled into it) is there even when its splash was skipped
-// (env NO_SPLASH). kmon copies the script out of BOLT's RAM at start-up
-// (video_keep_script) into its own SCRIPT_COPY, so a program that overwrites
-// BOLT's RAM doesn't take the display set-up with it. We replay BOLT's
-// runner 0x07010374:
+// The script is BOLT's SplashData (the display script compiled into BOLT),
+// copied once from BOLT's RAM and built into kmon (script.S), so nothing here
+// reads BOLT's RAM. We replay BOLT's runner 0x07010374:
 //   1. write the register table, in order, no delays;
 //   2. point each display's flip registers at the framebuffer;
 //   3. copy each list entry's RDC lists into our own memory, chain them with
@@ -24,10 +21,10 @@
 #include "mon.h"
 #include "video.h"
 
-#define SPLASHDATA  0x07056f30      // in BOLT's RAM image
-#define SD_CHECK    0x07054318      // register table .. end of the last list's words (0x07059347)
-#define SD_CHECK_LEN 0x5030
-#define SD_CRC      0x0ed66aea      // of SD_CHECK, from the BOLT RAM image of 2026-10-16
+#define SPLASHDATA  0x07056f30      // BOLT's address of SplashData
+#define SD_CHECK    0x07054318      // BOLT's address of the script: register table .. end of the
+#define SD_CHECK_LEN 0x5030         //   last list's words (0x07059347)
+#define SD_CRC      0x0ed66aea      // of the script, from the BOLT RAM image of 2026-10-16
 
 #define HDMI_HPD    0xf06fa1a8      // bit 0: hot-plug detect, 1 = a TV is connected (tested by replugging)
 #define HDMI_RXSENSE 0xf06fa86c     // 3 = the TV's receiver terminates the lines, 0 = not (tested)
@@ -41,8 +38,10 @@
 struct sd_display { uint32_t surface, format, flip0, flip1; };
 struct sd_list    { uint32_t trigger, desc, count, offsets, words; };
 
-// Pointers inside SplashData are BOLT addresses in SD_CHECK; the copy holds
-// the same bytes at SCRIPT_COPY.
+extern const uint8_t bolt_script[], bolt_script_end[];   // script.S
+
+// Pointers inside SplashData are BOLT addresses in SD_CHECK; bolt_script
+// holds the same bytes.
 static int words_in(uint32_t a, uint32_t n)     // n words at a lie in the script
 {
     return a >= SD_CHECK && a + n * 4 <= SD_CHECK + SD_CHECK_LEN && !(a & 3);
@@ -50,23 +49,13 @@ static int words_in(uint32_t a, uint32_t n)     // n words at a lie in the scrip
 
 static const void *at(uint32_t a)               // a BOLT script address in our copy
 {
-    return (const void *)(uintptr_t)(a - SD_CHECK + SCRIPT_COPY);
+    return bolt_script + (a - SD_CHECK);
 }
 
-static int copy_ok(void)
+static int script_ok(void)
 {
-    return crc32((const uint8_t *)SCRIPT_COPY, SD_CHECK_LEN) == SD_CRC;
-}
-
-// Keep a copy of the script, if BOLT's RAM still holds it. 0 = copy good.
-int video_keep_script(void)
-{
-    if (copy_ok())
-        return 0;
-    if (crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN) != SD_CRC)
-        return -1;
-    memcpy((void *)SCRIPT_COPY, (const void *)SD_CHECK, SD_CHECK_LEN);
-    return copy_ok() ? 0 : -1;
+    return bolt_script_end - bolt_script == SD_CHECK_LEN &&
+           crc32(bolt_script, SD_CHECK_LEN) == SD_CRC;
 }
 
 static inline uint32_t reg(uint32_t bus)        // table addresses are bus addresses
@@ -127,9 +116,9 @@ void video_status(void)
         safe_read(RDC_DESC + d * 0x40 + 0x10, 4, &cfg);
         printf("  RDC descriptor %d: list %08lx, count %lx, config %08lx\n", d, addr, cnt, cfg);
     }
-    uint32_t crc = crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN);
-    printf("  SplashData in BOLT's RAM: CRC %08x (%s); our copy at %08x: %s\n", crc,
-           crc == SD_CRC ? "as decoded" : "DIFFERENT", SCRIPT_COPY, copy_ok() ? "good" : "missing");
+    printf("  display script: built in, %lu bytes, CRC %08x (%s)\n",
+           (unsigned long)(bolt_script_end - bolt_script), crc32(bolt_script, SD_CHECK_LEN),
+           script_ok() ? "good" : "BAD");
 }
 
 // HDMI cable: 1 = TV connected, 0 = not, -1 = registers unreadable
@@ -222,9 +211,9 @@ static int start_lists(const struct sd_list *e, uint32_t format, uint32_t *mem, 
 
 int video_init(int force)
 {
-    if (video_keep_script()) {
-        printf("video: no good copy of BOLT's display script (BOLT's RAM: CRC %08x, not %08x)\n",
-               crc32((const uint8_t *)SD_CHECK, SD_CHECK_LEN), SD_CRC);
+    if (!script_ok()) {
+        printf("video: the built-in display script is damaged (CRC %08x, not %08x)\n",
+               crc32(bolt_script, SD_CHECK_LEN), SD_CRC);
         return -1;
     }
     const uint32_t *sd = at(SPLASHDATA);

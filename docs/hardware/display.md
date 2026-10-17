@@ -551,13 +551,14 @@ list entries. List entry 9 (trigger `19`, 6 lists) has its words at
 1 KB. The full range is the same with and without the splash (compared on
 the board, both CRC `0ed66aea`).
 
-**kmon copies the range at start-up** to its own RAM at `0x00832000`
-(CRC-checked) and builds the lists from the copy, so a program that
-overwrites BOLT's RAM no longer breaks `video init`. Tested 2026-10-16:
-BOLT's range filled with zeros (CRC then `87a8018d`), then `video! init` with
-BOLT's splash lists running. kmon built 8 + 6 lists from its copy, and the
-display ran on them (descriptor 0 at `7d9f9920`, frame counter moving). On a
-boot without the splash, kmon started the display and audio from the copy.
+**kmon has the range built in** (since 2026-10-17, `mon/script.S` with
+`mon/bolt_splashdata.dat`, copied once from BOLT's RAM with `tftp put`, CRC
+`0ed66aea`) and builds the lists from it, so kmon never reads BOLT's RAM for
+the display. Tested 2026-10-17: BOLT's range filled with zeros, then
+`video! init` with BOLT's splash lists running: 8 + 6 lists built, display
+running. On a boot without the splash (Ctrl-S), kmon started the display and
+audio from the built-in copy. (From 2026-10-16 to 2026-10-17 kmon copied the
+range out of BOLT's RAM at start-up instead, to `0x00832000`.)
 
 Tested on a boot where BOLT skipped its splash (Ctrl-S,
 [`../booting.md`](../booting.md)):

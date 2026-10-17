@@ -2060,7 +2060,6 @@ void mon_main(int how, long status)
     else
         show_exception();
     if (how == 0) {
-        video_keep_script();                    // before a program can overwrite BOLT's RAM
         if (video_running() == 0 && !video_init(0))   // BOLT's splash didn't run: our own display
             con_init();                         // (before boot_confirm: a hang here trips kboot's watchdog)
         boot_confirm();
