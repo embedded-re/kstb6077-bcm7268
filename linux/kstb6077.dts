@@ -10,7 +10,13 @@
 #define GIC_PPI 1
 #define IRQ_TYPE_LEVEL_HIGH 4
 #define IRQ_TYPE_LEVEL_LOW 8
+#define IRQ_TYPE_EDGE_BOTH 3
 #define PPI_ALL_CPUS (0xf << 8)
+#define GPIO_ACTIVE_LOW 1
+#define GPIO_OPEN_DRAIN 6
+#define EV_KEY 1
+#define KEY_POWER 116
+#define KEY_BLUETOOTH 237
 
 / {
 	model = "KaonMedia KSTB6077";
@@ -76,6 +82,56 @@
 		el3-monitor@6400000 {
 			reg = <0x0 0x06400000 0x0 0x10000>;
 			no-map;
+		};
+	};
+
+	// front LEDs on AON GPIO bank 0 (docs/hardware/gpio.md), open-drain,
+	// active-low. BOLT leaves green on; blue is an input until Linux drives it
+	leds {
+		compatible = "gpio-leds";
+
+		led-power-green {
+			label = "green:power";
+			gpios = <&aon_gpio 18 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
+			default-state = "keep";
+		};
+
+		led-power-red {
+			label = "red:power";
+			gpios = <&aon_gpio 17 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
+			default-state = "keep";
+		};
+
+		led-blue {
+			label = "blue:status";
+			gpios = <&aon_gpio 16 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
+			default-state = "off";
+		};
+	};
+
+	// SW1, the front standby button: AON GPIO 14, active-low, interrupt on
+	// both edges through the AON L2 (bit 3)
+	keys {
+		compatible = "gpio-keys";
+
+		key-standby {
+			label = "SW1 standby";
+			gpios = <&aon_gpio 14 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_POWER>;
+			debounce-interval = <20>;
+		};
+	};
+
+	// SW4, the recovery / Bluetooth-pairing button: AON GPIO 7, active-low;
+	// polled, as in the stock DTB
+	keys-polled {
+		compatible = "gpio-keys-polled";
+		poll-interval = <100>;
+
+		key-bt-pair {
+			label = "SW4 BT pair";
+			gpios = <&aon_gpio 7 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_BLUETOOTH>;
 		};
 	};
 
@@ -151,6 +207,64 @@
 			interrupt-controller;
 			reg = <0xffd01000 0x1000>,
 			      <0xffd02000 0x2000>;
+		};
+
+		// level-type L2 interrupt controllers of the UPG blocks
+		// (docs/hardware/interrupts.md); BOLT leaves every source masked
+		upg_main_l2: interrupt-controller@f040a600 {
+			compatible = "brcm,bcm7271-l2-intc";
+			reg = <0xf040a600 0x20>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		upg_aon_l2: interrupt-controller@f0419c00 {
+			compatible = "brcm,bcm7271-l2-intc";
+			reg = <0xf0419c00 0x20>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		upg_bsc_l2: interrupt-controller@f040a640 {
+			compatible = "brcm,bcm7271-l2-intc";
+			reg = <0xf040a640 0x20>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		upg_bsc_aon_l2: interrupt-controller@f0419c40 {
+			compatible = "brcm,bcm7271-l2-intc";
+			reg = <0xf0419c40 0x20>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		// main GPIO (banks of 32, 32, 19, 2), interrupt through UPG main L2 bit 0
+		gpio: gpio@f040a500 {
+			compatible = "brcm,bcm7268-gpio", "brcm,brcmstb-gpio";
+			reg = <0xf040a500 0x80>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			interrupts-extended = <&upg_main_l2 0>;
+			brcm,gpio-bank-widths = <32 32 19 2>;
+		};
+
+		// AON GPIO (banks of 28 and 6), interrupt through UPG AON L2 bit 3
+		aon_gpio: gpio@f0419c80 {
+			compatible = "brcm,bcm7268-gpio", "brcm,brcmstb-gpio";
+			reg = <0xf0419c80 0x40>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			interrupts-extended = <&upg_aon_l2 3>;
+			brcm,gpio-bank-widths = <28 6>;
 		};
 
 		// UART0: 16550, 32-bit registers, 81 MHz clock (docs/hardware/uart.md), ID 102
