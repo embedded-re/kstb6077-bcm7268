@@ -1,5 +1,5 @@
-// usb.c - OHCI1 (the USB-A port's low/full-speed controller) and a HID
-// boot-protocol keyboard, polled (docs/hardware/usb.md).
+// usb.c - OHCI1 (the USB-A port's low/full-speed controller), hubs, and a
+// HID boot-protocol keyboard, polled (docs/hardware/usb.md).
 //
 // OHCI 1.0a: the controller walks lists of endpoint descriptors (ED) and
 // transfer descriptors (TD) in RAM by DMA. They live in a non-cacheable 2 MB
@@ -7,8 +7,13 @@
 //
 //   usb_init()  USB clocks on, every USB host controller reset by the
 //               control block (not BOLT's state), port power and reset, then enumeration:
-//               GET_DESCRIPTOR, SET_ADDRESS, configuration, boot protocol
+//               GET_DESCRIPTOR, SET_ADDRESS, configuration; a hub's ports are
+//               powered, reset and enumerated in turn (addresses 1, 2, ...);
+//               the first boot keyboard found gets boot protocol and is polled
 //   usb_kbd_poll()  one 8-byte report from the interrupt endpoint, if any
+//   usb_port_changed()  1 when the root port changed (enumerate again); a hub
+//               port (one per call) is handled here: a new device is
+//               enumerated, a removed one (and what hung below it) forgotten
 //
 // Shared by mon/ and doom/ (like libc/); each builds it with its own kstb.h.
 
@@ -95,12 +100,29 @@ static const char *const cc_names[16] = {
 
 // ---------------- state ----------------
 
-static int up;                          // enumerated and polling
-static int lowspeed, mps0;
-static int kbd_ep, kbd_mps, kbd_iface, kbd_interval;
+#define MAX_DEV         8
+#define MAX_HUB_DEPTH   2
+
+struct dev {
+    int addr, lowspeed, mps0;           // addr 0: free slot
+    int parent, port;                   // hub's device index and port (parent -1: the root port)
+    uint16_t vid, pid;
+    uint8_t cls;                        // 09 hub, 03 keyboard, 08 mass storage, 0 other
+    int nports;                         // hubs: number of ports
+    int bulk_in, bulk_out, bulk_mps;    // mass storage (bulk-only) endpoints, interface
+    int msc_iface;
+};
+static struct dev devs[MAX_DEV];
+static int ndev;                        // slots used so far (some may be free again)
+static int next_addr;
+static struct dev *cur;                 // the device control() talks to
+
+static int up;                          // a keyboard is enumerated and polled
+static int kbd_dev, kbd_ep, kbd_mps, kbd_iface, kbd_interval;
+static int intr_err;                    // the keyboard's endpoint failed last time (print once)
 static uint32_t intr_td, intr_dummy;    // the interrupt endpoint's TD and tail
 static int report_n;
-static uint16_t vid, pid;
+static int hub_poll_dev, hub_poll_port; // usb_port_changed: the next hub port to check
 
 static void td_fill(uint32_t td, uint32_t d0, uint32_t buf, uint32_t len, uint32_t next)
 {
@@ -110,17 +132,19 @@ static void td_fill(uint32_t td, uint32_t d0, uint32_t buf, uint32_t len, uint32
     W(td + 12) = len ? buf + len - 1 : 0;
 }
 
-// ED dword 0: function address, endpoint, speed, max packet size
-static uint32_t ed_d0(int addr, int ep, int mps)
+// ED dword 0: function address, endpoint, speed, max packet size. A
+// low-speed device behind a full-speed hub: the controller sends the PRE
+// preamble itself.
+static uint32_t ed_d0(const struct dev *d, int ep, int mps)
 {
-    return addr | (ep << 7) | (lowspeed ? 1u << 13 : 0) | ((uint32_t)mps << 16);
+    return d->addr | (ep << 7) | (d->lowspeed ? 1u << 13 : 0) | ((uint32_t)mps << 16);
 }
 
 // ---------------- control transfers ----------------
 
-// One control transfer on the control list. Returns the number of bytes
-// received/sent in the data stage, or -1 (and prints why).
-static int control(int addr, uint8_t rtype, uint8_t req, uint16_t value, uint16_t index,
+// One control transfer to the device cur on the control list. Returns the
+// number of bytes received/sent in the data stage, or -1 (and prints why).
+static int control(uint8_t rtype, uint8_t req, uint16_t value, uint16_t index,
                    uint16_t len, void *data)
 {
     uint8_t *setup = (uint8_t *)SETUP_BUF;
@@ -138,11 +162,11 @@ static int control(int addr, uint8_t rtype, uint8_t req, uint16_t value, uint16_
     td_fill(td2, (in && len ? TD_OUT : TD_IN) | TD_NOINT | TD_DATA1, 0, 0, dummy);
     td_fill(dummy, 0, 0, 0, 0);
 
-    W(ED_CTRL + 0) = ed_d0(addr, 0, mps0) | (1u << 14);    // sKip while editing
+    W(ED_CTRL + 0) = ed_d0(cur, 0, cur->mps0) | (1u << 14); // sKip while editing
     W(ED_CTRL + 4) = dummy;                                 // TailP
     W(ED_CTRL + 8) = td0;                                   // HeadP, toggle carry 0
     W(ED_CTRL + 12) = 0;
-    W(ED_CTRL + 0) = ed_d0(addr, 0, mps0);
+    W(ED_CTRL + 0) = ed_d0(cur, 0, cur->mps0);
     __asm__ volatile("dsb sy" ::: "memory");
     W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_CLE;      // the list pointers may only change with CLE off
     wait_ms(1);
@@ -179,9 +203,9 @@ static int control(int addr, uint8_t rtype, uint8_t req, uint16_t value, uint16_
     return got;
 }
 
-static int get_descriptor(int addr, int type, int len, void *buf)
+static int get_descriptor(int type, int len, void *buf)
 {
-    return control(addr, 0x80, 6, type << 8, 0, len, buf);
+    return control(0x80, 6, type << 8, 0, len, buf);
 }
 
 // ---------------- bring-up ----------------
@@ -211,7 +235,8 @@ static void hc_start(void)
     wait_ms(20);
 }
 
-// Port reset; 0 when a device is there and the port is enabled.
+// Root port reset; 0 or 1 (low speed) when a device is there and the port
+// is enabled, -1 when not.
 static int port_reset(void)
 {
     uint32_t ps = W(HC_PORT1);
@@ -230,35 +255,44 @@ static int port_reset(void)
     ps = W(HC_PORT1);
     W(HC_PORT1) = 0x1f0000;                     // clear the change bits
     wait_ms(10);                                // reset recovery
-    lowspeed = (ps >> 9) & 1;
+    int ls = (ps >> 9) & 1;
     say("usb: port %08x: device connected, %s speed, enabled %s\n", ps,
-           lowspeed ? "low" : "full", ps & 2 ? "yes" : "no");
-    return ps & 2 ? 0 : -1;
+           ls ? "low" : "full", ps & 2 ? "yes" : "no");
+    return ps & 2 ? ls : -1;
 }
 
-// Find the boot keyboard interface and its interrupt IN endpoint.
-static int parse_config(const uint8_t *c, int n)
+// Walk a configuration: note a boot keyboard interface and its interrupt IN
+// endpoint (if no keyboard yet), a hub, a bulk-only mass storage interface.
+static void parse_config(struct dev *dv, const uint8_t *c, int n)
 {
-    int iface = -1;
-    kbd_ep = 0;
+    int kind = 0, idx = dv - devs;              // kind of the current interface
     for (int i = 0; i + 1 < n && c[i]; i += c[i]) {
         if (c[i + 1] == 4) {                    // interface
             say("usb:   interface %d: class %02x subclass %02x protocol %02x, %d endpoints\n",
                    c[i + 2], c[i + 5], c[i + 6], c[i + 7], c[i + 4]);
-            iface = (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 1) ? c[i + 2] : -1;
-            if (iface >= 0 && !kbd_ep)
-                kbd_iface = iface;
+            kind = 0;
+            if (c[i + 5] == 9)
+                kind = 9, dv->cls = 9;
+            else if (c[i + 5] == 3 && c[i + 6] == 1 && c[i + 7] == 1 && kbd_dev < 0 && !dv->cls)
+                kind = 3, dv->cls = 3, kbd_iface = c[i + 2], kbd_ep = 0;
+            else if (c[i + 5] == 8 && c[i + 6] == 6 && c[i + 7] == 0x50 && !dv->cls)
+                kind = 8, dv->cls = 8, dv->msc_iface = c[i + 2];
         } else if (c[i + 1] == 5) {             // endpoint
+            int ea = c[i + 2], type = c[i + 3] & 3, mps = c[i + 4] | c[i + 5] << 8;
             say("usb:     endpoint %02x: type %d, max packet %d, interval %d ms\n",
-                   c[i + 2], c[i + 3] & 3, c[i + 4] | c[i + 5] << 8, c[i + 6]);
-            if (iface >= 0 && !kbd_ep && (c[i + 2] & 0x80) && (c[i + 3] & 3) == 3) {
-                kbd_ep = c[i + 2] & 0xf;
-                kbd_mps = c[i + 4];
-                kbd_interval = c[i + 6];
+                   ea, type, mps, c[i + 6]);
+            if (kind == 3 && !kbd_ep && (ea & 0x80) && type == 3) {
+                kbd_ep = ea & 0xf, kbd_mps = mps, kbd_interval = c[i + 6];
+                kbd_dev = idx;
+            } else if (kind == 8 && type == 2) {
+                if (ea & 0x80)
+                    dv->bulk_in = ea & 0xf;
+                else
+                    dv->bulk_out = ea & 0xf;
+                dv->bulk_mps = mps;
             }
         }
     }
-    return kbd_ep ? 0 : -1;
 }
 
 static void intr_queue(void)
@@ -275,52 +309,175 @@ static void intr_queue(void)
     W(ED_INTR + 4) = dummy;
 }
 
-int usb_init(void)
-{
-    up = 0;
-    hc_start();
-    if (port_reset())
-        return -1;
+// ---------------- hubs ----------------
 
-    uint8_t d[256];
-    mps0 = 8;
-    if (get_descriptor(0, 1, 8, d) < 8)
+#define HUB_PORT_STATUS(p, st)  control(0xa3, 0, 0, (p), 4, (st))
+#define HUB_SET(p, f)           control(0x23, 3, (f), (p), 0, NULL)
+#define HUB_CLEAR(p, f)         control(0x23, 1, (f), (p), 0, NULL)
+#define F_PORT_RESET     4
+#define F_PORT_POWER     8
+#define F_C_CONNECTION  16
+#define F_C_RESET       20
+
+static int enumerate(int lowspeed, int parent, int port, int depth);
+
+// A hub port: reset it and enumerate what is on it. The device on it gets
+// the next address.
+static int hub_port_reset(int hub, int p, int depth)
+{
+    uint8_t st[4];
+    cur = &devs[hub];
+    HUB_CLEAR(p, F_C_CONNECTION);
+    wait_ms(100);                               // debounce
+    if (HUB_SET(p, F_PORT_RESET) < 0)
         return -1;
-    mps0 = d[7];
-    if (control(0, 0x00, 5, 1, 0, 0, NULL) < 0) {           // SET_ADDRESS 1
+    uint64_t end = now() + 500ull * TICKS_PER_MS;
+    do {
+        wait_ms(10);
+        if (HUB_PORT_STATUS(p, st) < 4)
+            return -1;
+        if (now() > end) {
+            say("usb: hub %d port %d: reset didn't finish (status %02x%02x)\n",
+                cur->addr, p, st[1], st[0]);
+            return -1;
+        }
+    } while (!(st[2] & (1u << 4)));             // C_PORT_RESET
+    HUB_CLEAR(p, F_C_RESET);
+    wait_ms(10);                                // reset recovery
+    int status = st[0] | st[1] << 8;
+    if (!(status & 2)) {
+        say("usb: hub %d port %d: not enabled after reset (status %04x)\n", cur->addr, p, status);
         return -1;
     }
-    wait_ms(5);
-    if (get_descriptor(1, 1, 18, d) < 18)
+    int ls = (status >> 9) & 1;
+    say("usb: hub %d port %d: device connected, %s speed\n", cur->addr, p,
+        ls ? "low" : status & 0x400 ? "high" : "full");
+    return enumerate(ls, hub, p, depth + 1);
+}
+
+static int depth_of(int i)                      // hubs above device i
+{
+    int n = 0;
+    while (devs[i].parent >= 0)
+        i = devs[i].parent, n++;
+    return n;
+}
+
+// Forget device i and everything below it (it was unplugged).
+static void forget(int i)
+{
+    for (int j = 0; j < ndev; j++)
+        if (devs[j].addr && devs[j].parent == i)
+            forget(j);
+    if (i == kbd_dev) {
+        W(HC_CONTROL) = W(HC_CONTROL) & ~CTL_PLE;
+        up = 0, kbd_dev = -1;
+    }
+    say("usb: device %d (%04x:%04x) gone\n", devs[i].addr, devs[i].vid, devs[i].pid);
+    devs[i].addr = 0;
+}
+
+static int kbd_start_polling(void);
+
+static int hub_init(int hub, int depth)
+{
+    uint8_t d[16];
+    cur = &devs[hub];
+    if (control(0xa0, 6, 0x2900, 0, sizeof d, d) < 7) {    // hub descriptor
+        say("usb: hub %d: no hub descriptor\n", cur->addr);
         return -1;
-    vid = d[8] | d[9] << 8, pid = d[10] | d[11] << 8;
-    say("usb: device %04x:%04x, USB %x.%02x, class %02x, ep0 max packet %d, %d configuration(s)\n",
-           vid, pid, d[3], d[2], d[4], mps0, d[17]);
-    if (get_descriptor(1, 2, 9, d) < 9)
+    }
+    int n = d[2], good = d[5] * 2;
+    cur->nports = n;
+    say("usb: hub %d: %d ports, characteristics %02x%02x, power good after %d ms\n",
+        cur->addr, n, d[4], d[3], good);
+    for (int p = 1; p <= n; p++)
+        HUB_SET(p, F_PORT_POWER);
+    wait_ms(good > 100 ? good : 100);
+    // A device that connects later (some sticks take longer than this) shows
+    // up as a connect change and is enumerated by usb_port_changed.
+    for (int p = 1; p <= n; p++) {
+        uint8_t st[4];
+        cur = &devs[hub];
+        if (HUB_PORT_STATUS(p, st) < 4)
+            continue;
+        if (!(st[0] & 1))
+            continue;                           // nothing on this port (yet)
+        if (depth >= MAX_HUB_DEPTH)
+            say("usb: hub %d port %d: hubs nested too deep, skipped\n", devs[hub].addr, p);
+        else
+            hub_port_reset(hub, p, depth);      // also clears its connect change
+    }
+    return 0;
+}
+
+// ---------------- enumeration ----------------
+
+// The device just reset on (parent, port) answers at address 0: give it the
+// next address, read its descriptors, set its configuration; a hub's ports
+// in turn. Returns its index, or -1.
+static int enumerate(int lowspeed, int parent, int port, int depth)
+{
+    int i = 0;
+    while (i < ndev && devs[i].addr)
+        i++;
+    if (i >= MAX_DEV || next_addr > 127) {
+        say("usb: too many devices\n");
+        return -1;
+    }
+    struct dev *dv = &devs[i];
+    memset(dv, 0, sizeof *dv);
+    dv->lowspeed = lowspeed, dv->parent = parent, dv->port = port, dv->mps0 = 8;
+    cur = dv;
+
+    uint8_t d[256];
+    if (get_descriptor(1, 8, d) < 8)
+        return -1;
+    dv->mps0 = d[7];
+    if (control(0x00, 5, next_addr, 0, 0, NULL) < 0)       // SET_ADDRESS
+        return -1;
+    dv->addr = next_addr++;
+    if (i == ndev)
+        ndev++;
+    wait_ms(5);
+    if (get_descriptor(1, 18, d) < 18)
+        return -1;
+    dv->vid = d[8] | d[9] << 8, dv->pid = d[10] | d[11] << 8;
+    say("usb: device %d: %04x:%04x, USB %x.%02x, class %02x, ep0 max packet %d, %d configuration(s)\n",
+           dv->addr, dv->vid, dv->pid, d[3], d[2], d[4], dv->mps0, d[17]);
+    if (get_descriptor(2, 9, d) < 9)
         return -1;
     int total = d[2] | d[3] << 8;
     if (total > (int)sizeof d)
         total = sizeof d;
-    int n = get_descriptor(1, 2, total, d);
+    int n = get_descriptor(2, total, d);
     if (n < 9)
         return -1;
     int config = d[5];
     say("usb: configuration %d, %d bytes, %d interface(s)\n", config, n, d[4]);
-    if (parse_config(d, n)) {
-        say("usb: no boot-protocol keyboard interface\n");
+    parse_config(dv, d, n);
+    if (control(0x00, 9, config, 0, 0, NULL) < 0)          // SET_CONFIGURATION
         return -1;
-    }
-    if (control(1, 0x00, 9, config, 0, 0, NULL) < 0)        // SET_CONFIGURATION
+    if (dv->cls == 9)
+        hub_init(i, depth);
+    else if (dv->cls == 8)
+        say("usb: device %d: mass storage (bulk-only), endpoints %d IN, %d OUT, %d bytes\n",
+            dv->addr, dv->bulk_in, dv->bulk_out, dv->bulk_mps);
+    return i;
+}
+
+static int kbd_start_polling(void)
+{
+    cur = &devs[kbd_dev];
+    if (control(0x21, 0x0b, 0, kbd_iface, 0, NULL) < 0)    // SET_PROTOCOL: boot
         return -1;
-    if (control(1, 0x21, 0x0b, 0, kbd_iface, 0, NULL) < 0)  // SET_PROTOCOL: boot
-        return -1;
-    control(1, 0x21, 0x0a, 0, kbd_iface, 0, NULL);          // SET_IDLE 0: reports on change (may STALL)
+    control(0x21, 0x0a, 0, kbd_iface, 0, NULL);             // SET_IDLE 0: reports on change (may STALL)
 
     // Interrupt endpoint: one ED hung from all 32 HCCA slots (polled every frame)
     intr_td = TD_POOL + 64, intr_dummy = TD_POOL + 80;
     td_fill(intr_dummy, 0, 0, 0, 0);
     td_fill(intr_td, TD_IN | TD_R | TD_NOINT, REPORT_BUF, kbd_mps > 16 ? 16 : kbd_mps, intr_dummy);
-    W(ED_INTR + 0) = ed_d0(1, kbd_ep, kbd_mps) | (2u << 11);  // direction IN
+    W(ED_INTR + 0) = ed_d0(cur, kbd_ep, kbd_mps) | (2u << 11);  // direction IN
     W(ED_INTR + 4) = intr_dummy;
     W(ED_INTR + 8) = intr_td;
     W(ED_INTR + 12) = 0;
@@ -329,25 +486,93 @@ int usb_init(void)
     __asm__ volatile("dsb sy" ::: "memory");
     W(HC_CONTROL) = W(HC_CONTROL) | CTL_PLE;
     report_n = 0;
+    intr_err = 0;
     up = 1;
-    say("usb: keyboard ready (interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
-           kbd_iface, kbd_ep, kbd_mps, kbd_interval);
+    say("usb: keyboard ready (device %d, interface %d, endpoint %d IN, %d bytes, every %d ms)\n",
+           cur->addr, kbd_iface, kbd_ep, kbd_mps, kbd_interval);
     return 0;
 }
 
-// One finished report copied to r (8 bytes): 1; nothing yet: 0; error: -1.
-// The port's connect-change bit (set by plugging or unplugging), cleared on
-// read; *connected = whether a device is there now.
+int usb_init(void)
+{
+    up = 0;
+    ndev = 0;
+    next_addr = 1;
+    kbd_dev = -1;
+    hub_poll_dev = hub_poll_port = 0;
+    hc_start();
+    int ls = port_reset();
+    if (ls < 0)
+        return -1;
+    if (enumerate(ls, -1, 1, 0) < 0)
+        return -1;
+    if (kbd_dev < 0) {
+        say("usb: no boot-protocol keyboard\n");
+        return -1;
+    }
+    return kbd_start_polling();
+}
+
+// 1 when something was plugged into or out of the USB-A port (its
+// connect-change bit, cleared on read; *connected = whether a device is there
+// now): the caller enumerates again. Each call also checks one hub port for
+// C_PORT_CONNECTION and handles it here (returns 0): what was on the port is
+// forgotten, a new device enumerated (quietly, then one line about it).
 int usb_port_changed(int *connected)
 {
     uint32_t ps = W(HC_PORT1);
     *connected = ps & 1;
-    if (!(ps & (1u << 16)))
-        return 0;
-    W(HC_PORT1) = 1u << 16;
+    if (ps & (1u << 16)) {
+        W(HC_PORT1) = 1u << 16;
+        if (!*connected)
+            up = 0, ndev = 0;
+        return 1;
+    }
     if (!*connected)
-        up = 0;
-    return 1;
+        return 0;
+    for (int tries = 0; tries < MAX_DEV; tries++) {     // the next hub port
+        if (hub_poll_dev >= ndev)
+            hub_poll_dev = 0, hub_poll_port = 0;
+        int hub = hub_poll_dev;
+        struct dev *h = &devs[hub];
+        if (!h->addr || h->cls != 9 || ++hub_poll_port > h->nports) {
+            hub_poll_dev++, hub_poll_port = 0;
+            continue;
+        }
+        int p = hub_poll_port;
+        uint8_t st[4];
+        int v = usb_verbose;
+        usb_verbose = 0;                        // a hub that was just unplugged: no noise
+        cur = h;
+        int r = HUB_PORT_STATUS(p, st);
+        usb_verbose = v;
+        if (r < 4 || !(st[2] & 1))
+            return 0;
+        cur = h;
+        HUB_CLEAR(p, F_C_CONNECTION);
+        for (int j = 0; j < ndev; j++)          // what was on that port is gone either way
+            if (devs[j].addr && devs[j].parent == hub && devs[j].port == p)
+                forget(j);
+        if (st[0] & 1) {
+            if (depth_of(hub) + 1 > MAX_HUB_DEPTH) {
+                say("usb: hub %d port %d: hubs nested too deep, skipped\n", h->addr, p);
+                return 0;
+            }
+            usb_verbose = 0;
+            int j = hub_port_reset(hub, p, depth_of(hub));
+            if (j >= 0 && !up && kbd_dev >= 0)
+                kbd_start_polling();
+            usb_verbose = v;
+            if (j < 0)
+                say("usb: hub %d port %d: device plugged in, enumeration failed\n", h->addr, p);
+            else
+                say("usb: hub %d port %d: device %d (%04x:%04x)%s\n", h->addr, p, devs[j].addr,
+                    devs[j].vid, devs[j].pid, devs[j].cls == 9 ? ", hub" : devs[j].cls == 3 ?
+                    ", keyboard" : devs[j].cls == 8 ? ", mass storage" : "");
+        }
+        return 0;
+    }
+    return 0;
 }
 
 int usb_kbd_up(void)
@@ -368,10 +593,12 @@ int usb_kbd_poll(uint8_t *r)
     int ok = cc == 0 || cc == 9;
     if (ok)
         memcpy(r, (void *)(uintptr_t)buf, 8);
-    if (head & 1) {                             // halted: report, clear, retry
-        say("usb: interrupt endpoint: %s\n", cc_names[cc]);
+    if (head & 1) {                             // halted: report (once), clear, retry
+        if (!intr_err)
+            say("usb: interrupt endpoint: %s\n", cc_names[cc]);
         W(ED_INTR + 8) = intr_dummy & ~1u;
     }
+    intr_err = !ok;
     intr_queue();
     if (ok)
         report_n++;
@@ -390,8 +617,20 @@ void usb_status(void)
            W(HC_FMNUMBER) & 0xffff, W(HC_HCCA), W(HC_PORT1),
            W(HC_PORT1) & 1 ? (W(HC_PORT1) & 0x200 ? " (connected, low speed)" : " (connected, full speed)")
                            : " (nothing connected)");
+    for (int i = 0; i < ndev; i++) {
+        const struct dev *d = &devs[i];
+        if (!d->addr)
+            continue;
+        printf("  device %d: %04x:%04x, %s speed, ", d->addr, d->vid, d->pid, d->lowspeed ? "low" : "full");
+        if (d->parent < 0)
+            printf("on the USB-A port");
+        else
+            printf("on hub %d port %d", devs[d->parent].addr, d->port);
+        printf("%s\n", d->cls == 9 ? ", hub" : d->cls == 3 ? ", keyboard" :
+                        d->cls == 8 ? ", mass storage" : "");
+    }
     if (up)
-        printf("keyboard %04x:%04x up, %d reports\n", vid, pid, report_n);
+        printf("keyboard (device %d) up, %d reports\n", devs[kbd_dev].addr, report_n);
 }
 
 // ---------------- HID boot keyboard -> characters ----------------

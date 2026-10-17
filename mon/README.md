@@ -157,15 +157,20 @@ first (it cleans and invalidates the cache). A core stops itself with
 CPU_OFF (`0x84000002`, `smc #0`); `cpu` then shows it off. Details and
 tests: [`../docs/hardware/cpu-cores.md`](../docs/hardware/cpu-cores.md).
 
-## USB keyboard (`usb`, [`usb.c`](usb.c))
+## USB keyboard and hub (`usb`, [`../usb/usb.c`](../usb/usb.c))
 
 OHCI1, the USB-A port's low/full-speed controller, polled (tested
 2026-10-15, details in [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
+A hub in the USB-A port works (tested 2026-10-17, up to 8 devices, hubs 2
+deep): every device on it is enumerated, the first boot keyboard is
+polled, and devices plugged into or out of the hub are found and
+forgotten while kmon runs (one line each). A mass-storage stick is
+enumerated and listed; reading it is not done yet.
 
 ```
-usb            controller and port state
+usb            controller and port state, the devices and where they are
 usb init       reset every USB host controller (USB_PM, not BOLT's state) and the port,
-               enumerate the device, print its
+               enumerate the device (and behind a hub, every device), print the
                descriptors; a boot-protocol keyboard is then polled
 usb kbd        print keyboard reports and the keys (US layout); any serial key stops
 usb stop       controller back to reset (also done before go/doom)
@@ -189,8 +194,8 @@ kmon needs no PC once it runs. At start (and when a program returns) it:
   BOLT's splash framebuffer, anti-aliased Source Code Pro 16 x 32 px
   ([`font.h`](font.h), from [`../tools/make-font`](../tools/make-font)), with a margin for TV overscan. Everything
   printed goes to the screen and the serial line.
-- sets up a USB keyboard on the USB-A port, if one is there, and checks every
-  200 ms for one being plugged in. It types into the prompt like the serial
+- sets up a USB keyboard on the USB-A port or behind a hub, if one is there,
+  and checks every 200 ms for one being plugged in. It types into the prompt like the serial
   line: arrows, Home/End/Delete, Tab completion, Ctrl keys; a held key repeats
   (500 ms, then every 40 ms). Keys are a US layout.
 

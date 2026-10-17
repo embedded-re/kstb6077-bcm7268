@@ -19,7 +19,7 @@ Tested on the modified box on 2026-10-02. Probes are in [`../evidence/usb/`](../
 | Control / PHY | `0xf0b00200`; **BOLT never writes it** (its values are the hardware's, "Our own USB start"); `USB_PM` `+0x34` bits 20/21/22 reset the controller pairs |
 | Ports | USB-A = EHCI1 + OHCI1; internal Bluetooth = EHCI0 + OHCI0; xHCI ports unknown |
 | State after `go -64` | every controller reset and stopped, still clocked |
-| Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard reports from an interrupt endpoint (kmon `usb`) |
+| Tested | OHCI1 from bare metal: port enable, control transfers, enumeration of a keyboard and a USB stick, keyboard reports from an interrupt endpoint, a hub with a keyboard and a stick behind it, plugging and unplugging behind the hub (kmon `usb`) |
 | Not tested | bulk transfers, EHCI, xHCI, interrupts from the USB controllers |
 
 ## Blocks (stock DTB [`boot/stock_dtb.dts`](../../boot/stock_dtb.dts), capability registers read)
@@ -238,6 +238,31 @@ up to six usage codes of the keys held down. Seen on this keyboard:
   key bytes (HID ErrorRollOver).
 - Not tested: Shift or Ctrl together with a letter (only alone), the
   keyboard LEDs (`SET_REPORT`).
+
+## A hub on OHCI1 (tested)
+
+Tested 2026-10-17 with kmon ([`../../usb/usb.c`](../../usb/usb.c)): a hub
+`0bda:5411` (USB 2.10, class 09, protocol 01) in the USB-A port, the stick
+and the keyboard plugged into it. The hub runs at full speed on OHCI1.
+
+| Step | Request | Seen |
+|---|---|---|
+| Hub descriptor | `GET_DESCRIPTOR` type `0x29` (request type `a0`) | 4 ports, characteristics `00a9`, power-on-to-good 0 ms |
+| Port power | `SET_FEATURE` PORT_POWER (8) on each port, then 100 ms | |
+| Port status | `GET_STATUS` (request type `a3`), 4 bytes: status, change | bit 0 connected, bit 1 enabled, bit 9 low speed; change bit 0 connection, bit 4 reset done |
+| Port reset | `CLEAR_FEATURE` C_PORT_CONNECTION (16), 100 ms, `SET_FEATURE` PORT_RESET (4), wait for change bit 4, `CLEAR_FEATURE` C_PORT_RESET (20), 10 ms | port 1: stick, full speed; port 4: keyboard, **low speed** |
+| Then | the device answers at address 0: enumerated like one on the USB-A port, with the next free address | hub 1, stick 2, keyboard 3 |
+
+- A low-speed device behind the full-speed hub needs nothing extra: its EDs
+  have the speed bit (13) set and the controller sends the PRE preamble.
+  The keyboard's reports came through the hub (typed at the prompt).
+- After the hub itself was plugged in again, the stick was **not connected
+  yet** 100 ms after port power. It connected later, as a connect change on
+  its port; kmon enumerates such a change by itself.
+- Plugging and unplugging: kmon reads one hub port's status every 200 ms.
+  Tested by the user: keyboard out and in again on the hub (`device 3
+  (0461:0010) gone`, `hub 1 port 4: device 4 (0461:0010), keyboard`), the
+  stick out and in, the hub out and in; typing worked after each.
 
 ## Open questions
 
