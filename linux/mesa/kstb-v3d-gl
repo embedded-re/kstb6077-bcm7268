@@ -1,0 +1,215 @@
+#!/usr/bin/python3
+# kstb-v3d-gl - a GL shader record job (coordinate, vertex and fragment shader)
+# through v3d by hand, without Mesa: 256x256 frame in 4x4 tiles of 64x64, raster
+# rgba8, a white triangle on red. The shaders are Mesa 23.3's code for
+# gl_Position = vec4(pos, 0, 1) and a constant colour, with v3d33-fixes.patch;
+# OLD=1 uses Mesa's code without the patch (VPM writes in the thread-end slots).
+# Needs v3dpack.py and Mesa's v3d_packet_v33.xml next to it (linux/README.md, "GPU").
+#
+#   kstb-v3d-gl                         the default triangle, expects 18432 lit pixels
+#   VERTS="x0 y0 x1 y1 x2 y2"           other corners (clip space)
+#   VSEQ="x0 ... y2;x0 ... y2;..."      several triangles, one job each, same process
+#   CSCODE / VSCODE="hex ..."           other coordinate / vertex shader code
+#   CSU="i=val,..."                     coordinate shader uniforms (val hex, or 1.5f)
+#   REC="field=val,..."                 shader record fields (names as in v3dpack.py)
+#   FEED=2 [JUNK=zw|xy]                 the vertex fetcher supplies Xc Yc Zc Wc Xs Ys itself
+#                                       (2 attributes), JUNK replaces Zc Wc / Xs Ys with junk
+#   MAP=1                               print the result as 8x8 blocks
+import ctypes, fcntl, mmap, os, struct, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from v3dpack import pack
+
+def iowr(nr, size):
+    return (3 << 30) | (size << 16) | (ord('d') << 8) | (0x40 + nr)
+
+SUBMIT_CL, WAIT_BO, CREATE_BO, MMAP_BO = iowr(0, 72), iowr(1, 16), iowr(2, 16), iowr(3, 16)
+fd = os.open('/dev/dri/renderD128', os.O_RDWR)
+
+def ioctl(req, fmt, *args):
+    return struct.unpack(fmt, fcntl.ioctl(fd, req, struct.pack(fmt, *args)))
+
+class BO:
+    def __init__(self, size):
+        self.size = size
+        _, _, self.handle, self.va = ioctl(CREATE_BO, '<IIII', size, 0, 0, 0)
+        off = ioctl(MMAP_BO, '<IIQ', self.handle, 0, 0)[2]
+        self.m = mmap.mmap(fd, size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=off)
+
+    def put(self, off, data):
+        self.m[off:off + len(data)] = data
+
+    def words(self, off, n):
+        return struct.unpack_from('<%dI' % n, self.m, off)
+
+def env_map(name, conv):
+    out = {}
+    for kv in filter(None, os.environ.get(name, '').split(',')):
+        k, v = kv.split('=')
+        out[k] = conv(v)
+    return out
+
+def f32(v):
+    return struct.unpack('<I', struct.pack('<f', v))[0]
+
+def hexwords(s):
+    return [int(x, 16) for x in s.split()]
+
+W = H = 256
+TW, TH = W // 64, H // 64
+cl = BO(64 * 1024)          # control lists, shader record, shaders, uniforms, vertices
+color = BO(W * H * 4)
+zbuf = BO(W * H * 4)
+tile_alloc = BO(1024 * 1024)
+tile_state = BO(4096)
+bos = [cl, color, zbuf, tile_alloc, tile_state]
+RCL, GTL, BCL, SHREC, DEFS, FS, VS, CS, UNIF, VERTS = (
+    0x000, 0x300, 0x400, 0x600, 0x700, 0x800, 0x840, 0x8c0, 0xa00, 0xb00)
+FSU, VSU, CSU = UNIF, UNIF + 0x20, UNIF + 0x40
+
+# fragment shader: the constant colour (white) to the tile buffer
+fs = hexwords('3c603186bb800000 3c0031c6bbf40000 3c0031c6bbf40000')
+# vertex shader: read X Y, write Xs Ys Zs 1/Wc; coordinate shader: write Xc Yc Zc Wc Xs Ys.
+# Fixed: every VPM write before the thread end (THRSW on a nop, then two nops)
+vs = hexwords('3c403186bb800000 3c003186bb81d000 3f403186bb800000 3f003006bbec0000 '
+              '54403086bba00000 3c003044f6ec2000 544030c1f5a7c000 3c003180f6803000 '
+              '3c003186bb81d000 3c403382f5e78000 3c003386bbe80000 3c003386bbf40000 '
+              '3de03386bbfc0028 3c203186bb800000 3c003186bb800000 3c003186bb800000')
+cs = hexwords('3c403186bb800000 3c003186bb81d000 3f403186bb800000 3f003006bbec0000 '
+              '3c003046bbec0000 3c003186bb800000 3c003186bb800000 3c003186bb81d000 '
+              '3c403386bbe00000 54403086bba00000 3c003383f6e42000 54003100f5a7b000 '
+              '3de03381f6fc4000 3de03382f5ff9028 3c003386bbe00000 3c003386bbe80000 '
+              '3c203186bb800000 3c003186bb800000 3c003186bb800000')
+if os.environ.get('OLD'):
+    # Mesa 23.3 without the patch's thread-end rule: THRSW on the last VPM write but
+    # two (VS: Ys, then Zs and 1/Wc in its delay slots; CS: Xs, then Ys)
+    vs = vs[:10] + hexwords('3c203386bbe80000 3c003386bbf40000 3de03386bbfc0028')
+    cs = cs[:14] + hexwords('3c203386bbe00000 3c003386bbe80000 3c003186bb800000')
+if os.environ.get('CSCODE'):
+    cs = hexwords(os.environ['CSCODE'])
+if os.environ.get('VSCODE'):
+    vs = hexwords(os.environ['VSCODE'])
+fsu = [0x3c003c00]                                           # 1.0, 1.0 as half floats
+# read setup (horizontal, 2 rows, 32-bit), x/y viewport scale, write setup, Zs
+vsu = [0x6880c000, f32(W * 128.0), f32(H * 128.0), 0x0140c000, f32(0.5)]
+csu = [0x6880c000, 0x0140c000, f32(W * 128.0), f32(H * 128.0)]
+for k, v in env_map('CSU', lambda s: f32(float(s[:-1])) if s.endswith('f') else int(s, 0)).items():
+    i = int(k)
+    csu += [0] * (i + 1 - len(csu))
+    csu[i] = v
+FEED = int(os.environ.get('FEED', '0'))
+JUNK = os.environ.get('JUNK', '')
+
+def build(verts):
+    nv = len(verts) // 2
+    r = pack('Tile Rendering Mode Cfg (Common)', number_of_render_targets=1, image_width_pixels=W,
+             image_height_pixels=H, early_z_disable=1, disable_render_target_stores=14)
+    r += pack('Tile Rendering Mode Cfg (Color)', render_target_number=0, internal_type=2,
+              output_image_format=27, memory_format=0, pad=15, address=color.va)
+    r += pack('Tile Rendering Mode Cfg (Z/Stencil)', address=zbuf.va)
+    r += pack('Tile Rendering Mode Cfg (Clear Colors Part1)', clear_color_low_32_bits=0xff0000ff)
+    r += pack('Tile Rendering Mode Cfg (Clear Colors Part3)', raster_row_stride_or_image_height_in_pixels=W)
+    r += pack('Tile Rendering Mode Cfg (ZS Clear Values)', z_clear_value=f32(1.0))
+    r += pack('Tile Coordinates') + bytes.fromhex('1d 08 02 00 00 00 00') + pack('Flush VCD cache')  # store nothing
+    r += pack('Tile List Initial Block Size', use_auto_chained_tile_lists=1)
+    r += pack('Multicore Rendering Tile List Set Base', address=tile_alloc.va)
+    r += pack('Multicore Rendering Supertile Cfg', supertile_width_in_tiles=1, supertile_height_in_tiles=1,
+              total_frame_width_in_supertiles=TW, total_frame_height_in_supertiles=TH,
+              total_frame_width_in_tiles=TW, total_frame_height_in_tiles=TH, number_of_bin_tile_lists=1)
+    gtl = bytes.fromhex('7d 15 00 18 12')       # implicit tile coords, binned list, store, return
+    r += pack('Start Address of Generic Tile List', start=cl.va + GTL, end=cl.va + GTL + len(gtl))
+    for y in range(TH):
+        for x in range(TW):
+            r += pack('Supertile Coordinates', column_number_in_supertiles=x, row_number_in_supertiles=y)
+    r += pack('End of rendering')
+    cl.put(RCL, r + bytes(32))
+    cl.put(GTL, gtl + bytes(32))
+
+    b = pack('Tile Binning Mode Cfg (Part2)', tile_allocation_memory_address=tile_alloc.va,
+             tile_allocation_memory_size=tile_alloc.size)
+    b += pack('Tile Binning Mode Cfg (Part1)', auto_initialize_tile_state_data_array=1,
+              tile_state_data_array_base_address=tile_state.va, width_in_tiles=TW, height_in_tiles=TH,
+              number_of_render_targets=1)
+    b += pack('Flush VCD cache') + pack('Start Tile Binning')
+    b += pack('clip_window', clip_window_width_in_pixels=W, clip_window_height_in_pixels=H)
+    b += pack('Cfg Bits', enable_forward_facing_primitive=1, enable_reverse_facing_primitive=1,
+              depth_test_function=7)
+    b += pack('Point size', point_size=1.0) + pack('Line width', line_width=1.0)
+    b += pack('Clipper XY Scaling', viewport_half_width_in_1_256th_of_pixel=W * 128.0,
+              viewport_half_height_in_1_256th_of_pixel=H * 128.0)
+    b += pack('Clipper Z Scale and Offset', viewport_z_scale_zc_to_zs=0.5, viewport_z_offset_zc_to_zs=0.5)
+    b += pack('clipz', minimum_zw=0.0, maximum_zw=1.0)
+    b += pack('Viewport Offset', viewport_centre_x_coordinate=W / 2, viewport_centre_y_coordinate=H / 2)
+    b += pack('Color Write Masks', mask=0) + pack('Zero All Flat Shade Flags')
+    b += pack('VCM Cache Size', number_of_16_vertex_batches_for_binning=4,
+              number_of_16_vertex_batches_for_rendering=4)
+    b += pack('GL Shader State', address=cl.va + SHREC, number_of_attribute_arrays=2 if FEED else 1)
+    b += pack('Vertex Array Prims', mode=4, length=nv, index_of_first_vertex=0)
+    b += pack('Flush')
+    cl.put(BCL, b + bytes(32))
+
+    # as Mesa: clipping on, shared VPM blocks, segment sizes 1, propagate NaNs (bit 2
+    # of the VS/CS code address words)
+    rec = dict(enable_clipping=1, coordinate_shader_output_vpm_segment_size=1,
+               coordinate_shader_input_vpm_segment_size=1, vertex_shader_output_vpm_segment_size=1,
+               vertex_shader_input_vpm_segment_size=1, address_of_default_attribute_values=cl.va + DEFS,
+               fragment_shader_propagate_nans=1, fragment_shader_code_address=cl.va + FS,
+               fragment_shader_uniforms_address=cl.va + FSU,
+               vertex_shader_code_address=(cl.va + VS) | 4, vertex_shader_uniforms_address=cl.va + VSU,
+               coordinate_shader_code_address=(cl.va + CS) | 4, coordinate_shader_uniforms_address=cl.va + CSU)
+    rec.update(env_map('REC', lambda s: int(s, 0)))
+    attr = dict(address=cl.va + VERTS, vec_size=2, type=2, number_of_values_read_by_coordinate_shader=2,
+                number_of_values_read_by_vertex_shader=2, stride=8)
+    sr = pack('GL Shader State Record', **rec)
+    if FEED:
+        # attribute 0: Xc Yc Zc Wc floats, attribute 1: Xs Ys ints in 1/256 pixel
+        sr += pack('GL Shader State Attribute Record', **dict(attr, vec_size=0, stride=16,
+                   number_of_values_read_by_coordinate_shader=4))
+        sr += pack('GL Shader State Attribute Record', address=cl.va + VERTS + 0x100, vec_size=2, type=6,
+                   read_as_int_uint=1, number_of_values_read_by_coordinate_shader=FEED, stride=8)
+        v4, v2 = [], []
+        for i in range(nv):
+            x, y = verts[2 * i], verts[2 * i + 1]
+            v4 += [x, y] + ([7.0, -3.0] if 'zw' in JUNK else [0.0, 1.0])
+            v2 += [0, 0] if 'xy' in JUNK else [int(x * W * 128), int(y * H * 128)]
+        cl.put(VERTS, struct.pack('<%df' % len(v4), *v4))
+        cl.put(VERTS + 0x100, struct.pack('<%di' % len(v2), *v2))
+    else:
+        sr += pack('GL Shader State Attribute Record', **attr)
+        cl.put(VERTS, struct.pack('<%df' % len(verts), *verts))
+    cl.put(SHREC, sr)
+    cl.put(DEFS, struct.pack('<64f', *([0, 0, 0, 1.0] * 16)))
+    assert len(r) < GTL - RCL and len(b) < SHREC - BCL and len(sr) < DEFS - SHREC
+    assert CS + 8 * len(cs) <= UNIF
+    for off, code in ((FS, fs), (VS, vs), (CS, cs)):
+        cl.put(off, struct.pack('<%dQ' % len(code), *code))
+    for off, u in ((FSU, fsu), (VSU, vsu), (CSU, csu)):
+        cl.put(off, struct.pack('<%dI' % len(u), *u))
+    return cl.va + BCL, cl.va + BCL + len(b), cl.va + RCL, cl.va + RCL + len(r)
+
+def submit(bstart, bend, rstart, rend):
+    handles = struct.pack('<%dI' % len(bos), *[b.handle for b in bos])
+    hbuf = mmap.mmap(-1, 4096)
+    hbuf[:len(handles)] = handles
+    hptr = ctypes.addressof(ctypes.c_char.from_buffer(hbuf))
+    ioctl(SUBMIT_CL, '<10IQ4IQ', bstart, bend, rstart, rend, 0, 0, 0,
+          tile_alloc.va, tile_alloc.size, 0, hptr, len(bos), 0, 0, 0, 0)
+    ioctl(WAIT_BO, '<IIQ', color.handle, 0, 2 * 10**9)
+
+seq = [v.split() for v in os.environ.get('VSEQ', '').split(';') if v.strip()] or \
+      [os.environ.get('VERTS', '-0.75 -0.75 0.75 -0.75 0 0.75').split()]
+for v in seq:
+    color.put(0, bytes(color.size))
+    submit(*build([float(x) for x in v]))
+    px = color.words(0, W * H)
+    lit = [(i % W, i // W) for i, p in enumerate(px) if p == 0xffffffff]
+    box = 'x %d-%d y %d-%d' % (min(p[0] for p in lit), max(p[0] for p in lit),
+                               min(p[1] for p in lit), max(p[1] for p in lit)) if lit else 'none'
+    tiles = sorted({(x // 64, y // 64) for x, y in lit})
+    print('%-34s lit %d, %s, tiles %s' % (' '.join(v), len(lit), box, ' '.join('%d%d' % t for t in tiles)))
+if os.environ.get('MAP'):
+    s = set(lit)
+    for by in range(0, H, 8):
+        print(''.join('#' if (bx + 4, by + 4) in s else '.' for bx in range(0, W, 8)))
+if 'VERTS' not in os.environ and 'VSEQ' not in os.environ:
+    print('OK' if len(lit) == 18432 else 'FAIL')
+    sys.exit(0 if len(lit) == 18432 else 1)

@@ -82,7 +82,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | Bluetooth | (USB, OHCI0) `btusb` + `btbcm` as modules | BCM43569A2, patched with the stock `BCM43569.hcd` (build 0000 → 0172), the box's own BD address `90:F8:91:E7:00:0C`. `UP RUNNING`; BLE scan (`hcitool lescan`, 12 s): 86 advertisements from 3 devices; classic inquiry: 2 devices. The patch is offered once per boot ("Bluetooth" below) |
 | xHCI | `usb@f0b01000` (`brcm,bcm7445-xhci`, `generic-xhci`), `brcm,has-xhci` on the PHY, ID 124 | `Host supports USB 3.0 SuperSpeed`, a USB 3 root hub with 2 ports (no USB 2 ports). A SuperSpeed-capable stick straight in the USB-A port still came up on EHCI1 at high speed; the xHCI ports stayed in RxDetect: nothing is wired to them ([`../docs/hardware/usb.md`](../docs/hardware/usb.md)) |
 | HDMI audio | `hdmi-audio@f0ca0000` (`kaon,kstb6077-hdmi-audio`, our own driver [`drivers/kstb-audio.c`](drivers/kstb-audio.c), a module) | ALSA card 0 `KSTB6077 HDMI`, 48 kHz, S32_LE, stereo. `aplay -d 30` took 30.00 s, also with 5 ms periods, no underrun; the default device converts other rates and formats (`plug`). Underrun, `rmmod`/`modprobe` and the load at boot from `KRN` tested. **Not yet heard**: nobody listened to the TV ("HDMI audio" below) |
-| GPU (V3D 3.3) | `gpu@f1200000` (`brcm,7268-v3d`, mainline `v3d`, built in), hub/core interrupts SPI 78/77; power island `clock-controller@f041d020` (our module [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c)) | `[drm] Initialized v3d 1.0.0`, `/dev/dri/card0`, `renderD128`; IDs `000e1133` / `03443356`. Binner + render jobs through the GPU MMU and both interrupts: clear and triangle pixel-exact ([`rootfs/usr/sbin/kstb-v3d-test`](rootfs/usr/sbin/kstb-v3d-test)). OpenGL ES through Mesa: not working yet ("GPU" below) |
+| GPU (V3D 3.3) | `gpu@f1200000` (`brcm,7268-v3d`, mainline `v3d`, built in), hub/core interrupts SPI 78/77; power island `clock-controller@f041d020` (our module [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c)) | `[drm] Initialized v3d 1.0.0`, `/dev/dri/card0`, `renderD128`; IDs `000e1133` / `03443356`. Binner + render jobs through the GPU MMU and both interrupts: clear and triangle pixel-exact ([`rootfs/usr/sbin/kstb-v3d-test`](rootfs/usr/sbin/kstb-v3d-test)). OpenGL ES 3.0 through Mesa 23.3.6 with our patch: a coloured and a textured triangle exact ("GPU" below) |
 | GISB arbiter | `gisb-arb@f0400000` (`brcm,gisb-arb`, mainline `brcmstb_gisb`) on the sys L2 `interrupt-controller@f0403000` (`brcm,l2-intc`, SPI 59) bits 0 and 2 | a read of an abort hole is reported: `kstb-reg f04d150c` gave `GISB: target abort at 0xf04d150c [R ], core: cpu_0` and one TEA interrupt (and the program's `Bus error`) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
@@ -396,7 +396,7 @@ address 0: with the MMU on, `v3d` reported `MMU error from client ?
 scheduler` twice per open: it sets up a scheduler entity for every queue,
 including the compute queue V3D 3.3 doesn't have. Harmless.
 
-### Mesa (OpenGL ES): not working yet
+### Mesa (OpenGL ES)
 
 Mesa removed V3D 3.3 (and 4.1) in 24.0, when V3D 7.1 support came in
 (MR 25851). The last Mesa with it is 23.3; Alpine 3.24's Mesa can't drive
@@ -406,11 +406,11 @@ packages stay as they are:
 | Mesa | Where | Result |
 |---|---|---|
 | 23.3.6 (Alpine 3.19 package) | `/opt/alpine319` | `GL_RENDERER V3D 3.3`, `OpenGL ES 3.0 Mesa 23.3.6`, then a segfault compiling the first shader |
-| 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | shaders compile, jobs run, no MMU error; fragments are drawn; **vertex positions wrong**: see below |
+| 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | **works**: [`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c) prints `OK` (below) |
 | 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` | hangs in the driver (no kernel message); no debug symbols packaged |
 
-The four fixes in the patch, all for code paths only V3D 3.3 takes, each
-found by a crash or hang on the box:
+The fixes in the patch, all for code paths only V3D 3.3 takes, each found
+by a crash, a hang or a wrong picture on the box:
 
 1. `vir_emit_last_thrsw`: a shader without texture lookups runs single
    threaded on 3.3 and has no THRSW; the code then dereferences
@@ -424,28 +424,73 @@ found by a crash or hang on the box:
    "any"; on 3.3 a uniform can only be loaded to `r5` (there is no
    `ldunifrf`), so packing failed: `Failed to pack instruction 13: nop
    t22; ldunifrf (vp_x_scale)`.
-4. The VPM write setup for 3.3 vertex/coordinate shaders: since Mesa 20
-   it is a comment (`/* XXX: v3d33_vir_vpm_write_setup(c); */`); Mesa 19
-   emitted it in `emit_vert_end`. Now emitted before the first output
-   write; plus a scheduler rule that keeps it 3 instructions away from an
-   `ldvpm`.
+4. Vertex and coordinate shader outputs. 3.3 has no indexed VPM stores
+   (`stvpm`): a VPM write setup, then each write to the `vpm` register
+   goes to the next row. Since Mesa 20 the setup is a comment
+   (`/* XXX: v3d33_vir_vpm_write_setup(c); */`), and the outputs were
+   written where NIR stores them: with a varying, the colour came before
+   Xs Ys Zs 1/Wc. Now the outputs are kept by VPM index and written at
+   the end in that order, after the setup, unwritten ones as 0.0 (as in
+   Mesa 19's `emit_vert_end`). A scheduler rule keeps the setup 3
+   instructions away from an `ldvpm`.
+5. **VPM writes in the thread end are lost**: in the final THRSW
+   instruction and its two delay slots. Mesa's scheduler put the last
+   writes there (coordinate shader: Ys; vertex shader: Zs and 1/Wc), so
+   the binner used Ys left in the VPM by the previous job. That is what
+   looked like random positions: right within one process (the leftover
+   was the same triangle), different after another program ran. Now no
+   VPM write may go into those slots (`qpu_inst_valid_in_thrend_slot`);
+   the shaders end with THRSW on a nop. Found with `kstb-v3d-gl` below.
 
-With these, a 256×256 FBO is cleared correctly (every pixel the clear
-colour, alpha 255) and a constant-colour fragment shader fills pixels;
-100 frames at 1920×1080 took 0.176 s. But the triangle comes out wrong:
-always confined to the 64×64 tile around the centre (2,2), often the
-whole tile, and the result is stable within one process but changes
-between processes (`KSTB_REPEAT`, `KSTB_VERTS` in
-[`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c)). Reading: the coordinate shader's screen
-coordinates come out near 0, so the binner puts the triangle only in the
-centre tile, and the shaders read VPM rows that hold leftovers from
-earlier runs. A vertical instead of horizontal VPM read setup drew
-nothing. Not solved.
+Results with the patch (2026-10-17): 256×256 FBO, triangle with red,
+green and blue corners: 18432 lit pixels (its area), corners
+241,8,6 / 7,242,6 / 4,6,245, centre 84,85,86; 5 runs in a row and 20
+draws in one process all exact; the same with a texture lookup
+(`KSTB_TEX=1`); a constant colour (`KSTB_FLAT=1`) too. 100 frames at
+1920×1080 in 0.163–0.197 s. No MMU error, no kernel message. The test
+copies its 256×256 picture to `/dev/fb0` at (832,412). Mesa's shader
+cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
+`MESA_SHADER_CACHE_DISABLE=true` while changing the compiler.
 
 ```
 # on the box; mesa/ch319 is the chroot helper (in /usr/local/bin there)
 ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
 ```
+
+**A GPU hang takes the GPU down until a reboot.** A job that doesn't
+finish times out (seen twice with a bogus VPM read setup in a hand-written
+shader, once with a triangle on the frame's edges, (1,1) (-1,1) (1,-1),
+before fix 5): `Internal error: Oops` in `drm_sched_stop+0x94` from
+`v3d_gpu_reset_for_timeout`, in the `v3d_reset` worker, for bin and
+render jobs alike. Linux keeps running, every later job times out
+(`Device timeout`); `reboot -f` recovers. Likely cause, from the source
+(not confirmed by a fix): the reset calls `drm_sched_stop` for every
+queue, including the CSD and cache-clean queues that `v3d` never
+initialises on 3.3 (`v3d_has_csd` is false); `v3d_sched_fini` skips such
+queues (`sched.ready`), the reset doesn't. A fix needs a patch to the
+kernel tree, which is stock so far.
+
+#### `kstb-v3d-gl`: a GL shader record without Mesa
+
+[`mesa/kstb-v3d-gl`](mesa/kstb-v3d-gl) builds the whole job by hand (python3, raw
+DRM ioctls like `kstb-v3d-test`): binning and render lists for 256×256 in
+4×4 tiles, the GL shader record, and Mesa's compiled coordinate, vertex
+and fragment shaders for `gl_Position = vec4(pos, 0, 1)` and a constant
+colour. Packets are packed by field name with [`mesa/v3dpack.py`](mesa/v3dpack.py) from
+Mesa's `v3d_packet_v33.xml`, which has to be next to it:
+
+```
+wget https://gitlab.freedesktop.org/mesa/mesa/-/raw/mesa-23.3.6/src/broadcom/cle/v3d_packet_v33.xml
+./kstb-v3d-gl                  # 18432 lit pixels, OK
+OLD=1 VSEQ='-0.75 -0.25 0.75 -0.25 0 0.25;-0.75 -0.75 0.75 -0.75 0 0.75' ./kstb-v3d-gl
+                               # Mesa's code without fix 5: 6144, then 17664 instead of 18432
+```
+
+Knobs: `VERTS`, `VSEQ` (several jobs in one process), `CSCODE`/`VSCODE`,
+`CSU`, `REC` (record fields), `FEED`/`JUNK` (the vertex fetcher supplies
+the coordinate shader's outputs itself), `MAP`. Tested with it
+(`docs/hardware/gpu.md`, "GL shader record"): which VPM rows the binner
+reads, that writes before the thread end land and the ones in it don't.
 
 ## Registers from Linux: `kstb-reg`
 
@@ -492,7 +537,7 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- OpenGL ES on the GPU: Mesa dropped V3D 3.3 in 24.0, and 23.3 needs fixes; with them the vertex positions are still wrong ("GPU" below). HDMI audio not yet heard.
+- OpenGL ES: only the test triangle so far, Mesa in a chroot on `ROOT` (not installed system-wide); a GPU hang wedges the GPU until a reboot (`v3d` timeout Oops, "GPU" below). HDMI audio not yet heard.
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.

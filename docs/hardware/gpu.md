@@ -545,9 +545,72 @@ the bare-metal results:
   the name of `0x40` on V3D 3.3 is not known.
 - Speed: the triangle job pair (binner + render, 64×64) took 0.20 ms per
   submission, measured from Python including the ioctls (1000 in 0.196 s).
-- OpenGL ES through Mesa doesn't work yet: Mesa dropped V3D 3.3 in 24.0;
-  23.3 needed four fixes to compile and run shaders here, and vertex
-  positions are still wrong (`linux/README.md`, "Mesa").
+- OpenGL ES 3.0 works through Mesa 23.3.6 with our patch (Mesa dropped
+  V3D 3.3 in 24.0): a coloured and a textured triangle, exact
+  (`linux/README.md`, "Mesa"). The hardware rules behind fixes 4 and 5
+  are below.
+
+### GL shader record: coordinate and vertex shaders
+
+Tested 2026-10-17 with [`linux/mesa/kstb-v3d-gl`](../../linux/mesa/kstb-v3d-gl) (a hand-built job,
+no Mesa): 256×256 frame in 4×4 tiles of 64×64, one triangle, Mesa 23.3's
+compiled shaders. The triangle (-0.75,-0.75) (0.75,-0.75) (0,0.75) in
+clip space covers pixels (32,32) (224,32) (128,224), area 18432.
+
+**The record.** `gl_shader` (`40`) with the address of a 36-byte record
+plus 12-byte attribute records. libGLES's `v3d_unpack_shadrec_gl_main`
+reads the same layout as Mesa's `v3d_packet_v33.xml`: word 0 flags (bits
+0–12: point size, clipping, CS/VS vertex and instance IDs, Z write,
+no early Z, CS/VS separate VPM blocks, FS needs W, and two Mesa doesn't
+name, `scb_wait_on_first_thrsw` and `disable_scb`), bytes 2 and 4–7 the
+varying count and the CS/VS output/input segment sizes, then the
+defaults address and for FS, VS, CS the code address (low 3 bits:
+2-way, 4-way, propagate NaNs) and the uniforms address. Values used, as
+Mesa: clipping on, shared VPM blocks, all segment sizes 1, VCM cache
+size 4/4. With Mesa's unfixed shaders, changing the VCM cache size
+(1–4), the segment sizes (0–2) or separate blocks for both shaders
+didn't change the (wrong) result.
+
+**The coordinate shader runs in the binner.** With its uniforms address
+at an unmapped `0x08000000`, `v3d` logged `MMU error from client ? (0xf)
+at 0x8000000, pte invalid`.
+
+**What the binner reads: rows 0–5 of the coordinate shader's VPM
+segment**, Xc Yc Zc Wc (floats), then Xs Ys (ints, 1/256 pixel from the
+viewport centre). Shown by letting the vertex fetcher write them
+itself: two attributes, vec4 (X, Y, 0, 1.0) and int vec2 (X·32768,
+Y·32768), and a coordinate shader that reads 2 rows and writes nothing
+(`FEED=2`): the triangle was binned and drawn. A shader that writes one
+0 at row k (write setup `0140c000` + k, before its THRSW): k = 3, 4 or 5
+(Wc, Xs, Ys) → nothing drawn; k = 0, 1, 2 or 6 → no change.
+
+**VPM writes in the thread end are lost**: in the final THRSW
+instruction and its two delay slots. Mesa 23.3's coordinate shader ends
+`mov vpm, r0 ; thrsw` (Xs), `mov vpm, r2` (Ys), `nop`:
+
+| Test | Result |
+|---|---|
+| fetcher writes Zc Wc as junk (7.0, -3.0), Xs Ys right; Mesa's shader | drawn: its Zc Wc writes, before the THRSW, land |
+| fetcher writes Xs Ys as 0; Mesa's shader | nothing: its Xs Ys writes don't land |
+| the same, THRSW moved to a `nop` after the last write | 18432 pixels |
+| Mesa's shaders, two jobs in one process: (-0.75,-0.25) (0.75,-0.25) (0,0.25), then the default triangle | 6144, then 17664: binned with the first triangle's Ys |
+| the same with THRSW after the last write | 6144, then 18432 |
+
+So with Mesa's code the binner used the Ys a previous job's coordinate
+shader had left in the VPM: X right, Y from before. Within one process
+that was mostly the same triangle, so it looked right; after another
+program had run, the triangle came out cut to the wrong tiles. With
+Mesa's shader, 20 NOPs at its start, a fresh address for every buffer,
+one read setup per row, or `L2CACTL` (`0xf1208020`, reads `1`) cleared
+before each job changed nothing. Mesa's vertex shader had Zs and 1/Wc in
+the delay slots the same way; with THRSW after them, a constant-colour
+and a coloured (varying) triangle are exact.
+
+**The VPM write setup advances one row per write**, in the order of the
+writes: Mesa 23.3 wrote the vertex shader's colour varying before
+Xs Ys Zs 1/Wc (it relies on the indexed `stvpm` stores 3.3 doesn't
+have), and the coloured triangle drew nothing until the outputs were
+written in VPM order.
 
 ## QPU instructions
 
@@ -653,12 +716,12 @@ or tested on the board:
 | Error/debug registers | `0xf1208f00` | read only (`ERR_STAT` = `1000`, `FDBGS` = `7`); meanings unknown |
 | Interrupts | hub and core `INT_*` | only polled; not routed to the CPU's GIC |
 | PTB overflow memory | `PTB_BPOA`/`BPOS` `0xf1208308/30c` | set to 0; never needed yet |
-| L2C / SLC / L2T caches | core `+0x20`, `+0x24`, `+0x30` | flushed before jobs only |
+| L2C / SLC / L2T caches | core `+0x20`, `+0x24`, `+0x30` | flushed before jobs only; `L2CACTL` reads 1, mainline never clears it on 3.3, no effect seen |
 | TMU (texture unit) | inside the core, used from shaders | not used |
-| VPM, vertex and coordinate shaders | `gl_shader` (`40`) | not used |
-| Varyings and interpolation | `ldvary`, flat/centroid flags (`58`–`62`) | not used |
+| VPM setups in general | `vpmsetup` | only Mesa's (horizontal, 32-bit, stride 1); vertical, laned, other strides not mapped |
+| Varyings and interpolation | `ldvary`, flat/centroid flags (`58`–`62`) | one smooth vec3 varying through Mesa; flat/centroid not |
 | Depth/stencil, blending, colour write masks other than "all on" | `50`, `54`, `56`, `57`, Z/stencil stores | not used |
-| Frames bigger than one tile | supertile config, tile lists per tile | only 1×1 tile |
+| Frames bigger than one tile | supertile config, tile lists per tile | 4×4 tiles tested (`kstb-v3d-gl`); multicore, bigger supertiles not |
 | Other primitives and draws | indexed lists, instancing, points, lines, transform feedback | only `vertex_array_prims` with triangles |
 | QPU instructions | [`tools/re/qpu.py`](../../tools/re/qpu.py) | about ten tested; branches, flags, SFU, semaphore/barrier types not tested |
 | TFU options | `0xf1200400` | one format conversion tested; mipmaps, other formats not |
