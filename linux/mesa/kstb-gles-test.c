@@ -13,9 +13,11 @@
 #include <GLES2/gl2ext.h>
 #include <fcntl.h>
 #include <gbm.h>
+#include <linux/fb.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
@@ -233,20 +235,27 @@ int main(void)
 	t = now() - t;
 	printf("1920x1080: 100 frames in %.3f s, %.1f frames/s\n", t, 100 / t);
 
-	// the 256x256 picture onto the TV (row 0 of GL is the bottom)
+	// the 256x256 picture onto the TV (row 0 of GL is the bottom), centred.
+	// simplefb's buffer starts inside a page (0x7db0b700): the mapping begins
+	// at the page, so pixel (0,0) is at smem_start's offset in it
 	int fb = open("/dev/fb0", O_RDWR);
-	if (fb >= 0) {
-		uint16_t *s = mmap(NULL, 3840 * 1080, PROT_READ | PROT_WRITE, MAP_SHARED, fb, 0);
+	struct fb_fix_screeninfo fix;
+	struct fb_var_screeninfo var;
+	if (fb >= 0 && !ioctl(fb, FBIOGET_FSCREENINFO, &fix) &&
+	    !ioctl(fb, FBIOGET_VSCREENINFO, &var) && var.bits_per_pixel == 16) {
+		long off = fix.smem_start & (sysconf(_SC_PAGESIZE) - 1);
+		uint8_t *m = mmap(NULL, off + fix.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fb, 0);
+		int x0 = (var.xres - W) / 2, y0 = (var.yres - H) / 2;
 
-		if (s != MAP_FAILED) {
+		if (m != MAP_FAILED) {
 			for (y = 0; y < H; y++)
 				for (x = 0; x < W; x++) {
 					uint8_t *p = px + 4 * ((H - 1 - y) * W + x);
+					uint16_t *d = (uint16_t *)(m + off + (y0 + y) * fix.line_length) + x0 + x;
 
-					s[(412 + y) * 1920 + 832 + x] =
-						(p[0] >> 3) << 11 | (p[1] >> 2) << 5 | p[2] >> 3;
+					*d = (p[0] >> 3) << 11 | (p[1] >> 2) << 5 | p[2] >> 3;
 				}
-			printf("copied to /dev/fb0 at (832,412)\n");
+			printf("copied to /dev/fb0 at (%d,%d)\n", x0, y0);
 		}
 	}
 	printf("%s\n", ok ? "OK" : "FAIL");
