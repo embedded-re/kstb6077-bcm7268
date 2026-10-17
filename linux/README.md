@@ -72,6 +72,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | GPIO | `gpio@f040a500` (32, 32, 19, 2) and `gpio@f0419c80` (28, 6), `brcm,brcmstb-gpio`, interrupts through UPG main L2 bit 0 / AON L2 bit 3 | `gpiochip0`–`3` (main) and `gpiochip4`–`5` (AON); each bank is one chip with 32 lines, the DT numbers pins across the banks (AON bank 0 pin 18 = `<&aon_gpio 18 …>`). `libgpiod` from apk works on them |
 | Front LEDs | `leds` (`gpio-leds`): `green:power` AON 18, `red:power` AON 17, `blue:status` AON 16, all active-low, open-drain | `/sys/class/leds/*/brightness`: blue on, red on, green off, then back (seen on the box by the user). Green keeps BOLT's state (on) at boot, blue starts off. Triggers `timer`, `heartbeat`, `default-on` and `mmc0` are built in |
 | Buttons | `keys` (`gpio-keys`): SW1 AON 14 → `KEY_POWER`; `keys-polled` (`gpio-keys-polled`, 100 ms): SW4 AON 7 → `KEY_BLUETOOTH` | `evtest`: SW1 4 presses → 4 × `KEY_POWER` 1/0 and 8 interrupts (one per edge); SW4 3 presses → 3 × `KEY_BLUETOOTH` 1/0. Polled as in the stock DTB. Nothing acts on the keys yet |
+| I2C | `i2c@f040a300`, `@f0419a80`, `@f0419b00`, `@f0419b80`, `@f040a400` (`brcm,brcmstb-i2c`, 97.5 kHz), interrupts on the BSC L2s as Nexus pairs them | `iica`…`iice registered in interrupt mode`, `/dev/i2c-0`…`4` (`i2c-tools` from apk). `i2cdetect -r`: bus 0 `0x30 0x3a 0x50` (HDMI DDC), bus 3 `0x67`, bus 2 nothing, the same as the bare-metal scan ([`../docs/hardware/i2c.md`](../docs/hardware/i2c.md)); one interrupt per address on `iica`, `iicc`, `iicd` (112 per scan). Buses 1 and 4: every transfer `Operation timed out`, no interrupt. EDID read from bus 0 (below) |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -179,6 +180,19 @@ NTP at boot (`kstb-rc`), `apk update` and `apk add nano` from the Internet;
 973 MB, 893 MB free. A file written in `/root` and `nano` were still there
 after `reboot` (busybox init: `umount -a -r`, PSCI reset, kmon, boot again),
 and ext4 mounted without a journal recovery.
+
+## EDID over I2C
+
+```
+i2ctransfer -y 0 w1@0x50 0 r128      # block 0; w1@0x50 0x80 r128 for block 1
+```
+
+The TV's 256 bytes, both checksums correct, decoded with `edid-decode` on
+the PC: `PHL`, "PHILIPS FTV", week 12 of 2017, 64 × 36 cm; preferred
+timing 1920×1080 at 60 Hz (148.5 MHz); CTA-861 block with 1080p50 as the
+native VIC 31, then 1080p60/24/25/30, 1080i, 720p50, basic audio, YCbCr
+4:4:4 and 4:2:2. Reading the DDC left the picture alone (kmon's HDMI
+set-up doesn't use the bus).
 
 ## Two consoles
 

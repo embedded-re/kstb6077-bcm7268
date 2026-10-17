@@ -27,6 +27,11 @@
 
 	aliases {
 		serial0 = &uart0;
+		i2c0 = &bsc0;
+		i2c1 = &bsc1;
+		i2c2 = &bsc2;
+		i2c3 = &bsc3;
+		i2c4 = &bsc4;
 	};
 
 	chosen {
@@ -265,6 +270,60 @@
 			#interrupt-cells = <2>;
 			interrupts-extended = <&upg_aon_l2 3>;
 			brcm,gpio-bank-widths = <28 6>;
+		};
+
+		// the five BSC (I2C) masters (docs/hardware/i2c.md), 97.5 kHz as BOLT
+		// and Nexus set them; L2 bits from Nexus. ch0 is the HDMI DDC (EDID
+		// at 0x50), ch3 has the demodulator at 0x67, ch2 is empty; on ch1 and
+		// ch4 every transfer times out (not wired, or pins not muxed)
+		bsc0: i2c@f040a300 {
+			compatible = "brcm,brcmstb-i2c";
+			reg = <0xf040a300 0x58>;
+			interrupts-extended = <&upg_bsc_l2 0>;
+			interrupt-names = "iica";
+			clock-frequency = <97500>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		bsc1: i2c@f0419a80 {
+			compatible = "brcm,brcmstb-i2c";
+			reg = <0xf0419a80 0x58>;
+			interrupts-extended = <&upg_bsc_aon_l2 0>;
+			interrupt-names = "iicb";
+			clock-frequency = <97500>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		bsc2: i2c@f0419b00 {
+			compatible = "brcm,brcmstb-i2c";
+			reg = <0xf0419b00 0x58>;
+			interrupts-extended = <&upg_bsc_aon_l2 1>;
+			interrupt-names = "iicc";
+			clock-frequency = <97500>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		bsc3: i2c@f0419b80 {
+			compatible = "brcm,brcmstb-i2c";
+			reg = <0xf0419b80 0x58>;
+			interrupts-extended = <&upg_bsc_aon_l2 2>;
+			interrupt-names = "iicd";
+			clock-frequency = <97500>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		bsc4: i2c@f040a400 {
+			compatible = "brcm,brcmstb-i2c";
+			reg = <0xf040a400 0x58>;
+			interrupts-extended = <&upg_bsc_l2 1>;
+			interrupt-names = "iice";
+			clock-frequency = <97500>;
+			#address-cells = <1>;
+			#size-cells = <0>;
 		};
 
 		// UART0: 16550, 32-bit registers, 81 MHz clock (docs/hardware/uart.md), ID 102

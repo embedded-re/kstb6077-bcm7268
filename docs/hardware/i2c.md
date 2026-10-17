@@ -92,9 +92,20 @@ CTLHI `0xc0` comes from is unknown.
 Both BSC L2 controllers have every bit masked after BOLT: `0xf040a640` MASK
 = `7`, `0xf0419c40` MASK = `f`.
 
+## Linux (tested 2026-10-17)
+
+Mainline `i2c-brcmstb` drives all five (`linux/kstb6077.dts`, `linux/README.md`):
+an `i2cdetect -r` of buses 0, 2 and 3 found the same devices as the scan
+above, and each probe raised one interrupt on `iica`, `iicc` and `iicd`.
+That confirms the Nexus channel ↔ L2 bit pairing for ch0 (UPG BSC bit 0),
+ch2 (AON BSC bit 1) and ch3 (AON BSC bit 2). On ch1 and ch4 every
+transfer times out with no interrupt, as in the bare-metal scan, so their
+pairing is still untested. The EDID at `0x50` on ch0 reads with a correct
+checksum in both blocks (the TV is a Philips, "PHILIPS FTV").
+
 ## Open questions
 
 - Whether ch1 and ch4 time out because they aren't wired or because their
   pins aren't muxed.
 - Where ch0's CTLHI `0xc0` comes from.
-- Whether the channel ↔ L2 bit pairing (from Nexus) is right.
+- Whether the channel ↔ L2 bit pairing (from Nexus) is right for ch1 and ch4.
