@@ -233,6 +233,57 @@
 			     <GIC_PPI 10 (PPI_ALL_CPUS | IRQ_TYPE_LEVEL_LOW)>;
 	};
 
+	// PCIe (docs/hardware/peripherals.md): the register layout of the
+	// driver's generic STB type (RGR1_SW_INIT_1 +0x9210, MISC_REVISION +0x406c
+	// = 0x304). Outbound windows, inbound 2 GB at 0 and the interrupts as in
+	// the stock DTB (MSI SPI 51 = ID 83, INTA-INTD SPIs 46-49); one lane, the
+	// Wi-Fi chip BCM43570 behind it. The stock DTB's Wi-Fi supplies (AON GPIO
+	// 21, 26) are left out: the chip comes up with them as inputs or driven low
+	pcie: pcie@f0460000 {
+		compatible = "brcm,bcm7445-pcie";
+		reg = <0x0 0xf0460000 0x0 0x9310>;
+		device_type = "pci";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		#interrupt-cells = <1>;
+		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "pcie", "msi";
+		interrupt-map-mask = <0x0 0x0 0x0 0x7>;
+		interrupt-map = <0 0 0 1 &gic GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 2 &gic GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 3 &gic GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 4 &gic GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
+		msi-controller;
+		msi-parent = <&pcie>;
+		bus-range = <0x0 0xff>;
+		linux,pci-domain = <0>;
+		ranges = <0x02000000 0x0 0xc0000000 0x0 0xc0000000 0x0 0x08000000>,
+			 <0x02000000 0x0 0xc8000000 0x0 0xc8000000 0x0 0x08000000>,
+			 <0x02000000 0x0 0xd0000000 0x0 0xd0000000 0x0 0x08000000>,
+			 <0x02000000 0x0 0xd8000000 0x0 0xd8000000 0x0 0x08000000>;
+		dma-ranges = <0x43000000 0x0 0x0 0x0 0x0 0x0 0x80000000>;
+		brcm,scb-sizes = <0x0 0x80000000>;
+
+		pci@0,0 {
+			device_type = "pci";
+			reg = <0x0 0x0 0x0 0x0 0x0>;
+			bus-range = <0x1 0xff>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			ranges;
+
+			// the Wi-Fi chip on bus 1 (brcmfmac): the MAC from the stock DTB;
+			// its board file is the stock nvm.txt, installed as
+			// /lib/firmware/brcm/brcmfmac43570-pcie.kaon,kstb6077.txt
+			wifi@0,0 {
+				compatible = "pci14e4,aa31", "brcm,bcm4329-fmac";
+				reg = <0x10000 0x0 0x0 0x0 0x0>;
+				local-mac-address = [90 f8 91 e7 1b 65];
+			};
+		};
+	};
+
 	soc@0 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -243,6 +294,7 @@
 		gic: interrupt-controller@ffd01000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
+			#address-cells = <0>;
 			interrupt-controller;
 			reg = <0xffd01000 0x1000>,
 			      <0xffd02000 0x2000>;

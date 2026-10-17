@@ -1,21 +1,17 @@
 #!/bin/sh
-# kstb-modules - fetch our own modules for the running kernel from the PC's
-# TFTP root (make -C linux tftp puts them there as linux-<name>) and depmod.
+# kstb-modules - fetch the modules for the running kernel from the PC's TFTP
+# root (make -C linux tftp puts linux-modules.tar there) into /lib/modules.
 #   kstb-modules [server]      default 192.168.1.38
 # Needs busybox-extras (tftp). The modules must come from the same build as
 # the kernel: run it after every kernel update.
 set -e
 server=${1:-192.168.1.38}
-dir=/lib/modules/$(uname -r)
-mkdir -p "$dir/extra"
-cd "$dir"
-busybox-extras tftp -g -r linux-modules.list -l modules.list "$server"
-for f in $(cat modules.list); do
-	case $f in
-	*.ko) busybox-extras tftp -g -r "linux-$f" -l "extra/$f" "$server" ;;
-	modules.list) ;;
-	*) busybox-extras tftp -g -r "linux-$f" -l "$f" "$server" ;;
-	esac
-	echo "$dir: $f"
-done
+rel=$(uname -r)
+busybox-extras tftp -g -r linux-modules.tar -l /tmp/modules.tar "$server"
+tar tf /tmp/modules.tar "./$rel/modules.dep" >/dev/null || { echo "kstb-modules: no modules for $rel in it"; exit 1; }
+rm -rf "/lib/modules/$rel"
+mkdir -p /lib/modules
+tar xf /tmp/modules.tar -C /lib/modules
+rm /tmp/modules.tar
 depmod -a
+echo "/lib/modules/$rel: $(find "/lib/modules/$rel" -name '*.ko*' | wc -l) modules"

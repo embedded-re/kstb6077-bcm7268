@@ -150,6 +150,19 @@ and put the bit back. Register names in quotes are from the Linux drivers
   vendor `14e4` (Broadcom), device `7268` (this chip): the controller's own
   configuration header. Bit 0 (Linux: PERST, the reset line to the card) was
   left set; the Wi-Fi chip's power (AON GPIO 21/26) wasn't touched.
+- **PCIe in Linux (tested 2026-10-17)**: mainline `pcie-brcmstb` with
+  the layout of its generic STB type (`brcm,bcm7445-pcie`) brings the link
+  up: `link up, 2.5 GT/s PCIe x1`, root port `14e4:7268`, behind it
+  `14e4:aa31` (class `0280`, network), the Wi-Fi chip BCM43570, BARs
+  assigned at `0xc0000000` (4 MB) and `0xc0400000` (32 KB). Set up by
+  the driver: MISC_CTRL `0xf0464008` = `80203480` (SCB0 2 GB, SCB access,
+  512-byte bursts), RC_BAR2 `0xf0464034` = `00000010` (2 GB at PCIe
+  address 0), window `0xf0464070` = `dff0c000`. **AON GPIO 21 and 26 (the
+  stock DTB's Wi-Fi supplies) are not needed**: the chip enumerated with
+  both as inputs reading low, and its configuration header still read back
+  (`aa3114e4`) with both driven low as outputs. Its interrupt works as MSI
+  (the controller's own, GIC ID 83) and as INTA (ID 78, with `pci=nomsi`).
+  The Wi-Fi itself: [`../../linux/README.md`](../../linux/README.md).
 - **USB device controller (BDC)**: bit 23 of `0xf0b00234` holds it in reset
   (0 = reset). Bits 20–22 are already 1: they hold EHCI0+OHCI0, EHCI1+OHCI1
   and the xHCI in reset when 0 (tested 2026-10-16, [`usb.md`](usb.md) "Our own USB

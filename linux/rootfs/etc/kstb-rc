@@ -30,9 +30,9 @@ mkdir -p /dev/pts && mount -t devpts devpts /dev/pts
 mount -t tmpfs tmpfs /tmp
 mount -t debugfs debugfs /sys/kernel/debug
 hostname kstb6077
-# our own drivers are modules (/lib/modules/*/extra, kstb-modules): load the
-# ones whose devices are in the device tree, by their modalias
-for a in $(sort -u /sys/bus/platform/devices/*/modalias 2>/dev/null); do
+# modules (kstb-modules): load the ones whose devices are there (device tree,
+# PCI, USB), by their modalias
+for a in $(sort -u /sys/bus/*/devices/*/modalias 2>/dev/null); do
 	modprobe -q "$a"
 done
 echo "kstb6077: $(uname -r), $(grep -c ^processor /proc/cpuinfo) cores, $(sed -n 's/MemTotal: *//p' /proc/meminfo), root $(awk '$2 == "/" {print $1}' /proc/mounts | tail -1)"

@@ -77,6 +77,8 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | Temperature | `thermal@f04d1500` (`brcm,avs-tmon`, 28 nm constants) on the AVS L2 `interrupt-controller@f04d1200` (`brcm,l2-intc`, SPI 25) bit 6; `thermal-zones` with the stock trips (95, 110 °C passive) and 125 °C critical | `/sys/class/thermal/thermal_zone0/temp`: 53.1 °C idle, 62.8 °C after 90 s with all 4 cores busy. Interrupt tested: trip 0 set to 54.5 °C, one `brcmstb_thermal` interrupt when the load crossed it. No cooling device (no cpufreq yet) |
 | RTC | `waketimer@f041a080` (`brcm,brcmstb-waketimer`, 27 MHz) on the `sys_pm` L2 `interrupt-controller@f0410640` (`brcm,l2-intc`, SPI 61) bit 4 | `rtc0`; `hwclock -w` / `-r` work. Only an uptime clock: the counter restarts at every reset (the date written before `reboot` read 44 s at `kmon>`), and an alarm sets the timer's EVENT bit but raises no interrupt while running (the L2 bit is a wake-up source). Time comes from NTP (`kstb-rc`) |
 | IR receiver | `ir@f0419900` (`brcm,bcm7268-kbd`, our own driver [`drivers/kstb-ir.c`](drivers/kstb-ir.c), a module) on the AON L2 bit 0 | `rc0`, input device "KSTB6077 IR receiver", key map `rc-kaon-kstb6077` (the stock one, 45 keys). The Kaon remote, checked by the user: 1, 2, 3, OK, VOL+ held, RED each gave its scancode (`MSC_SCAN 20081c` = `KEY_1` …) and key; one interrupt per IR frame, repeats every 108.7 ms. The keys type into the TV's shell. Loaded at boot by `kstb-rc` ("Our own drivers" below) |
+| PCIe | `pcie@f0460000` (`brcm,bcm7445-pcie`: the driver's generic STB layout), MSI through the controller (SPI 51), INTA–INTD SPIs 46–49, outbound `0xc0000000–0xdfffffff`, inbound 2 GB at 0 | `link up, 2.5 GT/s PCIe x1`, root port `14e4:7268`, Wi-Fi `14e4:aa31` on bus 1 ([`../docs/hardware/peripherals.md`](../docs/hardware/peripherals.md)) |
+| Wi-Fi | `pci@0,0/wifi@0,0` (`brcm,bcm4329-fmac`: the stock MAC `90:f8:91:e7:1b:65`); `brcmfmac` and `cfg80211` as modules | BCM43570 r2, firmware 7.124.22 from `linux-firmware-brcm`, the stock board file. Scan: 2.4 and 5 GHz networks. WPA2 with `wpa_supplicant`: associated at 2462 MHz, −65 dBm, DHCP lease from the router, ping to the Internet over `wlan0` 13 ms, 4.0 MB download in 1.00 s with Ethernet down (rx rate 72.2 Mbit/s). "Wi-Fi" below |
 | HDMI console | `chosen/framebuffer@7db0b700` (`simple-framebuffer`, 1920 × 1080, `r5g6b5`, stride 3840) | `fb0: simplefb registered!`, `Console: switching to colour frame buffer device 240x67`; the boot log and a shell on `tty1` show on the TV, typed into with the USB keyboard (checked by the user) |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
@@ -198,25 +200,28 @@ native VIC 31, then 1080p60/24/25/30, 1080i, 720p50, basic audio, YCbCr
 4:4:4 and 4:2:2. Reading the DDC left the picture alone (kmon's HDMI
 set-up doesn't use the bus).
 
-## Our own drivers: external modules
+## Modules: our own drivers and the ones that need ROOT
 
 Blocks with no mainline driver get one in [`drivers/`](drivers/), built as an
 external module against this kernel, so the kernel tree stays as
 downloaded and a driver can be reloaded without a reboot (`rmmod`,
-`modprobe`). Everything else stays built in: `kstb.config` turns on
-`MODULES` and `MODULE_UNLOAD`, and turns off the few options that would
-otherwise become `=m` (`HW_RANDOM`, `BCM2712_MIP`, `EFIVAR_FS`).
+`modprobe`). Of the kernel's own drivers only those that load files from
+ROOT when they probe are modules (`cfg80211`, `brcmfmac`); everything else
+stays built in. `kstb.config` turns on `MODULES` and `MODULE_UNLOAD`, and
+turns off the few options that would otherwise become `=m` (`HW_RANDOM`,
+`BCM2712_MIP`, `EFIVAR_FS`).
 
 ```
-make -C linux tftp       # also build/out/modules/: *.ko, modules.builtin*, modules.list
-kstb-modules             # on the box: fetch them over TFTP into /lib/modules/<release>, depmod
+make -C linux tftp       # also build/out/modules.tar: /lib/modules/<release>, depmod'ed
+kstb-modules             # on the box: fetch it over TFTP, replace /lib/modules/<release>
 ```
 
-`kstb-rc` loads at boot every module whose device is in the device tree
-(`modprobe` of each `/sys/bus/platform/devices/*/modalias`). Tested: after
+`kstb-rc` loads at boot every module whose device is there (`modprobe` of
+each `/sys/bus/*/devices/*/modalias`: device tree, PCI, USB). Tested: after
 `kstb-flash-kernel` and `reboot`, kmon's `linux` started the kernel from
-`KRN`, and `kstb_ir` was loaded at 1.67 s without the PC. Rebuild and fetch
-the modules with every kernel: they must come from the same build.
+`KRN`, and `kstb_ir` (1.97 s) and `brcmfmac` (Wi-Fi firmware up at 2.59 s)
+were loaded without the PC. Fetch the modules with every kernel: they must
+come from the same build, and nothing checks it (no `MODVERSIONS`).
 
 ### `kstb-ir`: the IR receiver
 
@@ -234,6 +239,45 @@ stock file. Unloading turns the decoder off (CMD bits 4, 5 cleared).
 Before the driver first ran, kbd1 already read CMD `37`, CIR_ADDR `1b`:
 set up earlier (the block is in the always-on part of the chip); what set
 it was not checked.
+
+## Wi-Fi
+
+The chip is a BCM43570 (rev 2) on PCIe; mainline `brcmfmac` drives it with
+Cypress's firmware from linux-firmware. On the box:
+
+```
+apk add linux-firmware-brcm wireless-regdb iw wpa_supplicant
+iw dev wlan0 scan | grep SSID
+wpa_passphrase <ssid> <passphrase> > /etc/wpa_supplicant/wpa_supplicant.conf
+wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf
+udhcpc -i wlan0
+```
+
+Wi-Fi is not started at boot; Ethernet stays the default route (lower
+metric).
+
+What it took:
+
+- **The board file.** Without one the firmware boots (`RTE (PCIE-MSG_BUF)
+  7.124.22 … on BCM43570 r2`, "Firmware init done") but never answers the
+  first command: `Timeout on response for query command`, the dongle's
+  MAILBOXINT (`BAR0 + 0x48`) stays `0`, then `Firmware has halted or
+  crashed`. The same with MSI and with INTA (`pci=nomsi`), so not an
+  interrupt problem. The stock firmware's `nvm.txt` (board type `0x0743`,
+  antenna and power tables) as `brcmfmac43570-pcie.kaon,kstb6077.txt` (the
+  name brcmfmac tries first: chip + the DT's first `compatible`) fixed it;
+  `make` puts it into `rootfs-overlay.tar`.
+- **The MAC.** `nvm.txt` carries Broadcom's placeholder `00:90:4c:0c:c1:54`;
+  a DT node for the endpoint with `brcm,bcm4329-fmac` and
+  `local-mac-address` gives `wlan0` the box's own address.
+- **Modules.** brcmfmac loads its firmware from ROOT when it probes, so it
+  and cfg80211 are modules (`kstb-rc` loads it by its PCI modalias);
+  `FW_LOADER_COMPRESS_ZSTD`, since Alpine ships `*.bin.zst`.
+- The stock DTB's Wi-Fi supplies (AON GPIO 21, 26) are left out: the chip
+  works without them.
+
+`brcmf_inetaddr_changed: fail to get arp ip table err:-52` at DHCP time is
+harmless (the firmware has no ARP offload).
 
 ## Registers from Linux: `kstb-reg`
 
@@ -281,7 +325,8 @@ power-sequence helpers, none of which this box needs.
 ## Not done
 
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
-- HDMI audio, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
+- HDMI audio, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Bluetooth.
+- Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.
 - KVM and KASLR are off; nothing tested them.

@@ -5,8 +5,9 @@
 #   make tftp     -> copies them into the TFTP root (doom/build), as linux-*
 # kstb6077.dtb boots the initramfs, kstb6077-root.dtb the root file system on
 # ROOT (mmcblk0p8); rootfs-overlay.tar is rootfs/ for installing onto ROOT.
-#   make modules  -> build/out/modules/*.ko: our own drivers in drivers/, built as
-#                    external modules against this kernel (the tree stays stock)
+#   make modules  -> build/out/modules.tar: /lib/modules/<release> with the kernel's
+#                    modules and our own drivers in drivers/ (external modules, so
+#                    the tree stays stock), for kstb-modules on the box
 #   make slots    -> build/out/{krn.img,dtb.img}: Image and kstb6077-root.dtb behind a
 #                    KSLT header, for the KRN and DTB partitions (kstb-flash-kernel on
 #                    the box writes them; kmon's `linux` starts them)
@@ -53,10 +54,14 @@ $(OUT)/kstb6077-root.dtb: kstb6077.dts $(OUT)/Image
 	cpp -P -nostdinc -undef -x assembler-with-cpp -DROOTFS kstb6077.dts > build/kstb6077-root.pp.dts
 	$(KOUT)/scripts/dtc/dtc -I dts -O dtb -o $@ build/kstb6077-root.pp.dts
 
-# our files for ROOT, owned by root, extracted over Alpine's minirootfs
-$(OUT)/rootfs-overlay.tar: $(shell find rootfs -type f)
+# our files for ROOT, owned by root, extracted over Alpine's minirootfs; plus the
+# Wi-Fi chip's board file from the stock firmware, under the name brcmfmac looks for
+NVRAM = ../stock/release/firmware/broadcom/dhd/nvrams/nvm.txt
+$(OUT)/rootfs-overlay.tar: $(shell find rootfs -type f) $(NVRAM)
 	mkdir -p $(OUT)
 	tar -C rootfs --owner=0 --group=0 --numeric-owner -cf $@ .
+	tar -C $(dir $(NVRAM)) --owner=0 --group=0 --numeric-owner --mode=644 \
+		--transform 's|^nvm.txt$$|./lib/firmware/brcm/brcmfmac43570-pcie.kaon,kstb6077.txt|' -rf $@ nvm.txt
 
 $(OUT)/boot.bin: boot.S layout.h
 	mkdir -p $(OUT)
@@ -66,9 +71,12 @@ $(OUT)/boot.bin: boot.S layout.h
 
 modules: $(OUT)/Image FORCE
 	$(KMAKE) M=$(CURDIR)/drivers MO=$(CURDIR)/build/drivers modules
-	rm -rf $(OUT)/modules && mkdir -p $(OUT)/modules
-	cp build/drivers/*.ko $(KOUT)/modules.builtin $(KOUT)/modules.builtin.modinfo $(OUT)/modules/
-	cd $(OUT)/modules && ls > ../modules.list && mv ../modules.list .
+	rm -rf build/modroot
+	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/build/modroot INSTALL_MOD_STRIP=1 modules_install
+	$(KMAKE) M=$(CURDIR)/drivers MO=$(CURDIR)/build/drivers INSTALL_MOD_PATH=$(CURDIR)/build/modroot \
+		INSTALL_MOD_DIR=extra INSTALL_MOD_STRIP=1 modules_install
+	mkdir -p $(OUT) && tar -C build/modroot/lib/modules --owner=0 --group=0 --numeric-owner \
+		--exclude='*/build' --exclude='*/source' -cf $(OUT)/modules.tar .
 
 slots: $(OUT)/krn.img $(OUT)/dtb.img
 
@@ -80,7 +88,7 @@ $(OUT)/dtb.img: $(OUT)/kstb6077-root.dtb
 
 tftp: all slots modules
 	for f in Image initramfs.cpio.gz kstb6077.dtb kstb6077-root.dtb rootfs-overlay.tar boot.bin krn.img dtb.img; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
-	for f in $(OUT)/modules/*; do cp $$f $(TFTP)/linux-$$(basename $$f); done
+	cp $(OUT)/modules.tar $(TFTP)/linux-modules.tar
 
 FORCE:
 .PHONY: all slots modules tftp FORCE
