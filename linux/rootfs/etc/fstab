@@ -1,0 +1,2 @@
+# ROOT (mmcblk0p8) when booted with kstb6077-root.dtb; unused in the initramfs
+/dev/mmcblk0p8	/	ext4	rw,noatime	0 1

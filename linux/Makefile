@@ -1,7 +1,10 @@
 # Linux on the KSTB6077: arm64 kernel (clang), Alpine minirootfs as initramfs,
 # hand-written DTB, and boot.bin, the jump from kmon into the kernel.
-#   make          -> build/out/{Image,initramfs.cpio.gz,kstb6077.dtb,boot.bin}
+#   make          -> build/out/{Image,initramfs.cpio.gz,kstb6077.dtb,kstb6077-root.dtb,
+#                    rootfs-overlay.tar,boot.bin}
 #   make tftp     -> copies them into the TFTP root (doom/build), as linux-*
+# kstb6077.dtb boots the initramfs, kstb6077-root.dtb the root file system on
+# ROOT (mmcblk0p8); rootfs-overlay.tar is rootfs/ for installing onto ROOT.
 # The kernel source and the Alpine tarball are fetched into build/dl first
 # (see README.md); build/ is not tracked.
 
@@ -15,7 +18,7 @@ KMAKE   = $(MAKE) -C $(SRC) O=$(KOUT) ARCH=arm64 LLVM=1
 
 addr = $(shell sed -n 's/^\#define $(1) *\(0x[0-9a-f]*\).*/\1/p' layout.h)
 
-all: $(OUT)/Image $(OUT)/initramfs.cpio.gz $(OUT)/kstb6077.dtb $(OUT)/boot.bin
+all: $(OUT)/Image $(OUT)/initramfs.cpio.gz $(OUT)/kstb6077.dtb $(OUT)/kstb6077-root.dtb $(OUT)/rootfs-overlay.tar $(OUT)/boot.bin
 
 $(KOUT)/.config: kstb.config
 	mkdir -p $(KOUT)
@@ -41,6 +44,15 @@ $(OUT)/kstb6077.dtb: kstb6077.dts layout.h $(OUT)/initramfs.cpio.gz
 		kstb6077.dts > build/kstb6077.pp.dts
 	$(KOUT)/scripts/dtc/dtc -I dts -O dtb -o $@ build/kstb6077.pp.dts
 
+$(OUT)/kstb6077-root.dtb: kstb6077.dts $(OUT)/Image
+	cpp -P -nostdinc -undef -x assembler-with-cpp -DROOTFS kstb6077.dts > build/kstb6077-root.pp.dts
+	$(KOUT)/scripts/dtc/dtc -I dts -O dtb -o $@ build/kstb6077-root.pp.dts
+
+# our files for ROOT, owned by root, extracted over Alpine's minirootfs
+$(OUT)/rootfs-overlay.tar: $(wildcard rootfs/*/*)
+	mkdir -p $(OUT)
+	tar -C rootfs --owner=0 --group=0 --numeric-owner -cf $@ .
+
 $(OUT)/boot.bin: boot.S layout.h
 	mkdir -p $(OUT)
 	clang --target=aarch64-none-elf -c boot.S -o build/boot.o
@@ -48,7 +60,7 @@ $(OUT)/boot.bin: boot.S layout.h
 	llvm-objcopy -O binary build/boot.elf $@
 
 tftp: all
-	for f in Image initramfs.cpio.gz kstb6077.dtb boot.bin; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
+	for f in Image initramfs.cpio.gz kstb6077.dtb kstb6077-root.dtb rootfs-overlay.tar boot.bin; do cp $(OUT)/$$f $(TFTP)/linux-$$f; done
 
 FORCE:
 .PHONY: all tftp FORCE

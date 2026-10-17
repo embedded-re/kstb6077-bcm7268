@@ -12,7 +12,7 @@ Tested on the modified box on 2026-10-17 unless marked otherwise.
 | Kernel | Linux 6.18.57 (LTS), `ARCH=arm64`, built with clang 23 / ld.lld (`LLVM=1`), no gcc |
 | Config | `allnoconfig` + [`kstb.config`](kstb.config): everything built in, no modules; Image 7.9 MB |
 | Device tree | [`kstb6077.dts`](kstb6077.dts) (no BCM7268 tree exists upstream) |
-| Userspace | Alpine 3.24.2 aarch64 minirootfs (busybox, musl) as initramfs, 4 MB; [`rootfs/`](rootfs/) adds `inittab` and `kstb-rc` |
+| Userspace | Alpine 3.24.2 aarch64 (busybox, musl, apk): on `ROOT` (mmcblk0p8, ext4), or the minirootfs as a 4 MB initramfs; [`rootfs/`](rootfs/) adds `inittab`, `kstb-rc` and `fstab` |
 | Boot | from `kmon>`: four files over TFTP, then `go` to [`boot.S`](boot.S) ([`../tools/kstb-linux`](../tools/kstb-linux)) |
 | Time to init | `Run /sbin/init` at 0.44 s (serial only) and 0.93 s (all drivers below) after the kernel starts |
 
@@ -25,8 +25,12 @@ curl -LO https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/aarch64/al
 cd .. && tar xf dl/linux-6.18.57.tar.xz && cd ../..
 
 make -C linux tftp                          # ~3.5 min the first time; copies linux-* into doom/build
-tools/kstb-linux --watchdog 150 --listen 20 # board at kmon>, network up
+tools/kstb-linux --root --watchdog 150      # board at kmon>, network up: root on ROOT
+tools/kstb-linux --watchdog 150             # the same with the initramfs instead
 ```
+
+With `--watchdog`, run `echo V > /dev/watchdog` in Linux within the time
+given: Linux's driver doesn't notice the watchdog kmon armed.
 
 SHA-256 of the two downloads: kernel `5bd9acdc…f98c` (matches kernel.org's
 `sha256sums.asc`), Alpine `9bf70a7f…c773` (matches `latest-releases.yaml`).
@@ -43,7 +47,7 @@ Load addresses ([`layout.h`](layout.h), all below `0x06000000`, kmon's
 |---|---|
 | `0x02000000` | `Image`; the kernel runs in place (header: text offset 0, image size `0x7d0000`) |
 | `0x04800000` | `initramfs.cpio.gz` (the DTB's `linux,initrd-end` is set from its size at build time) |
-| `0x05e00000` | `kstb6077.dtb` |
+| `0x05e00000` | `kstb6077.dtb` (initramfs), or `kstb6077-root.dtb` (`root=/dev/mmcblk0p8 rootwait rw`, no initrd) |
 | `0x05f00000` | `boot.bin`: `x0` = DTB, `x1`–`x3` = 0, jump to the Image |
 
 kmon's `go` already leaves the MMU and caches off with the data cache
@@ -70,6 +74,34 @@ Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
 backup GPT at the end of the eMMC still describes the old layout
 ([`../docs/hardware/display.md`](../docs/hardware/display.md)). The partitions come from the primary
 table (p10 = `splash` is there).
+
+## Root file system on `ROOT` (2026-10-17)
+
+`ROOT` (mmcblk0p8, 1 GiB) held no file system, only an old swap header
+labelled `SWAP`. It was installed from the initramfs Linux, on the box:
+
+```
+ntpd -n -q -p pool.ntp.org              # the clock starts at 1970; TLS needs the date
+apk add e2fsprogs                       # into RAM
+mkfs.ext4 -F -L ROOT /dev/mmcblk0p8     # only after checking PARTNAME=ROOT and 2097152 sectors
+mount /dev/mmcblk0p8 /mnt/root
+wget https://dl-cdn.alpinelinux.org/alpine/v3.24/releases/aarch64/alpine-minirootfs-3.24.2-aarch64.tar.gz
+sha256sum …                             # 9bf70a7f…c773, as on the PC
+tar xzf alpine-minirootfs-3.24.2-aarch64.tar.gz -C /mnt/root
+wget http://<PC>:<port>/rootfs-overlay.tar && tar xf rootfs-overlay.tar -C /mnt/root
+umount /mnt/root
+```
+
+Alpine's busybox has no `tftp` applet; the 10 KB overlay came from a
+short-lived `python3 -m http.server` on the PC (SHA-256 checked on both
+sides). `UUID 435cda17-99fa-492f-ba47-d04cc34286ea`.
+
+Tested with `kstb-linux --root`: `EXT4-fs (mmcblk0p8): mounted filesystem …
+r/w`, `VFS: Mounted root (ext4 filesystem)` at 1.1 s, DHCP, the clock from
+NTP at boot (`kstb-rc`), `apk update` and `apk add nano` from the Internet;
+973 MB, 893 MB free. A file written in `/root` and `nano` were still there
+after `reboot` (busybox init: `umount -a -r`, PSCI reset, kmon, boot again),
+and ext4 mounted without a journal recovery.
 
 ## Two consoles
 
@@ -103,6 +135,6 @@ power-sequence helpers, none of which this box needs.
 
 - xHCI (not described; its ports are unknown, [`../docs/hardware/usb.md`](../docs/hardware/usb.md)).
 - HDMI audio, the IR receiver, the GPU (`brcm,7268-v3d` exists in mainline, not tried), Wi-Fi (PCIe), Bluetooth firmware.
-- A root file system on the eMMC: everything is in the initramfs, nothing persists.
+- Logins and SSH: both consoles are root shells without a password.
 - Starting Linux without the PC (from `DATA` or a kboot slot).
 - KVM and KASLR are off; nothing tested them.

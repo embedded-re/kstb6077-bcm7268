@@ -27,11 +27,18 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-		// earlycon without a baud rate: it keeps BOLT's divisor (44, 115200)
+		// earlycon without a baud rate: it keeps BOLT's divisor (44, 115200).
+		// ROOTFS: root on ROOT (mmcblk0p8), else the initramfs
+#ifdef ROOTFS
+		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p8 rootfstype=ext4 rootwait rw";
+#else
 		bootargs = "earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 rdinit=/sbin/init";
+#endif
 		stdout-path = "serial0:115200n8";
+#ifndef ROOTFS
 		linux,initrd-start = <0x0 INITRD_START>;
 		linux,initrd-end = <0x0 INITRD_END>;
+#endif
 
 		// BOLT's splash framebuffer, which kmon keeps on screen at 1080p59.94
 		// (docs/hardware/display.md); the display keeps scanning it out
