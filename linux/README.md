@@ -413,7 +413,7 @@ packages stay as they are:
 |---|---|---|
 | 23.3.6 (Alpine 3.19 package) | `/opt/alpine319` | `GL_RENDERER V3D 3.3`, `OpenGL ES 3.0 Mesa 23.3.6`, then a segfault compiling the first shader |
 | 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | **works**: [`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c) prints `OK` (below) |
-| 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` | hangs in the driver (no kernel message); no debug symbols packaged |
+| 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` (deleted 2026-10-17) | hangs in the driver (no kernel message); no debug symbols packaged |
 
 The fixes in the patch, all for code paths only V3D 3.3 takes, each found
 by a crash, a hang or a wrong picture on the box:
