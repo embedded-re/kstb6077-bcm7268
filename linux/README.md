@@ -32,6 +32,12 @@ tools/kstb-linux --watchdog 150             # the same with the initramfs instea
 With `--watchdog`, run `echo V > /dev/watchdog` in Linux within the time
 given: Linux's driver doesn't notice the watchdog kmon armed.
 
+`make` first applies our kernel patches, [`patches/*.patch`](patches) (`-p1` from
+the source root), each once: one that already reverse-applies is skipped
+(stamp `build/linux-6.18.57/.kstb-patched`). Extracting the tarball over
+an existing tree keeps the stamp: delete it then, or the patches stay
+out. So far one patch, for the GPU reset ("GPU" below).
+
 SHA-256 of the two downloads: kernel `5bd9acdc…f98c` (matches kernel.org's
 `sha256sums.asc`), Alpine `9bf70a7f…c773` (matches `latest-releases.yaml`).
 `linux/build/` is not tracked.
@@ -208,8 +214,8 @@ set-up doesn't use the bus).
 ## Modules: our own drivers and the ones that need ROOT
 
 Blocks with no mainline driver get one in [`drivers/`](drivers/), built as an
-external module against this kernel, so the kernel tree stays as
-downloaded and a driver can be reloaded without a reboot (`rmmod`,
+external module against this kernel, so the kernel tree only carries the
+small fixes in [`patches/`](patches) and a driver can be reloaded without a reboot (`rmmod`,
 `modprobe`). Of the kernel's own drivers only those that load files from
 ROOT when they probe are modules (`cfg80211`, `brcmfmac`, Bluetooth); everything else
 stays built in. `kstb.config` turns on `MODULES` and `MODULE_UNLOAD`, and
@@ -457,18 +463,21 @@ cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
 ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
 ```
 
-**A GPU hang takes the GPU down until a reboot.** A job that doesn't
-finish times out (seen twice with a bogus VPM read setup in a hand-written
-shader, once with a triangle on the frame's edges, (1,1) (-1,1) (1,-1),
-before fix 5): `Internal error: Oops` in `drm_sched_stop+0x94` from
+**A GPU hang: reset, then the GPU works again** (with
+[`patches/0001-v3d-reset-only-existing-queues.patch`](patches/0001-v3d-reset-only-existing-queues.patch)). Before the patch,
+a job that didn't finish (twice a bogus VPM read setup in a hand-written
+shader, once a triangle on the frame's edges, (1,1) (-1,1) (1,-1), before
+fix 5) gave `Internal error: Oops` in `drm_sched_stop+0x94` from
 `v3d_gpu_reset_for_timeout`, in the `v3d_reset` worker, for bin and
-render jobs alike. Linux keeps running, every later job times out
-(`Device timeout`); `reboot -f` recovers. Likely cause, from the source
-(not confirmed by a fix): the reset calls `drm_sched_stop` for every
-queue, including the CSD and cache-clean queues that `v3d` never
-initialises on 3.3 (`v3d_has_csd` is false); `v3d_sched_fini` skips such
-queues (`sched.ready`), the reset doesn't. A fix needs a patch to the
-kernel tree, which is stock so far.
+render jobs alike; every later job timed out (`Device timeout`) until
+`reboot -f`. The reset stopped, resubmitted and restarted every queue,
+including the CSD and cache-clean queues `v3d` never sets up without a
+CSD (V3D < 4.1). The patch skips queues that aren't `sched.ready`, as
+`v3d_sched_fini` does. Tested 2026-10-17, kernel booted over TFTP and
+then from `KRN`: `CSU=0=0 kstb-v3d-gl` (hangs the binner) gets `Device
+timeout`, `v3d` logs `Resetting GPU for hang` (bin, then render), no
+Oops; the next `kstb-v3d-gl` and `kstb-gles-test` print `OK`. Twice in a
+row on one boot.
 
 #### `kstb-v3d-gl`: a GL shader record without Mesa
 
@@ -537,7 +546,7 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- OpenGL ES: only the test triangle so far, Mesa in a chroot on `ROOT` (not installed system-wide); a GPU hang wedges the GPU until a reboot (`v3d` timeout Oops, "GPU" below). HDMI audio not yet heard.
+- OpenGL ES: only the test triangle so far, Mesa in a chroot on `ROOT` (not installed system-wide); HDMI audio not yet heard.
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.

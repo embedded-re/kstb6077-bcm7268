@@ -1,0 +1,48 @@
+v3d: GPU reset on V3D 3.3 only touches the scheduler queues that exist
+
+v3d_gpu_reset_for_timeout() stops, resubmits and restarts every queue, also
+the CSD and cache-clean queues v3d_sched_init() skips without a CSD (V3D < 4.1).
+On the KSTB6077's V3D 3.3 a hung job then oopsed in drm_sched_stop+0x94 and the
+GPU stayed dead until a reboot. Skip queues that aren't ready, as
+v3d_sched_fini() does.
+
+--- a/drivers/gpu/drm/v3d/v3d_sched.c
++++ b/drivers/gpu/drm/v3d/v3d_sched.c
+@@ -737,9 +737,13 @@
+ 
+ 	mutex_lock(&v3d->reset_lock);
+ 
+-	/* block scheduler */
+-	for (i = 0; i < V3D_MAX_QUEUES; i++)
+-		drm_sched_stop(&v3d->queue[i].sched, sched_job);
++	/* block scheduler (the queues that exist: V3D 3.3 has no CSD and
++	 * cache-clean queue, and drm_sched_stop() on one oopses)
++	 */
++	for (i = 0; i < V3D_MAX_QUEUES; i++) {
++		if (v3d->queue[i].sched.ready)
++			drm_sched_stop(&v3d->queue[i].sched, sched_job);
++	}
+ 
+ 	if (sched_job)
+ 		drm_sched_increase_karma(sched_job);
+@@ -753,12 +757,16 @@
+ 		v3d_priv->reset_counter++;
+ 	spin_unlock_irqrestore(&v3d->queue[q].queue_lock, irqflags);
+ 
+-	for (i = 0; i < V3D_MAX_QUEUES; i++)
+-		drm_sched_resubmit_jobs(&v3d->queue[i].sched);
++	for (i = 0; i < V3D_MAX_QUEUES; i++) {
++		if (v3d->queue[i].sched.ready)
++			drm_sched_resubmit_jobs(&v3d->queue[i].sched);
++	}
+ 
+ 	/* Unblock schedulers and restart their jobs. */
+-	for (i = 0; i < V3D_MAX_QUEUES; i++)
+-		drm_sched_start(&v3d->queue[i].sched, 0);
++	for (i = 0; i < V3D_MAX_QUEUES; i++) {
++		if (v3d->queue[i].sched.ready)
++			drm_sched_start(&v3d->queue[i].sched, 0);
++	}
+ 
+ 	mutex_unlock(&v3d->reset_lock);
+ 

@@ -6,13 +6,14 @@
 # kstb6077.dtb boots the initramfs, kstb6077-root.dtb the root file system on
 # ROOT (mmcblk0p8); rootfs-overlay.tar is rootfs/ for installing onto ROOT.
 #   make modules  -> build/out/modules.tar: /lib/modules/<release> with the kernel's
-#                    modules and our own drivers in drivers/ (external modules, so
-#                    the tree stays stock), for kstb-modules on the box
+#                    modules and our own drivers in drivers/ (external modules,
+#                    not in the tree), for kstb-modules on the box
 #   make slots    -> build/out/{krn.img,dtb.img}: Image and kstb6077-root.dtb behind a
 #                    KSLT header, for the KRN and DTB partitions (kstb-flash-kernel on
 #                    the box writes them; kmon's `linux` starts them)
 # The kernel source and the Alpine tarball are fetched into build/dl first
-# (see README.md); build/ is not tracked.
+# (see README.md); build/ is not tracked. Our kernel patches, patches/*.patch,
+# are applied to the extracted source before the first build.
 
 KVER    = 6.18.57
 ALPINE  = alpine-minirootfs-3.24.2-aarch64.tar.gz
@@ -30,7 +31,15 @@ $(KOUT)/.config: kstb.config
 	mkdir -p $(KOUT)
 	$(KMAKE) alldefconfig KCONFIG_ALLCONFIG=$(CURDIR)/kstb.config
 
-$(OUT)/Image: $(KOUT)/.config FORCE
+# each patch once: one that already reverse-applies is skipped
+$(SRC)/.kstb-patched: $(wildcard patches/*.patch)
+	for p in $(sort $^); do \
+		if patch -d $(SRC) -p1 -R -s -f --dry-run < $$p > /dev/null; then echo "already applied: $$p"; \
+		else patch -d $(SRC) -p1 -N -s < $$p || exit 1; echo "applied: $$p"; fi; \
+	done
+	touch $@
+
+$(OUT)/Image: $(KOUT)/.config $(SRC)/.kstb-patched FORCE
 	$(KMAKE) Image modules scripts
 	mkdir -p $(OUT) && cp $(KOUT)/arch/arm64/boot/Image $@
 
