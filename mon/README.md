@@ -224,7 +224,7 @@ for a prompt (`kstb-send`) never sends while the screen is still busy.
 
 ## Files on `flash0.DATA` and the USB stick (FAT32, [`../fat/`](../fat/))
 
-The eMMC's 6.3 GB `DATA` partition ([`../docs/hardware/storage.md`](../docs/hardware/storage.md)) holds
+The eMMC's 2 GB `DATA` partition ([`../docs/hardware/storage.md`](../docs/hardware/storage.md)) holds
 files. Paths are `/`-separated from the root, names match without regard to
 case (long names from a PC too); new names must be 8.3 (`doom1.wad`,
 `games/save0.dsg`). Getting a file onto the box from the PC:
@@ -385,8 +385,9 @@ after a host or card error, the eMMC works again without a reboot
 sectors from the start of the user area; `flash0.splash` is LBA
 `#15239168`–`#15273594`, so `flash0.splash + offset` = `#15239168 + offset/512`.
 
-Writes are refused outside `flash0.splash` and `flash0.DATA` (LBA
-`#2242560`–`#15239167`, FAT32), and in splash's first 512 KB (the splash
+Writes are refused outside `flash0.splash` and `flash0.DATA` (FAT32; since
+2026-10-17 its range comes from the GPT entry named `DATA`, checked to lie
+between `hwcfg` and `splash`: LBA `#10979328`–`#15239167` now), and in splash's first 512 KB (the splash
 container BOLT reads at boot) unless the command is `mmc!`. The driver
 sends CMD6 only to BUS_WIDTH [183] and HS_TIMING [185] (refused for any
 other byte), and never erase or lock commands, so it can't change the

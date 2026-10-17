@@ -181,8 +181,11 @@ static int mmc_switch(uint32_t index, uint32_t value, uint32_t rca)
     return r ? r : wait_tran(rca);
 }
 
+static int data_known;                              // mmc_data_range's cache
+
 int mmc_reset_card(uint32_t cid[4])
 {
+    data_known = 0;
     const uint32_t rca = 2;                         // the address BOLT gives the card
 
     // Host: software reset of everything, interrupt status as BOLT + buffer
@@ -279,9 +282,70 @@ int mmc_read_ext_csd(uint8_t *buf)
     return read_blocks(8, 0, 1, TM_READ, buf);
 }
 
+// Find a partition by name in the primary GPT (header at LBA 1, entries of
+// 128..512 bytes, names in UTF-16LE). 0 and its first and last LBA, or MMC_ENOPART.
+int mmc_find_part(const char *name, uint32_t *first, uint32_t *last)
+{
+    static uint8_t sec[512] __attribute__((aligned(64)));
+    if (mmc_read(1, 1, sec))
+        return MMC_EIO;
+    static const char sig[8] = "EFI PART";
+    for (int i = 0; i < 8; i++)
+        if (sec[i] != (uint8_t)sig[i])
+            return MMC_ENOPART;
+    uint64_t entries;
+    uint32_t count, size;
+    __builtin_memcpy(&entries, sec + 72, 8);
+    __builtin_memcpy(&count, sec + 80, 4);
+    __builtin_memcpy(&size, sec + 84, 4);
+    if (size < 128 || size > 512 || 512 % size || count > 256 || entries < 2 || entries > 33)
+        return MMC_ENOPART;
+    uint32_t per = 512 / size;
+    for (uint32_t i = 0; i < count; i++) {
+        if (i % per == 0 && mmc_read(entries + i / per, 1, sec))
+            return MMC_EIO;
+        const uint8_t *en = sec + (i % per) * size;
+        int k = 0;
+        while (k < 36 && name[k] && en[56 + 2 * k] == (uint8_t)name[k] && en[57 + 2 * k] == 0)
+            k++;
+        if (name[k] || (k < 36 && (en[56 + 2 * k] || en[57 + 2 * k])))
+            continue;
+        uint64_t f, l;
+        __builtin_memcpy(&f, en + 32, 8);
+        __builtin_memcpy(&l, en + 40, 8);
+        if (f == 0 || l < f || l >> 32)
+            return MMC_ENOPART;
+        *first = f, *last = l;
+        return 0;
+    }
+    return MMC_ENOPART;
+}
+
+// flash0.DATA from the GPT, checked to lie between hwcfg and splash. Looked
+// up once per card reset (the table only changes from Linux, and a reboot
+// follows).
+static uint32_t data_first, data_last;
+static int data_known;
+
+int mmc_data_range(uint32_t *first, uint32_t *last)
+{
+    if (!data_known) {
+        uint32_t f, l;
+        int r = mmc_find_part("DATA", &f, &l);
+        if (r)
+            return r;
+        if (f < DATA_MIN_LBA || l >= SPLASH_FIRST)
+            return MMC_ENOPART;
+        data_first = f, data_last = l, data_known = 1;
+    }
+    *first = data_first, *last = data_last;
+    return 0;
+}
+
 int mmc_write_allowed(uint32_t lba, uint32_t n, int force)
 {
-    if (n && lba >= DATA_FIRST && lba + n - 1 <= DATA_LAST)
+    uint32_t df, dl;
+    if (n && !mmc_data_range(&df, &dl) && lba >= df && lba + n - 1 <= dl)
         return 0;
     if (n == 0 || lba < SPLASH_FIRST || lba + n - 1 > SPLASH_LAST)
         return MMC_EGUARD;
@@ -331,6 +395,7 @@ const char *mmc_strerror(int r)
     case MMC_EBUSY:    return "controller/card busy";
     case MMC_ENOCARD:  return "no card";
     case MMC_EGUARD:   return "refused: outside flash0.splash and flash0.DATA, or in splash's first 512 KB (use '!')";
+    case MMC_ENOPART:  return "partition not in the GPT (or outside hwcfg..splash)";
     }
     return "ok";
 }

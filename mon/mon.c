@@ -1835,11 +1835,13 @@ static void cmd_mmc(struct cmd *c)
                write ? "wrote" : "read", n, n / 2, lba, write ? "from" : "to", a,
                us / 1000, us ? n * 512 * 1000000 / 1024 / us : 0);
     } else {
+        uint32_t df = 0, dl = 0;
+        mmc_data_range(&df, &dl);
         printf("usage: mmc [init | extcsd | part | dump lba | read lba count [addr] | write lba count addr]\n"
                "  lba/count in 512-byte sectors (hex, or #decimal). Writes only to\n"
                "  flash0.splash = LBA #%u-#%u (not its first 512 KB without 'mmc!')\n"
-               "  and flash0.DATA = LBA #%u-#%u.\n",
-               SPLASH_FIRST, SPLASH_LAST, DATA_FIRST, DATA_LAST);
+               "  and flash0.DATA (from the GPT) = LBA #%u-#%u.\n",
+               SPLASH_FIRST, SPLASH_LAST, df, dl);
     }
 }
 
@@ -1922,7 +1924,13 @@ static int fs_ready_path(const char **path)
         printf("eMMC: %s\n", mmc_strerror(r));
         return 0;
     }
-    r = fat_mount(DATA_FIRST);
+    uint32_t df, dl;
+    r = mmc_data_range(&df, &dl);
+    if (r) {
+        printf("flash0.DATA: %s\n", mmc_strerror(r));
+        return 0;
+    }
+    r = fat_mount(df);
     if (r)
         printf("flash0.DATA: %s\n", fat_strerror(r));
     return r == 0;
@@ -1968,9 +1976,12 @@ static void cmd_fs(struct cmd *c)
     if (!fs_ready_path(&path) || fs_fail("fs", fs_usb ? "usb:" : "flash0.DATA",
                                          fat_info(&cb, &total, &avail)))
         return;
+    uint32_t df = 0, dl = 0;
+    if (!fs_usb)
+        mmc_data_range(&df, &dl);
     printf("%s (LBA #%u-#%u): FAT32, %u clusters of %u KB, %u MB free of %u MB\n",
-           fs_usb ? "USB stick" : "flash0.DATA", fs_usb ? usb_part_first : DATA_FIRST,
-           fs_usb ? usb_part_last : DATA_LAST, total, cb / 1024,
+           fs_usb ? "USB stick" : "flash0.DATA", fs_usb ? usb_part_first : df,
+           fs_usb ? usb_part_last : dl, total, cb / 1024,
            (uint32_t)((uint64_t)avail * cb >> 20), (uint32_t)((uint64_t)total * cb >> 20));
 }
 

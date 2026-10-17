@@ -95,9 +95,10 @@ EXT_CSD, read from the card with CMD8:
 | PRE_EOL_INFO [267] | `01` | normal |
 | FIRMWARE_VERSION [261:254] | `37 33 31 30 33 35 31 37` | ASCII "73103517" |
 
-GPT read with the driver (`mmc part`, entries at LBA 2). Since 2026-10-15
-the Linux port's `SWAP` and `ROOT` are replaced by a 1 GB `ROOT` and the
-FAT32 `DATA` partition ("The `DATA` partition" below):
+GPT read with the driver (`mmc part`, entries at LBA 2): 14 entries, first
+usable LBA 6, last usable LBA 15273594. Since 2026-10-17 most of the space is
+Linux's `ROOT` ("Repartitioned for Linux" below; before that, 2026-10-15,
+a 1 GB `ROOT` and a 6346 MB `DATA`, "The `DATA` partition" below):
 
 | # | First LBA | Last LBA | Name |
 |---|---|---|---|
@@ -108,8 +109,8 @@ FAT32 `DATA` partition ("The `DATA` partition" below):
 | 5 | 4096 | 6143 | hwcfg |
 | 6 | 6144 | 137215 | KRN |
 | 7 | 137216 | 145407 | DTB |
-| 8 | 145408 | 2242559 | ROOT (1 GB, kept for a minimal Linux rootfs; empty) |
-| 9 | 2242560 | 15239167 | **DATA** (6346 MB, FAT32) |
+| 8 | 145408 | 10979327 | **ROOT** (5290 MiB, ext4: Alpine for [`../../linux/`](../../linux/README.md)) |
+| 9 | 10979328 | 15239167 | **DATA** (2080 MiB, FAT32) |
 | 10 | 15239168 | 15273594 | splash |
 
 Safety rules in the driver: it sends CMD6 (SWITCH, which could change the
@@ -118,6 +119,32 @@ boot or partition configuration) only to write BUS_WIDTH [183] and HS_TIMING
 `mmc_write()` refuses anything outside `flash0.splash` and `flash0.DATA`,
 and the splash container (its first 512 KB) unless forced (tested: LBA 100
 in `nvram` and the container's first sector were both refused).
+
+## Repartitioned for Linux (2026-10-17)
+
+`ROOT` grew in place from 1 GB to 5290 MiB; `DATA` moved to the end, before
+`splash`, and shrank to 2080 MiB (the user's choice: 2 GB for bare metal;
+2 GiB exactly would give 65,519 clusters of 32 KB, under FAT32's minimum of
+65,525, so 32 MiB more). Entries 1–7 and 10, every type, unique GUID and
+name, and the disk GUID are unchanged; kboot reads `splash` at a fixed LBA,
+so it had to stay.
+
+| Step | How | Result |
+|---|---|---|
+| kmon finds `DATA` in the GPT | `mmc_data_range()` in [`../../mon/mmc.c`](../../mon/mmc.c): the entry named `DATA`, accepted only between `hwcfg` and `splash`; the write guard uses it | from RAM, then slot A (seq 43) and golden (seq 44), `kmon-gpt-data` CRC `1d38e7fc`: `fs`, `ls`, `fput`/`rm` on `DATA`; a write to `ROOT` refused |
+| backups | from the initramfs Linux, over `nc` to the PC | `DATA`'s files (tar), LBA 0–33 and the last 33 sectors; MD5 equal on both sides |
+| new table | the old one in a sparse image of the disk's size on the PC, entries 8 and 9 changed with `sfdisk` | `sfdisk --verify`: no errors. Primary: sectors 1, 3, 4 changed. Backup GPT written correctly for the first time (it had described an old layout) |
+| write | `dd` from the initramfs Linux, only after the current LBA 0–33 matched the backup's MD5 | both copies read back with the PC's MD5; `blockdev --rereadpt`: the new sizes, and Linux's `GPT:partition_entry_array_crc32` warning is gone |
+| `DATA` | `mkfs.fat -F 32 -s 64 -S 512 -n KSTB -h 10979328`, files restored | 66,541 clusters of 32 KB; every file's MD5 as before; `fsck.fat` clean |
+| `ROOT` | `e2fsck -f`, `resize2fs` | 1,354,240 blocks of 4 KB; Linux: 5.0 GB, 4.8 GB free, its files kept |
+| boot chain | reset | `STARTUP` loaded `flash0.DATA:kboot.bin` (EL3 path), kboot's monitor `4b423303`, slot A confirmed; kmon `fs`: LBA #10979328–#15239167, 2079 MB |
+
+`e2fsck` found a journal to replay and orphaned inodes on `ROOT` first: an
+earlier `reboot -f` (no unmount) while Linux ran from it. Fixed with
+`e2fsck -f -y`; use `reboot`, not `reboot -f`, when `ROOT` is mounted.
+
+The old table and `DATA`'s files are kept on the PC
+(`~/kstb-backup/repartition-2026-10-17/`, not in the repository).
 
 ## Our own eMMC init (tested)
 
