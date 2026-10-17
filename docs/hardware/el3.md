@@ -28,6 +28,7 @@ Each probe prints `CurrentEL` first (`3` and `2`), sets its own vectors
 | GIC | non-secure view | secure view: group settings, secure priority mask ([below](#gic-the-only-memory-that-reads-differently)) |
 | EL3 system registers | UNDEFINED (`SYNC 02000000`) | readable ([below](#system-registers)) |
 | Cortex-A53 implementation-defined registers | only CPUECTLR tried (`00000040`) | all 7 readable |
+| Secure DRAM `0x7df00000–0x7fffffff` (single words) | reads, no abort | reads, no abort ([below](#secure-dram-bl31-and-srr)) |
 
 ## Peripheral registers: no difference
 
@@ -112,7 +113,29 @@ CPTR_EL2 `33ff`, CNTHCTL_EL2 `3`, ACTLR_EL1 `0`. MDCR_EL2 is `6` at EL3
 entry and `1f` at EL2 entry (smm64 sets it before it drops to EL2,
 [`../booting.md`](../booting.md) "Our own EL3").
 
-## Not read yet
+## Secure DRAM (BL31 and SRR)
 
-- Secure DRAM `0x7df00000–0x7fffffff` (BL31, SRR): a read could trip the
-  memory controller's protection and hang the board; needs the user's go.
+Single words with [`el3_sdram_probe.s`](../evidence/el3/el3_sdram_probe.s),
+from `BOLT>` with the watchdog armed, on 2026-10-17: two runs at EL3
+([1](../evidence/el3/el3_sdram_probe_el3_output.txt),
+[2](../evidence/el3/el3_sdram_probe_el3_output_2.txt)), one at EL2
+([output](../evidence/el3/el3_sdram_probe_el2_output.txt)), each after its own reset.
+**No read aborted or hung, at either level.**
+
+| Address | EL3 run 1 | EL3 run 2 | EL2 |
+|---|---|---|---|
+| `0x7dee0000` (free RAM, control) | `f81ff81f` | `f81ff81f` | `f81ff81f` |
+| `0x7df00000` (BL31 start) | `183849b5` | `434e0791` | `a6e31431` |
+| `0x7df00004` | `a3e4bf15` | `c62aab2b` | `cea6abe7` |
+| `0x7df01000` | `7bf67620` | `651ac66e` | `e0653bb4` |
+| `0x7df10000` | `fff346aa` | `e2adb674` | `fdba11ac` |
+| `0x7df80000` | `d1022f14` | `ca81d59f` | `818f47c1` |
+| `0x7dff0000` | `4bab8907` | `3c7fc1a4` | `34e45cd4` |
+| `0x7dfffffc` | `d9b2277c` | `0d3fbdb8` | `44f4cd61` |
+| `0x7e000000–0c`, `0x7e100000`, `0x7f000000`, `0x7ffffffc` (SRR) | `0` | `0` | `0` |
+
+- The BL31 words are different in every run, also between the two EL3 runs,
+  so the difference to EL2 comes with the new boot, not with the level.
+- The SRR words read `0` in every run.
+- The GISB arbiter's error capture (`0xf04007e4`, `0xf04007ec`,
+  `0xf04007f0`, `0xf04007f8`), read after these words, is `0` in all three runs.

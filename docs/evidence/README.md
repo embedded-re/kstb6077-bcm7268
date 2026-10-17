@@ -61,6 +61,7 @@ them by folder.
 |---|---|---|
 | `el3_read_probe.s`, `el3_read_probe_el3_output.txt`, `el3_read_probe_el2_output.txt` | system registers and single words (EL2 abort holes, OTP, GIC), the same binary at EL3 and EL2 | [What EL3 sees](../hardware/el3.md) |
 | `el3_dump_probe.s`, `el3_dump_probe_el3_output{,_2}.txt`, `el3_dump_probe_el2_output{,_2}.txt` | every word of the GIC distributor, BSP, memory controller and DTU, two runs at each level | [What EL3 sees](../hardware/el3.md) |
+| `el3_sdram_probe.s`, `el3_sdram_probe_el3_output{,_2}.txt`, `el3_sdram_probe_el2_output.txt` | single words of secure DRAM (BL31, SRR), then the GISB error capture | [What EL3 sees](../hardware/el3.md) |
 
 ## `gpt/`
 

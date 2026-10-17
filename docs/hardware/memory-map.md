@@ -55,7 +55,7 @@ Probes and outputs: [`../evidence/ram/`](../evidence/ram/). All at EL2 on the mo
 | `0x7da00000–0x7db07fff` | 1 MB | **free** without `pcm0`, tested (picture unchanged). With `pcm0`, BOLT puts the audio buffer at `0x7dada100–0x7db08eff` |
 | `0x7db08000–0x7db0b6ff` | 14 KB | display lists: **never write** |
 | `0x7db0b700–0x7defffff` | 4 MB | the framebuffer |
-| `0x7df00000–0x7fffffff` | 33 MB | BL31 + SRR, secure: never read or write |
+| `0x7df00000–0x7fffffff` | 33 MB | BL31 + SRR, secure: never write. Single-word reads from EL2 and EL3 work ([`el3.md`](el3.md)) |
 
 About **2,008 MB is usable**, all tested: 1,971 MB ([`ram_test.s`](../evidence/ram/ram_test.s)) + BOLT's 35 MB ([`bolt_reuse_probe.s`](../evidence/ram/bolt_reuse_probe.s)) + 2 MB ([`ram_gaps_probe.s`](../evidence/ram/ram_gaps_probe.s)).
 
