@@ -438,13 +438,16 @@
 		// HDMI output, 1080p59.94 as BOLT/kmon set it up: our KMS driver
 		// drivers/kstb-drm.c. Frame counter and the two flip registers, the
 		// graphics feeder's surface address (read only), BOLT's framebuffer
-		// (shown again when ours are off; simplefb's until kstb-drm takes over)
+		// (shown again when ours are off; simplefb's until kstb-drm takes over),
+		// the graphics feeder's format and pitch registers
 		display@f0603484 {
 			compatible = "kaon,kstb6077-display";
 			reg = <0xf0603484 0xc>,
 			      <0xf0641048 0x4>,
-			      <0x7db0b700 0x3f4800>;
-			reg-names = "rdc", "gfd", "boot-fb";
+			      <0x7db0b700 0x3f4800>,
+			      <0xf0641014 0x8>,
+			      <0xf0641058 0x4>;
+			reg-names = "rdc", "gfd", "boot-fb", "gfd-format", "gfd-pitch";
 			interrupts-extended = <&bvnf0_l2 0>;
 		};
 

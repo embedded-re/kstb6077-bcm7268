@@ -4,11 +4,19 @@
  *
  * BOLT's boot splash (or kmon's `video init`) sets up the display at
  * 1920x1080, 59.94 Hz, RGB565, pitch 3840, and it keeps running under Linux
- * (docs/hardware/display.md). This driver doesn't touch the set-up; it only
- * flips what the display scans out:
+ * (docs/hardware/display.md). This driver doesn't touch the timing; it only
+ * changes what the display scans out:
  *
- * - one fixed mode, one primary plane (RGB565, 1920x1080, pitch 3840: the
- *   display lists write that pitch every frame), buffers from CMA (DMA GEM);
+ * - one fixed mode, one primary plane, buffers from CMA (DMA GEM);
+ * - formats: the graphics feeder's two format registers (GFD 0xf0641014/18,
+ *   bits per channel and each channel's lowest bit, as Nexus derives them
+ *   from its pixel format code) and its pitch register (0xf0641058); the
+ *   display lists write them only at set-up, so a direct write stays.
+ *   Without the "gfd-format" and "gfd-pitch" resources (an older device
+ *   tree), RGB565 with pitch 3840 only. 32-bit pixels always have alpha:
+ *   the feeder applies the fourth byte and the compositor blends the
+ *   picture over its background, so there is no XRGB8888 (a client
+ *   writing 0 there would get the background);
  * - page flip: the buffer's address into the two flip registers 0xf0603488 and
  *   0xf060348c; the RDC copies it into the graphics feeder (GFD 0xf0641048) at
  *   the next frame, the whole frame at once;
@@ -46,7 +54,7 @@
 
 #define WIDTH		1920
 #define HEIGHT		1080
-#define PITCH		3840		/* written into the GFD by the display lists */
+#define PITCH		3840		/* BOLT's: RGB565 */
 
 /* "rdc" registers, from 0xf0603484 */
 #define RDC_FRAME	0x0		/* counts up once per frame */
@@ -61,6 +69,10 @@ struct kstb_drm {
 	struct drm_connector connector;
 	void __iomem *rdc;
 	void __iomem *gfd;		/* GFD surface address: what is shown now */
+	void __iomem *gfd_format;	/* GFD format registers 1 and 2, or NULL */
+	void __iomem *gfd_pitch;	/* GFD pitch register */
+	u32 format;			/* DRM format the GFD is set to */
+	u32 pitch;
 	u32 boot_fb;			/* BOLT's framebuffer */
 	u32 shown;			/* last address written to the flip registers */
 	struct drm_pending_vblank_event *event;	/* sent once the GFD has `shown` */
@@ -76,6 +88,39 @@ static const struct drm_display_mode kstb_mode = {
 		 DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC),
 };
 
+/* GFD format registers: 1 = type << 16 | bits of channels 3..0 (alpha,
+ * red, green, blue), a nibble each; 2 = each channel's lowest bit, a byte
+ * each, 0 for a channel without bits. Type 2 is Nexus's for RGB565, 0 for
+ * 32-bit RGB (other types tested: 1 takes the alpha from elsewhere, 3-5
+ * are palette and alpha-only formats in Nexus; leave them alone).
+ */
+static const struct kstb_format {
+	u32 drm, def1, def2;
+} kstb_formats_gfd[] = {
+	{ DRM_FORMAT_RGB565,   0x00020565, 0x000b0500 },	/* BOLT's */
+	{ DRM_FORMAT_BGR565,   0x00020565, 0x0000050b },
+	{ DRM_FORMAT_ARGB8888, 0x00008888, 0x18100800 },
+	{ DRM_FORMAT_ABGR8888, 0x00008888, 0x18000810 },
+};
+
+static void kstb_set_format(struct kstb_drm *k, u32 format, u32 pitch)
+{
+	int i;
+
+	if (!k->gfd_format || (format == k->format && pitch == k->pitch))
+		return;
+	for (i = 0; i < ARRAY_SIZE(kstb_formats_gfd); i++)
+		if (kstb_formats_gfd[i].drm == format)
+			break;
+	if (WARN_ON(i == ARRAY_SIZE(kstb_formats_gfd)))
+		return;
+	writel(kstb_formats_gfd[i].def1, k->gfd_format);
+	writel(kstb_formats_gfd[i].def2, k->gfd_format + 4);
+	writel(pitch, k->gfd_pitch);
+	k->format = format;
+	k->pitch = pitch;
+}
+
 static void kstb_flip(struct kstb_drm *k, u32 addr)
 {
 	k->shown = addr;
@@ -90,6 +135,7 @@ static void kstb_show_boot_fb(struct kstb_drm *k)
 {
 	u32 v;
 
+	kstb_set_format(k, DRM_FORMAT_RGB565, PITCH);
 	kstb_flip(k, k->boot_fb);
 	if (readl_poll_timeout(k->gfd, v, v == k->boot_fb, 500, 100000))
 		drm_warn(&k->drm, "display still shows %08x\n", v);
@@ -110,12 +156,15 @@ static int kstb_plane_atomic_check(struct drm_plane *plane, struct drm_atomic_st
 						  DRM_PLANE_NO_SCALING, false, true);
 	if (ret || !ps->visible)
 		return ret;
-	/* the display lists set the pitch; x must stay 0 to keep the
-	 * address's alignment (a multiple of 256 in every tested case)
+	/* x must stay 0 to keep the address's alignment (a multiple of
+	 * 256 in every tested case); without the format registers, only
+	 * BOLT's format and pitch
 	 */
-	if (ps->fb->pitches[0] != PITCH || ps->src.x1) {
-		drm_dbg_kms(plane->dev, "pitch %u (needs %u), x %u (needs 0)\n",
-			    ps->fb->pitches[0], PITCH, ps->src.x1 >> 16);
+	if (ps->src.x1 || (ps->fb->pitches[0] & 255) ||
+	    (!to_kstb(plane->dev)->gfd_format &&
+	     (ps->fb->format->format != DRM_FORMAT_RGB565 || ps->fb->pitches[0] != PITCH))) {
+		drm_dbg_kms(plane->dev, "%p4cc pitch %u x %u not supported\n",
+			    &ps->fb->format->format, ps->fb->pitches[0], ps->src.x1 >> 16);
 		return -EINVAL;
 	}
 	return 0;
@@ -128,6 +177,7 @@ static void kstb_plane_atomic_update(struct drm_plane *plane, struct drm_atomic_
 
 	if (!ps->fb || !ps->visible)
 		return;
+	kstb_set_format(k, ps->fb->format->format, ps->fb->pitches[0]);
 	kstb_flip(k, drm_fb_dma_get_gem_addr(ps->fb, ps, 0));
 }
 
@@ -151,7 +201,9 @@ static const struct drm_plane_funcs kstb_plane_funcs = {
 	.atomic_destroy_state = drm_atomic_helper_plane_destroy_state,
 };
 
-static const u32 kstb_formats[] = { DRM_FORMAT_RGB565 };
+static const u32 kstb_formats[] = {
+	DRM_FORMAT_RGB565, DRM_FORMAT_BGR565, DRM_FORMAT_ARGB8888, DRM_FORMAT_ABGR8888,
+};
 static const u64 kstb_modifiers[] = { DRM_FORMAT_MOD_LINEAR, DRM_FORMAT_MOD_INVALID };
 
 /* CRTC */
@@ -321,7 +373,7 @@ static int kstb_modeset_init(struct kstb_drm *k)
 	drm->mode_config.funcs = &kstb_mode_config_funcs;
 
 	ret = drm_universal_plane_init(drm, &k->plane, 1, &kstb_plane_funcs, kstb_formats,
-				       ARRAY_SIZE(kstb_formats), kstb_modifiers,
+				       k->gfd_format ? ARRAY_SIZE(kstb_formats) : 1, kstb_modifiers,
 				       DRM_PLANE_TYPE_PRIMARY, NULL);
 	if (ret)
 		return ret;
@@ -371,6 +423,21 @@ static int kstb_drm_probe(struct platform_device *pdev)
 	k->gfd = devm_platform_ioremap_resource_byname(pdev, "gfd");
 	if (IS_ERR(k->gfd))
 		return PTR_ERR(k->gfd);
+	if (platform_get_resource_byname(pdev, IORESOURCE_MEM, "gfd-format")) {
+		k->gfd_format = devm_platform_ioremap_resource_byname(pdev, "gfd-format");
+		if (IS_ERR(k->gfd_format))
+			return PTR_ERR(k->gfd_format);
+		k->gfd_pitch = devm_platform_ioremap_resource_byname(pdev, "gfd-pitch");
+		if (IS_ERR(k->gfd_pitch))
+			return PTR_ERR(k->gfd_pitch);
+		/* BOLT's (checked: anything else would be left from an
+		 * earlier load of this driver, and kstb_show_boot_fb resets it)
+		 */
+		k->format = DRM_FORMAT_RGB565;
+		k->pitch = PITCH;
+		if (readl(k->gfd_format) != 0x00020565 || readl(k->gfd_pitch) != PITCH)
+			k->format = 0;
+	}
 	/* not requested: simplefb holds it until we remove it below */
 	fb = platform_get_resource_byname(pdev, IORESOURCE_MEM, "boot-fb");
 	if (!fb)
@@ -401,7 +468,8 @@ static int kstb_drm_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 	drm_client_setup_with_fourcc(&k->drm, DRM_FORMAT_RGB565);
-	drm_info(&k->drm, "1920x1080@59.94 RGB565, showing %08x\n", k->shown);
+	drm_info(&k->drm, "1920x1080@59.94 %s, showing %08x\n",
+		 k->gfd_format ? "RGB565/BGR565/ARGB8888/ABGR8888" : "RGB565", k->shown);
 	return 0;
 }
 

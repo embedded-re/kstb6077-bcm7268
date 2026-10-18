@@ -90,7 +90,7 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | HDMI audio | `hdmi-audio@f0ca0000` (`kaon,kstb6077-hdmi-audio`, our own driver [`drivers/kstb-audio.c`](drivers/kstb-audio.c), a module) | ALSA card 0 `KSTB6077 HDMI`, 48 kHz, S32_LE, stereo. `aplay -d 30` took 30.00 s, also with 5 ms periods, no underrun; the default device converts other rates and formats (`plug`). Underrun, `rmmod`/`modprobe` and the load at boot from `KRN` tested. **Not yet heard**: nobody listened to the TV ("HDMI audio" below) |
 | GPU (V3D 3.3) | `gpu@f1200000` (`brcm,7268-v3d`, mainline `v3d`, built in), hub/core interrupts SPI 78/77; power island `clock-controller@f041d020` (our module [`drivers/kstb-v3d-power.c`](drivers/kstb-v3d-power.c)) | `[drm] Initialized v3d 1.0.0`, `/dev/dri/card0`, `renderD128`; IDs `000e1133` / `03443356`. Binner + render jobs through the GPU MMU and both interrupts: clear and triangle pixel-exact ([`rootfs/usr/sbin/kstb-v3d-test`](rootfs/usr/sbin/kstb-v3d-test)). OpenGL ES 3.0 through Mesa 23.3.6 with our patch: a coloured and a textured triangle exact ("GPU" below) |
 | GISB arbiter | `gisb-arb@f0400000` (`brcm,gisb-arb`, mainline `brcmstb_gisb`) on the sys L2 `interrupt-controller@f0403000` (`brcm,l2-intc`, SPI 59) bits 0 and 2 | a read of an abort hole is reported: `kstb-reg f04d150c` gave `GISB: target abort at 0xf04d150c [R ], core: cpu_0` and one TEA interrupt (and the program's `Bus error`) |
-| HDMI display (KMS) | `display@f0603484` (`kaon,kstb6077-display`, our own driver [`drivers/kstb-drm.c`](drivers/kstb-drm.c), a module), vblank on the BVNF_0 L2 `interrupt-controller@f0606000` (`brcm,l2-intc`, SPI 17) bit 0; until it loads, `chosen/framebuffer@7db0b700` (`simple-framebuffer`) | `/dev/dri/card1` `kstb-drm`: 1920 × 1080 at 59.94 Hz, RGB565, page flips at vsync (59.94 per second, none missed), the console on its fbdev emulation, scanout buffers from CMA; Mesa renders straight into them (kmsro). Seen on the TV by the user ("Display" below). Before it loads, simplefb shows the boot log on BOLT's buffer; the console and the USB keyboard on `tty1` work on both |
+| HDMI display (KMS) | `display@f0603484` (`kaon,kstb6077-display`, our own driver [`drivers/kstb-drm.c`](drivers/kstb-drm.c), a module), vblank on the BVNF_0 L2 `interrupt-controller@f0606000` (`brcm,l2-intc`, SPI 17) bit 0; until it loads, `chosen/framebuffer@7db0b700` (`simple-framebuffer`) | `/dev/dri/card1` `kstb-drm`: 1920 × 1080 at 59.94 Hz, RGB565 (also BGR565, ARGB8888, ABGR8888, checked by the HDMI CRC), page flips at vsync (59.94 per second, none missed), the console on its fbdev emulation, scanout buffers from CMA; Mesa renders straight into them (kmsro). Seen on the TV by the user ("Display" below). Before it loads, simplefb shows the boot log on BOLT's buffer; the console and the USB keyboard on `tty1` work on both |
 
 Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
 backup GPT at the end of the eMMC still describes the old layout
@@ -383,7 +383,7 @@ changes what it scans out:
 | | |
 |---|---|
 | Mode | one, fixed: 1920 × 1080 at 59.94 Hz (CEA VIC 16 timings, 148.352 MHz); one CRTC, an HDMI-A connector (always connected, EDID not read) |
-| Plane | primary only, `RG16` (RGB565), linear; the pitch must be 3840 (the display lists write it every frame) and the source x 0 |
+| Plane | primary only, linear; `RG16`, `BG16`, `AR24`, `AB24` (RGB565, BGR565, ARGB8888, ABGR8888): the graphics feeder's format and pitch registers are set from the buffer (`gfd-format`, `gfd-pitch` in the device tree; without them, RGB565 with pitch 3840 only). Pitch a multiple of 256, source x 0. 32-bit pixels always have alpha (blended over the compositor's blue background), hence no `XR24` |
 | Buffers | DMA GEM from CMA (`CMA_SIZE_MBYTES=64`, placed at `0x77000000`); dumb buffers, PRIME export |
 | Page flip | the buffer's address into `0xf0603488` and `0xf060348c`; the RDC loads it into the GFD at the next frame |
 | Vblank | BVNF_0 L2 bit 0, one per frame; a flip's event goes out at the first one after `0xf0641048` (the GFD's surface address) reads the new buffer |
@@ -413,10 +413,35 @@ Tested (2026-10-17/18, kernel over TFTP, then from `KRN`):
 | GPU straight to the screen ("Mesa" below) | spinning triangle at 59.94 Hz, seen by the user |
 
 ```
-# in the Alpine 3.19 chroot (libdrm-dev):
+# on ROOT (libdrm-dev, build-base):
 gcc -O2 -o kstb-flip-test kstb-flip-test.c -I/usr/include/libdrm -ldrm
 ./kstb-flip-test 20
 ```
+
+**Formats, checked without the TV** (2026-10-18, kernel and new DTB over
+TFTP): [`drm/kstb-fmt-test.c`](drm/kstb-fmt-test.c) shows one test picture in each format
+and pitch and reads the HDMI transmitter's CRC of the output after each
+([`../docs/hardware/display.md`](../docs/hardware/display.md), "HDMI CRC"). Same picture, same CRC:
+
+```
+RGB565                 pitch  3840: crc 7de8 7de8 7de8
+BGR565                 pitch  3840: crc 7de8 7de8 7de8
+ARGB8888               pitch  7680: crc 7de8 7de8 7de8
+ABGR8888               pitch  7680: crc 7de8 7de8 7de8
+ARGB8888 pitch 8192    pitch  8192: crc 7de8 7de8 7de8
+RGB565 pitch 4096      pitch  4096: crc 7de8 7de8 7de8
+ARGB8888 alpha 00      pitch  7680: crc 0790 0790 0790
+ARGB8888 alpha 5a      pitch  7680: crc 3742 3742 3742
+RGB565 again           pitch  3840: crc 7de8 7de8 7de8
+ARGB8888 R/B swapped   pitch  7680: crc 13e3 13e3 13e3
+RGB565 R/B swapped     pitch  3840: crc 13e3 13e3 13e3
+OK: 11 of 11 as expected
+```
+
+The format registers are set when the plane is updated, the address at
+the next frame by the display lists, so a flip that also changes the
+format can show one frame of the old buffer read in the new format. Not
+seen on the TV yet (the RGB565 reference picture neither).
 
 ## GPU
 
@@ -520,6 +545,43 @@ cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
 # on the box; mesa/ch319 is the chroot helper (in /usr/local/bin there)
 ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
 ```
+
+**Installed on ROOT** (2026-10-18): `build-mesa.sh` with its default prefix
+`/usr/local`, run on ROOT's Alpine 3.24 itself (gcc 15.2, Python 3.14,
+meson from Alpine; the script `apk add`s the build packages, among them
+`py3-packaging`, which Mesa's meson check for mako needs since Python
+dropped `distutils`). No source changes beyond the two patches. musl's
+loader searches `/usr/local/lib` before `/usr/lib` and Alpine's own Mesa
+isn't installed, so programs need no `LD_LIBRARY_PATH`:
+
+```
+gcc -O2 -o kstb-gles-test kstb-gles-test.c -lEGL -lGLESv2 -lgbm
+./kstb-gles-test        # libEGL.so.1 => /usr/local/lib/libEGL.so.1 ...; same pixels as in the chroot, OK
+```
+
+`kstb-kms-gles` (601 flips in 10.11 s), `kstb-flip-test` and `kmscube`
+(below) run the same way. The chroot `/opt/alpine319` stays as it was.
+
+A faster way for changes: cross-building on the PC (clang `--target=aarch64-alpine-linux-musl`,
+lld, with `/usr/include`, `/usr/lib` and `/lib` copied from ROOT as the sysroot)
+builds the same tree in about 3 minutes; meson needs `-Wl,--undefined-version`
+for lld. Not yet run on the box.
+
+**kmscube** (2026-10-18, built on ROOT from `gitlab.freedesktop.org/mesa/kmscube`
+master, `meson setup build -Dgstreamer=disabled` with
+`PKG_CONFIG_PATH=/usr/local/lib/pkgconfig`), `-D /dev/dri/card1 -c 300`:
+
+| Options | Result |
+|---|---|
+| `-f AR24`, `-f RG16` | `Rendered 299 frames in 4.988 sec (59.940 fps)` each |
+| `-A -f AR24` (atomic) | `no eglDupNativeFenceFDANDROID`: exits; Mesa's EGL here has no Android native fence |
+| `-f AR24 -M rgba` (texture from a GBM buffer as a dma-buf EGLImage) | **kernel Oops**, `Unable to handle kernel NULL pointer dereference at virtual address 0000000000000024`; the board hung while printing it (no call trace on the serial line, no ping): power cycle needed |
+
+The Oops is open: the call trace never came out. That path (a linear
+texture from a dma-buf) differs from the working ones in two ways: v3d
+copies the texture to a tiled shadow copy, trying the TFU first
+(`v3d_tfu_blit`, no version check), and kmsro imports the buffer into
+`kstb-drm` too (`renderonly_create_gpu_import_for_resource`).
 
 **A GPU hang: reset, then the GPU works again** (with
 [`patches/0001-v3d-reset-only-existing-queues.patch`](patches/0001-v3d-reset-only-existing-queues.patch)). Before the patch,
@@ -633,8 +695,8 @@ power-sequence helpers, none of which this box needs.
 
 ## Not done
 
-- OpenGL ES: test triangles only (offscreen and on the screen through `kstb-drm`); Mesa in a chroot on `ROOT` (not installed system-wide); HDMI audio not yet heard.
-- Display: RGB565 at 1080p59.94 only (no other formats or modes, no EDID, no hot-plug, no overlay planes).
+- OpenGL ES: test triangles and kmscube's smooth cube only; a dma-buf texture (kmscube `-M rgba`) crashes the kernel; no conformance tests run yet. HDMI audio not yet heard.
+- Display: 1080p59.94 only (no other modes, no EDID, no hot-plug, no overlay planes); formats RGB565, BGR565, ARGB8888, ABGR8888, but no XRGB8888 (the feeder always applies the fourth byte as alpha).
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
 - Logins and SSH: both consoles are root shells without a password.
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.

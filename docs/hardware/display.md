@@ -84,7 +84,7 @@ The graphics feeder (GFD) block at `0xf0641000`:
 |---|---|---|
 | `0xf0641044` | `00000780` | source width, 1920 (see "Graphics feeder" below) |
 | `0xf0641048` | `7db0b700` | **surface address: where the pixels are** |
-| `0xf0641058` | `00000f00` (written by the display lists) | pitch, 3840 bytes |
+| `0xf0641058` | `00000f00` (written by the set-up lists only) | pitch, 3840 bytes; a direct write takes effect and stays ("Pixel formats and pitch") |
 | `0xf0641174` | `00000438` (written by the display lists) | height, 1080 |
 
 **Reading `0xf064105c` gives an external abort**, which hangs BOLT. The 590
@@ -440,7 +440,8 @@ Not understood (observed, no explanation yet):
 
 Other values that BOLT's per-frame list writes to the compositor every
 frame: `0xf064580c = 07800438` (canvas size, named by Nexus' builder),
-`0xf0645814 = 0002ff34`, `0xf0645818/1c = 000f0000`,
+`0xf0645814 = 0002ff34` (blend control, "Compositor blend and the
+feeder's alpha" below), `0xf0645818/1c = 000f0000`,
 `0xf0645984 = 0`, `0xf0645990 = 0`, `0xf0645994 = 1`,
 `0xf0645808 = 1` (written last). Their roles are not tested.
 
@@ -458,10 +459,96 @@ TV ([`gfd_hzoom_probe.s`](../evidence/display/gfd_hzoom_probe.s), [`gfd_bg_probe
 | `0xf06410f0–fc` | `0, 10000000, 0, 0` | horizontal filter coefficients | not changed |
 | `0xf0641180/84` | `10000000, 0` | vertical filter coefficients | not changed |
 | `0xf064106c` | `07800438` | output size, `width << 16 \| height` | not changed |
-| `0xf0641014/18` | `00020565`, `000b0500` | pixel format (`0565` = RGB565, inferred) | not changed |
+| `0xf0641014/18` | `00020565`, `000b0500` | pixel format | **tested**, see "Pixel formats and pitch" below |
 
 How to make the scaler work is open: the step register keeps a direct write
 but the picture isn't stretched.
+
+### HDMI CRC: checking the picture without looking (tested 2026-10-18)
+
+`0xf06f8014` (HDMI transmitter block, read by Nexus's
+`BHDM_GetCrcValue_isr`, low 16 bits) is a checksum of what goes out on the
+cable. It is running after BOLT's or kmon's set-up; nothing enables it.
+Read from Linux (`kstb-reg`):
+
+- with the text console it alternated between two values, `7fb6` and
+  `2331`: the cursor blinking;
+- the same picture always gives the same value: the 1920 × 1080 test
+  picture of [`linux/drm/kstb-fmt-test.c`](../../linux/drm/kstb-fmt-test.c) gave `7de8` in every
+  run, after reboots too, and from RGB565 and 32-bit buffers alike;
+  the same picture with red and blue swapped `13e3`;
+- a changed register shows in it within 0.1 s (6 frames).
+
+So a test can tell "this buffer is shown exactly like that one" without
+anyone at the TV. It says nothing about which picture is right: one
+reference has to be seen once.
+
+### Pixel formats and pitch (tested 2026-10-18, from Linux)
+
+The two format registers, as Nexus's `BVDC_P_GfxFeeder_BuildRul_isr` builds
+them from its pixel-format code (`BPXL_eR5_G6_B5` = `06e40565`: bits 0–15
+bits per component, 16–23 component positions):
+
+```
+0xf0641014  FORMAT_DEF_1 = type << 16 | A bits << 12 | R bits << 8 | G bits << 4 | B bits
+0xf0641018  FORMAT_DEF_2 = A lsb << 24 | R lsb << 16 | G lsb << 8 | B lsb    (lsb 0 for a 0-bit channel)
+```
+
+Types Nexus uses: 2 for RGB565 (both component orders), 1 for its ARGB1555
+codes, 4 palette, 5 alpha-only, 3 "special", 0 the rest (32-bit RGB). The
+pitch register `0xf0641058` is in bytes. All three are written only by the
+set-up lists, not by the per-frame list, so a direct write stays.
+
+Tested with the HDMI CRC above:
+
+| Change | CRC |
+|---|---|
+| RGB565 picture, `FORMAT_DEF_2` → `0000050b` (red at bit 0, blue at bit 11) | `13e3`, exactly the R/B-swapped picture's; back to `000b0500`: `7de8` |
+| same, pitch → `0x1000` | changed (`8fea`); back to `0xf00`: `7de8` |
+| `kstb-drm` with the format and pitch from the buffer ([`linux/README.md`](../../linux/README.md), "Display") | RGB565, BGR565 (`00020565` / `0000050b`), ARGB8888 (`00008888` / `18100800`), ABGR8888 (`00008888` / `18000810`) with alpha `ff`, pitches 3840, 4096, 7680, 8192: all `7de8` |
+| `FORMAT_DEF_1` `00000888` (no alpha bits) on a 32-bit buffer | changed (`6ab0`): the feeder then reads 24-bit pixels |
+| type 2 with `8888` | the same as type 0 |
+| type 1 with `8888` | every picture shows the compositor background, whatever the alpha byte and `0xf064103c` |
+
+**The fourth byte of a 32-bit pixel is alpha, always**: alpha `00` showed
+the compositor background (CRC `0790`), `5a` a blend (`3742`), `ff` the
+picture. There is no "X" byte: XRGB8888 from a client that writes 0 there
+would be invisible.
+
+### Compositor blend and the feeder's alpha (partly understood, 2026-10-18)
+
+`0xf0645814` (`0002ff34`, written by the per-frame list, so tested by
+changing the word in the running list in RAM, `0x7db09afc`) is the graphics
+window's blend control, as `BVDC_P_Window_SetBlender_isr` packs it:
+
+```
+bits 19:16  source (2)      bits 15:8  constant alpha (ff)
+bits 6:4    back factor (3) bits 2:0   front factor (4)
+```
+
+Measured with pictures of alpha `ff` and `00` (CRC `871a` = black,
+`0790` = the blue background alone), back factor: 0 zero, 1 one, 2 alpha,
+3 one minus alpha, 4 the constant alpha (`ff`, so one), 5–7 zero. Front
+factor, with alpha `ff`: 1 and 4 show the picture, 0 and 3 give black (2
+and 5–7 not measured with alpha `ff`; one run of the RGB565 picture with
+front 4 gave `9778` instead of `7de8`, not repeated). **No front factor
+0–7 shows an alpha-`00` pixel**: the picture is black where alpha is 0
+whatever the factor, so the alpha is applied before the compositor (in
+the feeder). BOLT's `34` reads as "alpha over background".
+
+Not found: a feeder setting that ignores the alpha byte. Tried without
+success: `0xf064103c` (`0000ff00`; `ffff`, `00ff`, `0`), `+0x28` and
+`+0x2c`, single bits of the feeder control word `0xf0641010` (written 0 by
+the per-frame list; changed in the list) and bit 1 with front factors 1, 3, 4.
+Nexus computes that control word from flags (`BuildRul_isr`, near
+`0x37e8xx`); their meaning is open.
+
+**A sequence of these experiments left the feeder stuck**: every picture,
+RGB565 included, gave CRC `be70` with all GFD registers back at their
+values and the frame counter running; writing `1` to `0xf064100c` didn't
+help, a reboot (BOLT's splash) did. The steps just before were control
+word `0x100` (and earlier `0x200`–`0x2000`, which recovered at the time)
+and `FORMAT_DEF_1` types 3–5. Avoid both.
 
 ## How BOLT's splash works (reverse-engineered)
 
