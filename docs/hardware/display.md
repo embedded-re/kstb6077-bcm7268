@@ -518,8 +518,10 @@ would be invisible.
 ### Compositor blend and the feeder's alpha (partly understood, 2026-10-18)
 
 `0xf0645814` (`0002ff34`, written by the per-frame list, so tested by
-changing the word in the running list in RAM, `0x7db09afc`) is the graphics
-window's blend control, as `BVDC_P_Window_SetBlender_isr` packs it:
+changing the word in BOLT's running list in RAM, `0x7db09afc`, put back
+after every test; that range is otherwise left alone, a wrong word there
+blanks the screen until a reboot) is the graphics window's blend control,
+as `BVDC_P_Window_SetBlender_isr` packs it:
 
 ```
 bits 19:16  source (2)      bits 15:8  constant alpha (ff)
