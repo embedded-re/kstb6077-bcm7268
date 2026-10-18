@@ -1,0 +1,7 @@
+# OpenRC networking (ifupdown-ng), on ROOT after kstb-setup; udhcpc stays
+# running and renews the lease
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp

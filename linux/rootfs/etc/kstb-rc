@@ -71,7 +71,11 @@ bt_patch() {
 (bt_patch &)
 echo "kstb6077: $(uname -r), $(grep -c ^processor /proc/cpuinfo) cores, $(sed -n 's/MemTotal: *//p' /proc/meminfo), root $(awk '$2 == "/" {print $1}' /proc/mounts | tail -1)"
 ip link set lo up
-if ip link set eth0 up 2>/dev/null; then
+# with OpenRC's networking (kstb-setup) the network and the clock (chronyd)
+# are services; here only for the initramfs and a ROOT without them
+if [ -e /etc/runlevels/default/networking ]; then
+	:
+elif ip link set eth0 up 2>/dev/null; then
 	udhcpc -i eth0 -b -q -t 5 >/dev/null 2>&1 && echo "eth0: $(ip -4 -o addr show eth0 | awk '{print $4}')"
 	# no RTC is used: set the clock from the network (TLS for apk needs it)
 	(ntpd -n -q -p pool.ntp.org >/dev/null 2>&1 &)

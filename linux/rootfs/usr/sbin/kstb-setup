@@ -1,0 +1,48 @@
+#!/bin/sh
+# kstb-setup - turn ROOT into an everyday system, on top of the overlay
+# (inittab, kstb-rc, network/interfaces, sshd_config.d, profile.d, local.d):
+# packages, time zone, user kstb (doas, SSH key), OpenRC services.
+# Safe to run again. Usage: kstb-setup 'ssh-ed25519 AAAA... me@pc'
+set -e
+key=$1
+[ "$(id -u)" = 0 ] || { echo "kstb-setup: run as root"; exit 1; }
+[ "$(awk '$2 == "/" {print $1}' /proc/mounts | tail -1)" != rootfs ] ||
+	{ echo "kstb-setup: this is the initramfs, not ROOT"; exit 1; }
+
+apk add openrc busybox-openrc ifupdown-ng openssh chrony tzdata musl-locales \
+	doas doas-sudo-shim bash bash-completion tmux htop vim less man-pages \
+	mandoc mandoc-apropos docs coreutils curl git avahi avahi-tools dbus
+
+echo kstb6077 > /etc/hostname
+cat > /etc/hosts <<EOF
+127.0.0.1	localhost
+::1		localhost
+127.0.1.1	kstb6077
+EOF
+ln -sf /usr/share/zoneinfo/Europe/Bratislava /etc/localtime
+echo Europe/Bratislava > /etc/timezone
+
+# user kstb: bash, wheel (doas without a password), GPU/sound groups.
+# Password '*': no password login, but not locked (sshd refuses locked
+# accounts even with a key); 'passwd kstb' sets one.
+id kstb >/dev/null 2>&1 || adduser -D -s /bin/bash -g kstb kstb
+for g in wheel video audio input; do addgroup kstb $g 2>/dev/null || true; done
+sed -i 's/^kstb:!:/kstb:*:/' /etc/shadow
+grep -qx 'permit nopass :wheel' /etc/doas.conf || echo 'permit nopass :wheel' >> /etc/doas.conf
+chmod 600 /etc/doas.conf
+
+if [ -n "$key" ]; then
+	for h in /root /home/kstb; do
+		mkdir -p $h/.ssh
+		grep -qxF "$key" $h/.ssh/authorized_keys 2>/dev/null ||
+			echo "$key" >> $h/.ssh/authorized_keys
+		chmod 700 $h/.ssh; chmod 600 $h/.ssh/authorized_keys
+	done
+	chown -R kstb:kstb /home/kstb/.ssh
+fi
+
+# boot: what the services need (kstb-rc has mounted and fscked already);
+# swclock keeps the clock near the last shutdown until chronyd steps it
+for s in hostname localmount bootmisc swclock syslog; do rc-update add $s boot; done
+for s in networking chronyd crond sshd dbus avahi-daemon local; do rc-update add $s default; done
+echo "kstb-setup: done; reboot to start everything from init"

@@ -198,6 +198,51 @@ NTP at boot (`kstb-rc`), `apk update` and `apk add nano` from the Internet;
 after `reboot` (busybox init: `umount -a -r`, PSCI reset, kmon, boot again),
 and ext4 mounted without a journal recovery.
 
+## Everyday setup: OpenRC, SSH, user `kstb` (2026-10-18)
+
+`kstb-setup` (in `/usr/sbin`, from `rootfs/`) installs the rest on top
+of the overlay. It can be run again:
+
+```
+kstb-setup "$(cat ~/.ssh/id_ed25519.pub)"    # on the box as root; the key is the PC's
+reboot                                       # then `linux` at kmon>
+```
+
+- Packages: OpenRC, openssh, chrony, avahi, dbus, doas (+ the `sudo` shim),
+  bash, tmux, htop, vim, curl, git, coreutils, man pages (`docs` pulls each
+  package's `-doc`).
+- Host name `kstb6077`, time zone `Europe/Bratislava`, `LANG=en_US.UTF-8`
+  (`/etc/profile.d/kstb-locale.sh`, login shells), US keymap (the kernel's).
+- User `kstb`: bash, groups `wheel video audio input`, `doas` without a
+  password (`permit nopass :wheel`). Its password field is `*`: no password
+  login, but not locked, because sshd refuses a locked account even with a
+  key. `passwd kstb` sets one.
+- SSH by key only (`/etc/ssh/sshd_config.d/kstb.conf`), for `kstb` and
+  `root`. Host keys are made at sshd's first start.
+- Boot: busybox init stays. `kstb-rc` still checks, mounts, loads modules
+  and patches Bluetooth, then `inittab` runs `openrc sysinit`, and `openrc
+  boot` + `default` as a `once` entry, so a service that hangs doesn't hold
+  up the two root shells. Runlevel `boot`: hostname, localmount, bootmisc,
+  swclock, syslog. `default`: networking, chronyd, crond, sshd, dbus,
+  avahi-daemon, local. When `networking` is in `default`, `kstb-rc` leaves
+  DHCP and the clock to it and chronyd. The initramfs has no OpenRC and
+  boots as before.
+- DHCP comes from ifupdown-ng (`/etc/network/interfaces`), and its `udhcpc`
+  keeps running to renew the lease. Before this, `kstb-rc`'s `udhcpc -q` quit
+  after the first lease (1800 s here).
+- `/etc/local.d/kstb-perms.start`: devtmpfs creates `/dev/dri/*` and
+  `/dev/snd/*` as `root` 0600, and there is no mdev/udev, so it gives them
+  to `video` / `audio` 0660.
+
+Tested on a `reboot` and `linux` from `KRN`: all services `started`, lease
+from the networking service, chronyd synced (`doas chronyc tracking`),
+`ssh kstb@192.168.1.33` and `ssh kstb@kstb6077.local` (avahi) with the
+PC's key, `ssh root@…` too, `doas`/`sudo`, `date` in CEST, `LANG` in a login
+shell, `man ls`, `/dev/dri` and `/dev/snd` group-owned. Seen at boot and
+harmless: OpenRC's "needs non existent service 'dev'" for services not in
+any runlevel (acpid, hwdrivers, machine-id, watchdog), and "clock skew
+detected" before chronyd sets the clock.
+
 ## EDID over I2C
 
 ```
@@ -791,6 +836,6 @@ power-sequence helpers, none of which this box needs.
 - OpenGL ES: test triangles and kmscube's smooth cube only; a dma-buf texture (kmscube `-M rgba`) crashes the kernel; no conformance tests run yet. HDMI audio not yet heard.
 - Display: 1080p59.94 only (no other modes, no EDID, no hot-plug, no overlay planes); formats RGB565, BGR565, ARGB8888, ABGR8888, but no XRGB8888 (the feeder always applies the fourth byte as alpha).
 - Hardware RNG: none found for the host; the stock firmware asks the security processor (Nexus `NEXUS_RandomNumber_Generate`, HSM command `BCMD_cmdType_eUSER_RANDOM_NUMBER`).
-- Logins and SSH: both consoles are root shells without a password.
+- Logins: both consoles are root shells without a password (the user's choice; SSH is by key, see "Everyday setup").
 - Starting Linux by itself at power-on: today it is `linux` typed at `kmon>`.
 - KVM and KASLR are off; nothing tested them.
