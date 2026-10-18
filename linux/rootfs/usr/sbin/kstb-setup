@@ -1,7 +1,8 @@
 #!/bin/sh
 # kstb-setup - turn ROOT into an everyday system, on top of the overlay
 # (inittab, kstb-rc, network/interfaces, sshd_config.d, profile.d, local.d):
-# packages, time zone, user kstb (doas, SSH key), OpenRC services.
+# packages, time zone, user kstb (doas, SSH key), OpenRC services, udev,
+# the console look (local.d) and `tv` (sway + foot, /etc/kstb-tv).
 # Safe to run again. Usage: kstb-setup 'ssh-ed25519 AAAA... me@pc'
 set -e
 key=$1
@@ -11,7 +12,9 @@ key=$1
 
 apk add openrc busybox-openrc ifupdown-ng openssh chrony tzdata musl-locales \
 	doas doas-sudo-shim bash bash-completion tmux htop vim less man-pages \
-	mandoc mandoc-apropos docs coreutils curl git avahi avahi-tools dbus
+	mandoc mandoc-apropos docs coreutils curl git avahi avahi-tools dbus \
+	eudev udev-init-scripts udev-init-scripts-openrc font-terminus kbd btop \
+	sway foot foot-themes seatd font-jetbrains-mono-nerd grim
 
 echo kstb6077 > /etc/hostname
 cat > /etc/hosts <<EOF
@@ -26,13 +29,21 @@ echo Europe/Bratislava > /etc/timezone
 # Password '*': no password login, but not locked (sshd refuses locked
 # accounts even with a key); 'passwd kstb' sets one.
 id kstb >/dev/null 2>&1 || adduser -D -s /bin/bash -g kstb kstb
-for g in wheel video audio input; do addgroup kstb $g 2>/dev/null || true; done
+for g in wheel video audio input seat; do addgroup kstb $g 2>/dev/null || true; done
 sed -i 's/^kstb:!:/kstb:*:/' /etc/shadow
 # doas clears the environment: keep the locale (btop needs a UTF-8 LANG)
 rule='permit nopass setenv { LANG LC_ALL LC_CTYPE } :wheel'
 sed -i '/^permit nopass .*:wheel$/d' /etc/doas.conf
 echo "$rule" >> /etc/doas.conf
 chmod 600 /etc/doas.conf
+# btop in Catppuccin (theme in /usr/share/btop/themes; shows in foot, the
+# console's TTY mode uses the console palette instead)
+if [ ! -e /home/kstb/.config/btop/btop.conf ]; then
+	mkdir -p /home/kstb/.config/btop
+	printf 'color_theme = "catppuccin-mocha"\ntheme_background = False\nrounded_corners = True\n' \
+		> /home/kstb/.config/btop/btop.conf
+	chown -R kstb:kstb /home/kstb/.config
+fi
 
 if [ -n "$key" ]; then
 	for h in /root /home/kstb; do
@@ -44,8 +55,11 @@ if [ -n "$key" ]; then
 	chown -R kstb:kstb /home/kstb/.ssh
 fi
 
+# udev: device groups/permissions and what libinput (sway) needs
+for s in udev udev-trigger udev-settle; do rc-update add $s sysinit; done
+rm -f /etc/local.d/kstb-perms.start	# before udev: chgrp of /dev/dri, /dev/snd
 # boot: what the services need (kstb-rc has mounted and fscked already);
 # swclock keeps the clock near the last shutdown until chronyd steps it
 for s in hostname localmount bootmisc swclock syslog; do rc-update add $s boot; done
-for s in networking chronyd crond sshd dbus avahi-daemon local; do rc-update add $s default; done
+for s in networking chronyd crond sshd dbus avahi-daemon seatd udev-postmount local; do rc-update add $s default; done
 echo "kstb-setup: done; reboot to start everything from init"

@@ -237,19 +237,55 @@ reboot                                       # then `linux` at kmon>
 - DHCP comes from ifupdown-ng (`/etc/network/interfaces`), and its `udhcpc`
   keeps running to renew the lease. Before this, `kstb-rc`'s `udhcpc -q` quit
   after the first lease (1800 s here).
-- `/etc/local.d/kstb-perms.start`: devtmpfs creates `/dev/dri/*` and
-  `/dev/snd/*` as `root` 0600, and there is no mdev/udev, so it gives them
-  to `video` / `audio` 0660.
+- udev (eudev, OpenRC `sysinit`): device groups and permissions
+  (`/dev/dri` `video`, `/dev/snd` `audio`, `/dev/input` `input`) and the
+  device database libinput needs. Before it, devtmpfs left these `root`
+  0600 and libinput found no input devices.
 
 Tested on a `reboot` and `linux` from `KRN`: all services `started`, lease
 from the networking service, chronyd synced (`doas chronyc tracking`),
 `ssh kstb@192.168.1.33` and `ssh kstb@kstb6077.local` (avahi) with the
 PC's key, `ssh root@…` too, `doas`/`sudo`, `date` in CEST, `LANG` in a login
 shell, `man ls`, btop as `kstb` over `ssh`, through `doas` and on the serial
-console (`LANG` and 24x80 there; the tty1 shell has `LANG`, 67x240), `/dev/dri` and `/dev/snd` group-owned. Seen at boot and
-harmless: OpenRC's "needs non existent service 'dev'" for services not in
-any runlevel (acpid, hwdrivers, machine-id, watchdog), and "clock skew
-detected" before chronyd sets the clock.
+console (`LANG` and 24x80 there; the tty1 shell has `LANG`), `/dev/dri`,
+`/dev/snd`, `/dev/input` group-owned by udev, `eth0` keeps its name,
+Bluetooth patched once. Seen at boot and harmless: "clock skew detected"
+before chronyd sets the clock.
+
+### The HDMI console and `tv`
+
+The console (tty1): `/etc/local.d/kstb-console-look.start` loads Terminus
+bold 12x24 (`setfont`, 160x45 instead of the kernel font's 240x67) and the
+Catppuccin Mocha palette, also into `/sys/module/vt/parameters/default_*`
+so a terminal reset keeps it, then switches to tty2 and back: fbcon
+repaints only what changes, and the boot messages would stay on the old
+black. Tested: the background reads `(24, 28, 41)` from `/dev/fb0`
+(`#1e1e2e` in RGB565). btop on the console runs in its TTY mode: 16
+colours, block graphs.
+
+`tv [command]` (`/usr/bin/tv`) starts a real terminal on the TV: foot
+(truecolor, JetBrains Mono Nerd Font, Catppuccin Mocha, `/etc/xdg/foot/foot.ini`)
+in sway as a kiosk (`/etc/kstb-tv/sway.conf`); `tv btop` runs btop in it,
+with btop's own `catppuccin-mocha` theme
+(`/usr/share/btop/themes`, `~kstb/.config/btop`). When the command or shell
+exits, sway exits and the console is back; Ctrl+Alt+Return opens another
+foot, Ctrl+Alt+Backspace leaves. Started as root (the consoles), it runs as
+`kstb` via `su`. seatd gives sway the DRM device and the inputs.
+
+- cage first: wlroots asks for XRGB8888, which `kstb-drm` doesn't offer, so
+  "Failed to pick primary buffer format for output 'HDMI-A-1'". Sway's
+  `output * render_bit_depth 6` asks for RGB565 instead; the plane then
+  shows `format=RG16` 1920x1080 in `/sys/kernel/debug/dri/1/state`.
+- Drawn by pixman (`WLR_RENDERER=pixman`, the CPU): sway + foot + btop
+  about 20 % of one core at btop's 100 ms. The GPU renderer is not tried
+  yet; wlroots loads our Mesa from `/usr/local/lib` before Alpine's
+  (`ldd /usr/lib/libwlroots-0.20.so`), and that one still has fixes 1-5 only.
+- `su -l kstb -c` doesn't read the profile, so `tv` loads
+  `kstb-locale.sh` itself (btop otherwise: "No UTF-8 locale detected").
+
+Tested: `tv btop` as `kstb` over ssh and as root, the picture taken with
+`grim` matches what the plane scans out (RG16), USB keyboard and IR remote
+listed as input devices.
 
 ## EDID over I2C
 

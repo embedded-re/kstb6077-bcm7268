@@ -1,0 +1,17 @@
+#!/bin/sh
+# tv [command] - a real terminal on the TV: foot (truecolor, Nerd Font,
+# Catppuccin) in sway; `tv btop` runs btop in it. Leave with `exit` (or
+# Ctrl+Alt+Backspace). As root (the console shells) it runs as kstb.
+if [ "$(id -u)" = 0 ]; then
+	exec su -l kstb -c "exec tv $*"
+fi
+# the locale for everything in it (btop needs a UTF-8 LANG); `su -l -c`
+# doesn't read the profile
+. /etc/profile.d/kstb-locale.sh
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp/xdg-$(id -u)}
+mkdir -p -m 700 "$XDG_RUNTIME_DIR"
+# pixman: draw with the CPU (the GPU path is not tested with sway yet)
+export WLR_RENDERER=${WLR_RENDERER:-pixman}
+export WLR_LIBINPUT_NO_DEVICES=1	# start even without a keyboard
+export TV_CMD="$*"
+exec sway -c /etc/kstb-tv/sway.conf > "$XDG_RUNTIME_DIR/tv.log" 2>&1

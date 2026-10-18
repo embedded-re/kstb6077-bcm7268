@@ -1,6 +1,0 @@
-#!/bin/sh
-# devtmpfs makes these root-only (0600) and there is no mdev/udev: open the
-# GPU, display and sound to the video and audio groups
-chgrp video /dev/dri/* && chmod 660 /dev/dri/*
-chgrp audio /dev/snd/* && chmod 660 /dev/snd/*
-exit 0

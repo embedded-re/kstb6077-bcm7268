@@ -1,0 +1,22 @@
+#!/bin/sh
+# The HDMI console (tty1): Terminus bold 12x24 (160x45 at 1080p; the
+# kernel's 8x16 gives 240x67) and the Catppuccin Mocha palette. The palette
+# goes into the vt defaults too, so a reset (ESC c, `reset`) keeps it.
+# Colour 0 is also the background.
+pal="1e1e2e f38ba8 a6e3a1 f9e2af 89b4fa f5c2e7 94e2d5 bac2de
+     585b70 f38ba8 a6e3a1 f9e2af 89b4fa f5c2e7 94e2d5 cdd6f4"
+setfont -C /dev/tty1 /usr/share/consolefonts/ter-v24b.psf.gz 2>/dev/null
+r= g= b= i=0 esc=
+for c in $pal; do
+	r=$r,$((0x${c%????})); g=$g,$((0x$(echo $c | cut -c3-4))); b=$b,$((0x${c#????}))
+	esc="$esc$(printf '\033]P%x%s' $i $c)"
+	i=$((i + 1))
+done
+echo ${r#,} > /sys/module/vt/parameters/default_red
+echo ${g#,} > /sys/module/vt/parameters/default_grn
+echo ${b#,} > /sys/module/vt/parameters/default_blu
+printf '%s' "$esc" > /dev/tty1
+# fbcon repaints only what changes: away and back redraws the boot messages
+# already on the screen in the new colours
+chvt 2 && chvt 1
+exit 0
