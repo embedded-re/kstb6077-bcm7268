@@ -28,7 +28,10 @@ echo Europe/Bratislava > /etc/timezone
 id kstb >/dev/null 2>&1 || adduser -D -s /bin/bash -g kstb kstb
 for g in wheel video audio input; do addgroup kstb $g 2>/dev/null || true; done
 sed -i 's/^kstb:!:/kstb:*:/' /etc/shadow
-grep -qx 'permit nopass :wheel' /etc/doas.conf || echo 'permit nopass :wheel' >> /etc/doas.conf
+# doas clears the environment: keep the locale (btop needs a UTF-8 LANG)
+rule='permit nopass setenv { LANG LC_ALL LC_CTYPE } :wheel'
+sed -i '/^permit nopass .*:wheel$/d' /etc/doas.conf
+echo "$rule" >> /etc/doas.conf
 chmod 600 /etc/doas.conf
 
 if [ -n "$key" ]; then

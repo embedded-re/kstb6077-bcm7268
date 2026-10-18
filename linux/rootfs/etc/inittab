@@ -5,8 +5,8 @@
 # The initramfs has no OpenRC and skips these.
 ::sysinit:/bin/sh -c '[ ! -x /sbin/openrc ] || exec /sbin/openrc sysinit'
 ::once:/bin/sh -c '[ ! -x /sbin/openrc ] || { /sbin/openrc boot; exec /sbin/openrc default; }'
-ttyS0::respawn:/sbin/getty -n -l /bin/sh 115200 ttyS0 vt100
-tty1::respawn:/sbin/getty -n -l /bin/sh 38400 tty1 linux
+ttyS0::respawn:/sbin/getty -n -l /usr/sbin/kstb-console 115200 ttyS0 vt100
+tty1::respawn:/sbin/getty -n -l /usr/sbin/kstb-console 38400 tty1 linux
 ::ctrlaltdel:/sbin/reboot
 ::shutdown:/bin/sh -c '[ ! -x /sbin/openrc ] || exec /sbin/openrc shutdown'
 ::shutdown:/bin/umount -a -r

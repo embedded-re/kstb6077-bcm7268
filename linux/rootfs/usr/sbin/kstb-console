@@ -1,0 +1,8 @@
+#!/bin/sh
+# kstb-console - the root shell getty starts on ttyS0 and tty1 (inittab).
+# Not a login shell, so set the locale login shells get (btop and others
+# refuse to start without a UTF-8 LANG), and give the serial line, which
+# reports 0x0, a size; `resize` takes the real one from the terminal.
+[ -r /etc/profile.d/kstb-locale.sh ] && . /etc/profile.d/kstb-locale.sh
+[ "$(stty size 2>/dev/null)" = "0 0" ] && stty rows 24 cols 80
+exec /bin/sh

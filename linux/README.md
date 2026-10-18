@@ -212,9 +212,16 @@ reboot                                       # then `linux` at kmon>
   bash, tmux, htop, vim, curl, git, coreutils, man pages (`docs` pulls each
   package's `-doc`).
 - Host name `kstb6077`, time zone `Europe/Bratislava`, `LANG=en_US.UTF-8`
-  (`/etc/profile.d/kstb-locale.sh`, login shells), US keymap (the kernel's).
+  (`/etc/profile.d/kstb-locale.sh`), US keymap (the kernel's). `LANG` has to
+  reach every shell: btop refuses to start without a UTF-8 one ("No UTF-8
+  locale detected"). Login shells read the profile file; SSH commands get it
+  from sshd (`SetEnv` in `kstb.conf`); `doas` keeps the caller's `LANG`,
+  `LC_ALL`, `LC_CTYPE` (`setenv`); the two consoles start
+  `/usr/sbin/kstb-console` instead of plain `/bin/sh`, which reads the
+  profile file and gives the serial line, which reports 0x0 (btop: "Failed to
+  get size of terminal"), 80x24 (`resize` takes the terminal's real size).
 - User `kstb`: bash, groups `wheel video audio input`, `doas` without a
-  password (`permit nopass :wheel`). Its password field is `*`: no password
+  password (`permit nopass setenv { LANG LC_ALL LC_CTYPE } :wheel`). Its password field is `*`: no password
   login, but not locked, because sshd refuses a locked account even with a
   key. `passwd kstb` sets one.
 - SSH by key only (`/etc/ssh/sshd_config.d/kstb.conf`), for `kstb` and
@@ -238,7 +245,8 @@ Tested on a `reboot` and `linux` from `KRN`: all services `started`, lease
 from the networking service, chronyd synced (`doas chronyc tracking`),
 `ssh kstb@192.168.1.33` and `ssh kstb@kstb6077.local` (avahi) with the
 PC's key, `ssh root@…` too, `doas`/`sudo`, `date` in CEST, `LANG` in a login
-shell, `man ls`, `/dev/dri` and `/dev/snd` group-owned. Seen at boot and
+shell, `man ls`, btop as `kstb` over `ssh`, through `doas` and on the serial
+console (`LANG` and 24x80 there; the tty1 shell has `LANG`, 67x240), `/dev/dri` and `/dev/snd` group-owned. Seen at boot and
 harmless: OpenRC's "needs non existent service 'dev'" for services not in
 any runlevel (acpid, hwdrivers, machine-id, watchdog), and "clock skew
 detected" before chronyd sets the clock.
