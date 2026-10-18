@@ -651,7 +651,11 @@ went to the cache-clean queue, which doesn't exist without a CSD, and
 0000000000000120`, `v3d_job_init` from `v3d_submit_cl_ioctl`), once per
 draw: 21 Oopses in one dEQP group. The patch reports no cache flush
 without a CSD and refuses the flag. Tested with the kernel booted over
-TFTP (`kstb-linux --root`); `KRN` still has the kernel without it.
+TFTP (`kstb-linux --root`), then flashed (`KRN`/`DTB`, 2026-10-18, kmon
+`linux info`: `linux-6.18.57-kstb 2026-10-18`, CRC `00fb3517`): started
+with kmon's `linux`, `varying_array.float_static_write_dynamic_read` on
+ROOT's older Mesa in `/usr/local` (which still uses scratch) passes, no
+Oops, no MMU error.
 
 #### dEQP
 
