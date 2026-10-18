@@ -526,6 +526,33 @@ by a crash, a hang or a wrong picture on the box:
    VPM write may go into those slots (`qpu_inst_valid_in_thrend_slot`);
    the shaders end with THRSW on a nop. Found with `kstb-v3d-gl` below.
 
+Found with dEQP (2026-10-18, "dEQP" below):
+
+6. **`Blend Cfg` is 4 bytes on 3.3**, not 3: byte 3 bits 4–5 are
+   `vg_mode` (0 for GL). From Broadcom's `v3d_cl_pack_blend_cfg` and
+   `v3d_cl_print_blend_cfg` in the stock `libGLES_nexus.so`
+   (`stock/release/hal/egl`), whose field names are `a_eqn a_src a_dst
+   c_eqn c_src c_dst vg_mode`; bytes 0–2 match Mesa's XML. With 3 bytes the
+   control list lost sync after the packet: every blended draw hung the GPU
+   (`V3D_ERR_STAT: 0x00001000`, reset after the timeout, nothing drawn).
+   The other 3.3 packets Mesa emits have the same payload sizes as
+   Broadcom's packers (compared by the highest byte each packer stores).
+7. No `PIPE_CAP_INDEP_BLEND_FUNC` on 3.3 (one `Blend Cfg` for all render
+   targets). Mesa then also drops `GL_EXT/OES_draw_buffers_indexed`, which it
+   listed without `EXT_draw_buffers2`: `glDisablei(GL_BLEND, i)` gave
+   `GL_INVALID_ENUM` and dEQP stopped after its first case.
+8. No TFU on 3.3: `glGenerateMipmap` through the TFU left level 1 black
+   (the TFU counts the jobs, `TFU_CS` conversion count 2 after two, but the
+   output isn't where Mesa reads it). The draw-based fallback is right
+   ([`mesa/kstb-tfu-test.c`](mesa/kstb-tfu-test.c): `level0`, `manual`, `tfu` all OK).
+9. Uniform loads copied out of `r5` in the next instruction: two uniforms
+   as the two sources of one instruction (`vfpack tlb, unif, unif` in the
+   clear shader) failed register allocation, so every scissored clear
+   segfaulted in `v3d_get_compiled_shader`.
+10. Indirectly indexed temporary arrays become if-ladders, not scratch:
+    scratch's TMU writes gave `MMU error ... write violation` at random
+    addresses.
+
 Results with the patch (2026-10-17): 256×256 FBO, triangle with red,
 green and blue corners: 18432 lit pixels (its area), corners
 241,8,6 / 7,242,6 / 4,6,245, centre 84,85,86; 5 runs in a row and 20
@@ -566,7 +593,10 @@ gcc -O2 -o kstb-gles-test kstb-gles-test.c -lEGL -lGLESv2 -lgbm
 A faster way for changes: cross-building on the PC (clang `--target=aarch64-alpine-linux-musl`,
 lld, with `/usr/include`, `/usr/lib` and `/lib` copied from ROOT as the sysroot)
 builds the same tree in about 3 minutes; meson needs `-Wl,--undefined-version`
-for lld. Not yet run on the box.
+for lld. Tested on the box (2026-10-18): the libraries and `v3d_dri.so`
+in `/opt/mesa-x`, used with `LD_LIBRARY_PATH=/opt/mesa-x
+LIBGL_DRIVERS_PATH=/opt/mesa-x/dri`; ROOT's own build in `/usr/local` is
+unchanged (it has fixes 1–5 only). The dEQP run below used `/opt/mesa-x`.
 
 **kmscube** (2026-10-18, built on ROOT from `gitlab.freedesktop.org/mesa/kmscube`
 master, `meson setup build -Dgstreamer=disabled` with
@@ -599,6 +629,52 @@ then from `KRN`: `CSU=0=0 kstb-v3d-gl` (hangs the binner) gets `Device
 timeout`, `v3d` logs `Resetting GPU for hang` (bin, then render), no
 Oops; the next `kstb-v3d-gl` and `kstb-gles-test` print `OK`. Twice in a
 row on one boot.
+
+**A cache-flush job oopsed the kernel** (fixed by
+[`patches/0003-v3d-no-cache-flush-without-csd.patch`](patches/0003-v3d-no-cache-flush-without-csd.patch)):
+`DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH` said 1, so Mesa set
+`DRM_V3D_SUBMIT_CL_FLUSH_CACHE` for shaders with TMU writes; the clean job
+went to the cache-clean queue, which doesn't exist without a CSD, and
+`drm_sched_job_init` oopsed (`NULL pointer dereference at virtual address
+0000000000000120`, `v3d_job_init` from `v3d_submit_cl_ioctl`), once per
+draw: 21 Oopses in one dEQP group. The patch reports no cache flush
+without a CSD and refuses the flag. Tested with the kernel booted over
+TFTP (`kstb-linux --root`); `KRN` still has the kernel without it.
+
+#### dEQP
+
+VK-GL-CTS `opengl-es-cts-3.2.14.1`, cross-built on the PC (surfaceless
+target, `linux/build/deqp/`), packed as `doom/build/deqp-kstb.tar`
+(`deqp-gles2`, `deqp-gles3`, `deqp-egl`, data, mustpass lists) and
+unpacked to `/root/deqp`. [`mesa/kstb-deqp`](mesa/kstb-deqp) runs a
+module 500 cases per process (pbuffer 256×256, `rgba8888d24s8ms0`) and
+resumes after a crash, a GPU hang or a board reset: one line per case in
+`/root/deqp/results-<module>.txt`, `--summary` counts them. On the box
+`/root/run-deqp.sh gles2` runs it with `/opt/mesa-x` and the watchdog
+keep-alive.
+
+**GLES2** (`gles2-main.txt`, 2026-10-18, Mesa 23.3.6 with fixes 1–10, the
+kernel with patch 0003):
+
+| Result | Cases |
+|---|---|
+| Pass | 16256 (94.7 %) |
+| Fail | 761 |
+| Crash | 37 |
+| NotSupported | 106 |
+| QualityWarning | 5 |
+| total | 17165 |
+
+No Oops; 12 GPU resets in the last 880 cases. Where the failures are:
+
+| Group | Fail + Crash | What is known |
+|---|---|---|
+| `shaders.operator.*`, `shaders.matrix.*`, `shaders.random.*` | 608 + 1 | in `binary_operator.add` the fragment variants with vec3 and vec4 inputs fail, every vertex variant passes. In `add.highp_vec3_fragment` one component (`v_in1.y`, packed in `VAR1.x`) arrives as 0; it fails with ROOT's original build too. [`mesa/kstb-grid-test.c`](mesa/kstb-grid-test.c) compiles to the same shaders (checked in `V3D_DEBUG=nir`) and draws them right (92×92 indexed grid, depth/stencil, viewport offset), so some state dEQP sets is missing from it. The other groups are not looked at |
+| `shaders.loops.*_dynamic_iterations` | 55 | not looked at |
+| `fbo.render.*`, `fbo.completeness.*` | 52 | not looked at |
+| `shaders.indexing.*`, `shaders.struct.*` | 26 + 36 | the crash looked at (`uniform_array.float_dynamic_read_vertex`): `Failed to pack instruction 31`, `Failed to compile MESA_SHADER_VERTEX`, then a segfault in `v3d_get_compiled_shader` |
+| `texture.filtering.*` | 16 | not looked at |
+| others | 4 | `shaders.conversions` 2, `fragment_ops.interaction` 2 |
 
 #### GPU straight to the screen: kmsro and `kstb-drm`
 
