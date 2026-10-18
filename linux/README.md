@@ -419,7 +419,8 @@ gcc -O2 -o kstb-flip-test kstb-flip-test.c -I/usr/include/libdrm -ldrm
 ```
 
 **Formats, checked without the TV** (2026-10-18, kernel and new DTB over
-TFTP): [`drm/kstb-fmt-test.c`](drm/kstb-fmt-test.c) shows one test picture in each format
+TFTP; the same 11 of 11 after flashing them to `KRN`/`DTB` and starting with
+`linux`): [`drm/kstb-fmt-test.c`](drm/kstb-fmt-test.c) shows one test picture in each format
 and pitch and reads the HDMI transmitter's CRC of the output after each
 ([`../docs/hardware/display.md`](../docs/hardware/display.md), "HDMI CRC"). Same picture, same CRC:
 
