@@ -196,6 +196,25 @@
          /* Size in bytes of registers that have been spilled. This is how much
           * space needs to be available in the spill BO per thread per QPU.
           */
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -681,6 +681,16 @@
+ 
+         NIR_PASS(_, c->s, nir_lower_compute_system_values, NULL);
+ 
++        /* V3D 3.3: scratch (TMU general writes) gives MMU write
++         * violations at random addresses; index temporary arrays with
++         * if-ladders instead, which v3d_optimize_nir() turns into SSA.
++         */
++        if (c->devinfo->ver < 40) {
++                NIR_PASS(_, c->s, nir_lower_indirect_derefs,
++                         nir_var_function_temp, UINT32_MAX);
++                return;
++        }
++
+         NIR_PASS(_, c->s, nir_lower_vars_to_scratch,
+                  nir_var_function_temp,
+                  0,
 --- a/src/broadcom/compiler/vir_register_allocate.c
 +++ b/src/broadcom/compiler/vir_register_allocate.c
 @@ -57,6 +57,17 @@

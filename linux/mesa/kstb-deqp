@@ -115,6 +115,7 @@ def main():
                 m = RESULT.match(line)
                 if m and current:
                     out.write(f"{current} {m.group(1)} {m.group(2).strip()}\n")
+                    out.flush()             # a killed runner loses nothing
                     seen.add(current)
                     ran += 1
                     current = None
