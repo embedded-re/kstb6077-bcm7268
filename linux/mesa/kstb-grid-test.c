@@ -16,6 +16,8 @@
 // KSTB_LOC="p a b": attribute locations of pos, a0, a1 (default "0 1 2").
 // KSTB_DS=1: a depth/stencil (D24S8) renderbuffer on the FBO too.
 // KSTB_VP="x y": draw into a WxW viewport at (x, y) of a 256x256 FBO.
+// KSTB_SIGNED=1: dEQP's signed attribute pattern, with different gradients
+// per component. Component checks map [-1,1] into [0.25,0.75].
 //   gcc -O2 -o kstb-grid-test kstb-grid-test.c -lEGL -lGLESv2
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -25,6 +27,8 @@
 #include <stdlib.h>
 
 #define W 32
+
+static int signed_pattern;
 
 static GLuint shader(GLenum type, const char *src)
 {
@@ -51,6 +55,13 @@ static const char *vs_src =
 // component c of attribute k at (u, w) in [0, 1]^2
 static float value(int k, int c, float u, float w)
 {
+	if (signed_pattern) {
+		float v[2][4] = {
+			{2*u-1, 2*w-1, 1-2*u, 1-2*w},
+			{2*w-1, 1-2*u, 1-2*w, 2*u-1},
+		};
+		return v[k][c];
+	}
 	return (c + 1 + 4 * k) / 40.0f + 0.25f * u + 0.125f * w;
 }
 
@@ -89,6 +100,8 @@ int main(int argc, char **argv)
 	EGLint num;
 	GLuint fb, rb, prog;
 	GLint sel;
+
+	signed_pattern = getenv("KSTB_SIGNED") && atoi(getenv("KSTB_SIGNED"));
 
 	if (comp < 1 || comp > 4)
 		comp = 3;
@@ -163,7 +176,8 @@ int main(int argc, char **argv)
 		for (c = 0; c < comp; c++, sel_n++)
 			p += sprintf(p, "  if (sel == %d) r = v%d.%c; else r += v%d.%c * 0.0;\n",
 				     sel_n, k, sw[c], k, sw[c]);
-	p += sprintf(p, "  gl_FragColor = vec4(r, 0.0, 0.0, 1.0);\n}\n");
+	p += sprintf(p, "  gl_FragColor = vec4(%s, 0.0, 0.0, 1.0);\n}\n",
+		     signed_pattern ? "r * 0.25 + 0.5" : "r");
 	}
 
 	if (getenv("KSTB_VP"))
@@ -228,6 +242,7 @@ int main(int argc, char **argv)
 					int g = img[(y * W + x) * 4 + c];
 					int e = (int)((value(0, c0[c], u, w) +
 						       value(1, c1[c], u, w)) * 0.5f * 255 + 0.5f);
+					e = e < 0 ? 0 : e > 255 ? 255 : e;
 
 					if (abs(g - e) > 3 && !bad++) {
 						fx = x; fy = y; got = g; want = e;
@@ -257,8 +272,11 @@ int main(int argc, char **argv)
 			for (y = 0; y < W; y++)
 				for (x = 0; x < W; x++) {
 					int g = img[(y * W + x) * 4];
-					int e = (int)(value(k, c, (x + 0.5f) / W,
-							    (y + 0.5f) / W) * 255 + 0.5f);
+					float expected = value(k, c, (x + 0.5f) / W,
+							       (y + 0.5f) / W);
+					if (signed_pattern)
+						expected = expected * 0.25f + 0.5f;
+					int e = (int)(expected * 255 + 0.5f);
 
 					if (abs(g - e) > 3) {
 						if (!bad++) {

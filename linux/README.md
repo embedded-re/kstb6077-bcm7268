@@ -552,6 +552,18 @@ Found with dEQP (2026-10-18, "dEQP" below):
 10. Indirectly indexed temporary arrays become if-ladders, not scratch:
     scratch's TMU writes gave `MMU error ... write violation` at random
     addresses.
+11. **`ldvary` writes `r3` before 4.1** (found by the user): the scheduler's
+    `fixup_pipelined_ldvary` moves an `ldvary` up into the instruction
+    before it unless that instruction reads the `ldvary`'s destination, and
+    took the destination from the 4.x encoding (`sig_addr`). On 3.3 the
+    `ldvary` was moved in front of a `fmul r3, r3, rf0` that still needed the
+    previous varying in `r3`, which was overwritten: in
+    `add.highp_vec3_fragment` one input component came out wrong. It showed
+    only with inputs whose components change differently across the
+    triangle: [`mesa/kstb-grid-test.c`](mesa/kstb-grid-test.c) `KSTB_SIGNED=1`
+    (dEQP's signed pattern) fails without the fix (`sum 4`: R 592, B 576 of
+    1024 pixels off) and passes with it; the earlier pattern, the same
+    gradient in every component, hid it.
 
 Results with the patch (2026-10-17): 256×256 FBO, triangle with red,
 green and blue corners: 18432 lit pixels (its area), corners
@@ -653,28 +665,28 @@ resumes after a crash, a GPU hang or a board reset: one line per case in
 `/root/run-deqp.sh gles2` runs it with `/opt/mesa-x` and the watchdog
 keep-alive.
 
-**GLES2** (`gles2-main.txt`, 2026-10-18, Mesa 23.3.6 with fixes 1–10, the
-kernel with patch 0003):
+**GLES2** (`gles2-main.txt`, 2026-10-18, Mesa 23.3.6 with fixes 1–11, the
+kernel with patch 0003, one full run):
 
 | Result | Cases |
 |---|---|
-| Pass | 16256 (94.7 %) |
-| Fail | 761 |
+| Pass | 16896 (98.4 %) |
+| Fail | 121 |
 | Crash | 37 |
 | NotSupported | 106 |
 | QualityWarning | 5 |
 | total | 17165 |
 
-No Oops; 12 GPU resets in the last 880 cases. Where the failures are:
+No Oops; 12 GPU resets. Before fix 11 the same list gave 16256 pass (761
+fail); every case that passed then passes now. Where the failures are:
 
 | Group | Fail + Crash | What is known |
 |---|---|---|
-| `shaders.operator.*`, `shaders.matrix.*`, `shaders.random.*` | 608 + 1 | in `binary_operator.add` the fragment variants with vec3 and vec4 inputs fail, every vertex variant passes. In `add.highp_vec3_fragment` one component (`v_in1.y`, packed in `VAR1.x`) arrives as 0; it fails with ROOT's original build too. [`mesa/kstb-grid-test.c`](mesa/kstb-grid-test.c) compiles to the same shaders (checked in `V3D_DEBUG=nir`) and draws them right (92×92 indexed grid, depth/stencil, viewport offset), so some state dEQP sets is missing from it. The other groups are not looked at |
-| `shaders.loops.*_dynamic_iterations` | 55 | not looked at |
 | `fbo.render.*`, `fbo.completeness.*` | 52 | not looked at |
-| `shaders.indexing.*`, `shaders.struct.*` | 26 + 36 | the crash looked at (`uniform_array.float_dynamic_read_vertex`): `Failed to pack instruction 31`, `Failed to compile MESA_SHADER_VERTEX`, then a segfault in `v3d_get_compiled_shader` |
+| `shaders.matrix.*`, `shaders.random.*`, `shaders.operator.*` | 51 + 1 | not looked at |
+| `shaders.indexing.*`, `shaders.struct.*` | 0 + 36 | the crash looked at (`uniform_array.float_dynamic_read_vertex`): `Failed to pack instruction 31`, `Failed to compile MESA_SHADER_VERTEX`, then a segfault in `v3d_get_compiled_shader` |
 | `texture.filtering.*` | 16 | not looked at |
-| others | 4 | `shaders.conversions` 2, `fragment_ops.interaction` 2 |
+| `shaders.conversions.*` | 2 | not looked at |
 
 #### GPU straight to the screen: kmsro and `kstb-drm`
 
