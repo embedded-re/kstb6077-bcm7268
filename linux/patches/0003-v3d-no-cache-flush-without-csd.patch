@@ -1,0 +1,37 @@
+v3d: no cache flush on V3D 3.3, which has no cache-clean queue
+
+v3d_sched_init() sets up the cache-clean queue only with a CSD (V3D >= 4.1),
+but DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH said 1 everywhere. Mesa then sets
+DRM_V3D_SUBMIT_CL_FLUSH_CACHE for a job whose shaders write through the TMU
+(scratch for dynamically indexed arrays, dEQP-GLES2 shaders.indexing.
+varying_array.*), and on the KSTB6077's V3D 3.3 the clean job oopsed in
+drm_sched_job_init() (entity without a run queue, job->sched still NULL).
+Report the cache flush only with a CSD, and refuse the flag without one.
+
+--- a/drivers/gpu/drm/v3d/v3d_drv.c
++++ b/drivers/gpu/drm/v3d/v3d_drv.c
+@@ -91,7 +91,8 @@
+ 		args->value = v3d_has_csd(v3d);
+ 		return 0;
+ 	case DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH:
+-		args->value = 1;
++		/* the cache-clean queue exists only with a CSD */
++		args->value = v3d_has_csd(v3d);
+ 		return 0;
+ 	case DRM_V3D_PARAM_SUPPORTS_PERFMON:
+ 		args->value = (v3d->ver >= V3D_GEN_41);
+--- a/drivers/gpu/drm/v3d/v3d_submit.c
++++ b/drivers/gpu/drm/v3d/v3d_submit.c
+@@ -937,6 +937,12 @@
+ 		return -EINVAL;
+ 	}
+ 
++	/* No cache-clean queue without a CSD (V3D < 4.1): its job would
++	 * oops in drm_sched_job_init().
++	 */
++	if ((args->flags & DRM_V3D_SUBMIT_CL_FLUSH_CACHE) && !v3d_has_csd(v3d))
++		return -EINVAL;
++
+ 	if (args->flags & DRM_V3D_SUBMIT_EXTENSION) {
+ 		ret = v3d_get_extensions(file_priv, args->extensions, &se, NULL);
+ 		if (ret) {
