@@ -50,6 +50,67 @@
  }
  
  static void
+@@ -4595,6 +4617,51 @@
+         }
+ }
+ 
++/* Before V3D 4.x, ldunif can only write r5, which holds a single value: two
++ * uniforms that are live at the same time (the two sources of one
++ * instruction, as in the clear shader's "vfpack tlb, unif, unif") can't be
++ * allocated. Copy each ldunif result out of r5 in the next instruction and
++ * read the copy everywhere, so r5 is only live for that one move.
++ */
++static void
++v3d33_vir_copy_ldunifs(struct v3d_compile *c)
++{
++        if (c->devinfo->ver >= 40)
++                return;
++
++        uint32_t num_temps = c->num_temps;
++        uint32_t *copy = rzalloc_array(c, uint32_t, num_temps);
++        struct vir_cursor cursor = c->cursor;
++
++        vir_for_each_block(block, c) {
++                vir_for_each_inst_safe(inst, block) {
++                        if (!inst->qpu.sig.ldunif ||
++                            inst->dst.file != QFILE_TEMP)
++                                continue;
++                        c->cursor = vir_after_inst(inst);
++                        copy[inst->dst.index] = vir_MOV(c, inst->dst).index + 1;
++                }
++        }
++
++        vir_for_each_inst_inorder(inst, c) {
++                for (int i = 0; i < vir_get_nsrc(inst); i++) {
++                        struct qreg *src = &inst->src[i];
++
++                        if (src->file != QFILE_TEMP || src->index >= num_temps ||
++                            !copy[src->index])
++                                continue;
++                        /* the copy itself keeps reading r5 */
++                        if (inst->dst.file == QFILE_TEMP &&
++                            inst->dst.index == copy[src->index] - 1)
++                                continue;
++                        src->index = copy[src->index] - 1;
++                }
++        }
++
++        ralloc_free(copy);
++        c->cursor = cursor;
++}
++
+ void
+ v3d_nir_to_vir(struct v3d_compile *c)
+ {
+@@ -4646,6 +4713,8 @@
+ 
+         vir_check_payload_w(c);
+ 
++        v3d33_vir_copy_ldunifs(c);
++
+         /* XXX perf: On VC4, we do a VIR-level instruction scheduling here.
+          * We used that on that platform to pipeline TMU writes and reduce the
+          * number of thread switches, as well as try (mostly successfully) to
 --- a/src/broadcom/compiler/qpu_schedule.c
 +++ b/src/broadcom/compiler/qpu_schedule.c
 @@ -532,6 +532,7 @@
@@ -173,3 +234,43 @@
                                  } else if (spill_type == SPILL_TYPE_RECONSTRUCT) {
                                          struct qreg temp =
                                                  reconstruct_temp(c, reconstruct_op);
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -145,7 +145,6 @@
+         case PIPE_CAP_SAMPLER_VIEW_TARGET:
+         case PIPE_CAP_ANISOTROPIC_FILTER:
+         case PIPE_CAP_COPY_BETWEEN_COMPRESSED_AND_PLAIN_FORMATS:
+-        case PIPE_CAP_INDEP_BLEND_FUNC:
+         case PIPE_CAP_CONDITIONAL_RENDER:
+         case PIPE_CAP_CONDITIONAL_RENDER_INVERTED:
+         case PIPE_CAP_CUBE_MAP_ARRAY:
+@@ -187,7 +186,13 @@
+         case PIPE_CAP_GENERATE_MIPMAP:
+                 return v3d_has_feature(screen, DRM_V3D_PARAM_SUPPORTS_TFU);
+ 
++        case PIPE_CAP_INDEP_BLEND_FUNC:
+         case PIPE_CAP_INDEP_BLEND_ENABLE:
++                /* V3D 3.3 has one BLEND_CFG for all render targets (no
++                 * render target mask). Without INDEP_BLEND_FUNC, Mesa also
++                 * drops EXT/OES_draw_buffers_indexed, whose glDisablei()
++                 * would fail with no EXT_draw_buffers2.
++                 */
+                 return screen->devinfo.ver >= 40;
+ 
+         case PIPE_CAP_CONSTANT_BUFFER_OFFSET_ALIGNMENT:
+--- a/src/gallium/drivers/v3d/v3dx_tfu.c
++++ b/src/gallium/drivers/v3d/v3dx_tfu.c
+@@ -46,6 +46,13 @@
+         int height = u_minify(pdst->height0, base_level) * msaa_scale;
+         enum pipe_format pformat;
+ 
++#if V3D_VERSION < 41
++        /* The V3D 3.3 TFU runs these jobs (TFU_CS counts them) but the
++         * output isn't where we read it back: use the draw-based paths.
++         */
++        return false;
++#endif
++
+         if (psrc->format != pdst->format)
+                 return false;
+         if (psrc->nr_samples != pdst->nr_samples)
