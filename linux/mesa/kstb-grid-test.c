@@ -11,6 +11,8 @@
 //                                  (v0.zxy + v1.yzx) / 2 to RGB
 // KSTB_INDEXED=1: (GRID+1)^2 shared vertices drawn with glDrawElements
 // (GL_UNSIGNED_SHORT), as dEQP does, so the vertex cache reuses outputs.
+// KSTB_INDEXED=8: the same with GL_UNSIGNED_BYTE indices (GRID at most 15).
+// KSTB_BLEND=1: blending on with glBlendFunc(GL_ONE, GL_ZERO) (same result).
 // KSTB_LOC="p a b": attribute locations of pos, a0, a1 (default "0 1 2").
 // KSTB_DS=1: a depth/stencil (D24S8) renderbuffer on the FBO too.
 // KSTB_VP="x y": draw into a WxW viewport at (x, y) of a 256x256 FBO.
@@ -52,9 +54,13 @@ static float value(int k, int c, float u, float w)
 	return (c + 1 + 4 * k) / 40.0f + 0.25f * u + 0.125f * w;
 }
 
+static GLubyte *idx8;
+
 static void draw(int nv, const GLushort *idx)
 {
-	if (idx)
+	if (idx8)
+		glDrawElements(GL_TRIANGLES, nv, GL_UNSIGNED_BYTE, idx8);
+	else if (idx)
 		glDrawElements(GL_TRIANGLES, nv, GL_UNSIGNED_SHORT, idx);
 	else
 		glDrawArrays(GL_TRIANGLES, 0, nv);
@@ -72,7 +78,7 @@ int main(int argc, char **argv)
 	int comp = argc > 1 ? atoi(argv[1]) : 3;
 	int grid = argc > 2 ? atoi(argv[2]) : 16;
 	int nv, i, k, c, x, y, sel_n = 0, total_bad = 0;
-	int indexed = getenv("KSTB_INDEXED") && atoi(getenv("KSTB_INDEXED"));
+	int indexed = getenv("KSTB_INDEXED") ? atoi(getenv("KSTB_INDEXED")) : 0;
 	GLushort *idx = NULL;
 	int loc[3] = { 0, 1, 2 };
 	int vx = 0, vy = 0, fbw;
@@ -103,6 +109,10 @@ int main(int argc, char **argv)
 	pos = malloc(nv * 4 * sizeof(GLfloat));
 	a[0] = malloc(nv * 4 * sizeof(GLfloat));
 	a[1] = malloc(nv * 4 * sizeof(GLfloat));
+	if (indexed == 8 && grid > 15) {
+		grid = 15;
+		nv = grid * grid * 6;
+	}
 	if (indexed) {
 		if ((grid + 1) * (grid + 1) > 65536)
 			grid = 255;
@@ -112,6 +122,11 @@ int main(int argc, char **argv)
 
 			idx[i] = (cy + corner[i % 6][1]) * (grid + 1) +
 				 cx + corner[i % 6][0];
+		}
+		if (indexed == 8) {
+			idx8 = malloc(nv);
+			for (i = 0; i < nv; i++)
+				idx8[i] = idx[i];
 		}
 	}
 	for (i = 0; i < (indexed ? (grid + 1) * (grid + 1) : nv); i++) {
@@ -174,6 +189,10 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	glViewport(vx, vy, W, W);
+	if (getenv("KSTB_BLEND") && atoi(getenv("KSTB_BLEND"))) {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ZERO);
+	}
 
 	prog = glCreateProgram();
 	glAttachShader(prog, shader(GL_VERTEX_SHADER, vs_src));
@@ -196,7 +215,7 @@ int main(int argc, char **argv)
 		static const int c0[3] = { 2, 0, 1 }, c1[3] = { 1, 2, 0 };
 
 		printf("sum, %dx%d grid (%d vertices%s):\n", grid, grid, nv,
-		       indexed ? ", indexed" : "");
+		       indexed == 8 ? ", 8-bit indices" : indexed ? ", indexed" : "");
 		glClear(GL_COLOR_BUFFER_BIT);
 		draw(nv, idx);
 		glReadPixels(vx, vy, W, W, GL_RGBA, GL_UNSIGNED_BYTE, img);
@@ -225,7 +244,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("%d components of each varying, %dx%d grid (%d vertices%s):\n",
-	       comp, grid, grid, nv, indexed ? ", indexed" : "");
+	       comp, grid, grid, nv, indexed == 8 ? ", 8-bit indices" : indexed ? ", indexed" : "");
 	sel_n = 0;
 	for (k = 0; k < 2; k++)
 		for (c = 0; c < comp; c++, sel_n++) {
