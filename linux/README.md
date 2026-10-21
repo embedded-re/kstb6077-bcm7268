@@ -929,12 +929,45 @@ running case by time:
 | Group | Fail | Other | Kernel |
 | --- | ---: | --- | --- |
 | `texture.shadow.*` | 274 | 76 QualityWarning, 7 Crash (SIGSEGV, cube and 2d_array) | none |
-| `fragment_out.{basic,array,random}` | 166 | | all 96 resets: integer render targets (`rgba16i`, `rgba16ui`, `rgb10_a2ui`, some 8/32-bit) |
+| `fragment_out.{basic,array,random}` | 166 | | all 96 resets: integer render targets (`rgba16i`, `rgba16ui`, `rgb10_a2ui`, some 8/32-bit); fixed below |
 | `fbo.{color,msaa,invalidate,blit}` | 40 | | all 29 MMU errors (clients `0x7`–`0xf`): `rg32f`/`rgba32f` on 2d_array, 3d, cube; MSAA blits |
 | `ubo.random` | 6 | | none |
 | `texture.specification` | 5 | 1 Crash (`texsubimage3d_depth.depth24_stencil8_2d_array`) | none |
 | `multisample.fbo_*` | 8 | | none |
 | others | 6 | 7 QualityWarning (rasterization) | none |
+
+**Colour writes of fewer than four components hung the GPU.** In
+`fragment_out.basic`, every case that failed had the shader write fewer
+components than the target has: `int`/`ivec2`/`ivec3` into `rgba16i`,
+`rgba16ui`, `rgb10_a2ui`, `float`/`vec2` into `rgba16f`, `r16f`,
+`rgb10_a2`. The four-component outputs passed, and so did 8- and 32-bit
+targets at any width. Run alone, those 72 cases gave 44 Fail, each with
+`Resetting GPU for hang` (`V3D_ERR_STAT 0x00001000`). The compiler sends
+the TLB as many values as the shader writes, and the config word says so
+(`TLB_VEC_SIZE_MINUS_1`, or the 2-half F16 size).
+[`mesa/v3d33-tlb-vec4.patch`](mesa/v3d33-tlb-vec4.patch) always writes four
+before V3D 4.1, with zero for the components the shader leaves undefined.
+The same 72 cases then gave 72 Pass, no reset; all 940 `fragment_out`
+cases 940 Pass, no reset
+([`../docs/evidence/gpu/tlbvec4-focused-20261021.txt`](../docs/evidence/gpu/tlbvec4-focused-20261021.txt)).
+
+Full runs with the fix (Mesa `6e5707b2…` in `/opt/mesa-repair-20261021b`,
+kernel `#28` from `KRN`, 2026-10-21; kernel log for each run's time span):
+
+| Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| GLES3, all 44,768 | 43,758 | 580 | 83 | 339 | 8 | 22 / 0 |
+| GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
+| EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 | 0 / 0 |
+
+GLES3 against the run before the fix, case by case: the 166
+`fragment_out` failures pass, nothing else in `fragment_out` changed. The
+only other changes are in `texture.shadow`, where the 7 SIGSEGVs moved
+between cases (12 cases changed between Fail, Crash and Pass, one of them
+Pass to Crash, one Crash to Pass): that crash is not deterministic. The 22
+MMU errors are in `fbo.color`, `fbo.invalidate` and `fbo.msaa` (the
+32-bit float targets above), with no reset left in the run. GLES2 and EGL
+are unchanged.
 
 #### GPU straight to the screen: kmsro and `kstb-drm`
 

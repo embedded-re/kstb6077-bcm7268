@@ -1,0 +1,4 @@
+b6_off 28 pass, 44 fail, 44 resets, 0 mmu
+b6_vec4 72 pass, 0 fail, 0 resets, 0 mmu
+fo_vec4 940 pass, 0 fail, 0 resets, 0 mmu
+fo_clean 940 pass, 0 fail, 0 resets, 0 mmu

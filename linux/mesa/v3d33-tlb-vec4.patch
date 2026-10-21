@@ -1,0 +1,36 @@
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -1770,6 +1770,15 @@
+                 num_components = MAX2(num_components, 3);
+         assert(num_components != 0);
+ 
++        /* Before 4.1 a TLB color write of fewer than four components can
++         * hang the GPU (seen with rgba16i, rgba16ui, rgb10_a2ui, rgba16f,
++         * r16f and rgb10_a2 render targets), so always write four; the
++         * components the shader doesn't write get zero.
++         */
++        int written_components = num_components;
++        if (c->devinfo->ver < 41)
++                num_components = 4;
++
+         enum glsl_base_type type = glsl_get_base_type(var->type);
+         bool is_int_format = type == GLSL_TYPE_INT || type == GLSL_TYPE_UINT;
+         bool is_32b_tlb_format = is_int_format ||
+@@ -1808,6 +1817,17 @@
+                 struct qreg b = color[2];
+                 struct qreg a = color[3];
+ 
++                if (written_components < num_components) {
++                        struct qreg zero = is_int_format ?
++                                vir_uniform_ui(c, 0) : vir_uniform_f(c, 0.0);
++                        if (written_components < 2)
++                                g = zero;
++                        if (written_components < 3)
++                                b = zero;
++                        if (written_components < 4)
++                                a = zero;
++                }
++
+                 if (c->fs_key->swap_color_rb & (1 << rt))  {
+                         r = color[2];
+                         b = color[0];

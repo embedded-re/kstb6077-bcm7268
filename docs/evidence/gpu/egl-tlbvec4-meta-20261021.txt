@@ -1,0 +1,15 @@
+Wed Oct 21 09:48:15 UTC 2026
+Linux kstb6077 6.18.57-kstb #28 SMP Wed Oct 21 06:54:18 CEST 2026 aarch64 GNU/Linux
+10466.85 37209.16
+bb645e31-53fb-4e28-a3e6-6e719a1fa8fe
+6e5707b2f44c31cd20b8deb08f8ad0fb9e9f22ba2c24a7826ba7b52d486d1726  /opt/mesa-repair-20261021b/dri/v3d_dri.so
+20f00cd6e2ab7b047a2d8aaea3f56ef365f65ca33c99710ad1ea0356af38d7c9  gles2/deqp-gles2
+4eb40e2ff37bfa472f0b6874516f344ec7924374a0b1ae0058711f51208c27ad  gles3/deqp-gles3
+cda7ac7e2155b763b7730a59a4a3b2f4b4bdd9f2bf9f7bcbd2f4a0cc482675fa  egl/deqp-egl
+3170569ab9d15c84e11e7e38c8e2ae861e12107233c9b94f77495533f94b580f  /root/kstb-deqp
+DEQP=/root/deqp-validation-20261021b
+DEQP_EGL_PLATFORM=drm
+DEQP_SURFACE_TYPE=window
+LD_LIBRARY_PATH=/opt/mesa-gles1/lib:/opt/mesa-x
+LIBGL_DRIVERS_PATH=/opt/mesa-repair-20261021b/dri
+10660.57 37770.78

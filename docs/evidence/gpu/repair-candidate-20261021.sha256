@@ -18,3 +18,6 @@ c5916a6ed45c1d6a6313b231560fb838bc3c12c291004d81e9bd1b0c3dc04be1  linux/patches/
 cbf4037cbf3294df56c9d7e63b9e303d9f53b1db4bfe3e88c1be439fbeef23d9  linux/patches/0004-v3d-mmu-flush-before-job-on-3.3.patch
 fa48b13432fdbaf791537ab46e3f452c8989a9de00051591e5c1a11753f30eb4  linux/build/mesa-repair-verify-20261020/build/src/gallium/targets/dri/libgallium_dri.so
 cfd9fb9124ee50f8b768e9b8246b515dcb589e0e003d5cab476554914b693ffb  linux/build/out/Image
+# 2026-10-21b: + v3d33-tlb-vec4.patch (13 patches); driver in /opt/mesa-repair-20261021b
+eea645dc6044836beba820208b086c12b0a340534ee59fffa9d80d8f38b557c0  linux/mesa/v3d33-tlb-vec4.patch
+6e5707b2f44c31cd20b8deb08f8ad0fb9e9f22ba2c24a7826ba7b52d486d1726  linux/build/mesa-repair-verify-20261020/build/src/gallium/targets/dri/libgallium_dri.so

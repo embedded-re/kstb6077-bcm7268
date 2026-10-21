@@ -28,6 +28,7 @@ patch -p1 < ../v3d33-vpm-read-offset.patch
 patch -p1 < ../v3d33-uniform-bounds.patch
 patch -p1 < ../v3d33-centroid.patch
 patch -p1 < ../v3d33-cl-prefetch.patch
+patch -p1 < ../v3d33-tlb-vec4.patch
 patch -p1 < ../kmsro-kstb-drm.patch
 meson setup build --prefix=$P --buildtype=release \
 	-Dgallium-drivers=v3d,kmsro -Dvulkan-drivers= -Dplatforms= -Dglx=disabled \
