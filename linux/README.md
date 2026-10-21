@@ -706,7 +706,8 @@ cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
 `MESA_SHADER_CACHE_DISABLE=true` while changing the compiler.
 
 ```
-# on the box; gpu-test/ch319 is the chroot helper (in /usr/local/bin there)
+# on the box, in the chroot (ch319 was its helper; chroot and helper
+# removed 2026-10-21)
 ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
 ```
 
@@ -724,7 +725,7 @@ gcc -O2 -o kstb-gles-test kstb-gles-test.c -lEGL -lGLESv2 -lgbm
 ```
 
 `kstb-kms-gles` (601 flips in 10.11 s), `kstb-flip-test` and `kmscube`
-(below) run the same way. The chroot `/opt/alpine319` stays as it was.
+(below) run the same way. The chroot `/opt/alpine319` stayed until 2026-10-21, when it was deleted.
 
 A faster way for changes: cross-building on the PC (clang `--target=aarch64-alpine-linux-musl`,
 lld, with `/usr/include`, `/usr/lib` and `/lib` copied from ROOT as the sysroot)

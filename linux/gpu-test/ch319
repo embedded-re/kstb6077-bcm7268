@@ -1,8 +1,0 @@
-#!/bin/sh
-# ch319 - run a command in the Alpine 3.19 chroot (/opt/alpine319 on ROOT,
-# linux/README.md "GPU") with /dev, /proc and /sys mounted:  ch319 'cmd'
-R=/opt/alpine319
-mountpoint -q $R/dev || mount --bind /dev $R/dev
-mountpoint -q $R/proc || mount -t proc proc $R/proc
-mountpoint -q $R/sys || mount --bind /sys $R/sys
-exec chroot $R /bin/sh -c "$*"
