@@ -893,7 +893,11 @@ fixed and rerun (per-run log:
   [`patches/0004-v3d-mmu-flush-before-job-on-3.3.patch`](patches/0004-v3d-mmu-flush-before-job-on-3.3.patch)
   flushes before every bin and render job before V3D 4.1. Same kernel and
   boot: 0 failing runs of 12 with the flush, 2 of 6 without (4 resets).
-  The TFU queue gets no flush; it is untested.
+  The TFU queue gets no flush; it is untested. Flashed to `KRN`/`DTB`
+  (2026-10-21, `kstb-flash-kernel`, kmon `linux info`: `linux-6.18.57-kstb
+  2026-10-21`, CRC `ee19fd05`); started with kmon's `linux`, the 200-case
+  sequence, the five `flush_finish` cases and `wait` twice: all Pass, no
+  MMU error, no reset.
 
 Validation on the result (2026-10-21, kernel `#28` = patches 0001–0004 over
 TFTP, not flashed; Mesa with all twelve patches of
