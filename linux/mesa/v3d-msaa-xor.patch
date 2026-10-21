@@ -1,0 +1,22 @@
+--- a/src/gallium/drivers/v3d/v3dx_rcl.c
++++ b/src/gallium/drivers/v3d/v3dx_rcl.c
+@@ -102,6 +102,10 @@
+                  */
+                 assert(buffer != ZSTENCIL);
+                 load.raw_mode = true;
++                /* Raw 3.3 loads have their own UIF XOR flag.  The render
++                 * target config does not supply it for MSAA reloads.
++                 */
++                load.xor_uif = surf->tiling == V3D_TILING_UIF_XOR;
+                 load.padded_height_of_output_image_in_uif_blocks =
+                         surf->padded_height_of_output_image_in_uif_blocks;
+ #endif /* V3D_VERSION < 40 */
+@@ -175,6 +179,8 @@
+                  */
+                 assert(buffer != ZSTENCIL);
+                 store.raw_mode = true;
++                /* Match the UIF layout selected for this surface. */
++                store.xor_uif = surf->tiling == V3D_TILING_UIF_XOR;
+                 if (!last_store) {
+                         store.disable_color_buffers_clear_on_write = true;
+                         store.disable_z_buffer_clear_on_write = true;

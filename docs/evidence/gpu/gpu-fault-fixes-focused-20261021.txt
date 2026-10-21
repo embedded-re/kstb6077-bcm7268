@@ -1,0 +1,63 @@
+# Focused GPU fault runs, 2026-10-20/21 (KSTB6077, V3D 3.3). One line per run:
+# dEQP Pass count, kernel "MMU error" lines, GPU resets, fault client/address.
+# Kernel errors counted by timestamp after the run's start (the dmesg ring wraps).
+# v2_*: kernel #24, selected driver f0b8cc27 ("selected") or experimental driver
+#   with the CL slack ("slack256"); first100 / 200-case sequence from GLES2 list
+#   entries 11000-11199; ff = the five flush_finish cases; ta16m = 16 MB extra
+#   initial tile_alloc (test knob).
+# v3_*, v4_*: diagnostic kernels #25/#26 (register and PTE logging); fill = unused
+#   PTEs pointed read-only at the scratch page.
+# v5_*: kernel #27, MMU flush before each bin/render job on (flush) or off (noflush),
+#   same boot.
+# c1_*: kernel #28 = 0001-0004 only, candidate Mesa fa48b134 (11 patches + v3d33-cl-prefetch).
+v2_baseline_selected   pass=100 mmu=28 resets=0  ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000   ? (0x20) 0x23e000 
+v2_slack256            pass=100 mmu=0 resets=0
+v2_slack256_200        pass=200 mmu=0 resets=0
+v2_ff_selected         pass=4 mmu=2 resets=2  ? (0x24) 0x2bc000   ? (0x8) 0x100 
+v2_ff_slack            pass=5 mmu=1 resets=1  ? (0x24) 0x2d4000 
+v2_ff_slack_r2         pass=5 mmu=1 resets=1  ? (0x24) 0x2aa000 
+v2_ff_slack_ta16m      pass=5 mmu=0 resets=0
+v2_ff_slack_ta16m_r2   pass=5 mmu=0 resets=0
+v3_ff_dbg              pass=5 mmu=0 resets=0
+v3_ff_dbg_r2           pass=5 mmu=1 resets=1  ? (0x24) 0x2b0000 
+v3_ff_dbg_r3           pass=5 mmu=0 resets=0
+v3_wait_ts3            pass=1 mmu=1 resets=1  ? (0x24) 0x33a000 
+v4_wait1               pass=1 mmu=0 resets=0
+v4_wait2               pass=1 mmu=0 resets=0
+v4_wait3               pass=1 mmu=0 resets=0
+v4_wait4               pass=1 mmu=1 resets=1  ? (0x24) 0x2b0000 
+v4_fill_wait1          pass=1 mmu=0 resets=1
+v4_fill_wait2          pass=1 mmu=0 resets=0
+v4_fill_wait3          pass=1 mmu=0 resets=1
+v4_fill_wait4          pass=1 mmu=0 resets=0
+v4_fill_wait5          pass=1 mmu=0 resets=0
+v4_fill_wait6          pass=1 mmu=1 resets=1  ? (0x40) 0x2a5000 
+v4_fill_wait7          pass=1 mmu=0 resets=1
+v4_fill_wait8          pass=1 mmu=0 resets=1
+v5_flush_wait1         pass=1 mmu=0 resets=0
+v5_flush_wait2         pass=1 mmu=0 resets=0
+v5_flush_wait3         pass=1 mmu=0 resets=0
+v5_flush_wait4         pass=1 mmu=0 resets=0
+v5_flush_wait5         pass=1 mmu=0 resets=0
+v5_flush_wait6         pass=1 mmu=0 resets=0
+v5_flush_wait7         pass=1 mmu=0 resets=0
+v5_flush_wait8         pass=1 mmu=0 resets=0
+v5_flush_wait9         pass=1 mmu=0 resets=0
+v5_flush_wait10        pass=1 mmu=0 resets=0
+v5_flush_wait11        pass=1 mmu=0 resets=0
+v5_flush_wait12        pass=1 mmu=0 resets=0
+v5_noflush_wait1       pass=1 mmu=0 resets=0
+v5_noflush_wait2       pass=1 mmu=0 resets=0
+v5_noflush_wait3       pass=1 mmu=1 resets=1  ? (0x24) 0x2bd000 
+v5_noflush_wait4       pass=1 mmu=0 resets=0
+v5_noflush_wait5       pass=1 mmu=3 resets=3  ? (0x24) 0x2e5000   ? (0x24) 0x2c2000   ? (0x24) 0x2e4000 
+v5_noflush_wait6       pass=1 mmu=0 resets=0
+c1_seq200              pass=200 mmu=0 resets=0
+c1_ff1                 pass=5 mmu=0 resets=0
+c1_ff2                 pass=5 mmu=0 resets=0
+c1_wait1               pass=1 mmu=0 resets=0
+c1_wait2               pass=1 mmu=0 resets=0
+c1_wait3               pass=1 mmu=0 resets=0
+c1_wait4               pass=1 mmu=0 resets=0
+c1_wait5               pass=1 mmu=0 resets=0
+c1_wait6               pass=1 mmu=0 resets=0

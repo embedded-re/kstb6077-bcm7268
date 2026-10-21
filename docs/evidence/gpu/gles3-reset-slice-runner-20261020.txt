@@ -1,0 +1,35 @@
+gles3: 801 cases, 0 done before, 801 to run
+  25 run, 776 left, 1 s
+  50 run, 751 left, 2 s
+  75 run, 726 left, 4 s
+  100 run, 701 left, 6 s
+  125 run, 676 left, 7 s
+  150 run, 651 left, 9 s
+  175 run, 626 left, 10 s
+  200 run, 601 left, 14 s
+  225 run, 576 left, 16 s
+  250 run, 551 left, 17 s
+  275 run, 526 left, 19 s
+  300 run, 501 left, 21 s
+  325 run, 476 left, 23 s
+  350 run, 451 left, 24 s
+  375 run, 426 left, 26 s
+  400 run, 401 left, 28 s
+  425 run, 376 left, 32 s
+  450 run, 351 left, 34 s
+  475 run, 326 left, 38 s
+  500 run, 301 left, 40 s
+  525 run, 276 left, 41 s
+  550 run, 251 left, 43 s
+  575 run, 226 left, 44 s
+  600 run, 201 left, 45 s
+  625 run, 176 left, 45 s
+  650 run, 151 left, 45 s
+  675 run, 126 left, 46 s
+  700 run, 101 left, 46 s
+  725 run, 76 left, 47 s
+  750 run, 51 left, 47 s
+  775 run, 26 left, 48 s
+  800 run, 1 left, 49 s
+  801 run, 0 left, 49 s
+801 cases: Pass 793, Fail 8

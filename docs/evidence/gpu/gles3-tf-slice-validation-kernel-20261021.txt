@@ -1,0 +1,4 @@
+4,257,2670015,-;kstb_v3d_power: loading out-of-tree module taints kernel.
+6,258,2679585,-;kstb-v3d-power f041d020.clock-controller: island off (424e0908)
+5,260,2700397,-;v3d f1200000.gpu: [drm] Transparent Hugepage support is recommended for optimal performance on this platform!
+6,261,2715095,-;[drm] Initialized v3d 1.0.0 for f1200000.gpu on minor 0

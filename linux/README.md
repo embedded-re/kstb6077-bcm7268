@@ -582,7 +582,8 @@ packages stay as they are:
 | 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | **works**: [`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c) prints `OK` (below) |
 | 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` (deleted 2026-10-17) | hangs in the driver (no kernel message); no debug symbols packaged |
 
-The fixes in the patch, all for code paths only V3D 3.3 takes, each found
+The fixes in the patch (V3D 3.3 compiler/driver repairs and GLES BGRA
+format acceptance), each found
 by a crash, a hang or a wrong picture on the box:
 
 1. `vir_emit_last_thrsw`: a shader without texture lookups runs single
@@ -654,6 +655,37 @@ Found with dEQP (2026-10-18, "dEQP" below):
     1024 pixels off) and passes with it; the earlier pattern, the same
     gradient in every component, hid it.
 
+Additional repairs, 2026-10-19/20 (candidate in `/opt/mesa-test/dri`,
+validation in progress):
+
+12. Indirect uniform loads use the general TMU path before V3D 4.1;
+    `LDUNIFA`/`LDUNIFARF` cannot be encoded on 3.3. This fixes the
+    dynamic uniform indexing/struct crashes without disabling GLES3 UBOs.
+13. Fix 9 now gives each uniform load a fresh temporary and copies into
+    its original destination. Rewriting every use of the original temporary
+    was wrong when it had later assignments. Scratch-setup uniform loads
+    also receive the required r5 register class.
+14. Do not merge two `ldvary` signals, including during pipelining fixup.
+    Each consumes a varying FIFO entry, even when its value is unused.
+    Dropped loads caused the matrix/conversion failures.
+15. Treat `TMUL` as a texture-request terminator on 3.x. Otherwise the
+    scheduler could read a texture result before issuing the final request
+    parameter. All 1898 GLES2 random-shader cases pass with this repair.
+16. For textures without mipmapping, preserve positive maximum LOD rather
+    than clamping it to level zero: the LOD still selects the minification
+    versus magnification filter. All 248 GLES2 filtering cases pass.
+17. Accept GLES BGRA renderbuffers and BGRA8_EXT internal formats when
+    EXT_texture_format_BGRA8888 is enabled. The 52 former failures become
+    39 passes and 13 unsupported separate depth/stencil attachment cases.
+18. Preserve valid stage metadata when compilation fails and skip drawing
+    the failed variant, instead of dereferencing NULL compiler output.
+19. Before 4.1, retain the existing final texture-related thread switch;
+    do not insert a bare switch without an outstanding TMU request.
+    On 3.x reduce to one thread before scratch spilling. This gives the
+    heavy `uniform_api.random.79` shader enough registers and it passes.
+    Threaded scratch spilling remains unresolved; this is a fallback,
+    not proof that all scratch-memory workloads work.
+
 Results with the patch (2026-10-17): 256×256 FBO, triangle with red,
 green and blue corners: 18432 lit pixels (its area), corners
 241,8,6 / 7,242,6 / 4,6,245, centre 84,85,86; 5 runs in a row and 20
@@ -697,7 +729,11 @@ builds the same tree in about 3 minutes; meson needs `-Wl,--undefined-version`
 for lld. Tested on the box (2026-10-18): the libraries and `v3d_dri.so`
 in `/opt/mesa-x`, used with `LD_LIBRARY_PATH=/opt/mesa-x
 LIBGL_DRIVERS_PATH=/opt/mesa-x/dri`; ROOT's own build in `/usr/local` is
-unchanged (it has fixes 1–5 only). The dEQP run below used `/opt/mesa-x`.
+updated on 2026-10-19 to fixes 1–11, after backing up the old libraries
+to `/root/gpu-backups/mesa-default-before-20261019.tgz`. Default triangle
+and mipmap tests pass. New repairs are being validated separately in
+`/opt/mesa-test/dri`; they are not yet the default. The historical dEQP
+run below used `/opt/mesa-x`.
 
 **kmscube** (2026-10-18, built on ROOT from `gitlab.freedesktop.org/mesa/kmscube`
 master, `meson setup build -Dgstreamer=disabled` with
@@ -709,7 +745,7 @@ master, `meson setup build -Dgstreamer=disabled` with
 | `-A -f AR24` (atomic) | `no eglDupNativeFenceFDANDROID`: exits; Mesa's EGL here has no Android native fence |
 | `-f AR24 -M rgba` (texture from a GBM buffer as a dma-buf EGLImage) | **kernel Oops**, `Unable to handle kernel NULL pointer dereference at virtual address 0000000000000024`; the board hung while printing it (no call trace on the serial line, no ping): power cycle needed |
 
-The Oops is open: the call trace never came out. That path (a linear
+The Oops was open at this point in the log: the call trace never came out. That path (a linear
 texture from a dma-buf) differs from the working ones in two ways: v3d
 copies the texture to a tiled shadow copy, trying the TFU first
 (`v3d_tfu_blit`, no version check), and kmsro imports the buffer into
@@ -780,6 +816,121 @@ fail); every case that passed then passes now. Where the failures are:
 | `shaders.indexing.*`, `shaders.struct.*` | 0 + 36 | the crash looked at (`uniform_array.float_dynamic_read_vertex`): `Failed to pack instruction 31`, `Failed to compile MESA_SHADER_VERTEX`, then a segfault in `v3d_get_compiled_shader` |
 | `texture.filtering.*` | 16 | not looked at |
 | `shaders.conversions.*` | 2 | not looked at |
+
+**2026-10-20 repair audit.** The current Mesa source builds with
+[`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch),
+[`mesa/v3d-native-fences.patch`](mesa/v3d-native-fences.patch),
+[`mesa/v3d-msaa-xor.patch`](mesa/v3d-msaa-xor.patch),
+[`mesa/v3d-pbo-fallback.patch`](mesa/v3d-pbo-fallback.patch), and the kmsro
+patch in that order. All five patches apply cleanly to pristine Mesa 23.3.6.
+GLES1 is enabled in [`mesa/build-mesa.sh`](mesa/build-mesa.sh). The candidate
+driver is staged on ROOT under `/opt/mesa-pbo-test/dri`, with the matching GLES1
+library in `/opt/mesa-gles1/lib`; the system `/usr/local` installation is
+still the older validated fixes 1–11 build.
+
+The fresh full GLES2 run on the compiler-fix candidate recorded **17,041 Pass,
+119 NotSupported, 5 QualityWarning, 0 Fail, 0 Crash, 0 Timeout** (17,165 cases).
+The BGRA change accounts for 13 new NotSupported results: separate depth and
+stencil attachment formats that Mesa still rejects. Threaded shader scratch
+spills still hang; a single-thread compiler fallback makes the known
+`uniform_api.random.79` reproducer pass without spilling. This does not prove
+scratch spilling works. Compiler failure handling has been changed but its
+fault path has not yet been validated separately.
+
+On the native-fence candidate, [`mesa/kstb-native-fence-test.c`](mesa/kstb-native-fence-test.c)
+passes 100 GPU export/import/server-wait chains with exact pixel checks.
+`kmscube -N -D /dev/dri/card1 -A -f AR24 -c60` runs at 60.12 fps; the
+formerly crashing `-f AR24 -M rgba -c60` path now completes without a kernel
+Oops, though it reaches only 8.56 fps. EGL advertises
+`EGL_ANDROID_native_fence_sync` with this candidate.
+
+The original GLES3 surfaceless dEQP sweep recorded 42,328 Pass, 1,690 Fail,
+7 Crash and 580 NotSupported of 44,768 cases, but some failures came from
+that test target supplying no default framebuffer (`-1 × -1`). For reliable
+GPU tests, use the GBM-backed dEQP target built with
+[`mesa/deqp-nullws-gbm.patch`](mesa/deqp-nullws-gbm.patch),
+`DEQP_EGL_PLATFORM=drm DEQP_SURFACE_TYPE=window`, and
+`LIBGL_DRIVERS_PATH=/opt/mesa-pbo-test/dri`. On that target, 432 shadow-texture
+cases yielded 80 Pass, 152 QualityWarning, 200 Fail. Transform feedback still
+fails and causes a GPU reset, so full GLES3 support is not yet established.
+The EGL GBM-window audit with GLES1-enabled dEQP recorded 749 Pass, 84 Fail,
+2,955 NotSupported and 1 QualityWarning of 3,789 cases. The MSAA UIF XOR fix
+passes 52 of the 84 failures; 32 4× MSAA depth/stencil shader-render cases
+still fail. A fresh full EGL run on the new candidate recorded **801 Pass,
+32 Fail, 2,955 NotSupported, 1 QualityWarning** of 3,789 cases. GBM has no
+pixmap/pbuffer target. Disabling broken V3D 3.x
+buffer-texture acceleration selects Mesa's correct CPU PBO upload path:
+108/108 `teximage2d_pbo` and 109/109 `texsubimage2d_pbo` GLES3 cases pass.
+V3D 3.x texture-buffer support remains unavailable.
+
+**MMU faults with every case passing (2026-10-20/21).** On the repair
+candidate a full GLES2 run passed every case but the kernel logged MMU
+errors and one GPU reset. Two separate causes, each reproduced alone,
+fixed and rerun (per-run log:
+[`../docs/evidence/gpu/gpu-fault-fixes-focused-20261021.txt`](../docs/evidence/gpu/gpu-fault-fixes-focused-20261021.txt)):
+
+- **The CLE reads past the end of a control-list BO.** GLES2 list entries
+  11000–11099 (texture.vertex.cube… then depth_stencil) gave 28 × `MMU
+  error from client ? (0x20) ... pte invalid`, always the page right after
+  the BO that holds the start of the job's BCL (seen with a per-job BO
+  dump); each case alone was clean. Mesa leaves about 225 bytes after the
+  branch at the end of a CL BO; the closed driver (`libGLES_nexus.so`,
+  `khrn_fmem_cle_new_block`) asks for size + 0x105 per block, the 5-byte
+  branch plus 256 bytes. [`mesa/v3d33-cl-prefetch.patch`](mesa/v3d33-cl-prefetch.patch)
+  keeps 256 bytes free at the end of every CL BO before V3D 4.1. The same
+  100 cases then gave 0 errors, the 200-case sequence 200 Pass, 0 errors.
+  Padding the TSDA or the CL BOs by 4 KB changed nothing (the CL then
+  simply fills the bigger BO).
+- **A freshly mapped BO read as unmapped.** `flush_finish.wait` gave `MMU
+  error from client ? (0x24)` and `Resetting GPU for hang` (`V3D_ERR_STAT
+  0x00001000`) in about a third of the runs, during a render job, at the
+  first page of the RCL BO of the job just submitted. A diagnostic kernel
+  printed that page's PTE at the fault: valid (`3000142c`). No binner OOM
+  happened (`BPOA`/`BPOS` 0, no OUTOMEM). Unused PTEs pointed at the
+  scratch page took the errors away but not the resets (5 in 8 runs). The
+  closed driver (`nexus.ko`, `BVC5_P_HardwarePrepareForJob`) clears the
+  MMU right before it starts a job;
+  [`patches/0004-v3d-mmu-flush-before-job-on-3.3.patch`](patches/0004-v3d-mmu-flush-before-job-on-3.3.patch)
+  flushes before every bin and render job before V3D 4.1. Same kernel and
+  boot: 0 failing runs of 12 with the flush, 2 of 6 without (4 resets).
+  The TFU queue gets no flush; it is untested.
+
+Validation on the result (2026-10-21, kernel `#28` = patches 0001–0004 over
+TFTP, not flashed; Mesa with all twelve patches of
+[`mesa/build-mesa.sh`](mesa/build-mesa.sh), `v3d_dri.so` `fa48b134…`, in
+`/opt/mesa-repair-20261021/dri`; GBM window 256×256, `rgba8888d24s8ms0`;
+the kernel log read from `/dev/kmsg` for the whole run; hashes in
+[`../docs/evidence/gpu/repair-candidate-20261021.sha256`](../docs/evidence/gpu/repair-candidate-20261021.sha256)):
+
+| Run | Pass | NotSupported | QualityWarning | Fail | MMU errors / resets |
+| --- | ---: | ---: | ---: | ---: | --- |
+| GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 / 0 |
+| EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 / 0 |
+| GLES3 transform feedback, 1,320 | 987 | 333 | 0 | 0 | 0 / 0 |
+| GLES3 shadow/MMU slice, 801 | 799 | 0 | 0 | 2 | 0 / 0 |
+| `flush_finish` ×2, `wait` ×6, the 200-case sequence | all | | | 0 | 0 / 0 |
+
+The counts are the previous candidate's, unchanged; the kernel errors are
+gone. The two GLES3 failures are the image cases
+`texture_functions.textureoffset.sampler2dshadow_bias_fragment` and
+`textureprojoffset.sampler2dshadow_bias_fragment`.
+
+Full GLES3 on the same kernel and driver (GBM window target, all 44,768
+cases, one run, 2026-10-21): **43,592 Pass, 580 NotSupported, 505 Fail,
+83 QualityWarning, 8 Crash**
+([`../docs/evidence/gpu/gles3-full-validation-results-20261021.txt`](../docs/evidence/gpu/gles3-full-validation-results-20261021.txt)).
+Not clean in the kernel: 96 GPU resets and 29 MMU errors, mapped to the
+running case by time:
+
+| Group | Fail | Other | Kernel |
+| --- | ---: | --- | --- |
+| `texture.shadow.*` | 274 | 76 QualityWarning, 7 Crash (SIGSEGV, cube and 2d_array) | none |
+| `fragment_out.{basic,array,random}` | 166 | | all 96 resets: integer render targets (`rgba16i`, `rgba16ui`, `rgb10_a2ui`, some 8/32-bit) |
+| `fbo.{color,msaa,invalidate,blit}` | 40 | | all 29 MMU errors (clients `0x7`–`0xf`): `rg32f`/`rgba32f` on 2d_array, 3d, cube; MSAA blits |
+| `ubo.random` | 6 | | none |
+| `texture.specification` | 5 | 1 Crash (`texsubimage3d_depth.depth24_stencil8_2d_array`) | none |
+| `multisample.fbo_*` | 8 | | none |
+| others | 6 | 7 QualityWarning (rasterization) | none |
 
 #### GPU straight to the screen: kmsro and `kstb-drm`
 

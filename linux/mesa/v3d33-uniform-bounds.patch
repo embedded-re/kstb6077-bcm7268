@@ -1,0 +1,21 @@
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -472,6 +472,18 @@
+                                          vir_uniform_ui(c, const_offset));
+                 }
+                 struct qreg data = ntq_get_src(c, instr->src[offset_src], 0);
++                /* Keep undefined dynamic uniform offsets inside the
++                 * uploaded block before forming a 3.x TMU address.
++                 */
++                if (c->devinfo->ver < 40 &&
++                    instr->intrinsic == nir_intrinsic_load_uniform) {
++                        uint32_t size = c->s->num_uniforms * 16;
++                        uint32_t base = nir_intrinsic_base(instr);
++                        uint32_t bytes = instr->num_components * 4;
++                        if (size >= base + bytes)
++                                data = vir_UMIN(c, data,
++                                                vir_uniform_ui(c, size - base - bytes));
++                }
+                 tmu = vir_ADD_dest(c, tmua, offset, data);
+         } else {
+                 if (const_offset != 0) {

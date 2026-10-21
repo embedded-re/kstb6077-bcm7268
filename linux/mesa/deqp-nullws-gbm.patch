@@ -1,0 +1,141 @@
+diff --git a/framework/platform/nullws/tcuNullWSPlatform.cpp b/framework/platform/nullws/tcuNullWSPlatform.cpp
+index 80b7207..fec0f0d 100644
+--- a/framework/platform/nullws/tcuNullWSPlatform.cpp
++++ b/framework/platform/nullws/tcuNullWSPlatform.cpp
+@@ -26,6 +26,11 @@
+ #include "eglwEnums.hpp"
+ #include "eglwLibrary.hpp"
+ #include "egluGLContextFactory.hpp"
++#include "tcuDefs.hpp"
++
++#include <fcntl.h>
++#include <gbm.h>
++#include <unistd.h>
+ 
+ namespace tcu
+ {
+@@ -37,14 +42,30 @@ class Window : public eglu::NativeWindow
+ public:
+     static const Capability CAPABILITIES = CAPABILITY_CREATE_SURFACE_LEGACY;
+ 
+-    Window(eglu::NativeDisplay *nativeDisplay, const eglu::WindowParams &params) : NativeWindow(CAPABILITIES)
++    Window(eglu::NativeDisplay *nativeDisplay, const eglu::WindowParams &params,
++           uint32_t format = GBM_FORMAT_ARGB8888)
++        : NativeWindow(CAPABILITIES), m_surface(nullptr)
++    {
++        auto *device = reinterpret_cast<gbm_device *>(nativeDisplay->getLegacyNative());
++        const int width = params.width > 0 ? params.width : 256;
++        const int height = params.height > 0 ? params.height : 256;
++        m_surface = gbm_surface_create(device, width, height, format, GBM_BO_USE_RENDERING);
++        if (!m_surface)
++            throw ResourceError("Failed to create V3D GBM surface");
++    }
++
++    ~Window()
+     {
++        gbm_surface_destroy(m_surface);
+     }
+ 
+     eglw::EGLNativeWindowType getLegacyNative()
+     {
+-        return nullptr;
++        return reinterpret_cast<eglw::EGLNativeWindowType>(m_surface);
+     }
++
++private:
++    gbm_surface *m_surface;
+ };
+ 
+ class WindowFactory : public eglu::NativeWindowFactory
+@@ -58,6 +79,16 @@ public:
+     {
+         return new Window(nativeDisplay, params);
+     }
++
++    eglu::NativeWindow *createWindow(eglu::NativeDisplay *nativeDisplay, eglw::EGLDisplay display,
++                                     eglw::EGLConfig config, const eglw::EGLAttrib *attribList,
++                                     const eglu::WindowParams &params) const
++    {
++        eglw::EGLint visual = 0;
++        if (!nativeDisplay->getLibrary().getConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &visual))
++            throw ResourceError("Failed to query EGL native visual");
++        return new Window(nativeDisplay, params, static_cast<uint32_t>(visual));
++    }
+ };
+ 
+ class Pixmap : public eglu::NativePixmap
+@@ -93,13 +124,26 @@ class Display : public eglu::NativeDisplay
+ public:
+     static const Capability CAPABILITIES = CAPABILITY_GET_DISPLAY_LEGACY;
+ 
+-    Display() : eglu::NativeDisplay(CAPABILITIES)
++    Display() : eglu::NativeDisplay(CAPABILITIES), m_fd(open("/dev/dri/renderD128", O_RDWR)), m_gbm(nullptr)
++    {
++        if (m_fd < 0)
++            throw ResourceError("Failed to open V3D render node");
++        m_gbm = gbm_create_device(m_fd);
++        if (!m_gbm) {
++            close(m_fd);
++            throw ResourceError("Failed to create V3D GBM device");
++        }
++    }
++
++    ~Display()
+     {
++        gbm_device_destroy(m_gbm);
++        close(m_fd);
+     }
+ 
+     eglw::EGLNativeDisplayType getLegacyNative()
+     {
+-        return EGL_DEFAULT_DISPLAY;
++        return reinterpret_cast<eglw::EGLNativeDisplayType>(m_gbm);
+     }
+ 
+     const eglw::Library &getLibrary() const
+@@ -108,6 +152,8 @@ public:
+     }
+ 
+ private:
++    int m_fd;
++    gbm_device *m_gbm;
+     eglw::DefaultLibrary m_library;
+ };
+ 
+diff --git a/targets/nullws/nullws.cmake b/targets/nullws/nullws.cmake
+index 5f6f9b7..81edb62 100644
+--- a/targets/nullws/nullws.cmake
++++ b/targets/nullws/nullws.cmake
+@@ -3,8 +3,11 @@ set(DEQP_TARGET_NAME "nullws")
+ 
+ set(DEQP_USE_NULLWS ON)
+ add_definitions(-DNULLWS)
++find_library(GBM_LIBRARY NAMES gbm REQUIRED)
++list(APPEND DEQP_PLATFORM_LIBRARIES ${GBM_LIBRARY})
+ 
+ find_library(GLES2_LIBRARY		NAMES libGLESv2 GLESv2)
++find_library(GLES1_LIBRARY		NAMES libGLESv1_CM GLESv1_CM)
+ find_library(GLES3_LIBRARY		NAMES libGLESv3 GLESv3)
+ find_library(EGL_LIBRARY		NAMES libEGL EGL)
+ 
+@@ -13,6 +16,7 @@ if (NOT GLES3_LIBRARY)
+ endif()
+ 
+ find_path(GLES2_INCLUDE_PATH	GLES2/gl2.h)
++find_path(GLES1_INCLUDE_PATH	GLES/gl.h)
+ find_path(GLES3_INCLUDE_PATH	GLES3/gl3.h)
+ find_path(GLES31_INCLUDE_PATH	GLES3/gl31.h)
+ find_path(GLES32_INCLUDE_PATH	GLES3/gl32.h)
+@@ -24,6 +28,12 @@ if (GLES2_LIBRARY AND GLES2_INCLUDE_PATH)
+ 	include_directories(BEFORE ${GLES2_INCLUDE_PATH})
+ endif ()
+ 
++if (GLES1_LIBRARY AND GLES1_INCLUDE_PATH)
++	set(DEQP_SUPPORT_GLES1 ON)
++	set(DEQP_GLES1_LIBRARIES ${GLES1_LIBRARY})
++	include_directories(BEFORE ${GLES1_INCLUDE_PATH})
++endif ()
++
+ if (GLES3_LIBRARY AND GLES3_INCLUDE_PATH)
+ 	set(DEQP_SUPPORT_GLES3		ON)
+ 	set(DEQP_GLES3_LIBRARIES	${GLES3_LIBRARY})

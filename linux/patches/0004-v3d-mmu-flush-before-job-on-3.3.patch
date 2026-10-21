@@ -1,0 +1,54 @@
+v3d: flush the MMU before each bin and render job on V3D < 4.1
+
+On the KSTB6077's V3D 3.3, dEQP-GLES2 flush_finish.wait faulted in about a
+third of the runs: "MMU error from client ? (0x24) ... pte invalid" at the
+first page of the render job's RCL BO, then a GPU reset (V3D_ERR_STAT
+0x1000). At the fault the PTE for that page was valid, and the BO had been
+mapped tens of milliseconds earlier while the previous job was running, so
+the MMU still used a stale translation despite the flush in
+v3d_mmu_insert_ptes(). With unused PTEs pointed at the scratch page instead,
+the faults went away but the resets stayed (the CLE read zeros).
+
+The closed driver (nexus.ko, BVC5_P_HardwarePrepareForJob) clears the MMU
+right before it starts a job. Do the same before the bin and render jobs on
+V3D < 4.1. Tested: flush_finish.wait 0 failing runs of 12 with the flush,
+2 of 6 without it, same kernel and boot.
+
+--- a/drivers/gpu/drm/v3d/v3d_sched.c
++++ b/drivers/gpu/drm/v3d/v3d_sched.c
+@@ -65,6 +65,19 @@
+ 	return container_of(sched_job, struct v3d_cpu_job, base.base);
+ }
+ 
++/* Before V3D 4.1 a page mapped while another job runs can still read as
++ * unmapped when a later job first uses it: "pte invalid" although the PTE
++ * is valid, then a hang. The flush in v3d_mmu_insert_ptes() is not enough
++ * (likely a page walk in flight across it). The closed driver flushes the
++ * MMU before it starts a job; do the same.
++ */
++static void
++v3d_mmu_flush_before_job(struct v3d_dev *v3d)
++{
++	if (v3d->ver < V3D_GEN_41)
++		v3d_mmu_flush_all(v3d);
++}
++
+ static void
+ v3d_sched_job_free(struct drm_sched_job *sched_job)
+ {
+@@ -259,6 +272,7 @@
+ 			       V3D_CLE_CT0QTS_ENABLE |
+ 			       job->qts);
+ 	}
++	v3d_mmu_flush_before_job(v3d);
+ 	V3D_CORE_WRITE(0, V3D_CLE_CT0QBA, job->start);
+ 	V3D_CORE_WRITE(0, V3D_CLE_CT0QEA, job->end);
+ 
+@@ -310,6 +324,7 @@
+ 	/* Set the current and end address of the control list.
+ 	 * Writing the end register is what starts the job.
+ 	 */
++	v3d_mmu_flush_before_job(v3d);
+ 	V3D_CORE_WRITE(0, V3D_CLE_CT1QBA, job->start);
+ 	V3D_CORE_WRITE(0, V3D_CLE_CT1QEA, job->end);
+ 

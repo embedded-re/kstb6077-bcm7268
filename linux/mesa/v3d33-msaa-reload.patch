@@ -1,0 +1,32 @@
+--- a/src/gallium/drivers/v3d/v3dx_rcl.c
++++ b/src/gallium/drivers/v3d/v3dx_rcl.c
+@@ -50,6 +50,11 @@
+         cl_emit(cl, TILE_COORDINATES_IMPLICIT, coords);
+         cl_emit(cl, STORE_TILE_BUFFER_GENERAL, store) {
+                 store.buffer_to_store = NONE;
++#if V3D_VERSION < 40
++                store.disable_color_buffers_clear_on_write = true;
++                store.disable_z_buffer_clear_on_write = true;
++                store.disable_stencil_buffer_clear_on_write = true;
++#endif
+         }
+ }
+ 
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -1227,9 +1227,12 @@
+         pscreen->resource_get_handle = v3d_resource_get_handle;
+         pscreen->resource_get_param = v3d_resource_get_param;
+         pscreen->resource_destroy = u_transfer_helper_resource_destroy;
+-        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl,
+-                                                            U_TRANSFER_HELPER_SEPARATE_Z32S8 |
+-                                                            U_TRANSFER_HELPER_MSAA_MAP);
++        struct v3d_screen *screen = v3d_screen(pscreen);
++        unsigned flags = U_TRANSFER_HELPER_SEPARATE_Z32S8 |
++                         U_TRANSFER_HELPER_MSAA_MAP;
++        if (screen->devinfo.ver < 40)
++                flags |= U_TRANSFER_HELPER_SEPARATE_STENCIL;
++        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl, flags);
+ }
+ 
+ void

@@ -1,0 +1,89 @@
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1024,6 +1024,15 @@
+ 
+         if (!v3d_render_condition_check(v3d))
+                 return;
++
++#if V3D_VERSION < 40
++        /* Count TF output in software, splitting restart-delimited draws. */
++        if (v3d->streamout.num_targets && info->primitive_restart) {
++                util_draw_vbo_without_prim_restart(pctx, info, drawid_offset,
++                                                  indirect, &draws[0]);
++                return;
++        }
++#endif
+ 
+         /* Fall back for weird desktop GL primitive restart values. */
+         if (info->primitive_restart &&
+@@ -1292,8 +1301,26 @@
+         /* A flush is required in between a TF draw and any following TF specs
+          * packet, or the GPU may hang.  Just flush each time for now.
+          */
++#if V3D_VERSION >= 40
+         if (v3d->streamout.num_targets)
+                 cl_emit(&job->bcl, TRANSFORM_FEEDBACK_FLUSH_AND_COUNT, flush);
++#else
++        if (v3d->streamout.num_targets)
++                cl_emit(&job->bcl, FLUSH_TRANSFORM_FEEDBACK_DATA, flush);
++#endif
++
++#if V3D_VERSION < 40
++        if (v3d->streamout.num_targets && v3d->active_queries) {
++                uint32_t prims = u_prims_for_vertices(info->mode, draws[0].count) *
++                                 info->instance_count;
++                uint32_t verts = u_vertices_for_prims(u_base_prim_type(info->mode), prims);
++                v3d->tf_prims_generated += prims;
++                for (int i = 0; i < v3d->streamout.num_targets; i++) {
++                        if (v3d->streamout.targets[i])
++                                v3d_stream_output_target(v3d->streamout.targets[i])->recorded_vertex_count += verts;
++                }
++        }
++#endif
+ 
+         job->draw_calls_queued++;
+         if (v3d->streamout.num_targets)
+@@ -1309,7 +1336,7 @@
+         if (!v3d->prog.gs && !v3d->prim_restart) {
+                 for (int i = 0; i < v3d->streamout.num_targets; i++)
+                         v3d_stream_output_target(v3d->streamout.targets[i])->offset +=
+-                                u_stream_outputs_for_vertices(info->mode, draws[0].count);
++                                u_stream_outputs_for_vertices(info->mode, draws[0].count) * info->instance_count;
+         }
+ 
+         if (v3d->zsa && job->zsbuf && v3d->zsa->base.depth_enabled) {
+--- a/src/gallium/drivers/v3d/v3d_job.c
++++ b/src/gallium/drivers/v3d/v3d_job.c
+@@ -590,9 +590,10 @@
+                  * to us reading an obsolete (possibly non-zero) value from
+                  * the GPU counters.
+                  */
+-                if (job->needs_primitives_generated ||
+-                    (v3d->streamout.num_targets &&
+-                     job->tf_draw_calls_queued > 0))
++                if (devinfo->ver >= 40 &&
++                    (job->needs_primitives_generated ||
++                     (v3d->streamout.num_targets &&
++                      job->tf_draw_calls_queued > 0)))
+                         v3d_read_and_accumulate_primitive_counters(v3d);
+         }
+ 
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -841,8 +841,14 @@
+                 }
+         }
+ 
+-        /* Set up the transform feedback buffers. */
+-        if (v3d->dirty & V3D_DIRTY_STREAMOUT) {
++        /* On 3.x the addresses are inline payload of TF_ENABLE, so every
++         * specs packet must include its complete address array.
++         */
++        uint64_t tf_buffer_dirty = V3D_DIRTY_STREAMOUT;
++#if V3D_VERSION < 40
++        tf_buffer_dirty |= V3D_DIRTY_RASTERIZER | V3D_DIRTY_PRIM_MODE;
++#endif
++        if (v3d->dirty & tf_buffer_dirty) {
+                 struct v3d_uncompiled_shader *tf_shader = get_tf_shader(v3d);
+                 struct v3d_streamout_stateobj *so = &v3d->streamout;
+                 for (int i = 0; i < so->num_targets; i++) {

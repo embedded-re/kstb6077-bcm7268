@@ -1,0 +1,20 @@
+# 2026-10-21 candidate: Mesa 23.3.6 + 12 patches (build-mesa.sh order), kernel 6.18.57 + patches 0001-0004
+cd3d6c60121dea73abbae99d399dc2facaecde1a8c6bd647e6d85410ff4b577b  linux/build/mesa-x/mesa-23.3.6.tar.xz
+7d5e6dc4db8ad736185d9a8ea291f5c7defd0ffa049498474b88ad9d03a458b5  linux/mesa/v3d33-fixes.patch
+3df374bb1b3f1d561d5adc0f43e202a719838a36289f4ca3de79a4fd5a4e7b62  linux/mesa/v3d-native-fences.patch
+dc88505fd7f910932636304697f488410379b48978ea87f42dce86edfc4688a3  linux/mesa/v3d-msaa-xor.patch
+1d5c6dd3960bff53822cdea2627da60e2c6f5ba7c0407fe241470d6fdd28e789  linux/mesa/v3d-pbo-fallback.patch
+5e29fe4bc9d2cd8c3086052bca04921fc7635734141c01c1851ff62c26d8f127  linux/mesa/v3d33-tmu-fifo.patch
+39d529beba48ab038ad60bbac1d65599fbd98a10e941c478761a8fc04448c7c3  linux/mesa/v3d33-msaa-reload.patch
+47a329faf7f3b9b045435a2c2b9effc1f3cd53cd02a9fa411fca4f0af25354c2  linux/mesa/v3d33-transform-feedback.patch
+201a9a03f6720e4a330e88c25324ae05523eff86dad84ba13c934dbd141ceb4a  linux/mesa/v3d33-vpm-read-offset.patch
+621f9eb0eb65ebcd465f7f020a8273b704e4fc4c4b2d7a76ba8a38763db2b063  linux/mesa/v3d33-uniform-bounds.patch
+97d3998487f85800d3fef292be9516eb08597ee63f468fb58f5a4bb4b5d9ba87  linux/mesa/v3d33-centroid.patch
+6f4ca6984b338efa1e1d091f7c530c6f98badf7dcaf5a3a1038fb49720609ee1  linux/mesa/v3d33-cl-prefetch.patch
+77f32b87b886808f2ac5f421d35d013d1f079b67f6a1dc0cf090885b398b4881  linux/mesa/kmsro-kstb-drm.patch
+258cc8e1ef9c815b42a3dc9373b4baf9e8973a64ec48e3a03a9b300e97c2fcf7  linux/patches/0001-v3d-reset-only-existing-queues.patch
+ff1049c1de13157115a3c0c3e06421362fa5ce8346d37f1cb4de80e16ac2c56b  linux/patches/0002-drm-kconfig-helpers-for-kstb-drm.patch
+c5916a6ed45c1d6a6313b231560fb838bc3c12c291004d81e9bd1b0c3dc04be1  linux/patches/0003-v3d-no-cache-flush-without-csd.patch
+cbf4037cbf3294df56c9d7e63b9e303d9f53b1db4bfe3e88c1be439fbeef23d9  linux/patches/0004-v3d-mmu-flush-before-job-on-3.3.patch
+fa48b13432fdbaf791537ab46e3f452c8989a9de00051591e5c1a11753f30eb4  linux/build/mesa-repair-verify-20261020/build/src/gallium/targets/dri/libgallium_dri.so
+cfd9fb9124ee50f8b768e9b8246b515dcb589e0e003d5cab476554914b693ffb  linux/build/out/Image

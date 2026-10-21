@@ -1,0 +1,48 @@
+--- a/framework/platform/nullws/tcuNullWSPlatform.cpp
++++ b/framework/platform/nullws/tcuNullWSPlatform.cpp
+@@ -28,6 +28,8 @@
+ #include "egluGLContextFactory.hpp"
+ #include "tcuDefs.hpp"
+ 
++#include <cstdlib>
++#include <cstring>
+ #include <fcntl.h>
+ #include <gbm.h>
+ #include <unistd.h>
+@@ -47,6 +49,8 @@
+         : NativeWindow(CAPABILITIES), m_surface(nullptr)
+     {
+         auto *device = reinterpret_cast<gbm_device *>(nativeDisplay->getLegacyNative());
++        if (!device)
++            throw NotSupportedError("Surfaceless audit target has no native windows");
+         const int width = params.width > 0 ? params.width : 256;
+         const int height = params.height > 0 ? params.height : 256;
+         m_surface = gbm_surface_create(device, width, height, format, GBM_BO_USE_RENDERING);
+@@ -124,8 +128,12 @@
+ public:
+     static const Capability CAPABILITIES = CAPABILITY_GET_DISPLAY_LEGACY;
+ 
+-    Display() : eglu::NativeDisplay(CAPABILITIES), m_fd(open("/dev/dri/renderD128", O_RDWR)), m_gbm(nullptr)
+-    {
++    Display() : eglu::NativeDisplay(CAPABILITIES), m_fd(-1), m_gbm(nullptr)
++    {
++        const char *backend = std::getenv("DEQP_NATIVE_BACKEND");
++        if (backend && std::strcmp(backend, "surfaceless") == 0)
++            return;
++        m_fd = open("/dev/dri/renderD128", O_RDWR);
+         if (m_fd < 0)
+             throw ResourceError("Failed to open V3D render node");
+         m_gbm = gbm_create_device(m_fd);
+@@ -137,8 +145,10 @@
+ 
+     ~Display()
+     {
+-        gbm_device_destroy(m_gbm);
+-        close(m_fd);
++        if (m_gbm)
++            gbm_device_destroy(m_gbm);
++        if (m_fd >= 0)
++            close(m_fd);
+     }
+ 
+     eglw::EGLNativeDisplayType getLegacyNative()

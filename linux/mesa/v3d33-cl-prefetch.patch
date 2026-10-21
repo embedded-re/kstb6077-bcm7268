@@ -1,0 +1,55 @@
+--- a/src/gallium/drivers/v3d/v3d_cl.c
++++ b/src/gallium/drivers/v3d/v3d_cl.c
+@@ -41,18 +41,31 @@
+         cl->job = job;
+ }
+ 
++/* Before V3D 4.1 the CLE prefetches past the last packet it executes, so
++ * keep the end of every CL BO free.  The closed driver reserves 256 bytes
++ * after the branch at the end of each control list block; without them a
++ * branch near a page end makes the CLE read the unmapped next page.
++ */
++static uint32_t
++v3d_cl_prefetch_slack(struct v3d_cl *cl)
++{
++        return cl->job->v3d->screen->devinfo.ver < 41 ? 256 : 0;
++}
++
+ uint32_t
+ v3d_cl_ensure_space(struct v3d_cl *cl, uint32_t space, uint32_t alignment)
+ {
+         uint32_t offset = align(cl_offset(cl), alignment);
++        uint32_t slack = v3d_cl_prefetch_slack(cl);
+ 
+-        if (offset + space <= cl->size) {
++        if (offset + space + slack <= cl->size) {
+                 cl->next = cl->base + offset;
+                 return offset;
+         }
+ 
+         v3d_bo_unreference(&cl->bo);
+-        cl->bo = v3d_bo_alloc(cl->job->v3d->screen, align(space, 4096), "CL");
++        cl->bo = v3d_bo_alloc(cl->job->v3d->screen,
++                              align(space + slack, 4096), "CL");
+         cl->base = v3d_bo_map(cl->bo);
+         cl->size = cl->bo->size;
+         cl->next = cl->base;
+@@ -63,11 +76,15 @@
+ void
+ v3d_cl_ensure_space_with_branch(struct v3d_cl *cl, uint32_t space)
+ {
+-        if (cl_offset(cl) + space + cl_packet_length(BRANCH) <= cl->size)
++        uint32_t slack = v3d_cl_prefetch_slack(cl);
++
++        if (cl_offset(cl) + space + cl_packet_length(BRANCH) + slack <=
++            cl->size)
+                 return;
+ 
+-        struct v3d_bo *new_bo = v3d_bo_alloc(cl->job->v3d->screen, space, "CL");
+-        assert(space <= new_bo->size);
++        struct v3d_bo *new_bo = v3d_bo_alloc(cl->job->v3d->screen,
++                                             space + slack, "CL");
++        assert(space + slack <= new_bo->size);
+ 
+         /* Chain to the new BO from the old one. */
+         if (cl->bo) {

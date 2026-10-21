@@ -17,7 +17,8 @@ import argparse, os, re, select, subprocess, sys, time
 
 DEQP = os.environ.get("DEQP", "/root/deqp")
 BIN = {"gles2": "deqp-gles2", "gles3": "deqp-gles3", "egl": "deqp-egl"}
-ARGS = ["--deqp-surface-type=pbuffer", "--deqp-gl-config-name=rgba8888d24s8ms0",
+ARGS = ["--deqp-surface-type=" + os.environ.get("DEQP_SURFACE_TYPE", "pbuffer"),
+        "--deqp-gl-config-name=rgba8888d24s8ms0",
         "--deqp-surface-width=256", "--deqp-surface-height=256",
         "--deqp-log-images=disable", "--deqp-log-shader-sources=disable",
         "--deqp-log-filename=/dev/null", "--deqp-watchdog=enable"]
@@ -79,7 +80,8 @@ def main():
         os.remove(running)
     todo = [c for c in cases if c not in done]
     print(f"{mod}: {len(cases)} cases, {len(cases) - len(todo)} done before, {len(todo)} to run", flush=True)
-    env = dict(os.environ, EGL_PLATFORM="surfaceless", MESA_SHADER_CACHE_DISABLE="true")
+    env = dict(os.environ, EGL_PLATFORM=os.environ.get("DEQP_EGL_PLATFORM", "surfaceless"),
+               MESA_SHADER_CACHE_DISABLE="true")
     wd = os.path.join(DEQP, mod)
     t0 = time.time()
     ran = 0
@@ -114,7 +116,8 @@ def main():
                     continue
                 m = RESULT.match(line)
                 if m and current:
-                    out.write(f"{current} {m.group(1)} {m.group(2).strip()}\n")
+                    out.write(f"{current} {m.group(1)} @uptime={time.monotonic():.3f} "
+                              f"{m.group(2).strip()}\n")
                     out.flush()             # a killed runner loses nothing
                     seen.add(current)
                     ran += 1
@@ -124,7 +127,7 @@ def main():
             sys.exit(f"{BIN[mod]} ran no case (exit {rc}): {buf.decode('utf-8', 'replace')[-500:]}")
         if current and current not in seen:     # died or was killed in this case
             what = "Timeout" if rc == -9 else "Crash"
-            out.write(f"{current} {what} exit {rc}\n")
+            out.write(f"{current} {what} @uptime={time.monotonic():.3f} exit {rc}\n")
             seen.add(current)
             ran += 1
         out.flush()

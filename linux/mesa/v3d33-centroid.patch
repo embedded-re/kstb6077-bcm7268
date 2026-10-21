@@ -1,0 +1,50 @@
+--- a/src/broadcom/cle/v3d_packet_v33.xml
++++ b/src/broadcom/cle/v3d_packet_v33.xml
+@@ -871,9 +871,9 @@
+     <field name="Mask" size="32" start="0" type="uint"/>
+   </packet>
+ 
+-  <packet code="88" name="Zero All Centroid Flags" min_ver="41"/>
+-
+-  <packet code="89" name="Centroid Flags" min_ver="41">
++  <packet code="88" name="Zero All Centroid Flags"/>
++
++  <packet code="89" name="Centroid Flags">
+     <field name="Centroid Flags for varyings V0*24" size="24" start="8" type="uint"/>
+     <field name="Action for Centroid Flags of higher numbered varyings" size="2" start="6" type="Varying Flags Action"/>
+     <field name="Action for Centroid Flags of lower numbered varyings" size="2" start="4" type="Varying Flags Action"/>
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -333,6 +333,7 @@
+                         higher;
+         }
+ }
++#endif /* V3D_VERSION >= 40 */
+ 
+ static void
+ emit_centroid_flags(struct v3d_job *job,
+@@ -350,7 +351,6 @@
+                         higher;
+         }
+ }
+-#endif /* V3D_VERSION >= 40 */
+ 
+ static bool
+ emit_varying_flags(struct v3d_job *job, uint32_t *flags,
+@@ -787,6 +787,8 @@
+                 }
+         }
+ 
++#endif
++
+         if (v3d->dirty & V3D_DIRTY_CENTROID_FLAGS) {
+                 if (!emit_varying_flags(job,
+                                         v3d->prog.fs->prog_data.fs->centroid_flags,
+@@ -794,7 +796,6 @@
+                         cl_emit(&job->bcl, ZERO_ALL_CENTROID_FLAGS, flags);
+                 }
+         }
+-#endif
+ 
+         /* Set up the transform feedback data specs (which VPM entries to
+          * output to which buffers).

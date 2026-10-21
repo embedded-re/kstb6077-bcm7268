@@ -1,0 +1,16 @@
+Tue Oct 20 13:03:42 UTC 2026
+Linux kstb6077 6.18.57-kstb #24 SMP Sun Oct 18 11:02:22 CEST 2026 aarch64 GNU/Linux
+15123aee3a6d5dff97190e2eb538fb43d5c0f8bb33beeca87e56df24ac55e5e3  /opt/mesa-pbo-test/dri/v3d_dri.so
+4eb40e2ff37bfa472f0b6874516f344ec7924374a0b1ae0058711f51208c27ad  /root/deqp-gbm/gles3/deqp-gles3
+c694f5876d6b83902faa0024ca54f7a6b918408ccbd9c70e4db14cb55a2d60ab  /root/kstb-deqp
+DEQP=/root/deqp-gles3-gbm-20261020
+DEQP_EGL_PLATFORM=drm
+DEQP_SURFACE_TYPE=window
+LD_LIBRARY_PATH=/opt/mesa-gles1/lib:/opt/mesa-x
+LIBGL_DRIVERS_PATH=/opt/mesa-pbo-test/dri
+DRIVER=v3d
+OF_NAME=gpu
+OF_FULLNAME=/soc@0/gpu@f1200000
+OF_COMPATIBLE_0=brcm,7268-v3d
+OF_COMPATIBLE_N=1
+MODALIAS=of:NgpuT(null)Cbrcm,7268-v3d

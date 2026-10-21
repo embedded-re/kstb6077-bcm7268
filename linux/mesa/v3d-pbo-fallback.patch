@@ -1,0 +1,15 @@
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -302,7 +302,11 @@
+                 return screen->prim_types;
+ 
+         case PIPE_CAP_TEXTURE_BUFFER_OBJECTS:
+-                return true;
++                /* 3.x buffer views cannot back Mesa's accelerated PBO
++                 * upload path; reporting them causes a sampler NULL crash
++                 * and corrupt texture contents. Mesa's CPU PBO path is
++                 * correct until 3.x buffer-view sampling is implemented. */
++                return screen->devinfo.ver >= 40;
+ 
+         case PIPE_CAP_TEXTURE_BUFFER_OFFSET_ALIGNMENT:
+                 return V3D_TMU_TEXEL_ALIGN;

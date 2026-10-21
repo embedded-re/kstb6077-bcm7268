@@ -1,0 +1,4 @@
+dEQP-GLES2.functional.fragment_ops.depth_stencil.stencil_depth_funcs.stencil_always_no_depth Pass @uptime=5925.097 (Pass)
+dEQP-GLES2.functional.fragment_ops.depth_stencil.stencil_depth_funcs.stencil_less_depth_never Pass @uptime=5925.337 (Pass)
+dEQP-GLES2.functional.fragment_ops.depth_stencil.stencil_depth_funcs.stencil_less_depth_always Pass @uptime=5925.575 (Pass)
+dEQP-GLES2.functional.fragment_ops.depth_stencil.stencil_depth_funcs.stencil_lequal_no_depth Pass @uptime=5925.816 (Pass)

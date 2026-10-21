@@ -49,7 +49,33 @@
          /* GFXH-1684: VPM writes need to be complete by the end of the shader.
           */
          if (c->devinfo->ver >= 40 && c->devinfo->ver <= 42)
-@@ -4556,8 +4577,9 @@
+@@ -3090,6 +3111,12 @@
+ static bool
+ ntq_emit_load_unifa(struct v3d_compile *c, nir_intrinsic_instr *instr)
+ {
++        /* The alternate uniform stream signals first exist on V3D 4.1.
++         * Older hardware must use the general TMU load path.
++         */
++        if (c->devinfo->ver < 41)
++                return false;
++
+         assert(instr->intrinsic == nir_intrinsic_load_ubo ||
+                instr->intrinsic == nir_intrinsic_load_ssbo ||
+                instr->intrinsic == nir_intrinsic_load_uniform);
+@@ -4547,7 +4574,11 @@
+          * any potential spilling we do happens before this. If we don't spill
+          * in the end, we will restore the previous one.
+          */
+-        if (*restore_last_thrsw == c->last_thrsw) {
++        /* Before 4.1 a switch requires an outstanding TMU request.
++         * Keep the existing final switch instead of adding a bare one.
++         */
++        if (c->devinfo->ver >= 41 &&
++            *restore_last_thrsw == c->last_thrsw) {
+                 if (*restore_last_thrsw)
+                         (*restore_last_thrsw)->is_last_thrsw = false;
+                 *restore_scoreboard_lock = c->lock_scoreboard_on_first_thrsw;
+@@ -4556,8 +4587,9 @@
                  *restore_last_thrsw = c->last_thrsw;
          }
  
@@ -61,7 +87,7 @@
  }
  
  static void
-@@ -4595,6 +4617,51 @@
+@@ -4595,6 +4627,43 @@
          }
  }
  
@@ -77,8 +103,6 @@
 +        if (c->devinfo->ver >= 40)
 +                return;
 +
-+        uint32_t num_temps = c->num_temps;
-+        uint32_t *copy = rzalloc_array(c, uint32_t, num_temps);
 +        struct vir_cursor cursor = c->cursor;
 +
 +        vir_for_each_block(block, c) {
@@ -86,45 +110,83 @@
 +                        if (!inst->qpu.sig.ldunif ||
 +                            inst->dst.file != QFILE_TEMP)
 +                                continue;
++                        /* A VIR temporary may have several definitions.
++                         * Give the load a fresh r5-only temporary and copy
++                         * into its original destination; rewriting every use
++                         * would discard later writes to that destination.
++                         */
++                        struct qreg dst = inst->dst;
++                        bool is_ssa = c->defs[dst.index] == inst;
++                        inst->dst = vir_get_temp(c);
++                        c->defs[inst->dst.index] = inst;
 +                        c->cursor = vir_after_inst(inst);
-+                        copy[inst->dst.index] = vir_MOV(c, inst->dst).index + 1;
++                        struct qinst *mov = vir_MOV_dest(c, dst, inst->dst);
++                        c->defs[dst.index] = is_ssa ? mov : NULL;
 +                }
 +        }
 +
-+        vir_for_each_inst_inorder(inst, c) {
-+                for (int i = 0; i < vir_get_nsrc(inst); i++) {
-+                        struct qreg *src = &inst->src[i];
-+
-+                        if (src->file != QFILE_TEMP || src->index >= num_temps ||
-+                            !copy[src->index])
-+                                continue;
-+                        /* the copy itself keeps reading r5 */
-+                        if (inst->dst.file == QFILE_TEMP &&
-+                            inst->dst.index == copy[src->index] - 1)
-+                                continue;
-+                        src->index = copy[src->index] - 1;
-+                }
-+        }
-+
-+        ralloc_free(copy);
 +        c->cursor = cursor;
 +}
 +
  void
  v3d_nir_to_vir(struct v3d_compile *c)
  {
-@@ -4646,6 +4713,8 @@
+@@ -4645,6 +4714,8 @@
+         vir_optimize(c);
  
          vir_check_payload_w(c);
- 
-+        v3d33_vir_copy_ldunifs(c);
 +
++        v3d33_vir_copy_ldunifs(c);
+ 
          /* XXX perf: On VC4, we do a VIR-level instruction scheduling here.
           * We used that on that platform to pipeline TMU writes and reduce the
-          * number of thread switches, as well as try (mostly successfully) to
+@@ -4717,7 +4788,8 @@
+         /* If we didn't spill, then remove the last thread switch we injected
+          * artificially (if any) and restore the previous one.
+          */
+-        if (!c->spills && c->last_thrsw != restore_last_thrsw)
++        if (c->devinfo->ver >= 41 && !c->spills &&
++            c->last_thrsw != restore_last_thrsw)
+                 vir_restore_last_thrsw(c, restore_last_thrsw, restore_scoreboard_lock);
+ 
+         if (c->spills &&
 --- a/src/broadcom/compiler/qpu_schedule.c
 +++ b/src/broadcom/compiler/qpu_schedule.c
-@@ -532,6 +532,7 @@
+@@ -184,8 +184,13 @@
+ }
+ 
+ static bool
+-tmu_write_is_sequence_terminator(uint32_t waddr)
+-{
++tmu_write_is_sequence_terminator(const struct v3d_device_info *devinfo,
++                                 uint32_t waddr)
++{
++        /* V3D 3.x launches texture requests through TMUL. */
++        if (devinfo->ver < 40 && waddr == V3D_QPU_WADDR_TMUL)
++                return true;
++
+         switch (waddr) {
+         case V3D_QPU_WADDR_TMUS:
+         case V3D_QPU_WADDR_TMUSCM:
+@@ -205,7 +210,7 @@
+         if (devinfo->ver < 40)
+                 return false;
+ 
+-        if (tmu_write_is_sequence_terminator(waddr))
++        if (tmu_write_is_sequence_terminator(devinfo, waddr))
+                 return false;
+ 
+         if (waddr == V3D_QPU_WADDR_TMUD)
+@@ -226,7 +231,7 @@
+                 else
+                         add_write_dep(state, &state->last_tmu_write, n);
+ 
+-                if (tmu_write_is_sequence_terminator(waddr))
++                if (tmu_write_is_sequence_terminator(state->devinfo, waddr))
+                         add_write_dep(state, &state->last_tmu_config, n);
+         } else if (v3d_qpu_magic_waddr_is_sfu(waddr)) {
+                 /* Handled by v3d_qpu_writes_r4() check. */
+@@ -532,6 +537,7 @@
          int last_stallable_sfu_tick;
          int last_ldvary_tick;
          int last_unifa_write_tick;
@@ -132,7 +194,7 @@
          int last_uniforms_reset_tick;
          int last_thrsw_tick;
          int last_branch_tick;
-@@ -696,6 +697,13 @@
+@@ -696,6 +702,13 @@
                            struct choose_scoreboard *scoreboard,
                            const struct v3d_qpu_instr *inst)
  {
@@ -146,10 +208,26 @@
          return qpu_inst_is_tlb(inst) &&
                 !scoreboard_is_locked(scoreboard,
                                       c->lock_scoreboard_on_first_thrsw);
-@@ -1394,6 +1402,15 @@
-                     scoreboard->tick - scoreboard->last_unifa_write_tick <= 3)
-                         continue;
+@@ -1199,6 +1212,13 @@
+         if (!qpu_compatible_peripheral_access(devinfo, a, b))
+                 return false;
  
++        /* Each varying load consumes a distinct FIFO entry, even when
++         * its result is unused. Pre-4.1 signals have implicit destinations,
++         * so the explicit signal-address check below cannot detect this.
++         */
++        if (a->sig.ldvary && b->sig.ldvary)
++                return false;
++
+         struct v3d_qpu_instr merge = *a;
+         const struct v3d_qpu_instr *add_instr = NULL, *mul_instr = NULL;
+ 
+@@ -1392,6 +1412,15 @@
+                  */
+                 if ((inst->sig.ldunifa || inst->sig.ldunifarf) &&
+                     scoreboard->tick - scoreboard->last_unifa_write_tick <= 3)
++                        continue;
++
 +                /* V3D 3.3: keep a VPM setup (the write setup after the
 +                 * inputs) away from a VPM read that is still going on.
 +                 */
@@ -157,12 +235,10 @@
 +                    inst->type == V3D_QPU_INSTR_TYPE_ALU &&
 +                    inst->alu.add.op == V3D_QPU_A_VPMSETUP &&
 +                    scoreboard->tick - scoreboard->last_ldvpm_tick <= 3)
-+                        continue;
-+
+                         continue;
+ 
                  /* "An instruction must not read from a location in physical
-                  *  regfile A or B that was written to by the previous
-                  *  instruction."
-@@ -1739,6 +1756,9 @@
+@@ -1739,6 +1768,9 @@
          if (inst->sig.ldvary)
                  scoreboard->last_ldvary_tick = scoreboard->tick;
  
@@ -172,20 +248,20 @@
          update_scoreboard_for_rf0_flops(scoreboard, inst, devinfo);
  
          update_scoreboard_tmu_tracking(scoreboard, qinst);
-@@ -1941,6 +1961,12 @@
-         if (c->devinfo->ver <= 42 && v3d_qpu_waits_vpm(inst))
+@@ -1939,6 +1971,12 @@
                  return false;
  
+         if (c->devinfo->ver <= 42 && v3d_qpu_waits_vpm(inst))
++                return false;
++
 +        /* V3D 3.3: VPM writes in the thread-end THRSW instruction or its
 +         * delay slots are lost.
 +         */
 +        if (c->devinfo->ver < 40 && v3d_qpu_writes_vpm(inst))
-+                return false;
-+
-         if (inst->sig.ldvary)
                  return false;
  
-@@ -2575,6 +2601,12 @@
+         if (inst->sig.ldvary)
+@@ -2575,6 +2613,12 @@
          uint32_t ldvary_magic = inst->sig_magic;
          uint32_t ldvary_index = inst->sig_addr;
  
@@ -198,7 +274,16 @@
          /* The instruction in which we merged the ldvary cannot read
           * the ldvary destination, if it does, then moving the ldvary before
           * it would overwrite it.
-@@ -2983,6 +3015,7 @@
+@@ -2617,6 +2661,8 @@
+         }
+ 
+         /* The previous instruction cannot have a conflicting signal */
++        if (prev->qpu.sig.ldvary)
++                return false;
+         if (v3d_qpu_sig_writes_address(devinfo, &prev->qpu.sig))
+                 return false;
+ 
+@@ -2983,6 +3029,7 @@
          memset(&scoreboard, 0, sizeof(scoreboard));
          scoreboard.last_ldvary_tick = -10;
          scoreboard.last_unifa_write_tick = -10;
@@ -208,18 +293,18 @@
          scoreboard.last_thrsw_tick = -10;
 --- a/src/broadcom/compiler/v3d_compiler.h
 +++ b/src/broadcom/compiler/v3d_compiler.h
-@@ -804,6 +804,11 @@
+@@ -803,6 +803,11 @@
+ 
          uint8_t vattr_sizes[V3D_MAX_VS_INPUTS / 4];
          uint32_t vpm_output_size;
- 
++
 +        /* V3D 3.3: the vertex shader outputs by VPM index, written in that
 +         * order at the end (the VPM write setup advances one row per write).
 +         */
 +        struct qreg *v33_vpm_outputs;
-+
+ 
          /* Size in bytes of registers that have been spilled. This is how much
           * space needs to be available in the spill BO per thread per QPU.
-          */
 --- a/src/broadcom/compiler/vir.c
 +++ b/src/broadcom/compiler/vir.c
 @@ -681,6 +681,16 @@
@@ -241,10 +326,12 @@
                   0,
 --- a/src/broadcom/compiler/vir_register_allocate.c
 +++ b/src/broadcom/compiler/vir_register_allocate.c
-@@ -57,6 +57,17 @@
+@@ -55,6 +55,17 @@
+                 return (CLASS_BITS_PHYS | CLASS_BITS_ACC | CLASS_BITS_R5);
+         else
                  return CLASS_BITS_PHYS;
- }
- 
++}
++
 +/* A new ldunif's destination: before V3D 4.x a uniform can only be loaded
 + * to r5 (there is no ldunifrf).
 + */
@@ -254,12 +341,45 @@
 +        if (devinfo->ver < 40)
 +                return CLASS_BITS_R5;
 +        return get_class_bit_any(devinfo);
-+}
-+
+ }
+ 
  static uint8_t
- filter_class_bits(const struct v3d_device_info *devinfo, uint8_t class_bits)
- {
-@@ -477,7 +488,7 @@
+@@ -275,9 +286,14 @@
+                         /* We can't insert new thread switches after
+                          * starting output writes.
+                          */
++                        /* On 3.x, try the full register file in single-thread
++                         * mode before spilling. Threaded spills currently hang
++                         * on BCM7268; single-thread mode needs no THRSW.
++                         */
+                         bool no_spilling =
+                                 (c->threads > 1 && started_last_seg) ||
+-                                (c->max_tmu_spills == 0);
++                                (c->max_tmu_spills == 0) ||
++                                (c->devinfo->ver < 40 && c->threads > 1);
+ 
+                         /* Discourage spilling of TMU operations */
+                         for (int i = 0; i < vir_get_nsrc(inst); i++) {
+@@ -343,7 +359,7 @@
+         /* We always emit a "last thrsw" to ensure all our spilling occurs
+          * before the last thread section. See vir_emit_last_thrsw.
+          */
+-        assert(started_last_seg);
++        assert(c->threads == 1 || started_last_seg);
+ 
+         for (unsigned i = 0; i < c->num_temps; i++) {
+                 if (BITSET_TEST(c->spillable, i)) {
+@@ -438,6 +454,9 @@
+                             i != c->spill_base.index) {
+                                 temp_class |= CLASS_BITS_ACC;
+                         }
++                        if (c->devinfo->ver < 40 && c->defs[i] &&
++                            c->defs[i]->qpu.sig.ldunif)
++                                temp_class = CLASS_BITS_R5;
+                         add_node(c, i, temp_class);
+                 }
+         }
+@@ -477,7 +496,7 @@
           */
          assert(c->disable_ldunif_opt);
          struct qreg offset = vir_uniform_ui(c, spill_offset);
@@ -268,7 +388,17 @@
  
          /* We always enable per-quad on spills/fills to ensure we spill
           * any channels involved with helper invocations.
-@@ -691,7 +702,7 @@
+@@ -614,7 +633,8 @@
+         }
+ 
+         struct qinst *last_thrsw = c->last_thrsw;
+-        assert(last_thrsw && last_thrsw->is_last_thrsw);
++        assert(c->threads == 1 ||
++               (last_thrsw && last_thrsw->is_last_thrsw));
+ 
+         int uniform_index = ~0;
+         if (spill_type == SPILL_TYPE_UNIFORM) {
+@@ -691,7 +711,7 @@
                                           * we can use any register class for it.
                                           */
                                          add_node(c, unif.index,
@@ -277,6 +407,39 @@
                                  } else if (spill_type == SPILL_TYPE_RECONSTRUCT) {
                                          struct qreg temp =
                                                  reconstruct_temp(c, reconstruct_op);
+--- a/src/gallium/drivers/v3d/v3d_program.c
++++ b/src/gallium/drivers/v3d/v3d_program.c
+@@ -488,13 +488,16 @@
+                                         v3d,
+                                         program_id, variant_id, &shader_size);
+ 
+-                /* qpu_insts being NULL can happen if the register allocation
+-                 * failed. At this point we can't really trigger an OpenGL API
+-                 * error, as the final compilation could happen on the draw
+-                 * call. So let's at least assert, so debug builds finish at
+-                 * this point.
++                /* Keep a resource-less variant on compilation failure.
++                 * v3d_check_compiled_shaders already rejects such draws, but
++                 * shader selection still needs valid stage metadata.
++                 * Never persist failed variants in the disk cache.
+                  */
+-                assert(qpu_insts);
++                if (!qpu_insts) {
++                        shader->prog_data.base =
++                                rzalloc_size(shader, v3d_prog_data_size(s->info.stage));
++                        goto shader_ready;
++                }
+                 ralloc_steal(shader, shader->prog_data.base);
+ 
+                 if (shader_size) {
+@@ -510,6 +513,7 @@
+                 free(qpu_insts);
+         }
+ 
++shader_ready:
+         v3d_set_shader_uniform_dirty_flags(shader);
+ 
+         if (ht) {
 --- a/src/gallium/drivers/v3d/v3d_screen.c
 +++ b/src/gallium/drivers/v3d/v3d_screen.c
 @@ -145,7 +145,6 @@
@@ -301,6 +464,25 @@
                  return screen->devinfo.ver >= 40;
  
          case PIPE_CAP_CONSTANT_BUFFER_OFFSET_ALIGNMENT:
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -157,10 +157,15 @@
+                 .min_level_of_detail = MIN2(psview->u.tex.first_level +
+                                             MAX2(psampler->min_lod, 0),
+                                             psview->u.tex.last_level),
++                /* Without mipmapping the filter already selects the base
++                 * level. Keep positive LODs so minification can still select
++                 * the min filter on a single-level texture.
++                 */
+                 .max_level_of_detail = MIN2(psview->u.tex.first_level +
+                                             MAX2(psampler->max_lod,
+                                                  psampler->min_lod),
+-                                            psview->u.tex.last_level),
++                                            psampler->min_mip_filter == PIPE_TEX_MIPFILTER_NONE ?
++                                            15 : psview->u.tex.last_level),
+ 
+                 .texture_base_pointer = cl_address(rsc->bo,
+                                                    rsc->slices[0].offset),
 --- a/src/gallium/drivers/v3d/v3dx_tfu.c
 +++ b/src/gallium/drivers/v3d/v3dx_tfu.c
 @@ -46,6 +46,13 @@
@@ -317,3 +499,53 @@
          if (psrc->format != pdst->format)
                  return false;
          if (psrc->nr_samples != pdst->nr_samples)
+--- a/src/mesa/main/fbobject.c
++++ b/src/mesa/main/fbobject.c
+@@ -2384,6 +2384,10 @@
+    case GL_RGB5_A1:
+    case GL_RGBA8:
+       return GL_RGBA;
++   case GL_BGRA:
++   case GL_BGRA8_EXT:
++      return _mesa_has_EXT_texture_format_BGRA8888(ctx) && _mesa_is_gles2(ctx)
++         ? GL_RGBA : 0;
+    case GL_RGBA:
+    case GL_RGBA2:
+    case GL_RGBA12:
+--- a/src/mesa/main/glformats.c
++++ b/src/mesa/main/glformats.c
+@@ -2279,6 +2279,7 @@
+    if (_mesa_is_gles(ctx)) {
+       switch (internalFormat) {
+       case GL_BGRA:
++      case GL_BGRA8_EXT:
+          return GL_RGBA;
+       default:
+          ; /* fallthrough */
+@@ -2769,6 +2770,7 @@
+ 
+    /* GL_EXT_texture_format_BGRA8888 */
+    case GL_BGRA:
++   case GL_BGRA8_EXT:
+ 
+    /* GL_OES_required_internalformat */
+    case GL_RGB565:
+@@ -2987,6 +2989,7 @@
+    case GL_BGRA_EXT:
+       if (type != GL_UNSIGNED_BYTE ||
+               (internalFormat != GL_BGRA &&
++               internalFormat != GL_BGRA8_EXT &&
+                internalFormat != GL_RGBA8 &&
+                internalFormat != GL_SRGB8_ALPHA8))
+          return GL_INVALID_OPERATION;
+--- a/src/mesa/state_tracker/st_format.c
++++ b/src/mesa/state_tracker/st_format.c
+@@ -256,7 +256,7 @@
+       { PIPE_FORMAT_R8G8B8A8_UNORM, DEFAULT_RGBA_FORMATS }
+    },
+    {
+-      { GL_BGRA, 0 },
++      { GL_BGRA, GL_BGRA8_EXT, 0 },
+       { DEFAULT_RGBA_FORMATS }
+    },
+    {

@@ -1,0 +1,351 @@
+@createbuf_aligned 4096 resource_0x1000
+@createbuf_aligned 4096 resource_0x3000
+@createbuf_aligned 4096 resource_0x4000
+@createbuf_aligned 4096 resource_0x5000
+@createbuf_aligned 4096 CL_0x107000
+@createbuf_aligned 4096 tile_alloc_0x108000
+@createbuf_aligned 4096 TSDA_0x18b000
+@createbuf_aligned 4096 CL_0x18c000
+@createbuf_aligned 4096 CL_0x18d000
+
+@buffer CL_0x107000
+@format ctrllist  /* [CL_0x107000+0x00000000] */
+TILE_BINNING_MODE_CFG_PART2
+    Tile Allocation Memory Size: 536577
+    Tile Allocation Memory Address: [tile_alloc_0x108000+0x00000000] /* 0x00108000 */
+TILE_BINNING_MODE_CFG_PART1
+    auto-initialize tile state data array: 1 /* true */
+    tile allocation initial block size: 0 /* tile allocation initial block size 64b */
+    tile allocation block size: 0 /* tile allocation block size 64b */
+    Tile State Data Array Base Address: [TSDA_0x18b000+0x00000000] /* 0x0018b000 */
+    Width (in tiles): 1
+    Height (in tiles): 1
+    Number of Render Targets: 1
+    Maximum BPP of all render targets: 0 /* 32 */
+    Multisample Mode (4x): 0 /* false */
+    Double-buffer in non-ms mode: 0 /* false */
+CLEAR_VCD_CACHE
+OCCLUSION_QUERY_COUNTER_ENABLE
+    address: [null]
+START_TILE_BINNING
+CLIP
+    Clip Window Left Pixel Coordinate: 0
+    Clip Window Bottom Pixel Coordinate: 0
+    Clip Window Width in pixels: 16
+    Clip Window Height in pixels: 16
+CFG_BITS
+    Enable Forward Facing Primitive: 1 /* true */
+    Enable Reverse Facing Primitive: 1 /* true */
+    Clockwise Primitives: 0 /* false */
+    Enable Depth Offset: 0 /* false */
+    Line Rasterization: 0 /* diamond exit */
+    Rasterizer Oversample Mode: 0
+    Direct3D Wireframe triangles mode: 0 /* false */
+    Depth-Test Function: 7 /* ALWAYS */
+    Z updates enable: 0 /* false */
+    Early Z enable: 0 /* false */
+    Early Z updates enable: 0 /* false */
+    Stencil enable: 0 /* false */
+    Blend enable: 0 /* false */
+    Direct3D 'Point-fill' mode: 0 /* false */
+    Direct3D Provoking Vertex: 0 /* false */
+POINT_SIZE
+    Point Size: 1.000000
+LINE_WIDTH
+    Line width: 1.000000
+CLIPPER_XY
+    Viewport Half-Width in 1/256th of pixel: 2048.000000
+    Viewport Half-Height in 1/256th of pixel: 2048.000000
+CLIPPER_Z
+    Viewport Z Scale (Zc to Zs): 0.500000
+    Viewport Z Offset (Zc to Zs): 0.500000
+CLIPZ
+    Minimum Zw: 0.000000
+    Maximum Zw: 1.000000
+VIEWPORT_OFFSET
+    Viewport Centre X-coordinate: 8.000000
+    Viewport Centre Y-coordinate: 8.000000
+COLOR_WMASKS
+    Mask: 0
+BLEND_CCOLOR
+    Red (F16): 0
+    Green (F16): 0
+    Blue (F16): 0
+    Alpha (F16): 0
+ZERO_ALL_FLATSHADE_FLAGS
+TRANSFORM_FEEDBACK_ENABLE
+    number of 32-bit Output Buffer Address following: 1
+    number of 16-bit Output Data Specs following: 1
+    First Shaded Vertex Value to output: 6
+    Number of consecutive Vertex Values to output as 32-bit values: 4
+    Output Buffer to write to: 0
+    address: [resource_0x4000+0x00000000] /* 0x00004000 */
+OCCLUSION_QUERY_COUNTER_ENABLE
+    address: [null]
+VCM_CACHE_SIZE
+    Number of 16-vertex batches for binning: 4
+    Number of 16-vertex batches for rendering: 4
+GL_SHADER
+    number of attribute arrays: 1
+    address: [CL_0x18c000+0x00000040] /* 0x0018c040 */
+VERTEX_ARRAY_PRIMS
+    mode: 16 /* POINTS_TF */
+    Length: 3
+    Index of First Vertex: 0
+TF_DRAW_FLUSH_AND_COUNT
+FLUSH
+
+
+
+@format blank 3964 /* [CL_0x107000+0x00000084..0x00000fff] */
+
+@buffer CL_0x18c000
+@format binary /* [CL_0x18c000+0x00000000] */
+0x3c003c00 0x6900c000 0x45000000 0x45000000 0x3f000000 0x3f000000 0x0140c000 0x6900c000 
+0x45000000 0x45000000 0x0140c000 
+@format blank 20 /* [CL_0x18c000+0x0000002c..0x0000003f] */
+@format shadrec_gl_main
+    Point size in shaded vertex data: 0 /* false */
+    Enable clipping: 1 /* true */
+    Vertex ID read by coordinate shader: 0 /* false */
+    Instance ID read by coordinate shader: 0 /* false */
+    Vertex ID read by vertex shader: 0 /* false */
+    Instance ID read by vertex shader: 0 /* false */
+    Fragment shader does Z writes: 0 /* false */
+    Turn off early-z test: 0 /* false */
+    Coordinate shader has separate input and output VPM blocks: 0 /* false */
+    Vertex shader has separate input and output VPM blocks: 0 /* false */
+    Fragment shader uses real pixel centre W in addition to centroid W2: 0 /* false */
+    Number of varyings in Fragment Shader: 0
+    Coordinate Shader output VPM segment size: 2
+    Coordinate Shader input VPM segment size: 1
+    Vertex Shader output VPM segment size: 1
+    Vertex Shader input VPM segment size: 1
+    Address of default attribute values: [resource_0x1000+0x00000500] /* 0x00001500 */
+    Fragment Shader 2-way threadable: 0 /* false */
+    Fragment Shader 4-way threadable: 0 /* false */
+    Fragment Shader Propagate NaNs: 1 /* true */
+    Fragment Shader Code Address: [resource_0x1000+0x00000600] /* 0x00001600 */
+    Fragment Shader Uniforms Address: [CL_0x18c000+0x00000000] /* 0x0018c000 */
+    Vertex Shader Code Address: [resource_0x1000+0x0000063c] /* 0x0000163c */
+    Vertex Shader 2-way threadable: 0 /* false */
+    Vertex Shader 4-way threadable: 0 /* false */
+    Vertex Shader Propagate NaNs: 1 /* true */
+    Vertex Shader Uniforms Address: [CL_0x18c000+0x00000004] /* 0x0018c004 */
+    Coordinate Shader Code Address: [resource_0x1000+0x00000714] /* 0x00001714 */
+    Coordinate Shader 2-way threadable: 0 /* false */
+    Coordinate Shader 4-way threadable: 0 /* false */
+    Coordinate Shader Propagate NaNs: 1 /* true */
+    Coordinate Shader Uniforms Address: [CL_0x18c000+0x0000001c] /* 0x0018c01c */
+@format shadrec_gl_attr /* 0 */
+    Address: [resource_0x5000+0x00000000] /* 0x00005000 */
+    Vec size: 4
+    Type: 2 /* Attribute float */
+    Signed int type: 0 /* false */
+    Normalized int type: 0 /* false */
+    Read as int/uint: 0 /* false */
+    Number of values read by Coordinate shader: 4
+    Number of values read by Vertex shader: 4
+    Instance Divisor: 0
+    Stride: 16
+
+@format ctrllist  /* [CL_0x18c000+0x00000070] */
+IMPLICIT_TILE_COORDS
+PRIM_LIST_FORMAT
+    primitive type: 2 /* List Triangles */
+    tri strip or fan: 0 /* false */
+BRANCH_IMPLICIT_TILE
+    tile list set number: 0
+STORE_SUBSAMPLE_EX
+    Last Tile of Frame: 0 /* false */
+    Disable fast opportunistic write out in multisample mode: 0 /* false */
+    Disable Z buffer clear on write: 1 /* true */
+    Disable Stencil buffer clear on write: 1 /* true */
+    Disable Color buffer(s) clear on write: 0 /* false */
+    Enable Stencil write: 0 /* false */
+    Enable Z write: 0 /* false */
+    Disable Color Buffer write: 14
+RETURN
+
+
+@format blank 3975 /* [CL_0x18c000+0x00000079..0x00000fff] */
+
+@buffer CL_0x18d000
+@format ctrllist  /* [CL_0x18d000+0x00000000] */
+TILE_RENDERING_MODE_CFG_COMMON
+    Number of Render Targets: 1
+    Image Width (pixels): 16
+    Image Height (pixels): 16
+    Maximum BPP of all render targets: 0 /* 32 */
+    Multisample Mode (4x): 0 /* false */
+    Double-buffer in non-ms mode: 0 /* false */
+    Early-Z Test and Update Direction: 0 /* Early-Z direction LT/LE */
+    Early-Z disable: 1 /* true */
+    Enable Stencil Store: 0 /* false */
+    Enable Z Store: 0 /* false */
+    Disable Render Target Stores: 0
+TILE_RENDERING_MODE_CFG_COLOR
+    Render Target Number: 0
+    Internal BPP: 0 /* 32 */
+    Internal Type: 2 /* 8 */
+    Decimate mode: 0 /* sample 0 */
+    Output image format: 27 /* rgba8 */
+    Dither Mode: 0 /* None */
+    Memory Format: 3 /* UB-linear (2 UIF blocks wide) */
+    Flip Y: 0 /* false */
+    Address: [resource_0x3000+0x00000000] /* 0x00003000 */
+TILE_RENDERING_MODE_CFG_CLEAR_COLORS_PART1
+    Render Target number: 0
+    Clear Color low 32 bits: 0
+    Clear Color next 24 bits: 0
+TILE_RENDERING_MODE_CFG_ZS_CLEAR_VALUES
+    Stencil Clear Value: 0
+    Z Clear Value: 0.000000
+TILE_LIST_INITIAL_BLOCK_SIZE
+    Size of first block in chained tile lists: 0 /* tile allocation block size 64b */
+    Use auto-chained tile lists: 1 /* true */
+MULTICORE_RENDERING_TILE_LIST_BASE
+    Tile List Set Number: 0
+    address: [tile_alloc_0x108000+0x00000000] /* 0x00108000 */
+MULTICORE_RENDERING_SUPERTILE_CFG
+    Supertile Width in Tiles: 1
+    Supertile Height in Tiles: 1
+    Total Frame Width in Supertiles: 1
+    Total Frame Height in Supertiles: 1
+    Total Frame Width in Tiles: 1
+    Total Frame Height in Tiles: 1
+    Multicore Enable: 0 /* false */
+    Supertile Raster Order: 0 /* false */
+    Number of Bin Tile Lists: 1
+TILE_COORDS
+    tile column number: 0
+    tile row number: 0
+STORE_GENERAL
+    Buffer to Store: 8 /* None */
+    Raw Mode: 0 /* false */
+    Disable Z buffer clear on write: 0 /* false */
+    Disable Stencil buffer clear on write: 0 /* false */
+    Disable Color buffer(s) clear on write: 0 /* false */
+    Last Tile of Frame: 0 /* false */
+    XOR UIF: 0 /* false */
+    Padded height of output image in UIF blocks: 0
+    Address: [null]
+CLEAR_VCD_CACHE
+GENERIC_TILE_LIST
+    start: [CL_0x18c000+0x00000070] /* 0x0018c070 */
+    end: [CL_0x18c000+0x00000079] /* 0x0018c079 */
+SUPERTILE_COORDS
+    column number in supertiles: 0
+    row number in supertiles: 0
+END_RENDER
+
+
+
+@format blank 4019 /* [CL_0x18d000+0x0000004d..0x00000fff] */
+@buffer resource_0x1000
+@format binary /* [resource_0x1000+0x00000000] */
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x00000001 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x00000001 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x00000001 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x00000001 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0x00000000 0x00000000 0x00000000 0x3f800000 0x00000000 0x00000000 0x00000000 0x3f800000 
+0xbb800000 0x3d003186 0xbb800000 0x3d003186 0xbb800000 0x3c003186 0xbb800000 0x3c403186 
+0xbbf40000 0x3c203006 0xbbe00000 0x3c0031c6 0xbbe00000 0x3c0031c6 0xbb800000 0x3c403186 
+0xbbf40000 0x3c403006 0xbb818000 0x3c003186 0xbbf40000 0x3f403106 0xbbec0000 0x3f003046 
+0xbbec0000 0x3f003086 0xbbec0000 0x3f003006 0xbb840000 0x54003046 0xbb2c0000 0x380034c6 
+0xbbf40000 0x3c4010c6 0xbbc800c0 0x54003086 0xbb300000 0x38001106 0xbbc40100 0x540030c6 
+0xf6c83100 0x54003042 0xbbf40000 0x3c403106 0xf583a000 0x540030c0 0xf6cc1100 0x54003084 
+0xf5f7c000 0x3c403043 0x05f51000 0x3c003044 0xbb819000 0x3c003186 0xbbe00000 0x3c003386 
+0xbbec0000 0x3c003386 0xbbf00000 0x3c003386 0xbbf80100 0x3c003386 0xbb800000 0x3c203186 
+0xbb800000 0x3c003186 0xbb800000 0x3c003186 0xbb800000 0x3c403186 0xbbf40000 0x3c403006 
+0xbb818000 0x3c003186 0xbbf40000 0x3f403046 0xbbec0000 0x3f0010c6 0xbbec0000 0x3f001106 
+0xbbec0000 0x3f001146 0xbbec0000 0x3c001186 0xbb380180 0x380034c6 0xbb3800c0 0x540030c6 
+0xbb800000 0x3c003186 0xbb300000 0x38003086 0xbb4c0000 0x54003006 0xf6f40000 0x3c403103 
+0xf5f7b000 0x3c0030c0 0xbb81b000 0x3c003186 0xbbf800c0 0x3c003386 0xbb980100 0x54003046 
+0xbbf80100 0x3c003386 0xbb440000 0x54003106 0xf6f84140 0x3c003381 0xf5fb9180 0x3c003382 
+0xbbe00000 0x3c003386 0xbbe80000 0x3c003386 0xbbf800c0 0x3c003386 0xbbf80100 0x3c003386 
+0xbbf80140 0x3c003386 0xbbf80180 0x3c003386 0xbb800000 0x3c203186 0xbb800000 0x3c003186 
+0xbb800000 0x3c003186 
+@format blank 6136 /* [resource_0x1000+0x00000808..0x00001fff] */
+
+@buffer resource_0x3000
+
+@format blank 4096 /* [resource_0x3000+0x00000000..0x00000fff] */
+
+@buffer resource_0x4000
+
+@format blank 4096 /* [resource_0x4000+0x00000000..0x00000fff] */
+
+@buffer resource_0x5000
+@format binary /* [resource_0x5000+0x00000000] */
+0xbf000000 0xbf000000 0x00000000 0x3f800000 0x00000000 0x3f000000 0x00000000 0x3f800000 
+0x3f000000 0xbf000000 0x00000000 0x3f800000 
+@format blank 4048 /* [resource_0x5000+0x00000030..0x00000fff] */
+
+@buffer tile_alloc_0x108000
+
+@format blank 536576 /* [tile_alloc_0x108000+0x00000000..0x00082fff] */
+
+@buffer TSDA_0x18b000
+
+@format blank 4096 /* [TSDA_0x18b000+0x00000000..0x00000fff] */
+
+@add_bin 0
+  [CL_0x107000+0x00000000] /* 0x00107000 */
+  [CL_0x107000+0x00000084] /* 0x00107084 */
+  [null]
+  0
+  [null]
+@wait_bin_all_cores
+@add_render 0
+  [CL_0x18d000+0x00000000] /* 0x0018d000 */
+  [CL_0x18d000+0x0000004d] /* 0x0018d04d */
+  [null]
+@wait_render_all_cores
+primitives written: 0 (expected 3)
+vertex 0: 0 0 0 0
+vertex 1: 0 0 0 0
+vertex 2: 0 0 0 0
