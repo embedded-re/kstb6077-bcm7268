@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 18:37:08 +0200
+Subject: [PATCH 14/14] v3d: clamp the max LOD of 32-bit-return textures on 3.3
+
+A 32-bit return forces the mip filter to nearest, but a sampler without
+mipmapping got a max LOD of 15, so a minified lookup selected levels the
+texture doesn't have: wrong data and TMU reads past the BO (MMU errors,
+clients 0x2-0xf) in fbo.color with r32f, rg32f and rgba32f cube, 2D array
+and 3D textures. Clamp those to the last level.
+---
+ src/gallium/drivers/v3d/v3dx_emit.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 255ee4b..8b4c0ef 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -159,12 +159,15 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+                                             psview->u.tex.last_level),
+                 /* Without mipmapping the filter already selects the base
+                  * level. Keep positive LODs so minification can still select
+-                 * the min filter on a single-level texture.
++                 * the min filter on a single-level texture. 32-bit returns
++                 * switch the mip filter to nearest below, so they need the
++                 * clamp to the last level.
+                  */
+                 .max_level_of_detail = MIN2(psview->u.tex.first_level +
+                                             MAX2(psampler->max_lod,
+                                                  psampler->min_lod),
+-                                            psampler->min_mip_filter == PIPE_TEX_MIPFILTER_NONE ?
++                                            psampler->min_mip_filter == PIPE_TEX_MIPFILTER_NONE &&
++                                            return_size != 32 ?
+                                             15 : psview->u.tex.last_level),
+ 
+                 .texture_base_pointer = cl_address(rsc->bo,

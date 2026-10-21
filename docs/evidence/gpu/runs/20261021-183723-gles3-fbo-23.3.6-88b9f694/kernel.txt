@@ -1,0 +1,25 @@
+[35016.031602] kstb-gpu-run sync 35015.872128
+[35016.416497] drm_sched_entity_init: called with uninitialized scheduler
+[35016.423928] drm_sched_entity_init: called with uninitialized scheduler
+[35019.497552] drm_sched_entity_init: called with uninitialized scheduler
+[35019.504977] drm_sched_entity_init: called with uninitialized scheduler
+[35047.513332] drm_sched_entity_init: called with uninitialized scheduler
+[35047.520808] drm_sched_entity_init: called with uninitialized scheduler
+[35057.536562] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x80dc00, pte invalid
+[35057.545369] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x812700, pte invalid
+[35075.735329] drm_sched_entity_init: called with uninitialized scheduler
+[35075.742972] drm_sched_entity_init: called with uninitialized scheduler
+[35095.989278] v3d f1200000.gpu: MMU error from client ? (0x8) at 0x8b2400, pte invalid
+[35095.998309] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x8c1f00, pte invalid
+[35096.254186] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x8a0b00, pte invalid
+[35096.263221] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x8c1f00, pte invalid
+[35096.548901] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x8a0800, pte invalid
+[35096.557936] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x8c1f00, pte invalid
+[35101.577155] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x5b6b00, pte invalid
+[35101.586210] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x5af000, pte invalid
+[35101.735495] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x5b6b00, pte invalid
+[35101.744547] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x5af000, pte invalid
+[35102.909992] drm_sched_entity_init: called with uninitialized scheduler
+[35102.917877] drm_sched_entity_init: called with uninitialized scheduler
+[35103.254524] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x513400, pte invalid
+[35103.263781] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x4ec000, pte invalid

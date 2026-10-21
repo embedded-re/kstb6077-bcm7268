@@ -77,7 +77,10 @@ shows no MMU error and no reset**: dEQP cases can all pass while the kernel
 logs faults.
 
 Focused lists in [`gpu-test/cases/`](gpu-test/cases), one per fixed fault:
-`gles2-cl-prefetch-seq200.txt`, `gles2-mmu-flush.txt`, `gles3-tlb-vec4.txt`.
+`gles2-cl-prefetch-seq200.txt`, `gles2-mmu-flush.txt`, `gles3-tlb-vec4.txt`,
+`gles3-32bit-max-lod.txt`. `kstb-layer-test cube|array|3d f|ui [size]
+[interleave] [srctex]` renders into every face/layer of an RGBA32F or
+RGBA32UI texture and checks each texel by readback and by sampling.
 Full runs take about 1 h (GLES3, 44,768 cases), 13 min (GLES2) and 3 min
 (EGL).
 
@@ -108,6 +111,7 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0011 | CLE prefetch past the end of a CL BO (MMU errors, client 0x20) |
 | 0012 | TLB colour writes of fewer than 4 components hung the GPU |
 | 0013 | kmsro entry for `kstb-drm` (scanout) |
+| 0014 | max LOD of 32-bit-return textures clamped to the last level (a minified lookup read missing mip levels: MMU errors, 32f `fbo.color` cube/array/3D) |
 
 ## Where it stands
 
@@ -129,11 +133,24 @@ every run (11 cases between Fail, Crash and Pass). GLES2 and EGL have no
 MMU error and no reset; GLES3's 22 MMU errors are all in the `fbo` cases
 below.
 
+Build `23.3.6-efbb2e70` (0001–0014, `v3d_dri.so` `12c6dedb…`) is installed
+but not `current`. On the GLES3 `fbo` group (2,075 cases), against
+`88b9f694` on the same boot: 1,985 Pass / 28 Fail / 8 MMU errors (was
+1,973 / 40 / 14); the 12 changed cases (`gles3-32bit-max-lod.txt`) all go
+Fail → Pass, nothing else changes. Full GLES2/GLES3/EGL runs on it are
+still to do.
+
 ## Open
 
-- `fbo.color` with `rg32f`/`rgba32f` on 2D array, 3D and cube textures,
-  `fbo.invalidate` and `fbo.msaa` MSAA blits: MMU errors (texture clients
-  `0x2`–`0xf`), the cases fail.
+- `fbo.msaa` depth/stencil formats and `fbo.invalidate.*blit_msaa*`: MMU
+  errors (texture clients), the cases fail (with 0014 the 32f `fbo.color`
+  faults are gone).
+- Single-sample D24S8 on 3.3 keeps its stencil in the low byte of the
+  Z resource: the separate S8 from 0006 is never written by the GPU there
+  (a stencil blit through the Z resource's low byte makes
+  `fbo.blit.depth_stencil.depth24_stencil8_{basic,scale,stencil_only}`
+  pass; through the S8 they fail). MSAA general stores and the transfer
+  helper do use the S8. Not fixed yet.
 - `texture.shadow`: 274 Fail, 76 QualityWarning, 7 SIGSEGVs that move
   between cube and 2D-array cases from run to run.
 - Smaller GLES3 groups not looked at: `fbo.msaa`, `fbo.blit`, `ubo.random`,
