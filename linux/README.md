@@ -535,6 +535,9 @@ seen on the TV yet (the RGB565 reference picture neither).
 
 ## GPU
 
+**Current state, layout, build, install and test: [`gpu.md`](gpu.md).** This
+section is the history: how each piece was found and tested.
+
 The V3D 3.3 runs with mainline's `v3d` driver (DRM render node, no
 display). After BOLT its power island is off and every GPU register
 aborts ([`../docs/hardware/gpu.md`](../docs/hardware/gpu.md), "Power island"). Mainline has no power
@@ -579,7 +582,7 @@ packages stay as they are:
 | Mesa | Where | Result |
 |---|---|---|
 | 23.3.6 (Alpine 3.19 package) | `/opt/alpine319` | `GL_RENDERER V3D 3.3`, `OpenGL ES 3.0 Mesa 23.3.6`, then a segfault compiling the first shader |
-| 23.3.6 built with [`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch) ([`mesa/build-mesa.sh`](mesa/build-mesa.sh), 1038 build steps, over an hour on the box) | `/opt/alpine319/opt/mesa` | **works**: [`mesa/kstb-gles-test.c`](mesa/kstb-gles-test.c) prints `OK` (below) |
+| 23.3.6 built with [`mesa/patches/0001-v3d-V3D-3.3-compiler-and-driver-fixes-1-19.patch`](mesa/patches/0001-v3d-V3D-3.3-compiler-and-driver-fixes-1-19.patch) (`build-mesa.sh`, 1038 build steps, over an hour on the box; replaced 2026-10-21 by the cross build [`mesa/Makefile`](mesa/Makefile)) | `/opt/alpine319/opt/mesa` | **works**: [`gpu-test/kstb-gles-test.c`](gpu-test/kstb-gles-test.c) prints `OK` (below) |
 | 19.2.7 (Alpine 3.11 package) | `/opt/alpine311` (deleted 2026-10-17) | hangs in the driver (no kernel message); no debug symbols packaged |
 
 The fixes in the patch (V3D 3.3 compiler/driver repairs and GLES BGRA
@@ -634,7 +637,7 @@ Found with dEQP (2026-10-18, "dEQP" below):
 8. No TFU on 3.3: `glGenerateMipmap` through the TFU left level 1 black
    (the TFU counts the jobs, `TFU_CS` conversion count 2 after two, but the
    output isn't where Mesa reads it). The draw-based fallback is right
-   ([`mesa/kstb-tfu-test.c`](mesa/kstb-tfu-test.c): `level0`, `manual`, `tfu` all OK).
+   ([`gpu-test/kstb-tfu-test.c`](gpu-test/kstb-tfu-test.c): `level0`, `manual`, `tfu` all OK).
 9. Uniform loads copied out of `r5` in the next instruction: two uniforms
    as the two sources of one instruction (`vfpack tlb, unif, unif` in the
    clear shader) failed register allocation, so every scissored clear
@@ -650,7 +653,7 @@ Found with dEQP (2026-10-18, "dEQP" below):
     previous varying in `r3`, which was overwritten: in
     `add.highp_vec3_fragment` one input component came out wrong. It showed
     only with inputs whose components change differently across the
-    triangle: [`mesa/kstb-grid-test.c`](mesa/kstb-grid-test.c) `KSTB_SIGNED=1`
+    triangle: [`gpu-test/kstb-grid-test.c`](gpu-test/kstb-grid-test.c) `KSTB_SIGNED=1`
     (dEQP's signed pattern) fails without the fix (`sum 4`: R 592, B 576 of
     1024 pixels off) and passes with it; the earlier pattern, the same
     gradient in every component, hid it.
@@ -703,7 +706,7 @@ cache (`~/.cache/mesa_shader_cache`) keeps shaders from earlier builds:
 `MESA_SHADER_CACHE_DISABLE=true` while changing the compiler.
 
 ```
-# on the box; mesa/ch319 is the chroot helper (in /usr/local/bin there)
+# on the box; gpu-test/ch319 is the chroot helper (in /usr/local/bin there)
 ch319 'cd /root && LD_LIBRARY_PATH=/opt/mesa/lib LIBGL_DRIVERS_PATH=/opt/mesa/lib/dri ./kstb-gles-test'
 ```
 
@@ -787,7 +790,7 @@ Oops, no MMU error.
 VK-GL-CTS `opengl-es-cts-3.2.14.1`, cross-built on the PC (surfaceless
 target, `linux/build/deqp/`), packed as `doom/build/deqp-kstb.tar`
 (`deqp-gles2`, `deqp-gles3`, `deqp-egl`, data, mustpass lists) and
-unpacked to `/root/deqp`. [`mesa/kstb-deqp`](mesa/kstb-deqp) runs a
+unpacked to `/root/deqp`. [`gpu-test/kstb-deqp`](gpu-test/kstb-deqp) runs a
 module 500 cases per process (pbuffer 256×256, `rgba8888d24s8ms0`) and
 resumes after a crash, a GPU hang or a board reset: one line per case in
 `/root/deqp/results-<module>.txt`, `--summary` counts them. On the box
@@ -818,12 +821,12 @@ fail); every case that passed then passes now. Where the failures are:
 | `shaders.conversions.*` | 2 | not looked at |
 
 **2026-10-20 repair audit.** The current Mesa source builds with
-[`mesa/v3d33-fixes.patch`](mesa/v3d33-fixes.patch),
-[`mesa/v3d-native-fences.patch`](mesa/v3d-native-fences.patch),
-[`mesa/v3d-msaa-xor.patch`](mesa/v3d-msaa-xor.patch),
-[`mesa/v3d-pbo-fallback.patch`](mesa/v3d-pbo-fallback.patch), and the kmsro
+[`mesa/patches/0001-v3d-V3D-3.3-compiler-and-driver-fixes-1-19.patch`](mesa/patches/0001-v3d-V3D-3.3-compiler-and-driver-fixes-1-19.patch),
+[`mesa/patches/0002-v3d-EGL_ANDROID_native_fence_sync-on-V3D-3.3.patch`](mesa/patches/0002-v3d-EGL_ANDROID_native_fence_sync-on-V3D-3.3.patch),
+[`mesa/patches/0003-v3d-MSAA-UIF-XOR-addressing-before-V3D-4.1.patch`](mesa/patches/0003-v3d-MSAA-UIF-XOR-addressing-before-V3D-4.1.patch),
+[`mesa/patches/0004-v3d-no-buffer-texture-acceleration-on-V3D-3.x.patch`](mesa/patches/0004-v3d-no-buffer-texture-acceleration-on-V3D-3.x.patch), and the kmsro
 patch in that order. All five patches apply cleanly to pristine Mesa 23.3.6.
-GLES1 is enabled in [`mesa/build-mesa.sh`](mesa/build-mesa.sh). The candidate
+GLES1 is enabled in the build ([`mesa/Makefile`](mesa/Makefile) now). The candidate
 driver is staged on ROOT under `/opt/mesa-pbo-test/dri`, with the matching GLES1
 library in `/opt/mesa-gles1/lib`; the system `/usr/local` installation is
 still the older validated fixes 1–11 build.
@@ -837,7 +840,7 @@ spills still hang; a single-thread compiler fallback makes the known
 scratch spilling works. Compiler failure handling has been changed but its
 fault path has not yet been validated separately.
 
-On the native-fence candidate, [`mesa/kstb-native-fence-test.c`](mesa/kstb-native-fence-test.c)
+On the native-fence candidate, [`gpu-test/kstb-native-fence-test.c`](gpu-test/kstb-native-fence-test.c)
 passes 100 GPU export/import/server-wait chains with exact pixel checks.
 `kmscube -N -D /dev/dri/card1 -A -f AR24 -c60` runs at 60.12 fps; the
 formerly crashing `-f AR24 -M rgba -c60` path now completes without a kernel
@@ -848,7 +851,7 @@ The original GLES3 surfaceless dEQP sweep recorded 42,328 Pass, 1,690 Fail,
 7 Crash and 580 NotSupported of 44,768 cases, but some failures came from
 that test target supplying no default framebuffer (`-1 × -1`). For reliable
 GPU tests, use the GBM-backed dEQP target built with
-[`mesa/deqp-nullws-gbm.patch`](mesa/deqp-nullws-gbm.patch),
+[`gpu-test/deqp/deqp-nullws-gbm.patch`](gpu-test/deqp/deqp-nullws-gbm.patch),
 `DEQP_EGL_PLATFORM=drm DEQP_SURFACE_TYPE=window`, and
 `LIBGL_DRIVERS_PATH=/opt/mesa-pbo-test/dri`. On that target, 432 shadow-texture
 cases yielded 80 Pass, 152 QualityWarning, 200 Fail. Transform feedback still
@@ -876,7 +879,7 @@ fixed and rerun (per-run log:
   dump); each case alone was clean. Mesa leaves about 225 bytes after the
   branch at the end of a CL BO; the closed driver (`libGLES_nexus.so`,
   `khrn_fmem_cle_new_block`) asks for size + 0x105 per block, the 5-byte
-  branch plus 256 bytes. [`mesa/v3d33-cl-prefetch.patch`](mesa/v3d33-cl-prefetch.patch)
+  branch plus 256 bytes. [`mesa/patches/0011-v3d-keep-256-bytes-free-at-the-end-of-every-CL-BO-be.patch`](mesa/patches/0011-v3d-keep-256-bytes-free-at-the-end-of-every-CL-BO-be.patch)
   keeps 256 bytes free at the end of every CL BO before V3D 4.1. The same
   100 cases then gave 0 errors, the 200-case sequence 200 Pass, 0 errors.
   Padding the TSDA or the CL BOs by 4 KB changed nothing (the CL then
@@ -901,7 +904,7 @@ fixed and rerun (per-run log:
 
 Validation on the result (2026-10-21, kernel `#28` = patches 0001–0004 over
 TFTP, not flashed; Mesa with all twelve patches of
-[`mesa/build-mesa.sh`](mesa/build-mesa.sh), `v3d_dri.so` `fa48b134…`, in
+the then `build-mesa.sh` series (now [`mesa/patches/`](mesa/patches)), `v3d_dri.so` `fa48b134…`, in
 `/opt/mesa-repair-20261021/dri`; GBM window 256×256, `rgba8888d24s8ms0`;
 the kernel log read from `/dev/kmsg` for the whole run; hashes in
 [`../docs/evidence/gpu/repair-candidate-20261021.sha256`](../docs/evidence/gpu/repair-candidate-20261021.sha256)):
@@ -945,7 +948,7 @@ targets at any width. Run alone, those 72 cases gave 44 Fail, each with
 `Resetting GPU for hang` (`V3D_ERR_STAT 0x00001000`). The compiler sends
 the TLB as many values as the shader writes, and the config word says so
 (`TLB_VEC_SIZE_MINUS_1`, or the 2-half F16 size).
-[`mesa/v3d33-tlb-vec4.patch`](mesa/v3d33-tlb-vec4.patch) always writes four
+[`mesa/patches/0012-v3d-always-write-four-TLB-colour-components-before-4.patch`](mesa/patches/0012-v3d-always-write-four-TLB-colour-components-before-4.patch) always writes four
 before V3D 4.1, with zero for the components the shader leaves undefined.
 The same 72 cases then gave 72 Pass, no reset; all 940 `fragment_out`
 cases 940 Pass, no reset
@@ -973,8 +976,8 @@ are unchanged.
 
 For a KMS device the DRI loader opens `<kernel driver name>_dri.so`;
 for a display-only driver that is Mesa's kmsro, which pairs it with the
-render GPU. [`mesa/kmsro-kstb-drm.patch`](mesa/kmsro-kstb-drm.patch) adds `kstb-drm` to kmsro's
-names and entry points, and `build-mesa.sh` builds `-Dgallium-drivers=v3d,kmsro`
+render GPU. [`mesa/patches/0013-kmsro-kstb-drm-display-driver.patch`](mesa/patches/0013-kmsro-kstb-drm-display-driver.patch) adds `kstb-drm` to kmsro's
+names and entry points, and the build ([`mesa/Makefile`](mesa/Makefile)) uses `-Dgallium-drivers=v3d,kmsro`
 (rebuilt on the box: `kstb-drm_dri.so` in `/opt/mesa/lib/dri`). For a
 `SCANOUT` resource v3d asks `kstb-drm` for a dumb buffer big enough
 (1024 × 32 bpp × n rows), imports it through PRIME and renders into it linear
@@ -1000,11 +1003,11 @@ correct. Same from `KRN`.
 
 #### `kstb-v3d-gl`: a GL shader record without Mesa
 
-[`mesa/kstb-v3d-gl`](mesa/kstb-v3d-gl) builds the whole job by hand (python3, raw
+[`gpu-test/kstb-v3d-gl`](gpu-test/kstb-v3d-gl) builds the whole job by hand (python3, raw
 DRM ioctls like `kstb-v3d-test`): binning and render lists for 256×256 in
 4×4 tiles, the GL shader record, and Mesa's compiled coordinate, vertex
 and fragment shaders for `gl_Position = vec4(pos, 0, 1)` and a constant
-colour. Packets are packed by field name with [`mesa/v3dpack.py`](mesa/v3dpack.py) from
+colour. Packets are packed by field name with [`gpu-test/v3dpack.py`](gpu-test/v3dpack.py) from
 Mesa's `v3d_packet_v33.xml`, which has to be next to it:
 
 ```

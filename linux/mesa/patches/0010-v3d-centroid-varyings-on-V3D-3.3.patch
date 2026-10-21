@@ -1,3 +1,17 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 10/13] v3d: centroid varyings on V3D 3.3
+
+The centroid flag packets exist on 3.3 but were version-gated in the XML
+and the emit code. Fixes the last 70 transform feedback image failures.
+---
+ src/broadcom/cle/v3d_packet_v33.xml | 4 ++--
+ src/gallium/drivers/v3d/v3dx_emit.c | 5 +++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/src/broadcom/cle/v3d_packet_v33.xml b/src/broadcom/cle/v3d_packet_v33.xml
+index 00ae008..4e89bd5 100644
 --- a/src/broadcom/cle/v3d_packet_v33.xml
 +++ b/src/broadcom/cle/v3d_packet_v33.xml
 @@ -871,9 +871,9 @@
@@ -5,17 +19,18 @@
    </packet>
  
 -  <packet code="88" name="Zero All Centroid Flags" min_ver="41"/>
--
--  <packet code="89" name="Centroid Flags" min_ver="41">
 +  <packet code="88" name="Zero All Centroid Flags"/>
-+
+ 
+-  <packet code="89" name="Centroid Flags" min_ver="41">
 +  <packet code="89" name="Centroid Flags">
      <field name="Centroid Flags for varyings V0*24" size="24" start="8" type="uint"/>
      <field name="Action for Centroid Flags of higher numbered varyings" size="2" start="6" type="Varying Flags Action"/>
      <field name="Action for Centroid Flags of lower numbered varyings" size="2" start="4" type="Varying Flags Action"/>
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 46f0662..255ee4b 100644
 --- a/src/gallium/drivers/v3d/v3dx_emit.c
 +++ b/src/gallium/drivers/v3d/v3dx_emit.c
-@@ -333,6 +333,7 @@
+@@ -333,6 +333,7 @@ emit_noperspective_flags(struct v3d_job *job,
                          higher;
          }
  }
@@ -23,7 +38,7 @@
  
  static void
  emit_centroid_flags(struct v3d_job *job,
-@@ -350,7 +351,6 @@
+@@ -350,7 +351,6 @@ emit_centroid_flags(struct v3d_job *job,
                          higher;
          }
  }
@@ -31,7 +46,7 @@
  
  static bool
  emit_varying_flags(struct v3d_job *job, uint32_t *flags,
-@@ -787,6 +787,8 @@
+@@ -787,6 +787,8 @@ v3dX(emit_state)(struct pipe_context *pctx)
                  }
          }
  
@@ -40,7 +55,7 @@
          if (v3d->dirty & V3D_DIRTY_CENTROID_FLAGS) {
                  if (!emit_varying_flags(job,
                                          v3d->prog.fs->prog_data.fs->centroid_flags,
-@@ -794,7 +796,6 @@
+@@ -794,7 +796,6 @@ v3dX(emit_state)(struct pipe_context *pctx)
                          cl_emit(&job->bcl, ZERO_ALL_CENTROID_FLAGS, flags);
                  }
          }

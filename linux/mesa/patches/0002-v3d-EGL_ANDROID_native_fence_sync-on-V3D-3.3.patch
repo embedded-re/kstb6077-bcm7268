@@ -1,6 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 02/13] v3d: EGL_ANDROID_native_fence_sync on V3D 3.3
+
+Export and import sync file fds for the V3D render job so
+EGL_ANDROID_native_fence_sync works (kmscube -A, server waits).
+---
+ src/gallium/drivers/v3d/v3d_context.c |  1 +
+ src/gallium/drivers/v3d/v3d_context.h |  3 ++
+ src/gallium/drivers/v3d/v3d_fence.c   | 73 ++++++++++++++++++++++++++-
+ src/gallium/drivers/v3d/v3d_job.c     |  2 +
+ src/gallium/drivers/v3d/v3d_screen.c  |  1 +
+ 5 files changed, 78 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_context.c b/src/gallium/drivers/v3d/v3d_context.c
+index 1dc4bd0..be78a5d 100644
 --- a/src/gallium/drivers/v3d/v3d_context.c
 +++ b/src/gallium/drivers/v3d/v3d_context.c
-@@ -365,6 +365,7 @@
+@@ -365,6 +365,7 @@ v3d_context_create(struct pipe_screen *pscreen, void *priv, unsigned flags)
          pctx->priv = priv;
          pctx->destroy = v3d_context_destroy;
          pctx->flush = v3d_pipe_flush;
@@ -8,9 +25,11 @@
          pctx->memory_barrier = v3d_memory_barrier;
          pctx->set_debug_callback = u_default_set_debug_callback;
          pctx->invalidate_resource = v3d_invalidate_resource;
+diff --git a/src/gallium/drivers/v3d/v3d_context.h b/src/gallium/drivers/v3d/v3d_context.h
+index 948abe6..4c52148 100644
 --- a/src/gallium/drivers/v3d/v3d_context.h
 +++ b/src/gallium/drivers/v3d/v3d_context.h
-@@ -541,6 +541,7 @@
+@@ -541,6 +541,7 @@ struct v3d_context {
  
          /** Sync object that our RCL or TFU job will update as its out_sync. */
          uint32_t out_sync;
@@ -18,7 +37,7 @@
  
          /* Stream uploader used by gallium internals.  This could also be used
           * by driver internals, but we tend to use the v3d_cl.h interfaces
-@@ -781,6 +782,8 @@
+@@ -781,6 +782,8 @@ bool v3d_generate_mipmap(struct pipe_context *pctx,
  void
  v3d_fence_unreference(struct v3d_fence **fence);
  
@@ -27,6 +46,8 @@
  struct v3d_fence *v3d_fence_create(struct v3d_context *v3d);
  
  bool v3d_fence_wait(struct v3d_screen *screen,
+diff --git a/src/gallium/drivers/v3d/v3d_fence.c b/src/gallium/drivers/v3d/v3d_fence.c
+index 3abfcd7..90d37bb 100644
 --- a/src/gallium/drivers/v3d/v3d_fence.c
 +++ b/src/gallium/drivers/v3d/v3d_fence.c
 @@ -36,6 +36,8 @@
@@ -38,7 +59,7 @@
  
  #include "v3d_context.h"
  #include "v3d_bufmgr.h"
-@@ -90,6 +92,7 @@
+@@ -90,6 +92,7 @@ v3d_fence_wait(struct v3d_screen *screen,
          ret = drmSyncobjImportSyncFile(screen->fd, syncobj, fence->fd);
          if (ret) {
                  fprintf(stderr, "Failed to import fence to syncobj: %d\n", ret);
@@ -46,7 +67,7 @@
                  return false;
          }
  
-@@ -128,8 +131,8 @@
+@@ -128,8 +131,8 @@ v3d_fence_create(struct v3d_context *v3d)
           * (HandleToFD/FDToHandle just gives you another syncobj ID for the
           * same syncobj).
           */
@@ -57,7 +78,7 @@
                  fprintf(stderr, "export failed\n");
                  free(f);
                  return NULL;
-@@ -140,9 +143,75 @@
+@@ -140,9 +143,75 @@ v3d_fence_create(struct v3d_context *v3d)
          return f;
  }
  
@@ -131,12 +152,13 @@
  {
          screen->base.fence_reference = v3d_fence_reference;
          screen->base.fence_finish = v3d_fence_finish;
--}
 +        screen->base.fence_get_fd = v3d_fence_get_fd;
-+}
+ }
+diff --git a/src/gallium/drivers/v3d/v3d_job.c b/src/gallium/drivers/v3d/v3d_job.c
+index 577890a..a470f69 100644
 --- a/src/gallium/drivers/v3d/v3d_job.c
 +++ b/src/gallium/drivers/v3d/v3d_job.c
-@@ -520,6 +520,8 @@
+@@ -520,6 +520,8 @@ v3d_job_submit(struct v3d_context *v3d, struct v3d_job *job)
           * dispatched.
           */
          job->submit.in_sync_rcl = v3d->out_sync;
@@ -145,9 +167,11 @@
  
          /* Update the sync object for the last rendering by our context. */
          job->submit.out_sync = v3d->out_sync;
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index 2391e7d..eb41579 100644
 --- a/src/gallium/drivers/v3d/v3d_screen.c
 +++ b/src/gallium/drivers/v3d/v3d_screen.c
-@@ -148,6 +148,7 @@
+@@ -148,6 +148,7 @@ v3d_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
          case PIPE_CAP_CONDITIONAL_RENDER:
          case PIPE_CAP_CONDITIONAL_RENDER_INVERTED:
          case PIPE_CAP_CUBE_MAP_ARRAY:

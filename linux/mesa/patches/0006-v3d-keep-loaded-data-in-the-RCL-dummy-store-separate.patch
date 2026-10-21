@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 06/13] v3d: keep loaded data in the RCL dummy store, separate
+ stencil on 3.3
+
+flush_last_load()'s dummy NONE store cleared buffers loaded before it;
+disable all three clears on 3.3. Raw combined ZSTENCIL stores are
+unsupported before 4.0: use U_TRANSFER_HELPER_SEPARATE_STENCIL there.
+---
+ src/gallium/drivers/v3d/v3d_resource.c | 9 ++++++---
+ src/gallium/drivers/v3d/v3dx_rcl.c     | 5 +++++
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_resource.c b/src/gallium/drivers/v3d/v3d_resource.c
+index 7eec001..fc3f00b 100644
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -1227,9 +1227,12 @@ v3d_resource_screen_init(struct pipe_screen *pscreen)
+         pscreen->resource_get_handle = v3d_resource_get_handle;
+         pscreen->resource_get_param = v3d_resource_get_param;
+         pscreen->resource_destroy = u_transfer_helper_resource_destroy;
+-        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl,
+-                                                            U_TRANSFER_HELPER_SEPARATE_Z32S8 |
+-                                                            U_TRANSFER_HELPER_MSAA_MAP);
++        struct v3d_screen *screen = v3d_screen(pscreen);
++        unsigned flags = U_TRANSFER_HELPER_SEPARATE_Z32S8 |
++                         U_TRANSFER_HELPER_MSAA_MAP;
++        if (screen->devinfo.ver < 40)
++                flags |= U_TRANSFER_HELPER_SEPARATE_STENCIL;
++        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl, flags);
+ }
+ 
+ void
+diff --git a/src/gallium/drivers/v3d/v3dx_rcl.c b/src/gallium/drivers/v3d/v3dx_rcl.c
+index c40e3bc..0c7590d 100644
+--- a/src/gallium/drivers/v3d/v3dx_rcl.c
++++ b/src/gallium/drivers/v3d/v3dx_rcl.c
+@@ -50,6 +50,11 @@ flush_last_load(struct v3d_cl *cl)
+         cl_emit(cl, TILE_COORDINATES_IMPLICIT, coords);
+         cl_emit(cl, STORE_TILE_BUFFER_GENERAL, store) {
+                 store.buffer_to_store = NONE;
++#if V3D_VERSION < 40
++                store.disable_color_buffers_clear_on_write = true;
++                store.disable_z_buffer_clear_on_write = true;
++                store.disable_stencil_buffer_clear_on_write = true;
++#endif
+         }
+ }
+ 

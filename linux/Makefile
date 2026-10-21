@@ -11,6 +11,10 @@
 #   make slots    -> build/out/{krn.img,dtb.img}: Image and kstb6077-root.dtb behind a
 #                    KSLT header, for the KRN and DTB partitions (kstb-flash-kernel on
 #                    the box writes them; kmon's `linux` starts them)
+#   make mesa     -> build/out/mesa-<id>.tar: Mesa with our series (mesa/Makefile;
+#                    kstb-mesa on the box installs it; see gpu.md)
+#   make gpu-test -> build/gpu-test/: the GPU tests (gpu-test/Makefile; its
+#                    `install` copies them to the box)
 # The kernel source and the Alpine tarball are fetched into build/dl first
 # (see README.md); build/ is not tracked. Our kernel patches, patches/*.patch,
 # are applied to the extracted source before the first build.
@@ -110,3 +114,11 @@ tftp: all slots modules
 
 FORCE:
 .PHONY: all slots modules tftp FORCE
+
+mesa:
+	$(MAKE) -C mesa
+
+gpu-test: mesa
+	$(MAKE) -C gpu-test
+
+.PHONY: mesa gpu-test

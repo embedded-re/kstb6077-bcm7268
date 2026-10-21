@@ -1,6 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 03/13] v3d: MSAA UIF XOR addressing before V3D 4.1
+
+Fixes the 52 EGL multisample shader-render failures.
+---
+ src/gallium/drivers/v3d/v3dx_rcl.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/gallium/drivers/v3d/v3dx_rcl.c b/src/gallium/drivers/v3d/v3dx_rcl.c
+index 8bac973..c40e3bc 100644
 --- a/src/gallium/drivers/v3d/v3dx_rcl.c
 +++ b/src/gallium/drivers/v3d/v3dx_rcl.c
-@@ -102,6 +102,10 @@
+@@ -102,6 +102,10 @@ load_general(struct v3d_cl *cl, struct pipe_surface *psurf, int buffer,
                   */
                  assert(buffer != ZSTENCIL);
                  load.raw_mode = true;
@@ -11,7 +23,7 @@
                  load.padded_height_of_output_image_in_uif_blocks =
                          surf->padded_height_of_output_image_in_uif_blocks;
  #endif /* V3D_VERSION < 40 */
-@@ -175,6 +179,8 @@
+@@ -175,6 +179,8 @@ store_general(struct v3d_job *job,
                   */
                  assert(buffer != ZSTENCIL);
                  store.raw_mode = true;

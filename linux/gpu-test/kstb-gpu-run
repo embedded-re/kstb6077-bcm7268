@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""kstb-gpu-run - one dEQP run on the box, with everything needed to judge it.
+
+    kstb-gpu-run [--mesa ID] [--name NAME] [--dir DIR] MODULE [kstb-deqp args]
+    kstb-gpu-run --summary DIR
+
+MODULE is gles2, gles3 or egl; the rest goes to kstb-deqp (--cases FILE,
+--filter PREFIX, --chunk N, ...). The Mesa build is one from kstb-mesa
+(default: current). Each run gets a directory, by default
+/root/gpu-runs/<date>-<time>-<module>[-NAME], holding:
+    meta.txt      kernel, boot id, Mesa build id and v3d_dri.so hash, dEQP
+                  binary hashes, environment, start and end uptime
+    results-<module>.txt   one line per case (kstb-deqp)
+    kernel.txt    every kernel message from the run's span (/dev/kmsg, so a
+                  wrapped dmesg ring loses nothing)
+    summary.txt   result counts, MMU errors and GPU resets, and each kernel
+                  event's case (the case running at that moment)
+Every case can pass while the kernel logs faults: read summary.txt, not only
+the counts. The busybox watchdog runs during the run (a hang reboots the
+box; --dir DIR then resumes after the lost case) and is stopped after it.
+"""
+import argparse, bisect, collections, datetime, os, re, subprocess, sys, threading, time
+
+DEQP = "/opt/deqp"            # gles2/, gles3/, egl/ (binary + data), mustpass/
+RUNS = "/root/gpu-runs"
+KSTB_DEQP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kstb-deqp")
+
+
+def sh(cmd):
+    return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
+
+
+def kmsg_reader(path, stop):
+    """Copy /dev/kmsg from now on into path until stop is set."""
+    fd = os.open("/dev/kmsg", os.O_RDONLY | os.O_NONBLOCK)
+    os.lseek(fd, 0, os.SEEK_END)
+    with open(path, "a") as out:
+        while not stop.is_set():
+            try:
+                line = os.read(fd, 8192).decode("utf-8", "replace")
+            except BlockingIOError:
+                time.sleep(0.2)
+                continue
+            except OSError:         # overrun: messages were dropped
+                out.write("kstb-gpu-run: kmsg overrun\n")
+                continue
+            head, _, msg = line.partition(";")
+            usec = head.split(",")[2] if head.count(",") >= 2 else "0"
+            out.write(f"[{int(usec) / 1e6:12.6f}] {msg.splitlines()[0] if msg else ''}\n")
+            out.flush()
+    os.close(fd)
+
+
+def summarize(d):
+    res = [f for f in os.listdir(d) if f.startswith("results-")]
+    lines = []
+    cases = []                       # (uptime, case, status)
+    counts = collections.Counter()
+    for f in res:
+        for l in open(os.path.join(d, f)):
+            p = l.split()
+            if len(p) < 2:
+                continue
+            counts[p[1]] += 1
+            m = re.search(r"@uptime=([\d.]+)", l)
+            if m:
+                cases.append((float(m.group(1)), p[0], p[1]))
+    cases.sort()
+    times = [c[0] for c in cases]
+    lines.append(f"{sum(counts.values())} cases: " +
+                 ", ".join(f"{k} {v}" for k, v in counts.most_common()))
+    ev = []
+    kpath = os.path.join(d, "kernel.txt")
+    klines = open(kpath).read().splitlines() if os.path.exists(kpath) else []
+    offset = 0.0                     # kernel time - CLOCK_MONOTONIC
+    for l in klines:
+        m = re.match(r"\[\s*([\d.]+)\] kstb-gpu-run sync ([\d.]+)", l)
+        if m:
+            offset = float(m.group(1)) - float(m.group(2))
+    for l in klines:
+        m = re.match(r"\[\s*([\d.]+)\] (.*)", l)
+        if not m:
+            continue
+        t, msg = float(m.group(1)) - offset, m.group(2)
+        if "MMU error" in msg:
+            kind = "mmu " + re.sub(r".*client (.*?) at (0x[0-9a-f]+).*", r"\1 @ \2", msg)
+        elif "Resetting GPU" in msg:
+            kind = "reset"
+        elif re.search(r"Oops|BUG|Unable to handle|Internal error", msg):
+            kind = "OOPS " + msg
+        else:
+            continue
+        # the case running at t: the first one whose result came at or after t
+        i = bisect.bisect_left(times, t)
+        case = cases[i][1] + " " + cases[i][2] if i < len(cases) else "(after the last result)"
+        ev.append((kind, case))
+    n_mmu = sum(1 for k, _ in ev if k.startswith("mmu"))
+    n_reset = sum(1 for k, _ in ev if k == "reset")
+    n_oops = sum(1 for k, _ in ev if k.startswith("OOPS"))
+    lines.append(f"kernel: {n_mmu} MMU errors, {n_reset} GPU resets, {n_oops} oops")
+    for kind, case in ev:
+        lines.append(f"  {kind:40s} {case}")
+    text = "\n".join(lines) + "\n"
+    open(os.path.join(d, "summary.txt"), "w").write(text)
+    return text
+
+
+def main():
+    ap = argparse.ArgumentParser(usage=__doc__)
+    ap.add_argument("--mesa", help="kstb-mesa build id (default current)")
+    ap.add_argument("--name", default="")
+    ap.add_argument("--dir", help="run directory (resumes it if it exists)")
+    ap.add_argument("--summary", metavar="DIR")
+    a, rest = ap.parse_known_args()
+    if a.summary:
+        print(summarize(a.summary), end="")
+        return
+    if not rest or rest[0] not in ("gles2", "gles3", "egl"):
+        sys.exit(__doc__)
+    mod = rest[0]
+
+    env_line = sh(f"kstb-mesa env {a.mesa or ''}")
+    if not env_line.startswith("export "):
+        sys.exit(f"kstb-gpu-run: no Mesa build {a.mesa or 'current'}")
+    env = dict(os.environ)
+    for kv in env_line[len("export "):].split():
+        k, v = kv.split("=", 1)
+        env[k] = v
+    mesa_dir = os.path.dirname(env["LIBGL_DRIVERS_PATH"].rstrip("/"))   # .../<id>/lib
+    mesa_dir = os.path.dirname(mesa_dir)
+    env.update(DEQP_EGL_PLATFORM="drm", DEQP_SURFACE_TYPE="window")
+
+    d = a.dir or os.path.join(RUNS, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+                              + f"-{mod}" + (f"-{a.name}" if a.name else ""))
+    os.makedirs(d, exist_ok=True)
+    for sub in ("gles2", "gles3", "egl", "mustpass"):
+        link = os.path.join(d, sub)
+        if not os.path.lexists(link):
+            os.symlink(os.path.join(DEQP, sub), link)
+    env["DEQP"] = d
+
+    uptime = sh("cut -d' ' -f1 /proc/uptime")
+    build = sh(f"grep -E '^(id|patch)|v3d_dri' {mesa_dir}/BUILD-ID")
+    hashes = sh(f"cd {DEQP} && sha256sum */deqp-* {KSTB_DEQP}")
+    with open(os.path.join(d, "meta.txt"), "a") as m:
+        m.write(f"start {uptime} {datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")}\n")
+        m.write(f"kernel {sh('uname -rv')}\nboot {sh('cat /proc/sys/kernel/random/boot_id')}\n")
+        m.write(f"mesa {mesa_dir}\n{build}\n{hashes}\n")
+        m.write(f"args {' '.join(rest)}\n")
+        for k in ("LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "DEQP_EGL_PLATFORM", "DEQP_SURFACE_TYPE"):
+            m.write(f"{k}={env[k]}\n")
+
+    stop = threading.Event()
+    reader = threading.Thread(target=kmsg_reader, args=(os.path.join(d, "kernel.txt"), stop))
+    reader.start()
+    time.sleep(0.5)
+    with open("/dev/kmsg", "w") as k:       # ties kernel time to CLOCK_MONOTONIC
+        k.write(f"kstb-gpu-run sync {time.monotonic():.6f}\n")
+    subprocess.run("watchdog -T 30 -t 5 /dev/watchdog", shell=True)
+    try:
+        rc = subprocess.run([KSTB_DEQP] + rest, env=env).returncode
+    finally:
+        subprocess.run("killall watchdog; sleep 1; printf V > /dev/watchdog 2>/dev/null"
+                       " || { sleep 2; printf V > /dev/watchdog; }", shell=True)
+        time.sleep(1)               # the last kernel messages
+        stop.set()
+        reader.join()
+        uptime = sh("cut -d' ' -f1 /proc/uptime")
+        with open(os.path.join(d, "meta.txt"), "a") as m:
+            m.write(f"end {uptime}\n")
+    print(f"{d}:")
+    print(summarize(d), end="")
+    sys.exit(rc)
+
+
+if __name__ == "__main__":
+    main()

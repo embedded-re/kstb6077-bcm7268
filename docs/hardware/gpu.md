@@ -552,7 +552,7 @@ the bare-metal results:
 
 ### GL shader record: coordinate and vertex shaders
 
-Tested 2026-10-17 with [`linux/mesa/kstb-v3d-gl`](../../linux/mesa/kstb-v3d-gl) (a hand-built job,
+Tested 2026-10-17 with [`linux/gpu-test/kstb-v3d-gl`](../../linux/gpu-test/kstb-v3d-gl) (a hand-built job,
 no Mesa): 256×256 frame in 4×4 tiles of 64×64, one triangle, Mesa 23.3's
 compiled shaders. The triangle (-0.75,-0.75) (0.75,-0.75) (0,0.75) in
 clip space covers pixels (32,32) (224,32) (128,224), area 18432.

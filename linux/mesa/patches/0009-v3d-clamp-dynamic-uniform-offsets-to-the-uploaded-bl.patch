@@ -1,6 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 09/13] v3d: clamp dynamic uniform offsets to the uploaded
+ block before 4.0
+
+Dynamic load_uniform offsets went past the uniform BO (MMU errors in
+builtin_variable.vertex_id); keep them inside it.
+---
+ src/broadcom/compiler/nir_to_vir.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index 1deb315..f156401 100644
 --- a/src/broadcom/compiler/nir_to_vir.c
 +++ b/src/broadcom/compiler/nir_to_vir.c
-@@ -472,6 +472,18 @@
+@@ -472,6 +472,18 @@ emit_tmu_general_address_write(struct v3d_compile *c,
                                           vir_uniform_ui(c, const_offset));
                  }
                  struct qreg data = ntq_get_src(c, instr->src[offset_src], 0);

@@ -1,6 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 04/13] v3d: no buffer-texture acceleration on V3D 3.x
+
+Lets Mesa take the CPU PBO upload path, which is correct: all
+teximage2d_pbo and texsubimage2d_pbo GLES3 cases pass.
+---
+ src/gallium/drivers/v3d/v3d_screen.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index eb41579..c7e509d 100644
 --- a/src/gallium/drivers/v3d/v3d_screen.c
 +++ b/src/gallium/drivers/v3d/v3d_screen.c
-@@ -302,7 +302,11 @@
+@@ -302,7 +302,11 @@ v3d_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
                  return screen->prim_types;
  
          case PIPE_CAP_TEXTURE_BUFFER_OBJECTS:

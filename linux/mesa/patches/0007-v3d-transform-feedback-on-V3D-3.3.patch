@@ -1,10 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 07/13] v3d: transform feedback on V3D 3.3
+
+Use FLUSH_TRANSFORM_FEEDBACK_DATA (opcode 31 reset the GPU), count TF
+primitives on the CPU (instances, primitive restart split), emit the
+address payload with every TF header (64-bit dirty mask), add the
+instance count to stream output offsets.
+---
+ src/gallium/drivers/v3d/v3d_job.c   |  7 ++++---
+ src/gallium/drivers/v3d/v3dx_draw.c | 29 ++++++++++++++++++++++++++++-
+ src/gallium/drivers/v3d/v3dx_emit.c | 10 ++++++++--
+ 3 files changed, 40 insertions(+), 6 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_job.c b/src/gallium/drivers/v3d/v3d_job.c
+index a470f69..9149351 100644
+--- a/src/gallium/drivers/v3d/v3d_job.c
++++ b/src/gallium/drivers/v3d/v3d_job.c
+@@ -590,9 +590,10 @@ v3d_job_submit(struct v3d_context *v3d, struct v3d_job *job)
+                  * to us reading an obsolete (possibly non-zero) value from
+                  * the GPU counters.
+                  */
+-                if (job->needs_primitives_generated ||
+-                    (v3d->streamout.num_targets &&
+-                     job->tf_draw_calls_queued > 0))
++                if (devinfo->ver >= 40 &&
++                    (job->needs_primitives_generated ||
++                     (v3d->streamout.num_targets &&
++                      job->tf_draw_calls_queued > 0)))
+                         v3d_read_and_accumulate_primitive_counters(v3d);
+         }
+ 
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index 92dfdd9..92d22b1 100644
 --- a/src/gallium/drivers/v3d/v3dx_draw.c
 +++ b/src/gallium/drivers/v3d/v3dx_draw.c
-@@ -1024,6 +1024,15 @@
- 
+@@ -1025,6 +1025,15 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
          if (!v3d_render_condition_check(v3d))
                  return;
-+
+ 
 +#if V3D_VERSION < 40
 +        /* Count TF output in software, splitting restart-delimited draws. */
 +        if (v3d->streamout.num_targets && info->primitive_restart) {
@@ -13,10 +47,11 @@
 +                return;
 +        }
 +#endif
- 
++
          /* Fall back for weird desktop GL primitive restart values. */
          if (info->primitive_restart &&
-@@ -1292,8 +1301,26 @@
+             info->index_size) {
+@@ -1292,8 +1301,26 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
          /* A flush is required in between a TF draw and any following TF specs
           * packet, or the GPU may hang.  Just flush each time for now.
           */
@@ -43,7 +78,7 @@
  
          job->draw_calls_queued++;
          if (v3d->streamout.num_targets)
-@@ -1309,7 +1336,7 @@
+@@ -1309,7 +1336,7 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
          if (!v3d->prog.gs && !v3d->prim_restart) {
                  for (int i = 0; i < v3d->streamout.num_targets; i++)
                          v3d_stream_output_target(v3d->streamout.targets[i])->offset +=
@@ -52,25 +87,11 @@
          }
  
          if (v3d->zsa && job->zsbuf && v3d->zsa->base.depth_enabled) {
---- a/src/gallium/drivers/v3d/v3d_job.c
-+++ b/src/gallium/drivers/v3d/v3d_job.c
-@@ -590,9 +590,10 @@
-                  * to us reading an obsolete (possibly non-zero) value from
-                  * the GPU counters.
-                  */
--                if (job->needs_primitives_generated ||
--                    (v3d->streamout.num_targets &&
--                     job->tf_draw_calls_queued > 0))
-+                if (devinfo->ver >= 40 &&
-+                    (job->needs_primitives_generated ||
-+                     (v3d->streamout.num_targets &&
-+                      job->tf_draw_calls_queued > 0)))
-                         v3d_read_and_accumulate_primitive_counters(v3d);
-         }
- 
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index adbee4a..46f0662 100644
 --- a/src/gallium/drivers/v3d/v3dx_emit.c
 +++ b/src/gallium/drivers/v3d/v3dx_emit.c
-@@ -841,8 +841,14 @@
+@@ -841,8 +841,14 @@ v3dX(emit_state)(struct pipe_context *pctx)
                  }
          }
  

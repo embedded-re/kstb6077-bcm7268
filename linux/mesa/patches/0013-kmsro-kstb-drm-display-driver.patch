@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:16 +0200
+Subject: [PATCH 13/13] kmsro: kstb-drm display driver
+
+Load kmsro for the KSTB6077's kstb-drm KMS device so v3d renders and
+kstb-drm scans out.
+---
+ src/gallium/targets/dri/meson.build | 1 +
+ src/gallium/targets/dri/target.c    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/gallium/targets/dri/meson.build b/src/gallium/targets/dri/meson.build
+index 66619bb..af6d3a2 100644
+--- a/src/gallium/targets/dri/meson.build
++++ b/src/gallium/targets/dri/meson.build
+@@ -78,6 +78,7 @@ foreach d : [[with_gallium_kmsro, [
+                'imx-lcdif_dri.so',
+                'ingenic-drm_dri.so',
+                'kirin_dri.so',
++               'kstb-drm_dri.so',
+                'komeda_dri.so',
+                'mali-dp_dri.so',
+                'mcde_dri.so',
+diff --git a/src/gallium/targets/dri/target.c b/src/gallium/targets/dri/target.c
+index 9d3069e..648545e 100644
+--- a/src/gallium/targets/dri/target.c
++++ b/src/gallium/targets/dri/target.c
+@@ -108,6 +108,7 @@ DEFINE_LOADER_DRM_ENTRYPOINT(imx_dcss)
+ DEFINE_LOADER_DRM_ENTRYPOINT(imx_lcdif)
+ DEFINE_LOADER_DRM_ENTRYPOINT(ingenic_drm)
+ DEFINE_LOADER_DRM_ENTRYPOINT(kirin)
++DEFINE_LOADER_DRM_ENTRYPOINT(kstb_drm)
+ DEFINE_LOADER_DRM_ENTRYPOINT(komeda)
+ DEFINE_LOADER_DRM_ENTRYPOINT(mali_dp)
+ DEFINE_LOADER_DRM_ENTRYPOINT(mcde)

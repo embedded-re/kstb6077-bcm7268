@@ -1,0 +1,24 @@
+44768 cases: Pass 43758, NotSupported 580, Fail 340, QualityWarning 83, Crash 7
+kernel: 22 MMU errors, 0 GPU resets, 0 oops
+  mmu ? (0x8) @ 0x61fc00                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0xe) @ 0x617c00                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0x8) @ 0x618100                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0xe) @ 0x620300                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0xf) @ 0x621700                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0xb) @ 0x620300                   dEQP-GLES3.functional.fbo.color.texcube.rgba32f Fail
+  mmu ? (0xc) @ 0xcaf400                   dEQP-GLES3.functional.fbo.color.tex2darray.rg32f Fail
+  mmu ? (0xa) @ 0xcacf00                   dEQP-GLES3.functional.fbo.color.tex2darray.rg32f Fail
+  mmu ? (0xd) @ 0xcafb00                   dEQP-GLES3.functional.fbo.color.tex3d.rg32f Fail
+  mmu ? (0xf) @ 0xcacf00                   dEQP-GLES3.functional.fbo.color.tex3d.rg32f Fail
+  mmu ? (0xe) @ 0xcaf400                   dEQP-GLES3.functional.fbo.color.tex3d.rg32f Fail
+  mmu ? (0xb) @ 0xcacf00                   dEQP-GLES3.functional.fbo.color.tex3d.rg32f Fail
+  mmu ? (0xd) @ 0x582300                   dEQP-GLES3.functional.fbo.blit.default_framebuffer.rgba32f Fail
+  mmu ? (0xa) @ 0x580100                   dEQP-GLES3.functional.fbo.blit.default_framebuffer.rgba32f Fail
+  mmu ? (0xa) @ 0x70e000                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_color Fail
+  mmu ? (0xa) @ 0x6f3000                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_color Fail
+  mmu ? (0xa) @ 0x70e700                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_depth Fail
+  mmu ? (0xa) @ 0x6f3000                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_depth Fail
+  mmu ? (0xe) @ 0x70e300                   dEQP-GLES3.functional.fbo.invalidate.sub.unbind_blit_msaa_color Fail
+  mmu ? (0xc) @ 0x713000                   dEQP-GLES3.functional.fbo.invalidate.sub.unbind_blit_msaa_color Fail
+  mmu ? (0xc) @ 0x70e800                   dEQP-GLES3.functional.fbo.invalidate.sub.unbind_blit_msaa_depth Fail
+  mmu ? (0xc) @ 0x713000                   dEQP-GLES3.functional.fbo.invalidate.sub.unbind_blit_msaa_depth Fail

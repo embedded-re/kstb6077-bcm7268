@@ -1,0 +1,215 @@
+[11748.660823] kstb-gpu-run sync 11748.524105
+[11749.108377] drm_sched_entity_init: called with uninitialized scheduler
+[11749.116764] drm_sched_entity_init: called with uninitialized scheduler
+[11765.072438] drm_sched_entity_init: called with uninitialized scheduler
+[11765.080821] drm_sched_entity_init: called with uninitialized scheduler
+[11774.588537] drm_sched_entity_init: called with uninitialized scheduler
+[11774.596960] drm_sched_entity_init: called with uninitialized scheduler
+[11780.151200] drm_sched_entity_init: called with uninitialized scheduler
+[11780.159603] drm_sched_entity_init: called with uninitialized scheduler
+[11792.165103] drm_sched_entity_init: called with uninitialized scheduler
+[11792.173519] drm_sched_entity_init: called with uninitialized scheduler
+[11807.715930] drm_sched_entity_init: called with uninitialized scheduler
+[11807.724315] drm_sched_entity_init: called with uninitialized scheduler
+[11822.850163] drm_sched_entity_init: called with uninitialized scheduler
+[11822.858569] drm_sched_entity_init: called with uninitialized scheduler
+[11837.167221] drm_sched_entity_init: called with uninitialized scheduler
+[11837.175598] drm_sched_entity_init: called with uninitialized scheduler
+[11850.640303] drm_sched_entity_init: called with uninitialized scheduler
+[11850.648713] drm_sched_entity_init: called with uninitialized scheduler
+[11859.754153] drm_sched_entity_init: called with uninitialized scheduler
+[11859.762587] drm_sched_entity_init: called with uninitialized scheduler
+[11865.357617] drm_sched_entity_init: called with uninitialized scheduler
+[11865.365997] drm_sched_entity_init: called with uninitialized scheduler
+[11869.138873] drm_sched_entity_init: called with uninitialized scheduler
+[11869.147268] drm_sched_entity_init: called with uninitialized scheduler
+[11872.436985] drm_sched_entity_init: called with uninitialized scheduler
+[11872.445226] drm_sched_entity_init: called with uninitialized scheduler
+[11888.091378] drm_sched_entity_init: called with uninitialized scheduler
+[11888.099560] drm_sched_entity_init: called with uninitialized scheduler
+[11906.136902] drm_sched_entity_init: called with uninitialized scheduler
+[11906.144994] drm_sched_entity_init: called with uninitialized scheduler
+[11922.309299] drm_sched_entity_init: called with uninitialized scheduler
+[11922.317417] drm_sched_entity_init: called with uninitialized scheduler
+[11938.897446] drm_sched_entity_init: called with uninitialized scheduler
+[11938.905415] drm_sched_entity_init: called with uninitialized scheduler
+[11955.692227] drm_sched_entity_init: called with uninitialized scheduler
+[11955.700087] drm_sched_entity_init: called with uninitialized scheduler
+[11974.357079] drm_sched_entity_init: called with uninitialized scheduler
+[11974.364882] drm_sched_entity_init: called with uninitialized scheduler
+[11992.400878] drm_sched_entity_init: called with uninitialized scheduler
+[11992.408542] drm_sched_entity_init: called with uninitialized scheduler
+[12009.718668] drm_sched_entity_init: called with uninitialized scheduler
+[12009.726237] drm_sched_entity_init: called with uninitialized scheduler
+[12028.178982] drm_sched_entity_init: called with uninitialized scheduler
+[12028.186485] drm_sched_entity_init: called with uninitialized scheduler
+[12045.701879] drm_sched_entity_init: called with uninitialized scheduler
+[12045.709201] drm_sched_entity_init: called with uninitialized scheduler
+[12064.263008] drm_sched_entity_init: called with uninitialized scheduler
+[12064.270329] drm_sched_entity_init: called with uninitialized scheduler
+[12081.995975] drm_sched_entity_init: called with uninitialized scheduler
+[12082.003294] drm_sched_entity_init: called with uninitialized scheduler
+[12098.894461] drm_sched_entity_init: called with uninitialized scheduler
+[12098.901824] drm_sched_entity_init: called with uninitialized scheduler
+[12115.378438] drm_sched_entity_init: called with uninitialized scheduler
+[12115.385770] drm_sched_entity_init: called with uninitialized scheduler
+[12132.692691] drm_sched_entity_init: called with uninitialized scheduler
+[12132.700011] drm_sched_entity_init: called with uninitialized scheduler
+[12149.691069] drm_sched_entity_init: called with uninitialized scheduler
+[12149.698397] drm_sched_entity_init: called with uninitialized scheduler
+[12165.358429] drm_sched_entity_init: called with uninitialized scheduler
+[12165.365753] drm_sched_entity_init: called with uninitialized scheduler
+[12181.218160] drm_sched_entity_init: called with uninitialized scheduler
+[12181.225521] drm_sched_entity_init: called with uninitialized scheduler
+[12197.701605] drm_sched_entity_init: called with uninitialized scheduler
+[12197.708968] drm_sched_entity_init: called with uninitialized scheduler
+[12213.872251] drm_sched_entity_init: called with uninitialized scheduler
+[12213.879588] drm_sched_entity_init: called with uninitialized scheduler
+[12230.248296] drm_sched_entity_init: called with uninitialized scheduler
+[12230.255627] drm_sched_entity_init: called with uninitialized scheduler
+[12248.181587] drm_sched_entity_init: called with uninitialized scheduler
+[12248.188915] drm_sched_entity_init: called with uninitialized scheduler
+[12275.479329] drm_sched_entity_init: called with uninitialized scheduler
+[12275.486652] drm_sched_entity_init: called with uninitialized scheduler
+[12283.117168] drm_sched_entity_init: called with uninitialized scheduler
+[12283.124501] drm_sched_entity_init: called with uninitialized scheduler
+[12290.444970] drm_sched_entity_init: called with uninitialized scheduler
+[12290.452332] drm_sched_entity_init: called with uninitialized scheduler
+[12554.403466] drm_sched_entity_init: called with uninitialized scheduler
+[12554.410797] drm_sched_entity_init: called with uninitialized scheduler
+[12772.521096] drm_sched_entity_init: called with uninitialized scheduler
+[12772.528447] drm_sched_entity_init: called with uninitialized scheduler
+[13240.873108] drm_sched_entity_init: called with uninitialized scheduler
+[13240.880415] drm_sched_entity_init: called with uninitialized scheduler
+[13255.914331] drm_sched_entity_init: called with uninitialized scheduler
+[13255.921681] drm_sched_entity_init: called with uninitialized scheduler
+[13271.767538] drm_sched_entity_init: called with uninitialized scheduler
+[13271.774872] drm_sched_entity_init: called with uninitialized scheduler
+[13287.728012] drm_sched_entity_init: called with uninitialized scheduler
+[13287.735394] drm_sched_entity_init: called with uninitialized scheduler
+[13305.141938] drm_sched_entity_init: called with uninitialized scheduler
+[13305.149264] drm_sched_entity_init: called with uninitialized scheduler
+[13321.408913] drm_sched_entity_init: called with uninitialized scheduler
+[13321.416256] drm_sched_entity_init: called with uninitialized scheduler
+[13381.046140] drm_sched_entity_init: called with uninitialized scheduler
+[13381.053465] drm_sched_entity_init: called with uninitialized scheduler
+[13448.171365] drm_sched_entity_init: called with uninitialized scheduler
+[13448.178674] drm_sched_entity_init: called with uninitialized scheduler
+[13507.391802] drm_sched_entity_init: called with uninitialized scheduler
+[13507.399150] drm_sched_entity_init: called with uninitialized scheduler
+[13534.057228] drm_sched_entity_init: called with uninitialized scheduler
+[13534.064570] drm_sched_entity_init: called with uninitialized scheduler
+[13594.008179] drm_sched_entity_init: called with uninitialized scheduler
+[13594.015490] drm_sched_entity_init: called with uninitialized scheduler
+[13644.075763] drm_sched_entity_init: called with uninitialized scheduler
+[13644.083082] drm_sched_entity_init: called with uninitialized scheduler
+[13662.206713] drm_sched_entity_init: called with uninitialized scheduler
+[13662.214065] drm_sched_entity_init: called with uninitialized scheduler
+[13666.505188] drm_sched_entity_init: called with uninitialized scheduler
+[13666.512516] drm_sched_entity_init: called with uninitialized scheduler
+[13681.336046] drm_sched_entity_init: called with uninitialized scheduler
+[13681.343377] drm_sched_entity_init: called with uninitialized scheduler
+[13684.179744] drm_sched_entity_init: called with uninitialized scheduler
+[13684.187060] drm_sched_entity_init: called with uninitialized scheduler
+[13687.183209] drm_sched_entity_init: called with uninitialized scheduler
+[13687.190555] drm_sched_entity_init: called with uninitialized scheduler
+[13690.553303] drm_sched_entity_init: called with uninitialized scheduler
+[13690.560640] drm_sched_entity_init: called with uninitialized scheduler
+[13716.597318] drm_sched_entity_init: called with uninitialized scheduler
+[13716.604645] drm_sched_entity_init: called with uninitialized scheduler
+[13736.722914] drm_sched_entity_init: called with uninitialized scheduler
+[13736.730231] drm_sched_entity_init: called with uninitialized scheduler
+[13737.674942] drm_sched_entity_init: called with uninitialized scheduler
+[13737.682287] drm_sched_entity_init: called with uninitialized scheduler
+[13793.251326] drm_sched_entity_init: called with uninitialized scheduler
+[13793.258666] drm_sched_entity_init: called with uninitialized scheduler
+[13963.231251] drm_sched_entity_init: called with uninitialized scheduler
+[13963.238552] drm_sched_entity_init: called with uninitialized scheduler
+[13995.307757] drm_sched_entity_init: called with uninitialized scheduler
+[13995.315080] drm_sched_entity_init: called with uninitialized scheduler
+[14010.016831] drm_sched_entity_init: called with uninitialized scheduler
+[14010.024139] drm_sched_entity_init: called with uninitialized scheduler
+[14019.420708] drm_sched_entity_init: called with uninitialized scheduler
+[14019.428007] drm_sched_entity_init: called with uninitialized scheduler
+[14030.800935] drm_sched_entity_init: called with uninitialized scheduler
+[14030.808250] drm_sched_entity_init: called with uninitialized scheduler
+[14043.118895] drm_sched_entity_init: called with uninitialized scheduler
+[14043.126194] drm_sched_entity_init: called with uninitialized scheduler
+[14068.435930] drm_sched_entity_init: called with uninitialized scheduler
+[14068.443235] drm_sched_entity_init: called with uninitialized scheduler
+[14086.194938] drm_sched_entity_init: called with uninitialized scheduler
+[14086.202247] drm_sched_entity_init: called with uninitialized scheduler
+[14104.746475] drm_sched_entity_init: called with uninitialized scheduler
+[14104.753789] drm_sched_entity_init: called with uninitialized scheduler
+[14115.314088] v3d f1200000.gpu: MMU error from client ? (0x8) at 0x61fc00, pte invalid
+[14115.322770] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x617c00, pte invalid
+[14115.333642] v3d f1200000.gpu: MMU error from client ? (0x8) at 0x618100, pte invalid
+[14115.342214] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x620300, pte invalid
+[14115.351006] v3d f1200000.gpu: MMU error from client ? (0xf) at 0x621700, pte invalid
+[14115.359568] v3d f1200000.gpu: MMU error from client ? (0xb) at 0x620300, pte invalid
+[14120.561397] v3d f1200000.gpu: MMU error from client ? (0xc) at 0xcaf400, pte invalid
+[14120.570102] v3d f1200000.gpu: MMU error from client ? (0xa) at 0xcacf00, pte invalid
+[14125.328510] v3d f1200000.gpu: MMU error from client ? (0xd) at 0xcafb00, pte invalid
+[14125.337227] v3d f1200000.gpu: MMU error from client ? (0xf) at 0xcacf00, pte invalid
+[14125.345847] v3d f1200000.gpu: MMU error from client ? (0xe) at 0xcaf400, pte invalid
+[14125.354428] v3d f1200000.gpu: MMU error from client ? (0xb) at 0xcacf00, pte invalid
+[14136.821080] drm_sched_entity_init: called with uninitialized scheduler
+[14136.828631] drm_sched_entity_init: called with uninitialized scheduler
+[14159.728687] v3d f1200000.gpu: MMU error from client ? (0xd) at 0x582300, pte invalid
+[14159.737607] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x580100, pte invalid
+[14162.034491] drm_sched_entity_init: called with uninitialized scheduler
+[14162.042262] drm_sched_entity_init: called with uninitialized scheduler
+[14169.307849] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x70e000, pte invalid
+[14169.316997] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x6f3000, pte invalid
+[14169.466626] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x70e700, pte invalid
+[14169.475754] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x6f3000, pte invalid
+[14170.793241] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x70e300, pte invalid
+[14170.802379] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x713000, pte invalid
+[14170.932183] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x70e800, pte invalid
+[14170.941309] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x713000, pte invalid
+[14189.539741] drm_sched_entity_init: called with uninitialized scheduler
+[14189.547710] drm_sched_entity_init: called with uninitialized scheduler
+[14227.436634] drm_sched_entity_init: called with uninitialized scheduler
+[14227.444615] drm_sched_entity_init: called with uninitialized scheduler
+[14262.731238] drm_sched_entity_init: called with uninitialized scheduler
+[14262.739206] drm_sched_entity_init: called with uninitialized scheduler
+[14273.067298] drm_sched_entity_init: called with uninitialized scheduler
+[14273.075264] drm_sched_entity_init: called with uninitialized scheduler
+[14291.725773] drm_sched_entity_init: called with uninitialized scheduler
+[14291.733733] drm_sched_entity_init: called with uninitialized scheduler
+[14580.260578] drm_sched_entity_init: called with uninitialized scheduler
+[14580.268542] drm_sched_entity_init: called with uninitialized scheduler
+[14658.411187] drm_sched_entity_init: called with uninitialized scheduler
+[14658.419152] drm_sched_entity_init: called with uninitialized scheduler
+[14693.724867] drm_sched_entity_init: called with uninitialized scheduler
+[14693.732859] drm_sched_entity_init: called with uninitialized scheduler
+[14703.646436] drm_sched_entity_init: called with uninitialized scheduler
+[14703.654415] drm_sched_entity_init: called with uninitialized scheduler
+[14713.999748] drm_sched_entity_init: called with uninitialized scheduler
+[14714.007604] drm_sched_entity_init: called with uninitialized scheduler
+[14724.121480] drm_sched_entity_init: called with uninitialized scheduler
+[14724.129363] drm_sched_entity_init: called with uninitialized scheduler
+[14736.536117] drm_sched_entity_init: called with uninitialized scheduler
+[14736.543970] drm_sched_entity_init: called with uninitialized scheduler
+[14744.481024] drm_sched_entity_init: called with uninitialized scheduler
+[14744.488899] drm_sched_entity_init: called with uninitialized scheduler
+[14758.040161] drm_sched_entity_init: called with uninitialized scheduler
+[14758.047996] drm_sched_entity_init: called with uninitialized scheduler
+[14796.783789] drm_sched_entity_init: called with uninitialized scheduler
+[14796.791651] drm_sched_entity_init: called with uninitialized scheduler
+[14817.724082] drm_sched_entity_init: called with uninitialized scheduler
+[14817.731801] drm_sched_entity_init: called with uninitialized scheduler
+[14852.915809] drm_sched_entity_init: called with uninitialized scheduler
+[14852.923484] drm_sched_entity_init: called with uninitialized scheduler
+[14895.807717] drm_sched_entity_init: called with uninitialized scheduler
+[14895.815255] drm_sched_entity_init: called with uninitialized scheduler
+[14918.999796] drm_sched_entity_init: called with uninitialized scheduler
+[14919.007246] drm_sched_entity_init: called with uninitialized scheduler
+[14928.754539] drm_sched_entity_init: called with uninitialized scheduler
+[14928.761976] drm_sched_entity_init: called with uninitialized scheduler
+[14931.810096] drm_sched_entity_init: called with uninitialized scheduler
+[14931.817523] drm_sched_entity_init: called with uninitialized scheduler
+[14942.768455] drm_sched_entity_init: called with uninitialized scheduler
+[14942.775876] drm_sched_entity_init: called with uninitialized scheduler
+[14967.344644] drm_sched_entity_init: called with uninitialized scheduler
+[14967.351977] drm_sched_entity_init: called with uninitialized scheduler

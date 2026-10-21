@@ -1,0 +1,59 @@
+#!/bin/sh
+# kstb-mesa - install and switch our Mesa builds (linux/mesa: make -C linux/mesa).
+# Each build lives in /opt/mesa/<id>; /opt/mesa/current points at the one in
+# use (Mesa is built with prefix /opt/mesa/current, so it finds its drivers
+# there). Nothing outside /opt/mesa is touched.
+#   kstb-mesa install [file|server]  install a build: a local mesa-*.tar, or
+#                                    linux-mesa.tar from the PC's TFTP root
+#                                    (default 192.168.1.38); not made current
+#   kstb-mesa use <id>               make <id> current
+#   kstb-mesa list                   builds, * = current
+#   kstb-mesa env [id]               shell exports to run a build (default current)
+#   kstb-mesa remove <id>            delete a build (not the current one)
+set -e
+M=/opt/mesa
+cur=$(readlink $M/current 2>/dev/null || true)
+
+case "$1" in
+install)
+	src=${2:-192.168.1.38}
+	if [ -f "$src" ]; then tar=$src; else
+		tar=/tmp/linux-mesa.tar
+		busybox-extras tftp -g -r linux-mesa.tar -l $tar "$src"
+	fi
+	id=$(tar xOf "$tar" ./BUILD-ID | sed -n 's/^id //p')
+	[ -n "$id" ] || { echo "kstb-mesa: no BUILD-ID in $tar"; exit 1; }
+	[ ! -e "$M/$id" ] || { echo "kstb-mesa: $id is already installed"; exit 1; }
+	mkdir -p "$M/$id.part"
+	tar xf "$tar" -C "$M/$id.part"
+	mv "$M/$id.part" "$M/$id"
+	[ "$tar" != /tmp/linux-mesa.tar ] || rm "$tar"
+	echo "installed $id ($(grep v3d_dri "$M/$id/BUILD-ID" | cut -c1-16)...)"
+	;;
+use)
+	[ -d "$M/$2" ] || { echo "kstb-mesa: no build $2"; exit 1; }
+	ln -sfn "$2" $M/current.new && mv -T $M/current.new $M/current
+	echo "current: $2 (was ${cur:-none})"
+	;;
+list)
+	for d in $M/*/; do
+		id=$(basename "$d"); [ "$id" = current ] && continue
+		[ "$id" = "$cur" ] && mark='*' || mark=' '
+		echo "$mark $id  $(sed -n 's/^built //p' "$d/BUILD-ID")  $(grep -c '^patch' "$d/BUILD-ID") patches"
+	done
+	;;
+env)
+	id=${2:-$cur}
+	[ -d "$M/$id" ] || { echo "kstb-mesa: no build ${id:-current}" >&2; exit 1; }
+	echo "export LD_LIBRARY_PATH=$M/$id/lib LIBGL_DRIVERS_PATH=$M/$id/lib/dri"
+	;;
+remove)
+	[ -n "$2" ] && [ -d "$M/$2" ] || { echo "kstb-mesa: no build $2"; exit 1; }
+	[ "$2" != "$cur" ] || { echo "kstb-mesa: $2 is current"; exit 1; }
+	rm -rf "${M:?}/$2"
+	echo "removed $2"
+	;;
+*)
+	sed -n '2,13s/^# \{0,1\}//p' "$0"; exit 1
+	;;
+esac

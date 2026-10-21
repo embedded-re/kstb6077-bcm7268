@@ -1,6 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 11:58:15 +0200
+Subject: [PATCH 11/13] v3d: keep 256 bytes free at the end of every CL BO
+ before 4.1
+
+The CLE reads past the last packet: a branch near a page end made it read
+the unmapped next page (MMU error, client 0x20). The closed driver
+reserves 256 bytes after the branch of each control list block.
+---
+ src/gallium/drivers/v3d/v3d_cl.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_cl.c b/src/gallium/drivers/v3d/v3d_cl.c
+index c03927e..7112af5 100644
 --- a/src/gallium/drivers/v3d/v3d_cl.c
 +++ b/src/gallium/drivers/v3d/v3d_cl.c
-@@ -41,18 +41,31 @@
+@@ -41,18 +41,31 @@ v3d_init_cl(struct v3d_job *job, struct v3d_cl *cl)
          cl->job = job;
  }
  
@@ -34,7 +49,7 @@
          cl->base = v3d_bo_map(cl->bo);
          cl->size = cl->bo->size;
          cl->next = cl->base;
-@@ -63,11 +76,15 @@
+@@ -63,11 +76,15 @@ v3d_cl_ensure_space(struct v3d_cl *cl, uint32_t space, uint32_t alignment)
  void
  v3d_cl_ensure_space_with_branch(struct v3d_cl *cl, uint32_t space)
  {

@@ -1,0 +1,22 @@
+[binaries]
+c = ['clang', '--target=aarch64-alpine-linux-musl', '--sysroot=@SYSROOT@']
+cpp = ['clang++', '--target=aarch64-alpine-linux-musl', '--sysroot=@SYSROOT@']
+c_ld = 'lld'
+cpp_ld = 'lld'
+ar = 'llvm-ar'
+strip = 'llvm-strip'
+pkg-config = 'pkg-config'
+
+[properties]
+sys_root = '@SYSROOT@'
+pkg_config_libdir = '@SYSROOT@/usr/lib/pkgconfig:@SYSROOT@/usr/share/pkgconfig'
+
+[host_machine]
+system = 'linux'
+cpu_family = 'aarch64'
+cpu = 'cortex-a53'
+endian = 'little'
+
+[built-in options]
+c_link_args = ['-Wl,--undefined-version']
+cpp_link_args = ['-Wl,--undefined-version']
