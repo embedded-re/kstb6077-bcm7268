@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """kstb-gpu-run - one dEQP run on the box, with everything needed to judge it.
 
-    kstb-gpu-run [--mesa ID] [--name NAME] [--dir DIR] MODULE [kstb-deqp args]
+    kstb-gpu-run [--mesa ID] [--dri DIR] [--name NAME] [--dir DIR] MODULE [kstb-deqp args]
     kstb-gpu-run --summary DIR
 
 MODULE is gles2, gles3 or egl; the rest goes to kstb-deqp (--cases FILE,
 --filter PREFIX, --chunk N, ...). The Mesa build is one from kstb-mesa
-(default: current). Each run gets a directory, by default
+(default: current); --dri DIR takes v3d_dri.so from a scratch directory
+instead, on top of that build's libraries (meta.txt records its hash). Each
+run gets a directory, by default
 /root/gpu-runs/<date>-<time>-<module>[-NAME], holding:
     meta.txt      kernel, boot id, Mesa build id and v3d_dri.so hash, dEQP
                   binary hashes, environment, start and end uptime
@@ -108,6 +110,7 @@ def summarize(d):
 def main():
     ap = argparse.ArgumentParser(usage=__doc__)
     ap.add_argument("--mesa", help="kstb-mesa build id (default current)")
+    ap.add_argument("--dri", help="scratch directory with v3d_dri.so (overrides the build's)")
     ap.add_argument("--name", default="")
     ap.add_argument("--dir", help="run directory (resumes it if it exists)")
     ap.add_argument("--summary", metavar="DIR")
@@ -128,6 +131,8 @@ def main():
         env[k] = v
     mesa_dir = os.path.dirname(env["LIBGL_DRIVERS_PATH"].rstrip("/"))   # .../<id>/lib
     mesa_dir = os.path.dirname(mesa_dir)
+    if a.dri:
+        env["LIBGL_DRIVERS_PATH"] = os.path.abspath(a.dri)
     env.update(DEQP_EGL_PLATFORM="drm", DEQP_SURFACE_TYPE="window")
 
     d = a.dir or os.path.join(RUNS, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -146,6 +151,9 @@ def main():
         m.write(f"start {uptime} {datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")}\n")
         m.write(f"kernel {sh('uname -rv')}\nboot {sh('cat /proc/sys/kernel/random/boot_id')}\n")
         m.write(f"mesa {mesa_dir}\n{build}\n{hashes}\n")
+        if a.dri:
+            dri = os.path.join(env["LIBGL_DRIVERS_PATH"], "v3d_dri.so")
+            m.write(f"dri {sh(f'sha256sum {dri}')}\n")
         m.write(f"args {' '.join(rest)}\n")
         for k in ("LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "DEQP_EGL_PLATFORM", "DEQP_SURFACE_TYPE"):
             m.write(f"{k}={env[k]}\n")

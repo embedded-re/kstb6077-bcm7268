@@ -63,10 +63,13 @@ Programs reach a build through `LD_LIBRARY_PATH`/`LIBGL_DRIVERS_PATH`
 ## Testing
 
 ```
-make -C linux/gpu-test install         # C tests (cross-built) and scripts -> /opt/gpu-test
+make -C linux/gpu-test install         # C tests (cross-built), scripts, cases/ -> /opt/gpu-test
 # on the box:
-/opt/gpu-test/kstb-gpu-run [--mesa <id>] [--name x] gles2|gles3|egl [--cases FILE]
+/opt/gpu-test/kstb-gpu-run [--mesa <id>] [--dri DIR] [--name x] gles2|gles3|egl [--cases FILE]
 ```
+
+`--dri DIR` runs a scratch `v3d_dri.so` (the quick experiment below) on
+top of the build's libraries; `meta.txt` records its hash.
 
 `kstb-gpu-run` runs dEQP (GBM window 256×256, `rgba8888d24s8ms0`) on one
 Mesa build in its own directory, with the watchdog on, and records the
@@ -115,36 +118,31 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 
 ## Where it stands
 
-Build `23.3.6-88b9f694` (`v3d_dri.so` `a1aa9cd4…`, all 13 patches) on
-kernel `#28` from `KRN` (patches 0001–0004), 2026-10-21, with
-`kstb-gpu-run` (results, kernel log and summary in
-[`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs)):
+Build `23.3.6-efbb2e70` (`v3d_dri.so` `12c6dedb…`, all 14 patches,
+`/opt/mesa/current` since 2026-10-21) on kernel `#28` from `KRN` (patches
+0001–0004), 2026-10-21, with `kstb-gpu-run` (results, kernel log and
+summary in [`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs),
+`20261021-*-efbb-*`):
 
 | Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
 | EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 | 0 / 0 |
-| GLES3, all 44,768 | 43,758 | 580 | 83 | 340 | 7 | 22 / 0 |
-| the three focused lists | 1,145 | | | 0 | 0 | 0 / 0 |
+| GLES3, all 44,768 | 43,771 | 580 | 83 | 324 | 10 | 6 / 0 |
+| the four focused lists | 1,157 | | | 0 | 0 | 0 / 0 |
 
-Against the same series built the old way (`6e5707b2…`), case by case,
-only `texture.shadow` moved, where the SIGSEGVs land on different cases
-every run (11 cases between Fail, Crash and Pass). GLES2 and EGL have no
-MMU error and no reset; GLES3's 22 MMU errors are all in the `fbo` cases
-below.
-
-Build `23.3.6-efbb2e70` (0001–0014, `v3d_dri.so` `12c6dedb…`) is installed
-but not `current`. On the GLES3 `fbo` group (2,075 cases), against
-`88b9f694` on the same boot: 1,985 Pass / 28 Fail / 8 MMU errors (was
-1,973 / 40 / 14); the 12 changed cases (`gles3-32bit-max-lod.txt`) all go
-Fail → Pass, nothing else changes. Full GLES2/GLES3/EGL runs on it are
-still to do.
+Against the previous build `88b9f694` (13 patches), case by case: GLES2
+and EGL identical; in GLES3 the 12 cases of `gles3-32bit-max-lod.txt` go
+Fail → Pass, and 15 `texture.shadow` cases move between Fail, Crash and
+Pass (the SIGSEGVs land on different cases every run); nothing else
+changes. GLES3's 6 MMU errors (was 22) are all in
+`fbo.msaa.2_samples.depth32f_stencil8` and
+`fbo.invalidate.whole.unbind_blit_msaa_{color,depth}`, which fail.
 
 ## Open
 
 - `fbo.msaa` depth/stencil formats and `fbo.invalidate.*blit_msaa*`: MMU
-  errors (texture clients), the cases fail (with 0014 the 32f `fbo.color`
-  faults are gone).
+  errors (texture clients, 6 in the last full run), the cases fail.
 - Single-sample D24S8 on 3.3 keeps its stencil in the low byte of the
   Z resource: the separate S8 from 0006 is never written by the GPU there
   (a stencil blit through the Z resource's low byte makes

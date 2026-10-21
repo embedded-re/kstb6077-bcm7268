@@ -2,8 +2,8 @@
 #   make          -> ../build/gpu-test/: the C tests, cross-built against the
 #                    Mesa build from ../mesa (make -C ../mesa first); they find
 #                    /opt/mesa/current/lib by rpath (kstb-mesa env overrides it)
-#   make install  -> copies the tests and the scripts to /opt/gpu-test on the
-#                    box (ssh $(BOARD))
+#   make install  -> copies the tests, the scripts and cases/ to /opt/gpu-test
+#                    on the box (ssh $(BOARD))
 # On the box: kstb-gpu-run runs dEQP (/opt/deqp) on a Mesa build and keeps
 # results, kernel log and a summary together; see its header.
 
@@ -18,6 +18,7 @@ LDFLAGS = -L$(MESA)/lib -Wl,-rpath,/opt/mesa/current/lib
 
 TESTS   = $(patsubst %.c,%,$(wildcard kstb-*.c))
 SCRIPTS = kstb-gpu-run kstb-deqp kstb-v3d-gl v3dpack.py
+CASES   = $(wildcard cases/*.txt)
 
 all: $(addprefix $(OUT)/,$(TESTS))
 
@@ -33,8 +34,9 @@ $(OUT)/%: %.c $(MESA)/include/EGL/egl.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lEGL -lGLESv2 -lgbm
 
 install: all
-	ssh $(BOARD) 'mkdir -p /opt/gpu-test'
+	ssh $(BOARD) 'mkdir -p /opt/gpu-test/cases'
 	scp -q $(addprefix $(OUT)/,$(TESTS)) $(SCRIPTS) $(BOARD):/opt/gpu-test/
-	@echo "/opt/gpu-test: $(words $(TESTS)) tests, $(words $(SCRIPTS)) scripts"
+	scp -q $(CASES) $(BOARD):/opt/gpu-test/cases/
+	@echo "/opt/gpu-test: $(words $(TESTS)) tests, $(words $(SCRIPTS)) scripts, $(words $(CASES)) case lists"
 
 .PHONY: all install
