@@ -1,0 +1,139 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Wed, 21 Oct 2026 20:13:46 +0200
+Subject: [PATCH 15/15] v3d: one D24S8 buffer on 3.3, MSAA Z/S through the Z/S
+ config
+
+The Z/S config with output format depth24_stencil8 keeps D24S8's stencil
+in the low byte of the Z buffer, and the hardware never touches the
+separate stencil buffer then, so the separate S8 from
+U_TRANSFER_HELPER_SEPARATE_STENCIL was never written by rendering.
+Drop it: D24S8 is one buffer (separate S8 stays for Z32F_S8), as in
+Broadcom's own driver.
+
+MSAA Z/S used raw general loads/stores, one for Z and one for S, whose
+layout the sampler can't read: MSAA views were set up with the colour
+internal type of the Z/S output format (RGBA16F for D24S8, RGBA8 for
+D32F), and cpp was multiplied by the sample count on top of the 2x2
+layout. Store and load MSAA Z/S through the Z/S config instead, with
+decimate mode all samples, one sample per texel, and sample it with
+its normal texture format.
+---
+ src/gallium/drivers/v3d/v3d_resource.c | 14 ++++++--------
+ src/gallium/drivers/v3d/v3dx_rcl.c     | 15 ++++++++++-----
+ src/gallium/drivers/v3d/v3dx_state.c   | 15 ++++++---------
+ 3 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3d_resource.c b/src/gallium/drivers/v3d/v3d_resource.c
+index fc3f00b..fab9f75 100644
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -768,9 +768,10 @@ v3d_resource_setup(struct pipe_screen *pscreen,
+         if (prsc->nr_samples <= 1 ||
+             devinfo->ver >= 40 ||
+             util_format_is_depth_or_stencil(prsc->format)) {
++                /* MSAA Z/S on 3.x is stored one sample per texel, like
++                 * colour: 2x2 samples per pixel at twice the size.
++                 */
+                 rsc->cpp = util_format_get_blocksize(prsc->format);
+-                if (devinfo->ver < 40 && prsc->nr_samples > 1)
+-                        rsc->cpp *= prsc->nr_samples;
+         } else {
+                 assert(v3d_rt_format_supported(devinfo, prsc->format));
+                 uint32_t output_image_format =
+@@ -1227,12 +1228,9 @@ v3d_resource_screen_init(struct pipe_screen *pscreen)
+         pscreen->resource_get_handle = v3d_resource_get_handle;
+         pscreen->resource_get_param = v3d_resource_get_param;
+         pscreen->resource_destroy = u_transfer_helper_resource_destroy;
+-        struct v3d_screen *screen = v3d_screen(pscreen);
+-        unsigned flags = U_TRANSFER_HELPER_SEPARATE_Z32S8 |
+-                         U_TRANSFER_HELPER_MSAA_MAP;
+-        if (screen->devinfo.ver < 40)
+-                flags |= U_TRANSFER_HELPER_SEPARATE_STENCIL;
+-        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl, flags);
++        pscreen->transfer_helper = u_transfer_helper_create(&transfer_vtbl,
++                                                            U_TRANSFER_HELPER_SEPARATE_Z32S8 |
++                                                            U_TRANSFER_HELPER_MSAA_MAP);
+ }
+ 
+ void
+diff --git a/src/gallium/drivers/v3d/v3dx_rcl.c b/src/gallium/drivers/v3d/v3dx_rcl.c
+index 0c7590d..343353e 100644
+--- a/src/gallium/drivers/v3d/v3dx_rcl.c
++++ b/src/gallium/drivers/v3d/v3dx_rcl.c
+@@ -255,9 +255,10 @@ v3d_rcl_emit_loads(struct v3d_job *job, struct v3d_cl *cl, int layer)
+                              bit, &loads_pending);
+         }
+ 
+-        if ((loads_pending & PIPE_CLEAR_DEPTHSTENCIL) &&
+-            (V3D_VERSION >= 40 ||
+-             (job->zsbuf && job->zsbuf->texture->nr_samples > 1))) {
++        /* On 3.x, Z/S (MSAA too) is loaded by the RELOAD packet through
++         * the Z/S config.
++         */
++        if ((loads_pending & PIPE_CLEAR_DEPTHSTENCIL) && V3D_VERSION >= 40) {
+                 assert(!job->early_zs_clear);
+                 struct pipe_surface *src = job->bbuf ? job->bbuf : job->zsbuf;
+                 struct v3d_resource *rsc = v3d_resource(src->texture);
+@@ -339,7 +340,9 @@ v3d_rcl_emit_stores(struct v3d_job *job, struct v3d_cl *cl, int layer)
+          * pixel is a 2x2 quad, and the format will be that of the
+          * internal_type/internal_bpp, rather than the format from GL's
+          * perspective.  Non-MSAA surfaces will use
+-         * STORE_MULTI_SAMPLE_RESOLVED_TILE_COLOR_BUFFER_EXTENDED.
++         * STORE_MULTI_SAMPLE_RESOLVED_TILE_COLOR_BUFFER_EXTENDED.  So does
++         * Z/S, MSAA too: its config stores all samples (decimate mode), in
++         * its own format, which keeps D24S8's stencil in the low byte.
+          */
+         assert(!job->bbuf || job->nr_cbufs <= 1);
+         for (int i = 0; i < job->nr_cbufs; i++) {
+@@ -358,7 +361,7 @@ v3d_rcl_emit_stores(struct v3d_job *job, struct v3d_cl *cl, int layer)
+         }
+ 
+         if (job->store & PIPE_CLEAR_DEPTHSTENCIL && job->zsbuf &&
+-            !(V3D_VERSION < 40 && job->zsbuf->texture->nr_samples <= 1)) {
++            V3D_VERSION >= 40) {
+                 assert(!job->early_zs_clear);
+                 struct v3d_resource *rsc = v3d_resource(job->zsbuf->texture);
+                 if (rsc->separate_stencil) {
+@@ -617,6 +620,8 @@ v3d_emit_z_stencil_config(struct v3d_job *job, struct v3d_surface *surf,
+ 
+                 zs.padded_height_of_output_image_in_uif_blocks =
+                         surf->padded_height_of_output_image_in_uif_blocks;
++                if (rsc->base.nr_samples > 1)
++                        zs.decimate_mode = V3D_DECIMATE_MODE_ALL_SAMPLES;
+ 
+                 assert(surf->tiling != V3D_TILING_RASTER);
+                 zs.memory_format = surf->tiling;
+diff --git a/src/gallium/drivers/v3d/v3dx_state.c b/src/gallium/drivers/v3d/v3dx_state.c
+index 6a72812..9c3b01e 100644
+--- a/src/gallium/drivers/v3d/v3dx_state.c
++++ b/src/gallium/drivers/v3d/v3dx_state.c
+@@ -1039,22 +1039,19 @@ v3dX(create_texture_shader_state_bo)(struct v3d_context *v3d,
+                 tex.swizzle_a = v3d_translate_pipe_swizzle(so->swizzle[3]);
+ #endif
+ 
+-                if (prsc->nr_samples > 1 && V3D_VERSION < 40) {
++                if (prsc->nr_samples > 1 && V3D_VERSION < 40 &&
++                    !util_format_is_depth_or_stencil(prsc->format)) {
+                         /* Using texture views to reinterpret formats on our
+                          * MSAA textures won't work, because we don't lay out
+                          * the bits in memory as it's expected -- for example,
+                          * RGBA8 and RGB10_A2 are compatible in the
+                          * ARB_texture_view spec, but in HW we lay them out as
+                          * 32bpp RGBA8 and 64bpp RGBA16F.  Just assert for now
+-                         * to catch failures.
+-                         *
+-                         * We explicitly allow remapping S8Z24 to RGBA8888 for
+-                         * v3d_blit.c's stencil blits.
++                         * to catch failures.  MSAA Z/S is stored in its own
++                         * format and sampled with the normal texture format.
+                          */
+-                        assert((util_format_linear(cso->format) ==
+-                                util_format_linear(prsc->format)) ||
+-                               (prsc->format == PIPE_FORMAT_S8_UINT_Z24_UNORM &&
+-                                cso->format == PIPE_FORMAT_R8G8B8A8_UNORM));
++                        assert(util_format_linear(cso->format) ==
++                               util_format_linear(prsc->format));
+                         uint32_t output_image_format =
+                                 v3d_get_rt_format(&screen->devinfo, cso->format);
+                         uint32_t internal_type;

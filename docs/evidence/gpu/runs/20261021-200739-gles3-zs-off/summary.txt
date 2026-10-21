@@ -1,0 +1,12 @@
+2306 cases: Pass 2158, NotSupported 94, Fail 53, Crash 1
+kernel: 10 MMU errors, 0 GPU resets, 0 oops
+  mmu ? (0x8) @ 0x7aa400                   dEQP-GLES3.functional.fbo.msaa.2_samples.depth32f_stencil8 Fail
+  mmu ? (0x1) @ 0x7dd900                   dEQP-GLES3.functional.fbo.msaa.2_samples.depth32f_stencil8 Fail
+  mmu ? (0xa) @ 0x7aa900                   dEQP-GLES3.functional.fbo.msaa.2_samples.depth24_stencil8 Fail
+  mmu ? (0x1) @ 0x7dd900                   dEQP-GLES3.functional.fbo.msaa.2_samples.depth24_stencil8 Fail
+  mmu ? (0xa) @ 0x7aa800                   dEQP-GLES3.functional.fbo.msaa.2_samples.stencil_index8 Fail
+  mmu ? (0x1) @ 0x7dd900                   dEQP-GLES3.functional.fbo.msaa.2_samples.stencil_index8 Fail
+  mmu ? (0xc) @ 0x505500                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_color Fail
+  mmu ? (0xb) @ 0x4ea000                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_color Fail
+  mmu ? (0xa) @ 0x511700                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_depth Fail
+  mmu ? (0xe) @ 0x4ea000                   dEQP-GLES3.functional.fbo.invalidate.whole.unbind_blit_msaa_depth Fail

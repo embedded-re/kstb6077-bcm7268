@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 11:58:15 +0200
-Subject: [PATCH 12/14] v3d: always write four TLB colour components before 4.1
+Subject: [PATCH 12/15] v3d: always write four TLB colour components before 4.1
 
 A colour write of fewer than four components hung the GPU for rgba16i,
 rgba16ui, rgb10_a2ui, rgba16f, r16f and rgb10_a2 targets. Write four,

@@ -1,0 +1,23 @@
+[40432.089998] kstb-gpu-run sync 40431.928110
+[40432.423550] drm_sched_entity_init: called with uninitialized scheduler
+[40432.431907] drm_sched_entity_init: called with uninitialized scheduler
+[40436.184424] drm_sched_entity_init: called with uninitialized scheduler
+[40436.192623] drm_sched_entity_init: called with uninitialized scheduler
+[40449.241338] drm_sched_entity_init: called with uninitialized scheduler
+[40449.249566] drm_sched_entity_init: called with uninitialized scheduler
+[40475.068602] drm_sched_entity_init: called with uninitialized scheduler
+[40475.076807] drm_sched_entity_init: called with uninitialized scheduler
+[40504.434420] drm_sched_entity_init: called with uninitialized scheduler
+[40504.442610] drm_sched_entity_init: called with uninitialized scheduler
+[40525.565666] v3d f1200000.gpu: MMU error from client ? (0x8) at 0x7aa400, pte invalid
+[40525.575237] v3d f1200000.gpu: MMU error from client ? (0x1) at 0x7dd900, pte invalid
+[40525.834102] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x7aa900, pte invalid
+[40525.843680] v3d f1200000.gpu: MMU error from client ? (0x1) at 0x7dd900, pte invalid
+[40526.132248] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x7aa800, pte invalid
+[40526.141829] v3d f1200000.gpu: MMU error from client ? (0x1) at 0x7dd900, pte invalid
+[40531.197522] drm_sched_entity_init: called with uninitialized scheduler
+[40531.205937] drm_sched_entity_init: called with uninitialized scheduler
+[40531.416979] v3d f1200000.gpu: MMU error from client ? (0xc) at 0x505500, pte invalid
+[40531.426713] v3d f1200000.gpu: MMU error from client ? (0xb) at 0x4ea000, pte invalid
+[40531.579388] v3d f1200000.gpu: MMU error from client ? (0xa) at 0x511700, pte invalid
+[40531.589060] v3d f1200000.gpu: MMU error from client ? (0xe) at 0x4ea000, pte invalid
