@@ -169,5 +169,9 @@ patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
 
 - TFU jobs get no MMU flush (untested).
 - Threaded shader scratch spilling still hangs; 0001 falls back to one
-  thread.
+  thread. An SSBO store in a 4-thread fragment shader hangs the same way
+  ([`gpu-compute.md`](gpu-compute.md)).
+- TMU writes reach memory only when a later job starts, and the last 256
+  bytes can land after their buffer is freed: no cache clean after the job
+  on 3.3 ([`gpu-compute.md`](gpu-compute.md)).
 - The system default (`/usr/local`) is still the older build.
