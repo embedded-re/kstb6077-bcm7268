@@ -83,9 +83,15 @@ Focused lists in [`gpu-test/cases/`](gpu-test/cases), one per fixed fault:
 `gles2-cl-prefetch-seq200.txt`, `gles2-mmu-flush.txt`, `gles3-tlb-vec4.txt`,
 `gles3-32bit-max-lod.txt`, `gles3-d24s8-msaa-zs.txt`, `gles3-shadow-32bit.txt`,
 `gles3-sample-coverage.txt`, `gles3-fbo-msaa.txt`,
-`gles3-texture-units-spill.txt`, `gles3-ubo-vec-align.txt`. `kstb-layer-test cube|array|3d f|ui [size]
+`gles3-texture-units-spill.txt`, `gles3-ubo-vec-align.txt`,
+`gles3-mipmap-cube.txt`. `kstb-layer-test cube|array|3d f|ui [size]
 [interleave] [srctex]` renders into every face/layer of an RGBA32F or
 RGBA32UI texture and checks each texel by readback and by sampling.
+`kstb-cube-seam-test linear|lmn|lml|nmn|nearest [max_level] [lod]` samples
+a cube face near its edge with `textureLod` and prints how much of the
+neighbouring face each lookup blends in next to the seamless value;
+`... max_level quad W H` draws the face with `texture()` and a NEAREST mag
+filter, as dEQP `texture.mipmap.cube` does.
 Full runs take about 1 h (GLES3, 44,768 cases), 13 min (GLES2) and 3 min
 (EGL).
 
@@ -124,37 +130,43 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0019 | no 4× MSAA for R32F/RG32F/RGB32F/RGBA32F (Broadcom's driver gives these 0 samples; the resolve came out near zero): 3 `fbo.msaa.4_samples` cases NotSupported, `gles3-fbo-msaa.txt` |
 | 0020 | register allocation on 3.3 keeps spill candidates for the 1-thread retry (the 2-thread round cleared them, so big shaders failed to compile with any strategy and the draw was skipped): 3 `texture.units.all_units.only_cube` cases (24 cube lookups), `gles3-texture-units-spill.txt` |
 | 0021 | vector TMU loads on 3.3 only at the vector's alignment (8 bytes vec2, 16 vec3/vec4); the vectorizer's vec2/vec3 loads at 4-byte offsets read wrong data: 6 `ubo.random.scalar_types` cases, `gles3-ubo-vec-align.txt` |
+| 0022 | a sampler view of one level samples without a mip filter: `GL_TEXTURE_MAX_LEVEL` is the max LOD clamp on 3.3, at the base level that clamp is 0 and the TMU then used the magnification filter for minified lookups (a face edge without the neighbouring face): `texture.mipmap.cube.max_level.linear_nearest`, `gles3-mipmap-cube.txt` |
 
 ## Where it stands
 
-Build `23.3.6-518c06f4` (`v3d_dri.so` `6c11029e…`, patches 0001–0021,
+Build `23.3.6-848c0204` (`v3d_dri.so` `f65f014d…`, patches 0001–0022,
 `/opt/mesa/current` since 2026-10-22) on kernel `#28` from `KRN` (patches
 0001–0004), 2026-10-22, with `kstb-gpu-run` (results, kernel log and
 summary in [`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs),
-`20261022-1[678]*-518c-*`):
+`20261022-1[89]*-848c-*`):
 
 | Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
 | EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 | 0 / 0 |
-| GLES3, all 44,768 | 43,907 | 583 | 277 | 1 | 0 | 0 / 0 |
-| the ten focused lists | 1,570 | 29 | 118 | 0 | 0 | 0 / 0 |
+| GLES3, all 44,768 | 43,908 | 583 | 277 | 0 | 0 | 0 / 0 |
+| the eleven focused lists | 1,610 | 29 | 118 | 0 | 0 | 0 / 0 |
 
-Against `60757ba5` (17 patches), case by case: GLES2 and EGL identical;
-in GLES3 exactly 18 cases change, all from Fail: 15 to Pass (the 6 sample
-coverage, 3 `texture.units` cube and 6 `ubo.random` cases) and the 3
-`fbo.msaa.4_samples.*32f` to NotSupported. Each patch was also run on and
-off on one build (scratch driver, `*-cov-*`, `*-ms32f-*`, `*-ra-*`,
-`*-ubo-*`): its own group changed only in those cases (`multisample` 64,
-`fbo.msaa` 70, `texture.units` + `texture.mipmap.cube` 240, `ubo` 2,357
-cases), 0 MMU errors and 0 resets either way.
+No GLES2, GLES3 or EGL case fails. Against `518c06f4` (21 patches), case
+by case: GLES2 and EGL identical, in GLES3 only
+`texture.mipmap.cube.max_level.linear_nearest` changes (Fail → Pass).
+0022 on and off on one build (`*-lvl-*`): of all 5,895 GLES3 and 807
+GLES2 `texture.*` cases only that one changes, 0 MMU errors and 0 resets
+either way. `kstb-cube-seam-test lmn 0 quad 17 128` (LINEAR_MIPMAP_NEAREST,
+`MAX_LEVEL` 0): R 20 on both edge rows without 0022 (no part of the
+neighbouring face), 40 and 50 with it, the same as plain LINEAR; with
+`textureLod` the TMU blended the edge texels exactly as seamless filtering
+should in every filter mode tried, before and after.
 
-Before, `60757ba5`: GLES3 43,892 Pass, 19 Fail, 0 MMU errors.
+Before, `518c06f4` (0001–0021): GLES3 43,907 Pass, 1 Fail, 0 MMU errors.
+0018–0021 against `60757ba5`, case by case: exactly 18 GLES3 cases change,
+all from Fail: 15 to Pass (6 sample coverage, 3 `texture.units` cube, 6
+`ubo.random`) and the 3 `fbo.msaa.4_samples.*32f` to NotSupported; each
+patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
+`*-ra-*`, `*-ubo-*`) and changed only its own cases, 0 MMU errors.
 
 ## Open
 
-- GLES3's last failure: `texture.mipmap.cube.max_level.linear_nearest`
-  (17 pixels on a face edge get no part of the neighbouring face).
 - TFU jobs get no MMU flush (untested).
 - Threaded shader scratch spilling still hangs; 0001 falls back to one
   thread.

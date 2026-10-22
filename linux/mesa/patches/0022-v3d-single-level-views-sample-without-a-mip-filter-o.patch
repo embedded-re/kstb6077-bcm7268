@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 18:35:14 +0200
+Subject: [PATCH 22/22] v3d: single-level views sample without a mip filter on
+ 3.3
+
+3.3 has no max level field, so GL_TEXTURE_MAX_LEVEL is the TMU's max
+LOD clamp. With MAX_LEVEL at the base level that clamp is 0, and the
+TMU then picks the magnification filter for minified lookups too: with
+LINEAR_MIPMAP_NEAREST and a NEAREST mag filter a face edge got no part
+of the neighbouring face (GLES3 texture.mipmap.cube.max_level.
+linear_nearest; kstb-cube-seam-test lmn 0 quad 17 128: R 20 on both
+edge rows, plain LINEAR 40 and 50). A view of one level samples the
+same without a mip filter, which keeps the max LOD open; do that.
+---
+ src/gallium/drivers/v3d/v3dx_emit.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index ed57b4a..54783df 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -132,6 +132,15 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+ 
+         uint32_t return_size = v3d_get_tex_return_size(devinfo, psview->format);
+ 
++        /* A view of one level samples the same with or without a mip
++         * filter.  Without one the max LOD stays open: with GL_TEXTURE_MAX_LEVEL
++         * at the base level the LOD clamp was 0, and the TMU then used the
++         * magnification filter for minified lookups.
++         */
++        int min_mip_filter =
++                psview->u.tex.last_level == psview->u.tex.first_level ?
++                PIPE_TEX_MIPFILTER_NONE : psampler->min_mip_filter;
++
+         struct V3D33_TEXTURE_SHADER_STATE unpacked = {
+                 /* XXX */
+                 .border_color_red = swizzled_border_color(devinfo, psampler,
+@@ -166,7 +175,7 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+                 .max_level_of_detail = MIN2(psview->u.tex.first_level +
+                                             MAX2(psampler->max_lod,
+                                                  psampler->min_lod),
+-                                            psampler->min_mip_filter != PIPE_TEX_MIPFILTER_NONE ?
++                                            min_mip_filter != PIPE_TEX_MIPFILTER_NONE ?
+                                             psview->u.tex.last_level :
+                                             return_size == 32 ?
+                                             psview->u.tex.first_level : 15),
+@@ -197,7 +206,6 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+         }
+ 
+         int min_img_filter = psampler->min_img_filter;
+-        int min_mip_filter = psampler->min_mip_filter;
+         int mag_img_filter = psampler->mag_img_filter;
+ 
+         if (return_size == 32) {

@@ -1,0 +1,2 @@
+44768 cases: Pass 43908, NotSupported 583, QualityWarning 277
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

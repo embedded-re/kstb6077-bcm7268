@@ -1,0 +1,2 @@
+5895 cases: Pass 5560, QualityWarning 270, NotSupported 64, Fail 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
