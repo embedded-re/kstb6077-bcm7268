@@ -35,11 +35,15 @@ $(KOUT)/.config: kstb.config
 	mkdir -p $(KOUT)
 	$(KMAKE) alldefconfig KCONFIG_ALLCONFIG=$(CURDIR)/kstb.config
 
-# each patch once: one that already reverse-applies is skipped
+# each patch once: the stamp lists the applied ones (a later patch can change
+# an earlier one's lines, so that one no longer reverse-applies); one not
+# listed that reverse-applies is only added to the list
 $(SRC)/.kstb-patched: $(wildcard patches/*.patch)
-	for p in $(sort $^); do \
-		if patch -d $(SRC) -p1 -R -s -f --dry-run < $$p > /dev/null; then echo "already applied: $$p"; \
-		else patch -d $(SRC) -p1 -N -s < $$p || exit 1; echo "applied: $$p"; fi; \
+	touch $@
+	for p in $(sort $^); do n=$$(basename $$p); \
+		if grep -qxF "$$n" $@; then :; \
+		elif patch -d $(SRC) -p1 -R -s -f --dry-run < $$p > /dev/null; then echo "already applied: $$p"; echo "$$n" >> $@; \
+		else patch -d $(SRC) -p1 -N -s < $$p || exit 1; echo "applied: $$p"; echo "$$n" >> $@; fi; \
 	done
 	touch $@
 

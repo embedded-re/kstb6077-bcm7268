@@ -11,7 +11,7 @@ history of how each piece was found is in [`README.md`](README.md) "GPU".
 
 | What | In the repo | On the box |
 | --- | --- | --- |
-| Kernel patches (`v3d`) | [`patches/`](patches) 0001, 0003, 0004 (0002 is kstb-drm) | in the kernel on `KRN` |
+| Kernel patches (`v3d`) | [`patches/`](patches) 0001, 0003–0005 (0002 is kstb-drm) | in the kernel on `KRN` |
 | Mesa patch series | [`mesa/patches/`](mesa/patches), one patch per fix | |
 | Mesa build | [`mesa/Makefile`](mesa/Makefile) (cross build on the PC) | `/opt/mesa/<id>`, `/opt/mesa/current` = the build in use |
 | Mesa installer | [`rootfs/usr/sbin/kstb-mesa`](rootfs/usr/sbin/kstb-mesa) | `/usr/sbin/kstb-mesa` |
@@ -103,6 +103,7 @@ Kernel ([`patches/`](patches)):
 | --- | --- | --- |
 | 0001 reset only existing queues | Oops in `drm_sched_stop` on every GPU reset | README "A GPU hang" |
 | 0003 no cache flush without CSD | Oops per draw with TMU writes | README "A cache-flush job oopsed" |
+| 0005 cache clean after render jobs on 3.3 (replaces 0003's refusal) | TMU writes not visible after the job; the last 256 bytes landed after the buffer was freed | [`gpu-compute.md`](gpu-compute.md): `kstb-tmu-write-test` exact right after the draw; GLES2/GLES3/EGL unchanged case by case |
 | 0004 MMU flush before each job | a freshly mapped BO read as unmapped, then a GPU reset | `gles2-mmu-flush.txt`: 0 of 12 runs failing with it, 2 of 6 without |
 
 Mesa ([`mesa/patches/`](mesa/patches)):
@@ -171,7 +172,4 @@ patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
 - Threaded shader scratch spilling still hangs; 0001 falls back to one
   thread. An SSBO store in a 4-thread fragment shader hangs the same way
   ([`gpu-compute.md`](gpu-compute.md)).
-- TMU writes reach memory only when a later job starts, and the last 256
-  bytes can land after their buffer is freed: no cache clean after the job
-  on 3.3 ([`gpu-compute.md`](gpu-compute.md)).
 - The system default (`/usr/local`) is still the older build.

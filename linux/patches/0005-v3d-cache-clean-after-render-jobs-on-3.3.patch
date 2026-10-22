@@ -1,0 +1,66 @@
+v3d: clean the caches after render jobs on V3D 3.3 (cache-clean queue without a CSD)
+
+Patch 0003 refused DRM_V3D_SUBMIT_CL_FLUSH_CACHE before V3D 4.1, because
+v3d_sched_init() made the cache-clean queue only with a CSD. But fragment
+shaders on 3.3 write through the TMU too (SSBOs, register spills), and
+nothing cleaned after the job: kstb-tmu-write-test (one SSBO word per
+pixel, 1-thread fragment shader) read only stale data after the draw; the
+next job's L2T flush made it visible except the last 256 bytes, which
+landed after the buffer was freed, in the next process's buffer. The
+closed driver (nexus.ko, BVC5_P_HardwareCoreClean) cleans after such jobs
+on 3.3 with the same writes as v3d_clean_caches(): L2TCACTL = TMUWCF, then
+L2TFLS | FLM_CLEAN. Make the cache-clean queue on every V3D, report the
+cache flush and accept the flag again.
+
+--- a/drivers/gpu/drm/v3d/v3d_drv.c
++++ b/drivers/gpu/drm/v3d/v3d_drv.c
+@@ -91,8 +91,7 @@
+ 		args->value = v3d_has_csd(v3d);
+ 		return 0;
+ 	case DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH:
+-		/* the cache-clean queue exists only with a CSD */
+-		args->value = v3d_has_csd(v3d);
++		args->value = 1;
+ 		return 0;
+ 	case DRM_V3D_PARAM_SUPPORTS_PERFMON:
+ 		args->value = (v3d->ver >= V3D_GEN_41);
+--- a/drivers/gpu/drm/v3d/v3d_sched.c
++++ b/drivers/gpu/drm/v3d/v3d_sched.c
+@@ -936,13 +936,17 @@
+ 					   "v3d_csd");
+ 		if (ret)
+ 			goto fail;
+-
+-		ret = v3d_queue_sched_init(v3d, &v3d_cache_clean_sched_ops,
+-					   V3D_CACHE_CLEAN, "v3d_cache_clean");
+-		if (ret)
+-			goto fail;
+ 	}
+ 
++	/* Render jobs need the clean too: before V3D 4.1 fragment shaders
++	 * write through the TMU (SSBOs, spills), and their last writes stay
++	 * in the TMU write combiner and L2T after the job.
++	 */
++	ret = v3d_queue_sched_init(v3d, &v3d_cache_clean_sched_ops,
++				   V3D_CACHE_CLEAN, "v3d_cache_clean");
++	if (ret)
++		goto fail;
++
+ 	ret = v3d_queue_sched_init(v3d, &v3d_cpu_sched_ops, V3D_CPU, "v3d_cpu");
+ 	if (ret)
+ 		goto fail;
+--- a/drivers/gpu/drm/v3d/v3d_submit.c
++++ b/drivers/gpu/drm/v3d/v3d_submit.c
+@@ -937,12 +937,6 @@
+ 		return -EINVAL;
+ 	}
+ 
+-	/* No cache-clean queue without a CSD (V3D < 4.1): its job would
+-	 * oops in drm_sched_job_init().
+-	 */
+-	if ((args->flags & DRM_V3D_SUBMIT_CL_FLUSH_CACHE) && !v3d_has_csd(v3d))
+-		return -EINVAL;
+-
+ 	if (args->flags & DRM_V3D_SUBMIT_EXTENSION) {
+ 		ret = v3d_get_extensions(file_priv, args->extensions, &se, NULL);
+ 		if (ret) {

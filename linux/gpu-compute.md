@@ -12,11 +12,10 @@ SSBO that the CPU filled with `0xdeadbeef`. The CPU then reads the buffer
 right after the draw (`glMemoryBarrier`, `glFinish`, map), and again after
 one more job (a clear) that writes nothing through the TMU.
 
-Our kernel reports no cache flush on 3.3 (kernel patch 0003), so the
-installed Mesa has 0 SSBOs. The test ran on a scratch driver from
+Kernel `#28` reported no cache flush on 3.3 (kernel patch 0003), so the
+installed Mesa had 0 SSBOs. The test ran on a scratch driver from
 `23.3.6-848c0204` that reports SSBOs anyway and does not set
 `DRM_V3D_SUBMIT_CL_FLUSH_CACHE`, with `MESA_GLES_VERSION_OVERRIDE=3.1`.
-Kernel `6.18.57-kstb`.
 
 | Fragment shader | After the draw | After the clear |
 | --- | --- | --- |
@@ -32,12 +31,38 @@ Each line ran 1–4 times with the same result. The GPU was healthy afterward
 - That flush does not drain everything: the last 256 bytes (64 words)
   stay behind. In the second run they landed in a buffer of the next
   process, written after the first process had exited and freed its
-  buffer. So today, TMU writes can reach memory after their buffer is
-  freed.
+  buffer. So on kernel `#28`, TMU writes could reach memory after their
+  buffer was freed.
 - The store sequence Mesa emits is `mov tmud` / `add tmua` / `tmuwt`, with
   no config uniform (32-bit, per pixel, default op). It hangs in a
   4-thread fragment shader and completes in a 1-thread one. The same
   thread split is in [`gpu.md`](gpu.md) "Open": threaded spills hang.
 
-Not tested yet: a cleaning job end (`TMUWCF`, then L2T clean, as mainline
-`v3d_clean_caches()` does) on 3.3.
+## Cleaning after the job: kernel patch 0005 (2026-10-22)
+
+[`patches/0005-v3d-cache-clean-after-render-jobs-on-3.3.patch`](patches/0005-v3d-cache-clean-after-render-jobs-on-3.3.patch)
+creates the cache-clean queue on 3.3 too (mainline makes it only with a
+CSD), reports `DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH` = 1 and accepts
+`DRM_V3D_SUBMIT_CL_FLUSH_CACHE` again (0003 had refused it). A render job
+with the flag is followed by `v3d_clean_caches()`: `L2TCACTL` = `TMUWCF`
+(drain the TMU write combiner), then `L2TFLS | FLM_CLEAN`. These are the
+same writes the closed driver's `BVC5_P_HardwareCoreClean` makes.
+
+Kernel `#29`, flashed to `KRN`/`DTB` (kmon `linux info`: `linux-6.18.57-kstb
+2026-10-22`, CRC `335f53c0`), started with kmon's `linux`.
+
+- `kstb-tmu-write-test` (1-thread scratch driver; Mesa sets the flag now
+  that the kernel reports the flush): **exact right after the draw**, with
+  no old or stray words, in 8 runs: 64x64 three times, 256x256 twice,
+  17x13, 1x1 and 1920x1080 (2,073,600 words). There were no kernel messages
+  and no resets. `gpu_stats` counted one `cache_clean` job per run.
+- Full runs on `23.3.6-848c0204` (which now also sets the flag when a
+  shader writes through the TMU): GLES3 43,908 Pass, GLES2 17,041 Pass,
+  EGL 833 Pass. All have 0 MMU errors, 0 resets and 0 oopses, and match
+  the kernel `#28` runs case by case (0 of 65,722 results differ). GLES3
+  ran 3 `cache_clean` jobs; GLES2 and EGL ran none.
+- The `shaders.indexing.varying_array` cases that oopsed before 0003 pass
+  (64/64) on both `848c0204` and `/usr/local`, but neither build sends a
+  clean job for them anymore (no scratch), so they no longer test this path.
+
+The threaded-store hang above is a compiler matter and is still open.

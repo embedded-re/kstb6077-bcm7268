@@ -784,7 +784,9 @@ TFTP (`kstb-linux --root`), then flashed (`KRN`/`DTB`, 2026-10-18, kmon
 `linux info`: `linux-6.18.57-kstb 2026-10-18`, CRC `00fb3517`): started
 with kmon's `linux`, `varying_array.float_static_write_dynamic_read` on
 ROOT's older Mesa in `/usr/local` (which still uses scratch) passes, no
-Oops, no MMU error.
+Oops, no MMU error. Patch 0005 (2026-10-22) replaces the refusal: it
+creates the cache-clean queue on 3.3 too, so a job with the flag gets its
+clean ([`gpu-compute.md`](gpu-compute.md)).
 
 #### dEQP
 
