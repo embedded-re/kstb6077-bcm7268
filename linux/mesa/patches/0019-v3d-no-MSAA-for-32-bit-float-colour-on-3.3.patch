@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 16:19:14 +0200
+Subject: [PATCH 19/21] v3d: no MSAA for 32-bit float colour on 3.3
+
+4x MSAA renderbuffers of R32F, RG32F and RGBA32F came out of a resolve
+blit as near-zero data with garbage along the edges (GLES3
+fbo.msaa.4_samples.{r32f,rg32f,rgba32f}). Broadcom's driver doesn't
+offer them: libGLES_nexus's glxx_max_ms_mode_for_internalformat returns
+0 samples for GL_RGBA32F, GL_RGB32F, GL_RG32F and GL_R32F and 4 for
+every other format. Report the same, so GL_SAMPLES for these formats
+is empty and the cases are NotSupported.
+---
+ src/gallium/drivers/v3d/v3d_screen.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index c7e509d..eccdbd7 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -580,6 +580,22 @@ v3d_screen_is_format_supported(struct pipe_screen *pscreen,
+         if (sample_count > 1 && sample_count != V3D_MAX_SAMPLES)
+                 return false;
+ 
++        /* 4x MSAA of 32-bit float colour doesn't render on 3.3; Broadcom's
++         * driver gives these formats no samples either.
++         */
++        if (sample_count > 1 && screen->devinfo.ver < 40) {
++                switch (format) {
++                case PIPE_FORMAT_R32_FLOAT:
++                case PIPE_FORMAT_R32G32_FLOAT:
++                case PIPE_FORMAT_R32G32B32_FLOAT:
++                case PIPE_FORMAT_R32G32B32X32_FLOAT:
++                case PIPE_FORMAT_R32G32B32A32_FLOAT:
++                        return false;
++                default:
++                        break;
++                }
++        }
++
+         if (target >= PIPE_MAX_TEXTURE_TYPES) {
+                 return false;
+         }

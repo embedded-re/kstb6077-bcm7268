@@ -1,0 +1,2 @@
+64 cases: NotSupported 32, Pass 26, Fail 6
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

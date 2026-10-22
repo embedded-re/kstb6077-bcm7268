@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 16:50:55 +0200
+Subject: [PATCH 21/21] v3d: 3.3 vector TMU loads need the vector's alignment
+
+nir_opt_load_store_vectorize merged neighbouring 32-bit UBO loads into
+vec2/vec3 loads at 4-byte offsets (allowed on 4.x, where a vector only
+must not cross 16 bytes). On 3.3 those read wrong data: all six failing
+GLES3 ubo.random.scalar_types cases (2, 3, 5, 6, 14, 23) have a vec2 or
+vec3 load at offset 4, none of the 19 passing ones has a vector load
+off 8/16 bytes. Only vectorize on 3.3 when the vector is aligned to 8
+bytes (vec2) or 16 bytes (vec3/vec4).
+---
+ src/broadcom/compiler/nir_to_vir.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index ae53783..6a591ec 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -2054,6 +2054,8 @@ mem_vectorize_callback(unsigned align_mul, unsigned align_offset,
+                        nir_intrinsic_instr *high,
+                        void *data)
+ {
++        struct v3d_compile *c = data;
++
+         /* TMU general access only supports 32-bit vectors */
+         if (bit_size > 32)
+                 return false;
+@@ -2073,6 +2075,16 @@ mem_vectorize_callback(unsigned align_mul, unsigned align_offset,
+         if (16 - align_mul + align_offset + num_components * 4 > 16)
+                 return false;
+ 
++        /* On 3.3 a vector access also needs the vector's own alignment
++         * (8 bytes for vec2, 16 for vec3/vec4): a vec2 or vec3 load at a
++         * 4-byte offset returned wrong data.
++         */
++        if (c->devinfo->ver < 41 && num_components > 1) {
++                unsigned vec_align = num_components == 2 ? 8 : 16;
++                if (align_mul < vec_align || align_offset % vec_align != 0)
++                        return false;
++        }
++
+         return true;
+ }
+ 
+@@ -2158,6 +2170,7 @@ v3d_optimize_nir(struct v3d_compile *c, struct nir_shader *s)
+                                  nir_var_mem_global,
+                         .callback = mem_vectorize_callback,
+                         .robust_modes = 0,
++                        .cb_data = c,
+                 };
+                 bool vectorize_progress = false;
+ 

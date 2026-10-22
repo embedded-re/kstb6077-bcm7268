@@ -1,0 +1,2 @@
+32 cases: Pass 32
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

@@ -1,0 +1,63 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 16:16:36 +0200
+Subject: [PATCH 18/21] v3d: sample coverage on 3.3
+
+V3D 3.3 has Sample State (packet 91) too, but with one field: the GL
+coverage value as a 32-bit float, the sign bit for an inverted one
+(libGLES_nexus's glxx_hw_draw_triangles emits it per draw: the value,
+ORed with 0x80000000 when inverted, 1.0 when coverage is off or the
+framebuffer is single-sampled). Mesa emitted it only on 4.x, so
+glSampleCoverage had no effect on 3.3. The frontend hands the driver
+the first n samples as a mask (or their inverse); turn that back into
+the coverage value. Other masks can't be expressed and cover all
+samples, as before.
+---
+ src/broadcom/cle/v3d_packet_v33.xml |  5 +++++
+ src/gallium/drivers/v3d/v3dx_emit.c | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/src/broadcom/cle/v3d_packet_v33.xml b/src/broadcom/cle/v3d_packet_v33.xml
+index 4e89bd5..290438f 100644
+--- a/src/broadcom/cle/v3d_packet_v33.xml
++++ b/src/broadcom/cle/v3d_packet_v33.xml
+@@ -880,6 +880,11 @@
+     <field name="Varying offset V0" size="4" start="0" type="uint"/>
+   </packet>
+ 
++  <packet code="91" name="Sample State" max_ver="33">
++    <!-- the glSampleCoverage value; the sign bit inverts it -->
++    <field name="Coverage" size="32" start="0" type="float"/>
++  </packet>
++
+   <packet code="91" name="Sample State" min_ver="41">
+     <field name="Coverage" size="16" start="16" type="f187"/>
+     <field name="Mask" size="4" start="0" type="uint"/>
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 3d50247..ed57b4a 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -935,5 +935,23 @@ v3dX(emit_state)(struct pipe_context *pctx)
+                         state.mask = job->msaa ? v3d->sample_mask : 0xf;
+                 }
+         }
++#else
++        if (v3d->dirty & V3D_DIRTY_SAMPLE_STATE) {
++                /* V3D 3.3 has no sample mask, only the GL coverage value
++                 * (negative = inverted), which the frontend turned into
++                 * the first n samples or their inverse.  Recover it; any
++                 * other mask can't be expressed and covers everything.
++                 */
++                uint32_t mask = job->msaa ? v3d->sample_mask & 0xf : 0xf;
++                uint32_t n = util_bitcount(mask);
++                float coverage = 1.0f;
++                if (mask == BITFIELD_MASK(n))
++                        coverage = n / 4.0f;
++                else if (mask == (0xf & ~BITFIELD_MASK(4 - n)))
++                        coverage = -((4 - n) / 4.0f);
++                cl_emit(&job->bcl, SAMPLE_STATE, state) {
++                        state.coverage = coverage;
++                }
++        }
+ #endif
+ }

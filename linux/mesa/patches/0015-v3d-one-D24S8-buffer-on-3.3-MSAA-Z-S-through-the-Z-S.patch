@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 20:13:46 +0200
-Subject: [PATCH 15/17] v3d: one D24S8 buffer on 3.3, MSAA Z/S through the Z/S
+Subject: [PATCH 15/21] v3d: one D24S8 buffer on 3.3, MSAA Z/S through the Z/S
  config
 
 The Z/S config with output format depth24_stencil8 keeps D24S8's stencil

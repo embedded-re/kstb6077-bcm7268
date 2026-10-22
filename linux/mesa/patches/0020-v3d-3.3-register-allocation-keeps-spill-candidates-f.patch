@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 16:25:42 +0200
+Subject: [PATCH 20/21] v3d: 3.3 register allocation keeps spill candidates for
+ 1 thread
+
+On 3.3 a shader that doesn't allocate is retried in the same compile
+at 4, 2 and 1 threads, and 0001 allows TMU spills only at 1 thread.
+v3d_choose_spill_node marked the temps it couldn't spill by clearing
+them in c->spillable, which outlives the attempt: after the 2-thread
+round no TMU-spillable temp was left, the 1-thread round found no spill
+candidate (2188 temps, 0 spills) and the shader failed with every
+strategy, so the draw was skipped (GLES3
+texture.units.all_units.only_cube.{1,2,7}: 24 cube lookups, the image
+kept the clear colour). Keep "can't spill in this attempt" local; the
+shader now compiles at 1 thread with 2 spills.
+---
+ src/broadcom/compiler/vir_register_allocate.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/src/broadcom/compiler/vir_register_allocate.c b/src/broadcom/compiler/vir_register_allocate.c
+index 5879de1..337e199 100644
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -274,11 +274,17 @@ v3d_choose_spill_node(struct v3d_compile *c)
+         const float tmu_scale = 10;
+         float block_scale = 1.0;
+         float spill_costs[c->num_temps];
++        /* TMU spills not possible in this attempt.  Kept out of
++         * c->spillable: a retry at fewer threads can spill them.
++         */
++        bool no_tmu_spill[c->num_temps];
+         bool in_tmu_operation = false;
+         bool started_last_seg = false;
+ 
+-        for (unsigned i = 0; i < c->num_temps; i++)
++        for (unsigned i = 0; i < c->num_temps; i++) {
+                 spill_costs[i] = 0.0;
++                no_tmu_spill[i] = false;
++        }
+ 
+         /* XXX: Scale the cost up when inside of a loop. */
+         vir_for_each_block(block, c) {
+@@ -313,7 +319,7 @@ v3d_choose_spill_node(struct v3d_compile *c)
+                                                               tmu_scale *
+                                                               tmu_op_scale);
+                                 } else {
+-                                        BITSET_CLEAR(c->spillable, temp);
++                                        no_tmu_spill[temp] = true;
+                                 }
+                         }
+ 
+@@ -328,7 +334,7 @@ v3d_choose_spill_node(struct v3d_compile *c)
+                                         spill_costs[temp] += (block_scale *
+                                                               tmu_scale);
+                                 } else {
+-                                        BITSET_CLEAR(c->spillable, temp);
++                                        no_tmu_spill[temp] = true;
+                                 }
+                         }
+ 
+@@ -364,6 +370,7 @@ v3d_choose_spill_node(struct v3d_compile *c)
+         for (unsigned i = 0; i < c->num_temps; i++) {
+                 if (BITSET_TEST(c->spillable, i)) {
+                         ra_set_node_spill_cost(c->g, temp_to_node(c, i),
++                                               no_tmu_spill[i] ? 0.0 :
+                                                spill_costs[i]);
+                 }
+         }
