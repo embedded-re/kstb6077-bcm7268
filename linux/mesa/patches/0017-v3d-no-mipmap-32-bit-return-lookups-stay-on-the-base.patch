@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 07:33:27 +0200
+Subject: [PATCH 17/17] v3d: no-mipmap 32-bit-return lookups stay on the base
+ level on 3.3
+
+32-bit returns force the mip filter to nearest, and 0014 clamped their
+max LOD to the view's last level. On a texture with mipmaps and a
+sampler without, a minified lookup then read smaller levels instead of
+the base level (texture.shadow nearest/linear: 28 cases per depth
+format). Clamp to the base level when the sampler doesn't mipmap; for
+single-level textures that is the same as before.
+---
+ src/gallium/drivers/v3d/v3dx_emit.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 804828e..3d50247 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -160,15 +160,16 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+                 /* Without mipmapping the filter already selects the base
+                  * level. Keep positive LODs so minification can still select
+                  * the min filter on a single-level texture. 32-bit returns
+-                 * switch the mip filter to nearest below, so they need the
+-                 * clamp to the last level.
++                 * switch the mip filter to nearest below, so without
++                 * mipmapping they need the clamp to the base level.
+                  */
+                 .max_level_of_detail = MIN2(psview->u.tex.first_level +
+                                             MAX2(psampler->max_lod,
+                                                  psampler->min_lod),
+-                                            psampler->min_mip_filter == PIPE_TEX_MIPFILTER_NONE &&
+-                                            return_size != 32 ?
+-                                            15 : psview->u.tex.last_level),
++                                            psampler->min_mip_filter != PIPE_TEX_MIPFILTER_NONE ?
++                                            psview->u.tex.last_level :
++                                            return_size == 32 ?
++                                            psview->u.tex.first_level : 15),
+ 
+                 .texture_base_pointer = cl_address(rsc->bo,
+                                                    rsc->slices[0].offset),

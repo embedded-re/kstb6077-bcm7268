@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Thu, 22 Oct 2026 07:30:00 +0200
+Subject: [PATCH 16/17] v3d: DEPTH_COMP32F for comparing samplers of Z32F on
+ 3.3
+
+Z32F is an R32F texture on 3.3, and the TMU doesn't do the depth
+compare on it: every Z32F shadow lookup returned the depth instead of
+the comparison (texture.shadow depth_component32f: all 144 cases
+failed, always/never too). When the sampler compares, emit the texture
+with DEPTH_COMP32F instead, as Broadcom's driver does.
+---
+ src/gallium/drivers/v3d/v3dx_emit.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 8b4c0ef..804828e 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -231,11 +231,31 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+         else if (psampler->max_anisotropy)
+                 unpacked.filter = V3D_TMU_FILTER_ANISOTROPIC_2_1;
+ 
++        uint8_t view_state[cl_packet_length(TEXTURE_SHADER_STATE)];
++        memcpy(view_state, sview->texture_shader_state, sizeof(view_state));
++        /* Z32F is an R32F texture on 3.3, which the TMU doesn't compare;
++         * a comparing sampler needs DEPTH_COMP32F (as Broadcom's driver
++         * switches it).
++         */
++        if (psampler->compare_mode &&
++            (psview->format == PIPE_FORMAT_Z32_FLOAT ||
++             psview->format == PIPE_FORMAT_Z32_FLOAT_S8X24_UINT)) {
++                struct V3D33_TEXTURE_SHADER_STATE type_field = {
++                        .texture_type = 0x7f,
++                };
++                uint8_t mask[sizeof(view_state)];
++                cl_packet_pack(TEXTURE_SHADER_STATE)(&job->indirect, mask,
++                                                     &type_field);
++                for (int i = 0; i < ARRAY_SIZE(view_state); i++)
++                        view_state[i] &= ~mask[i];
++                unpacked.texture_type = TEXTURE_DATA_FORMAT_DEPTH_COMP32F;
++        }
++
+         uint8_t packed[cl_packet_length(TEXTURE_SHADER_STATE)];
+         cl_packet_pack(TEXTURE_SHADER_STATE)(&job->indirect, packed, &unpacked);
+ 
+         for (int i = 0; i < ARRAY_SIZE(packed); i++)
+-                packed[i] |= sview->texture_shader_state[i] | sampler->texture_shader_state[i];
++                packed[i] |= view_state[i] | sampler->texture_shader_state[i];
+ 
+         /* TMU indirect structs need to be 32b aligned. */
+         v3d_cl_ensure_space(&job->indirect, ARRAY_SIZE(packed), 32);

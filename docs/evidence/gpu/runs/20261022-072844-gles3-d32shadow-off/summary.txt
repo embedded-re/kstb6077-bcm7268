@@ -1,0 +1,2 @@
+432 cases: Fail 200, QualityWarning 152, Pass 80
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

@@ -81,7 +81,7 @@ logs faults.
 
 Focused lists in [`gpu-test/cases/`](gpu-test/cases), one per fixed fault:
 `gles2-cl-prefetch-seq200.txt`, `gles2-mmu-flush.txt`, `gles3-tlb-vec4.txt`,
-`gles3-32bit-max-lod.txt`, `gles3-d24s8-msaa-zs.txt`. `kstb-layer-test cube|array|3d f|ui [size]
+`gles3-32bit-max-lod.txt`, `gles3-d24s8-msaa-zs.txt`, `gles3-shadow-32bit.txt`. `kstb-layer-test cube|array|3d f|ui [size]
 [interleave] [srctex]` renders into every face/layer of an RGBA32F or
 RGBA32UI texture and checks each texel by readback and by sampling.
 Full runs take about 1 h (GLES3, 44,768 cases), 13 min (GLES2) and 3 min
@@ -116,43 +116,43 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0013 | kmsro entry for `kstb-drm` (scanout) |
 | 0014 | max LOD of 32-bit-return textures clamped to the last level (a minified lookup read missing mip levels: MMU errors, 32f `fbo.color` cube/array/3D) |
 | 0015 | D24S8 is one buffer (stencil in the Z buffer's low byte, as the hardware writes it; separate S8 only for Z32F_S8); MSAA Z/S stored and loaded through the Z/S config with decimate mode all samples, one sample per texel, sampled with its depth format (was read as RGBA16F/RGBA8): MSAA depth/stencil MMU errors and wrong data, `gles3-d24s8-msaa-zs.txt` |
+| 0016 | Z32F shadow lookups: a comparing sampler gets `DEPTH_COMP32F` (Z32F is R32F on 3.3, which the TMU doesn't compare; Broadcom's driver switches the same way): `texture.shadow` depth_component32f |
+| 0017 | a no-mipmap sampler with a 32-bit return stays on the base level (0014 let it reach the last level of a mipmapped texture): 28 `texture.shadow` cases per depth format |
 
 ## Where it stands
 
-Build `23.3.6-949e0192` (`v3d_dri.so` `0fd992e7…`, all 15 patches,
-`/opt/mesa/current` since 2026-10-21) on kernel `#28` from `KRN` (patches
-0001–0004), 2026-10-21, with `kstb-gpu-run` (results, kernel log and
+Build `23.3.6-60757ba5` (`v3d_dri.so` `03615472…`, all 17 patches,
+`/opt/mesa/current` since 2026-10-22) on kernel `#28` from `KRN` (patches
+0001–0004), 2026-10-22, with `kstb-gpu-run` (results, kernel log and
 summary in [`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs),
-`20261021-*-949e-*`):
+`2026102*-6075-*`):
 
 | Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
 | EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 | 0 / 0 |
-| GLES3, all 44,768 | 43,808 | 580 | 159 | 221 | 0 | 0 / 0 |
-| the five focused lists | 1,190 | | | 0 | 0 | 0 / 0 |
+| GLES3, all 44,768 | 43,892 | 580 | 277 | 19 | 0 | 0 / 0 |
+| the six focused lists | 1,272 | | 118 | 0 | 0 | 0 / 0 |
 
-All three full runs are clean in the kernel log. Against the previous
-build `efbb2e70` (14 patches), case by case: GLES2 and EGL identical; in
-GLES3 119 cases change, none for the worse: the 33 of
-`gles3-d24s8-msaa-zs.txt` Fail/Crash → Pass (`fbo.msaa` depth/stencil
-formats, `fbo.invalidate.*blit*`, `fbo.blit` depth24_stencil8,
-`texture.specification` depth24_stencil8 with its SIGSEGV,
-`multisample.*.stencil`), and 86 `texture.shadow` cases, all
-depth24_stencil8, which now give exactly what depth_component16 gives
-(28 Fail, 40 Pass, 76 QualityWarning; was 104 Fail, 36 Pass, 4 Crash).
-The same list on one scratch driver with and without the 0015 model: 21
-against 53 Fail, 0 against 10 MMU errors (`*-gles3-zs-on`, `*-zs-off`).
+Against `949e0192` (15 patches), case by case: GLES2 and EGL identical;
+in GLES3 202 cases change, none for the worse: the 200 of
+`gles3-shadow-32bit.txt` (`texture.shadow` Fail → 82 Pass, 118
+QualityWarning; all 432 shadow cases now Pass or QualityWarning, the
+three depth formats alike) and the two
+`shaders.texture_functions.*sampler2dshadow_bias_fragment` cases. With
+0016 alone (scratch, `*-d32shadow-on`/`-off`) depth_component32f went
+from 144 Fail to the 28 Fail that every format had before 0017.
+
+Before, `949e0192`: GLES3 43,808 Pass, 221 Fail, 0 MMU errors; 0015
+against `efbb2e70` turned 33 MSAA/D24S8 cases (`gles3-d24s8-msaa-zs.txt`)
+and 86 depth24_stencil8 shadow cases better, and removed the last 6 MMU
+errors.
 
 ## Open
 
-- `texture.shadow` depth_component32f: all 144 cases Fail (SIGSEGVs in
-  earlier runs, none in the last one); depth24_stencil8 and
-  depth_component16 each 28 Fail, 76 QualityWarning.
-- Other GLES3 failures: `ubo.random` 6, `texture.units` 3 (cube),
+- GLES3's 19 failures: `ubo.random` 6, `texture.units` 3 (cube),
   `multisample.fbo_*` 6 (sample coverage), `fbo.msaa.4_samples`
-  r32f/rg32f/rgba32f, two `sampler2dshadow_bias` image cases,
-  `texture.mipmap` 1 (cube).
+  r32f/rg32f/rgba32f, `texture.mipmap` 1 (cube).
 - TFU jobs get no MMU flush (untested).
 - Threaded shader scratch spilling still hangs; 0001 falls back to one
   thread.

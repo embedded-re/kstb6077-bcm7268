@@ -1,0 +1,2 @@
+432 cases: QualityWarning 270, Pass 162
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

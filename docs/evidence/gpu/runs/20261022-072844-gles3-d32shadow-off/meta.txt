@@ -1,0 +1,32 @@
+start 81296.08 2026-10-22T05:28:44+00:00
+kernel 6.18.57-kstb #28 SMP Wed Oct 21 06:54:18 CEST 2026
+boot bb645e31-53fb-4e28-a3e6-6e719a1fa8fe
+mesa /opt/mesa/23.3.6-949e0192
+id 23.3.6-949e0192
+patch v3d: V3D 3.3 compiler and driver fixes 1-19
+patch v3d: EGL_ANDROID_native_fence_sync on V3D 3.3
+patch v3d: MSAA UIF XOR addressing before V3D 4.1
+patch v3d: no buffer-texture acceleration on V3D 3.x
+patch v3d: fewer threads when a TMU request exceeds the per-thread FIFO
+patch v3d: keep loaded data in the RCL dummy store, separate stencil on 3.3
+patch v3d: transform feedback on V3D 3.3
+patch v3d: advance VPM reads past the first 32 inputs on 3.3
+patch v3d: clamp dynamic uniform offsets to the uploaded block before 4.0
+patch v3d: centroid varyings on V3D 3.3
+patch v3d: keep 256 bytes free at the end of every CL BO before 4.1
+patch v3d: always write four TLB colour components before 4.1
+patch kmsro: kstb-drm display driver
+patch v3d: clamp the max LOD of 32-bit-return textures on 3.3
+patch v3d: one D24S8 buffer on 3.3, MSAA Z/S through the Z/S config
+0fd992e70930d4b19ce8f2f2de7d6d1cda54cdbc09639830d98a5777f361f0f2  lib/dri/v3d_dri.so
+cda7ac7e2155b763b7730a59a4a3b2f4b4bdd9f2bf9f7bcbd2f4a0cc482675fa  egl/deqp-egl
+20f00cd6e2ab7b047a2d8aaea3f56ef365f65ca33c99710ad1ea0356af38d7c9  gles2/deqp-gles2
+4eb40e2ff37bfa472f0b6874516f344ec7924374a0b1ae0058711f51208c27ad  gles3/deqp-gles3
+3170569ab9d15c84e11e7e38c8e2ae861e12107233c9b94f77495533f94b580f  /opt/gpu-test/kstb-deqp
+dri 1a31b498a6c96ba6979f5728e3c243893c4d6bdb32b72fed44e6cbbb604a6d49  /tmp/kstb-d32/v3d_dri.so
+args gles3 --cases /tmp/kstb-d32/shadow-cases.txt
+LD_LIBRARY_PATH=/opt/mesa/23.3.6-949e0192/lib
+LIBGL_DRIVERS_PATH=/tmp/kstb-d32
+DEQP_EGL_PLATFORM=drm
+DEQP_SURFACE_TYPE=window
+end 81347.04
