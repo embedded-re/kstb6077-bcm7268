@@ -61,6 +61,10 @@ Kernel `#29`, flashed to `KRN`/`DTB` (kmon `linux info`: `linux-6.18.57-kstb
   EGL 833 Pass. All have 0 MMU errors, 0 resets and 0 oopses, and match
   the kernel `#28` runs case by case (0 of 65,722 results differ). GLES3
   ran 3 `cache_clean` jobs; GLES2 and EGL ran none.
+  Raw kernel `#29` evidence:
+  [GLES3](../docs/evidence/gpu/runs/20261022-220306-gles3-848c-krn29-full/summary.txt),
+  [GLES2](../docs/evidence/gpu/runs/20261022-225849-gles2-848c-krn29-full/summary.txt),
+  [EGL](../docs/evidence/gpu/runs/20261022-231119-egl-848c-krn29-full/summary.txt).
 - The `shaders.indexing.varying_array` cases that oopsed before 0003 pass
   (64/64) on both `848c0204` and `/usr/local`, but neither build sends a
   clean job for them anymore (no scratch), so they no longer test this path.
