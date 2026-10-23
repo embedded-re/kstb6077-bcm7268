@@ -4,7 +4,7 @@
     kstb-gpu-run [--mesa ID] [--dri DIR] [--name NAME] [--dir DIR] MODULE [kstb-deqp args]
     kstb-gpu-run --summary DIR
 
-MODULE is gles2, gles3 or egl; the rest goes to kstb-deqp (--cases FILE,
+MODULE is gles2, gles3, gles31 or egl; the rest goes to kstb-deqp (--cases FILE,
 --filter PREFIX, --chunk N, ...). The Mesa build is one from kstb-mesa
 (default: current); --dri DIR takes v3d_dri.so from a scratch directory
 instead, on top of that build's libraries (meta.txt records its hash). Each
@@ -23,7 +23,7 @@ box; --dir DIR then resumes after the lost case) and is stopped after it.
 """
 import argparse, bisect, collections, datetime, os, re, subprocess, sys, threading, time
 
-DEQP = "/opt/deqp"            # gles2/, gles3/, egl/ (binary + data), mustpass/
+DEQP = "/opt/deqp"            # gles2/, gles3/, gles31/, egl/, mustpass/
 RUNS = "/root/gpu-runs"
 KSTB_DEQP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kstb-deqp")
 
@@ -118,7 +118,7 @@ def main():
     if a.summary:
         print(summarize(a.summary), end="")
         return
-    if not rest or rest[0] not in ("gles2", "gles3", "egl"):
+    if not rest or rest[0] not in ("gles2", "gles3", "gles31", "egl"):
         sys.exit(__doc__)
     mod = rest[0]
 
@@ -133,12 +133,13 @@ def main():
     mesa_dir = os.path.dirname(mesa_dir)
     if a.dri:
         env["LIBGL_DRIVERS_PATH"] = os.path.abspath(a.dri)
-    env.update(DEQP_EGL_PLATFORM="drm", DEQP_SURFACE_TYPE="window")
+    env.update(DEQP_EGL_PLATFORM="drm", DEQP_SURFACE_TYPE="window",
+               MESA_SHADER_CACHE_DISABLE="true")
 
     d = a.dir or os.path.join(RUNS, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
                               + f"-{mod}" + (f"-{a.name}" if a.name else ""))
     os.makedirs(d, exist_ok=True)
-    for sub in ("gles2", "gles3", "egl", "mustpass"):
+    for sub in ("gles2", "gles3", "gles31", "egl", "mustpass"):
         link = os.path.join(d, sub)
         if not os.path.lexists(link):
             os.symlink(os.path.join(DEQP, sub), link)
@@ -155,8 +156,10 @@ def main():
             dri = os.path.join(env["LIBGL_DRIVERS_PATH"], "v3d_dri.so")
             m.write(f"dri {sh(f'sha256sum {dri}')}\n")
         m.write(f"args {' '.join(rest)}\n")
-        for k in ("LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "DEQP_EGL_PLATFORM", "DEQP_SURFACE_TYPE"):
-            m.write(f"{k}={env[k]}\n")
+        for k in ("LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "DEQP_EGL_PLATFORM", "DEQP_SURFACE_TYPE",
+                  "MESA_GLES_VERSION_OVERRIDE", "MESA_GLSL_VERSION_OVERRIDE",
+                  "MESA_SHADER_CACHE_DISABLE", "V3D_DEBUG"):
+            m.write(f"{k}={env.get(k, '(unset)')}\n")
 
     stop = threading.Event()
     reader = threading.Thread(target=kmsg_reader, args=(os.path.join(d, "kernel.txt"), stop))

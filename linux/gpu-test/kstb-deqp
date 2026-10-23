@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run dEQP (GLES2, GLES3, EGL) on the box, a chunk of cases per process,
+"""Run dEQP (GLES2, GLES3, GLES31, EGL) on the box, a chunk of cases per process,
 resumable: a crash, a GPU hang or a reset of the whole board loses at most
 the case that was running.
 
@@ -7,7 +7,7 @@ the case that was running.
     kstb-deqp gles2 --summary
 
 DEQP (default /root/deqp) holds gles2/deqp-gles2 with its data directory
-gles2/gles2, the same for gles3 and egl, and mustpass/<module>-main.txt
+gles2/gles2, the same for gles3, gles31 and egl, and mustpass/<module>-main.txt
 (linux/README.md, "dEQP"). Results go to $DEQP/results-<module>.txt, one
 line per case: "<case> <result> <detail>". The case that was running when
 the board went down is in $DEQP/running-<module>; the next run records it
@@ -16,7 +16,8 @@ as "Lost" and goes on after it.
 import argparse, os, re, select, subprocess, sys, time
 
 DEQP = os.environ.get("DEQP", "/root/deqp")
-BIN = {"gles2": "deqp-gles2", "gles3": "deqp-gles3", "egl": "deqp-egl"}
+BIN = {"gles2": "deqp-gles2", "gles3": "deqp-gles3",
+       "gles31": "deqp-gles31", "egl": "deqp-egl"}
 ARGS = ["--deqp-surface-type=" + os.environ.get("DEQP_SURFACE_TYPE", "pbuffer"),
         "--deqp-gl-config-name=rgba8888d24s8ms0",
         "--deqp-surface-width=256", "--deqp-surface-height=256",
