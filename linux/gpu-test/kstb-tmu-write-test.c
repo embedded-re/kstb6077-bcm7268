@@ -56,7 +56,7 @@ static const char *fs =
     "  o = vec4(1.0);\n"
     "}\n";
 
-static void count(const char *when, GLuint seed, int n)
+static int count(const char *when, GLuint seed, int n)
 {
     const GLuint *v = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, n * 4, GL_MAP_READ_BIT);
     CHECK(v);
@@ -77,7 +77,8 @@ static void count(const char *when, GLuint seed, int n)
     if (first >= 0)
         printf("  (first wrong word %d = 0x%08x)", first, v[first]);
     printf("\n");
-    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    CHECK(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
+    return exact == n;
 }
 
 int main(int argc, char **argv)
@@ -138,13 +139,13 @@ int main(int argc, char **argv)
     glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
     glFinish();
     CHECK(glGetError() == GL_NO_ERROR);
-    count("after the draw", seed, n);
+    int exact_after_draw = count("after the draw", seed, n);
 
     // A job without TMU writes; the kernel invalidates the caches before it.
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     glFinish();
-    count("after a clear", seed, n);
+    int exact_after_clear = count("after a clear", seed, n);
     CHECK(glGetError() == GL_NO_ERROR);
-    return 0;
+    return exact_after_draw && exact_after_clear ? 0 : 1;
 }

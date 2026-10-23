@@ -1,0 +1,342 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-f3d0b37dc1), 16 fragment SSBOs, 64x64 words, seed 0xd2cdaff9
+MESA_SHADER_FRAGMENT prog 1/1 pre-opt VIR:
+BLOCK 0:
+mov t0, rf0
+mov t1, rf1
+mov t2, rf2
+fxcd t3
+fycd t4
+fmov recip, t0
+fmov t5, r4
+nop t6; ldunif (0x00000000 / 0.000000)
+mov t7, t4
+nop t8; ldunif (0x3f000000 / 0.500000)
+fadd t9, t7, t8
+nop t10; ldunif (push[8])
+nop t11; ldunif (push[9])
+nop t12; ldunif (push[10])
+nop t13; ldunif (push[11])
+fmul t14, t9, t10
+mov t15, t3
+fadd t16, t14, t11
+fadd t17, t15, t8
+ftouz t18, t16
+ftouz t19, t17
+nop t20; ldunif (push[4])
+multop null, t18, t20
+umul24 t21, t18, t20
+add t22, t21, t19
+nop t23; ldunif (0x9e3779b1 / -0.000000)
+multop null, t22, t23
+umul24 t24, t22, t23
+nop t25; ldunif (0x00000002 / 0.000000)
+shl t26, t22, t25
+nop t27; ldunif (push[0])
+xor t28, t27, t24
+nop t29; ldunif (0x3f800000 / 1.000000)
+nop t30; ldunif (0x3f800000 / 1.000000)
+mov t31, t29
+mov t32, t30
+mov t33, t29
+mov t34, t29
+nop t35; ldunif (ssbo[0])
+mov tmud, t28
+add tmua, t35, t26
+nop t36; ldunif (0x00000000 / 0.000000)
+add tmua, t35, t36
+nop null; thrsw
+nop null; ldtmu
+mov t37, r4
+mov tlbu, null (0xffffff80 / -nan)
+vfpack tlb, t31, t32
+vfpack tlb, t33, t34
+
+MESA_SHADER_FRAGMENT prog 1/1 VIR:
+BLOCK 0:
+mov t0, rf0
+fxcd t3
+fycd t4
+fmov recip, t0
+fadd t9, t4, 0.500000
+nop t39; ldunif (push[8])
+mov t10, t39
+nop t40; ldunif (push[9])
+mov t11, t40
+fmul t14, t9, t10
+fadd t16, t14, t11
+fadd t17, t3, 0.500000
+ftouz t18, t16
+ftouz t19, t17
+nop t41; ldunif (push[4])
+mov t20, t41
+multop null, t18, t20
+umul24 t21, t18, t20
+add t22, t21, t19
+nop t42; ldunif (0x9e3779b1 / -0.000000)
+mov t23, t42
+multop null, t22, t23
+umul24 t24, t22, t23
+shl t26, t22, 2
+nop t43; ldunif (push[0])
+mov t27, t43
+xor t28, t27, t24
+nop t44; ldunif (ssbo[0])
+mov t35, t44
+mov tmud, t28
+add tmua, t35, t26
+add tmua, t35, 0
+nop null; thrsw
+nop null; ldtmu
+mov tlbu, null (0xffffff80 / -nan)
+nop t45; ldunif (0x3c003c00 / 0.007827)
+mov t38, t45
+mov tlb, t38
+mov tlb, t38
+
+MESA_SHADER_FRAGMENT prog 1/1 QPU:
+0x384034c1bb38c000 fycd r1                       ; fmov recip, rf0             ; ldunif
+0x3de030c205f79027 fadd r2, r1, 0x3f000000       ; mov r3, r5
+0x54403040bb688000 fxcd r0                       ; fmul r1, r2, r3             ; ldunif
+0x3c403106bbf40000 nop                           ; mov r4, r5                  ; ldunif
+0x3c40304205f61000 fadd r2, r1, r4               ; mov r1, r5                  ; ldunif
+0x3c003184f681a000 ftouz r4, r2                  ; nop
+0x29e0318305338027 fadd r3, r0, 0x3f000000       ; multop -, r4, r1
+0x0c003080f631b000 ftouz r0, r3                  ; umul24 r2, r4, r1
+0x3c40310338f42000 add r3, r2, r0                ; mov r4, r5                  ; ldunif
+0x29e031817c8fb002 shl r1, r3, 2                 ; multop -, r3, r4
+0x3c403086bbf40000 nop                           ; mov r2, r5                  ; ldunif
+0x0c003006bb8c0000 nop                           ; umul24 r0, r3, r4
+0x3c003103b7f42000 xor r3, r2, r0                ; mov r4, r5
+0x3c2032c6bbec0000 nop                           ; mov tmud, r3                ; thrsw
+0x3c20318c3880c000 add tmua, r4, r1              ; nop                         ; thrsw
+0x3de0318c3883c000 add tmua, r4, 0               ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c003206bbf80140 nop                           ; mov tlbu, rf5
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3c203006bbf40000 nop                           ; mov r0, r5                  ; thrsw
+0x3c0031c6bbe00000 nop                           ; mov tlb, r0
+0x3c0031c6bbe00000 nop                           ; mov tlb, r0
+
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 22 inst, 4 threads, 0 loops, 8 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 22 inst-and-stalls, 0 nops
+MESA_SHADER_VERTEX prog 0/1 pre-opt VIR:
+BLOCK 0:
+nop t0; ldunif (0x6840c000 / 3640944558292496459759616.000000)
+vpmsetup null, t0
+mov t1, vpm1073741823.3
+mov t2, t1
+nop t3; ldunif (0x00000001 / 0.000000)
+xor.pushz null, t2, t3
+nop t4; ldunif (0xffffffff / -nan)
+nop t5; ldunif (0x00000000 / 0.000000)
+mov t6, t5
+mov.ifa t6, t4
+mov t7, t6
+nop t8; ldunif (vp_x_scale)
+nop t9; ldunif (0x00000002 / 0.000000)
+xor.pushz null, t2, t9
+mov t10, t5
+mov.ifa t10, t4
+mov t11, t10
+nop t12; ldunif (0x40400000 / 3.000000)
+nop t13; ldunif (0xbf800000 / -1.000000)
+xor.pushz null, t2, t3
+mov t14, t13
+mov.ifa t14, t12
+mov t15, t14
+nop t16; ldunif (vp_y_scale)
+xor.pushz null, t2, t9
+mov t17, t13
+mov.ifa t17, t12
+mov t18, t17
+fmul t19, t15, t8
+fmul t20, t18, t16
+ffloor t21, t19
+ffloor t22, t20
+ftoiz t23, t21
+ftoiz t24, t22
+nop t25; ldunif (0x00000000 / 0.000000)
+nop t26; ldunif (vp_z_offset)
+nop t27; ldunif (0x3f800000 / 1.000000)
+nop t28; ldunif (0x0140c000 / 0.000000)
+vpmsetup null, t28
+mov vpm, t23
+mov vpm, t24
+mov vpm, t26
+mov vpm, t27
+
+MESA_SHADER_VERTEX prog 0/1 VIR:
+BLOCK 0:
+nop t29; ldunif (0x6840c000 / 3640944558292496459759616.000000)
+mov t0, t29
+vpmsetup null, t0
+mov t1, vpm1073741823.3
+nop t30; ldunif (vp_x_scale)
+mov t8, t30
+nop t31; ldunif (0x40400000 / 3.000000)
+mov t12, t31
+nop t32; ldunif (0xbf800000 / -1.000000)
+mov t13, t32
+xor.pushz null, t1, 1
+mov t14, t13
+mov.ifa t14, t12
+nop t33; ldunif (vp_y_scale)
+mov t16, t33
+xor.pushz null, t1, 2
+mov t17, t13
+mov.ifa t17, t12
+fmul t19, t14, t8
+fmul t20, t17, t16
+ffloor t21, t19
+ffloor t22, t20
+ftoiz t23, t21
+ftoiz t24, t22
+nop t34; ldunif (vp_z_offset)
+mov t26, t34
+nop t35; ldunif (0x0140c000 / 0.000000)
+mov t28, t35
+vpmsetup null, t28
+mov vpm, t23
+mov vpm, t24
+mov vpm, t26
+mov vpm, 1.000000
+
+MESA_SHADER_VERTEX prog 0/1 QPU:
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3c403006bbf40000 nop                           ; mov r0, r5                  ; ldunif
+0x3c003186bb818000 vpmsetup -, r0                ; nop
+0x3f403086bbf40000 nop                           ; mov r2, r5                  ; ldvpm; ldunif
+0x3c003046bbec0000 nop                           ; mov r1, r3
+0x3c4030c6bbf40000 nop                           ; mov r3, r5                  ; ldunif
+0x3de07106b7f79001 xor.pushz -, r1, 1            ; mov r4, r5
+0x3c403006bbf00000 nop                           ; mov r0, r4                  ; ldunif
+0x3dec7006b7ef9002 xor.pushz -, r1, 2            ; mov.ifa r0, r3
+0x3c003046bbf00000 nop                           ; mov r1, r4
+0x3c4010c6bbf40000 nop                           ; mov rf3, r5                 ; ldunif
+0x3c0c3046bbec0000 nop                           ; mov.ifa r1, r3
+0x54003086bb400000 nop                           ; fmul r2, r0, r2
+0x540030c4f6c420c0 ffloor r4, r2                 ; fmul r3, r1, rf3
+0x3c4030c0f6f43000 ffloor r0, r3                 ; mov r3, r5                  ; ldunif
+0x3c003101f5f7c000 ftoiz r1, r4                  ; mov r4, r5
+0x3c003186bb81c000 vpmsetup -, r4                ; nop
+0x3c003382f5e78000 ftoiz r2, r0                  ; mov vpm, r1
+0x3c003386bbe80000 nop                           ; mov vpm, r2
+0x3c003386bbec0000 nop                           ; mov vpm, r3
+0x3de03386bbfc0028 nop                           ; mov vpm, 0x3f800000
+0x3c203186bb800000 nop                           ; nop                         ; thrsw
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+MESA_SHADER_VERTEX_BIN prog 0/2 pre-opt VIR:
+BLOCK 0:
+nop t0; ldunif (0x6840c000 / 3640944558292496459759616.000000)
+vpmsetup null, t0
+mov t1, vpm1073741823.3
+mov t2, t1
+nop t3; ldunif (0x00000001 / 0.000000)
+xor.pushz null, t2, t3
+nop t4; ldunif (0xffffffff / -nan)
+nop t5; ldunif (0x00000000 / 0.000000)
+mov t6, t5
+mov.ifa t6, t4
+mov t7, t6
+nop t8; ldunif (0x00000002 / 0.000000)
+xor.pushz null, t2, t8
+mov t9, t5
+mov.ifa t9, t4
+mov t10, t9
+nop t11; ldunif (0x40400000 / 3.000000)
+nop t12; ldunif (0xbf800000 / -1.000000)
+xor.pushz null, t2, t3
+mov t13, t12
+mov.ifa t13, t11
+mov t14, t13
+nop t15; ldunif (vp_x_scale)
+xor.pushz null, t2, t8
+mov t16, t12
+mov.ifa t16, t11
+mov t17, t16
+fmul t18, t14, t15
+nop t19; ldunif (vp_y_scale)
+ffloor t20, t18
+fmul t21, t17, t19
+ftoiz t22, t20
+ffloor t23, t21
+nop t24; ldunif (0x3f800000 / 1.000000)
+ftoiz t25, t23
+nop t26; ldunif (0x0140c000 / 0.000000)
+vpmsetup null, t26
+mov vpm, t14
+mov vpm, t17
+mov vpm, t5
+mov vpm, t24
+mov vpm, t22
+mov vpm, t25
+
+MESA_SHADER_VERTEX_BIN prog 0/2 VIR:
+BLOCK 0:
+nop t27; ldunif (0x6840c000 / 3640944558292496459759616.000000)
+mov t0, t27
+vpmsetup null, t0
+mov t1, vpm1073741823.3
+nop t28; ldunif (0x40400000 / 3.000000)
+mov t11, t28
+nop t29; ldunif (0xbf800000 / -1.000000)
+mov t12, t29
+xor.pushz null, t1, 1
+mov t13, t12
+mov.ifa t13, t11
+nop t30; ldunif (vp_x_scale)
+mov t15, t30
+xor.pushz null, t1, 2
+mov t16, t12
+mov.ifa t16, t11
+fmul t18, t13, t15
+nop t31; ldunif (vp_y_scale)
+mov t19, t31
+ffloor t20, t18
+fmul t21, t16, t19
+ftoiz t22, t20
+ffloor t23, t21
+ftoiz t25, t23
+nop t32; ldunif (0x0140c000 / 0.000000)
+mov t26, t32
+vpmsetup null, t26
+mov vpm, t13
+mov vpm, t16
+mov vpm, 0
+mov vpm, 1.000000
+mov vpm, t22
+mov vpm, t25
+
+MESA_SHADER_VERTEX_BIN prog 0/2 QPU:
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3c403006bbf40000 nop                           ; mov r0, r5                  ; ldunif
+0x3c003186bb818000 vpmsetup -, r0                ; nop
+0x3f403086bbf40000 nop                           ; mov r2, r5                  ; ldvpm; ldunif
+0x3c003046bbec0000 nop                           ; mov r1, r3
+0x3de070c6b7f79001 xor.pushz -, r1, 1            ; mov r3, r5
+0x3c403106bbec0000 nop                           ; mov r4, r3                  ; ldunif
+0x3dec7106b7eb9002 xor.pushz -, r1, 2            ; mov.ifa r4, r2
+0x3c003046bbec0000 nop                           ; mov r1, r3
+0x3c403006bbf40000 nop                           ; mov r0, r5                  ; ldunif
+0x3c0c3046bbe80000 nop                           ; mov.ifa r1, r2
+0x54003086bb100000 nop                           ; fmul r2, r4, r0
+0x3c4030c0f6f42000 ffloor r0, r2                 ; mov r3, r5                  ; ldunif
+0x54003083f5678000 ftoiz r3, r0                  ; fmul r2, r1, r3
+0x3c003180f6802000 ffloor r0, r2                 ; nop
+0x3c003002f5f78000 ftoiz r2, r0                  ; mov r0, r5
+0x3c003186bb818000 vpmsetup -, r0                ; nop
+0x3c003386bbf00000 nop                           ; mov vpm, r4
+0x3c003386bbe40000 nop                           ; mov vpm, r1
+0x3de03386bbfc0000 nop                           ; mov vpm, 0
+0x3de03386bbfc0028 nop                           ; mov vpm, 0x3f800000
+0x3c003386bbec0000 nop                           ; mov vpm, r3
+0x3c003386bbe80000 nop                           ; mov vpm, r2
+0x3c203186bb800000 nop                           ; nop                         ; thrsw
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+after the draw  exact   4096  old      0  other      0
+after a clear   exact   4096  old      0  other      0

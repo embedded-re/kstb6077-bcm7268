@@ -1,0 +1,3 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-848c0204
+f65f014d239860c453cf6aa63e0a07163b88f74f0a770d596f1b7ace908b7dfe  /opt/mesa/current/lib/dri/v3d_dri.so

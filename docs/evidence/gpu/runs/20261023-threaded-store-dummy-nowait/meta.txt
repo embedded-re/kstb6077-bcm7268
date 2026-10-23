@@ -1,0 +1,3 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-848c0204
+bf1eec8f8fc14d37f93fb8e7b8605cc1f9deb3cca6f7dc0712a5af83c30774a3  /tmp/kstb-threaded-store/v3d_dri.so

@@ -1,0 +1,24 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-f3d0b37dc1), 16 fragment SSBOs, 1x1 words, seed 0xbcdb568b
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 23 inst, 4 threads, 0 loops, 8 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 23 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+after the draw  exact      1  old      0  other      0
+after a clear   exact      1  old      0  other      0
+OpenGL ES 3.1 Mesa 23.3.6 (git-f3d0b37dc1), 16 fragment SSBOs, 17x13 words, seed 0xbcdb568b
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 23 inst, 4 threads, 0 loops, 8 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 23 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+after the draw  exact    221  old      0  other      0
+after a clear   exact    221  old      0  other      0
+OpenGL ES 3.1 Mesa 23.3.6 (git-f3d0b37dc1), 16 fragment SSBOs, 256x256 words, seed 0xbcdb568b
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 23 inst, 4 threads, 0 loops, 8 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 23 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+after the draw  exact  65536  old      0  other      0
+after a clear   exact  65536  old      0  other      0
+OpenGL ES 3.1 Mesa 23.3.6 (git-f3d0b37dc1), 16 fragment SSBOs, 1920x1080 words, seed 0xbcdb568b
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 23 inst, 4 threads, 0 loops, 8 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 23 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+after the draw  exact 2073600  old      0  other      0
+after a clear   exact 2073600  old      0  other      0

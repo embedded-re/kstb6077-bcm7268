@@ -66,3 +66,54 @@ Kernel `#29`, flashed to `KRN`/`DTB` (kmon `linux info`: `linux-6.18.57-kstb
   clean job for them anymore (no scratch), so they no longer test this path.
 
 The threaded-store hang above is a compiler matter and is still open.
+
+## Capability queries on kernel #29 (2026-10-23)
+
+`kstb-gl-caps 2|3|3.1` creates a surfaceless context and prints extensions
+and limits without compiling shaders or submitting draws. On installed
+`23.3.6-848c0204` (`v3d_dri.so` SHA256 `f65f014d239860c453cf6aa63e0a07163b88f74f0a770d596f1b7ace908b7dfe`),
+requests for versions 2 and 3 both returned GLES 3.0 / ESSL 3.00.
+With `MESA_GLES_VERSION_OVERRIDE=3.1`, the 3.1 request returned GLES 3.1 /
+ESSL 3.10 and these limits:
+
+| Query | Value |
+| --- | ---: |
+| Fragment shader storage blocks | 16 |
+| Vertex shader storage blocks | 0 |
+| Compute shader storage blocks | 8 |
+| Storage-buffer offset alignment | 4 |
+| Fragment / vertex / compute image uniforms | 0 / 0 / 0 |
+| Compute workgroup invocations | 0 |
+| Compute shared-memory bytes | 0 |
+| Fragment atomic counters | 4096 |
+
+The override also reports `GL_OES_shader_image_atomic` despite zero image
+uniforms. These are query results, not evidence that those features work;
+the override does not provide a working GLES 3.1 implementation.
+Raw output is in [`../docs/evidence/gpu/caps-20261023/`](../docs/evidence/gpu/caps-20261023).
+
+## Threaded-store investigation (2026-10-23, scratch driver)
+
+On kernel #29, the 64x64 baseline store shader reproduced the hang with
+four threads and no spills: 0/4096 exact, reset, `ERR_STAT=0x1000`.
+Moving the thread switch after the address write still hung. Adding a
+read before the switch, and discarding its result, gave exact results
+with four threads at 1x1, 17x13, 256x256 and 1920x1080, with no resets or
+MMU errors. A coherent/volatile store followed by a shader buffer barrier,
+reload and store also read back 4096 exact words. The reproducer now exits
+nonzero if either CPU readback differs.
+
+This does not close threaded spilling. A scratch compiler that adds the
+read to spills and permits threaded spills completed the 200-case
+`gles3-texture-units-spill.txt` list with 187 Pass and 13 image-comparison
+Fail, no MMU errors or resets. The failures were `all_units.only_2d.0`–`.9`
+and `all_units.only_2d_array.4`, `all_units.only_3d.4`,
+`all_units.mixed.4`; the selected shader for `only_2d.0`
+used two threads, 22 spills and 32 fills. The production spill fallback
+has not been removed from the patch series. Evidence is under
+[`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs), directories
+`20261023-threaded-*` and `20261023-180438-gles3-threaded-spill-fix`.
+
+All these opens also emitted `drm_sched_entity_init: called with
+uninitialized scheduler`. No installed Mesa build or kernel was changed
+in this investigation.
