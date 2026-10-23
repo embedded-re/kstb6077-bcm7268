@@ -1,0 +1,151 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Fri, 23 Oct 2026 23:28:01 +0200
+Subject: [PATCH 23/23] v3d: threaded TMU stores and scratch spills on V3D 3.3
+
+Issue a discarded read for store-only batches before THRSW so there is a TMU response to resume the thread. Apply the same sequence to register spills and remove the single-thread spill restriction.
+
+Keep pre-4.1 TMU sequences open until the final result has been copied from r4. Ending at the LDTMU signal allowed a postponed spill to overwrite r4 before its consumer, corrupting texture results.
+
+Tested on BCM7268: 200 texture/spill cases pass without MMU faults or resets; scalar, vector and batched SSBO stores are exact from 1x1 through 1920x1080. Forced fragment, vertex and coordinate spills also produce exact results.
+---
+ src/broadcom/compiler/nir_to_vir.c            | 25 +++++++++++++
+ src/broadcom/compiler/v3d_compiler.h          |  3 ++
+ src/broadcom/compiler/vir_register_allocate.c | 37 ++++++++++++++++---
+ 3 files changed, 59 insertions(+), 6 deletions(-)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index 6a591ec..a05ff72 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -267,6 +267,19 @@ ntq_flush_tmu(struct v3d_compile *c)
+         if (c->tmu.flush_count == 0)
+                 return;
+ 
++        /* A store-only batch has no TMU response to wake a switched thread
++         * on 3.3. Provide one before THRSW. The read result is discarded;
++         * TMUWT below still waits for all writes in the batch.
++         */
++        bool dummy_read = c->devinfo->ver == 33 && c->threads > 1 &&
++                          c->tmu.output_fifo_size == 0;
++        if (dummy_read) {
++                struct qinst *read = vir_MOV_dest(c,
++                        vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_TMUA),
++                        c->tmu.store_base);
++                read->ldtmu_count = 1;
++        }
++
+         vir_emit_thrsw(c);
+ 
+         bool emitted_tmuwt = false;
+@@ -287,6 +300,9 @@ ntq_flush_tmu(struct v3d_compile *c)
+                 }
+         }
+ 
++        if (dummy_read)
++                vir_LDTMU(c);
++
+         c->tmu.output_fifo_size = 0;
+         c->tmu.flush_count = 0;
+         _mesa_set_clear(c->tmu.outstanding_regs, NULL);
+@@ -715,6 +731,15 @@ ntq_emit_tmu_general(struct v3d_compile *c, nir_intrinsic_instr *instr,
+                          */
+                         const uint32_t component_mask =
+                                 (1 << dest_components) - 1;
++                        if (is_store && c->devinfo->ver == 33) {
++                                /* SSBO/shared/scratch bases are valid buffer
++                                 * addresses. Global operations use the offset
++                                 * itself as their address.
++                                 */
++                                c->tmu.store_base = is_global ?
++                                        (dynamic_src ? ntq_get_src(c, instr->src[offset_src], 0) :
++                                         vir_uniform_ui(c, const_offset)) : base_offset;
++                        }
+                         ntq_add_pending_tmu_flush(c, &instr->def,
+                                                   component_mask);
+                 }
+diff --git a/src/broadcom/compiler/v3d_compiler.h b/src/broadcom/compiler/v3d_compiler.h
+index b04ec61..dfb884c 100644
+--- a/src/broadcom/compiler/v3d_compiler.h
++++ b/src/broadcom/compiler/v3d_compiler.h
+@@ -644,6 +644,9 @@ struct v3d_compile {
+ 
+                 uint32_t output_fifo_size;
+ 
++                /* A valid address for the V3D 3.3 store-only batch read. */
++                struct qreg store_base;
++
+                 struct {
+                         nir_def *def;
+                         uint8_t num_components;
+diff --git a/src/broadcom/compiler/vir_register_allocate.c b/src/broadcom/compiler/vir_register_allocate.c
+index 337e199..ade0fd5 100644
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -149,6 +149,19 @@ is_end_of_tmu_sequence(const struct v3d_device_info *devinfo,
+         bool is_tmuwt = inst->qpu.type == V3D_QPU_INSTR_TYPE_ALU &&
+                         inst->qpu.alu.add.op == V3D_QPU_A_TMUWT;
+         bool is_ldtmu = inst->qpu.sig.ldtmu;
++        if (devinfo->ver < 41) {
++                /* Before LDTMU can target the register file, the result is
++                 * copied from r4 by the following MOV. A postponed spill
++                 * must not clobber r4 between that signal and its consumer.
++                 */
++                if (is_ldtmu)
++                        return false;
++                is_ldtmu = inst->qpu.alu.mul.op == V3D_QPU_M_MOV &&
++                           inst->src[0].file == QFILE_MAGIC &&
++                           inst->src[0].index == V3D_QPU_WADDR_R4 &&
++                           inst->link.prev != &block->instructions &&
++                           ((struct qinst *)inst->link.prev)->qpu.sig.ldtmu;
++        }
+         if (!is_tmuwt && !is_ldtmu)
+                 return false;
+ 
+@@ -292,14 +305,9 @@ v3d_choose_spill_node(struct v3d_compile *c)
+                         /* We can't insert new thread switches after
+                          * starting output writes.
+                          */
+-                        /* On 3.x, try the full register file in single-thread
+-                         * mode before spilling. Threaded spills currently hang
+-                         * on BCM7268; single-thread mode needs no THRSW.
+-                         */
+                         bool no_spilling =
+                                 (c->threads > 1 && started_last_seg) ||
+-                                (c->max_tmu_spills == 0) ||
+-                                (c->devinfo->ver < 40 && c->threads > 1);
++                                (c->max_tmu_spills == 0);
+ 
+                         /* Discourage spilling of TMU operations */
+                         for (int i = 0; i < vir_get_nsrc(inst); i++) {
+@@ -515,6 +523,19 @@ v3d_emit_spill_tmua(struct v3d_compile *c,
+         inst->uniform = vir_get_uniform_index(c, QUNIFORM_CONSTANT,
+                                               0xffffff7f); /* per-quad */
+ 
++        /* As with SSBO stores, a 3.3 spill needs a read response before
++         * switching threads. Read the same valid scratch address, per quad
++         * so helper lanes participate just as they do in the spill/fill.
++         */
++        bool dummy_read = !fill_dst && c->devinfo->ver == 33 && c->threads > 1;
++        if (dummy_read) {
++                struct qinst *read = vir_ADD_dest(c, tmua, c->spill_base, offset);
++                read->qpu.flags.ac = cond;
++                read->ldtmu_count = 1;
++                read->uniform = vir_get_uniform_index(c, QUNIFORM_CONSTANT,
++                                                      0xffffff7f);
++        }
++
+         vir_emit_thrsw(c);
+ 
+         /* If this is for a spill, emit a TMUWT otherwise a LDTMU to load the
+@@ -528,6 +549,10 @@ v3d_emit_spill_tmua(struct v3d_compile *c,
+                 struct qreg dst = vir_TMUWT(c);
+                 assert(dst.file == QFILE_TEMP);
+                 add_node(c, dst.index, temp_class);
++                if (dummy_read) {
++                        struct qreg discarded = vir_LDTMU(c);
++                        add_node(c, discarded.index, temp_class);
++                }
+         } else {
+                 *fill_dst = vir_LDTMU(c);
+                 assert(fill_dst->file == QFILE_TEMP);

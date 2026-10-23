@@ -117,3 +117,43 @@ has not been removed from the patch series. Evidence is under
 All these opens also emitted `drm_sched_entity_init: called with
 uninitialized scheduler`. No installed Mesa build or kernel was changed
 in this investigation.
+
+## Patch 0023: threaded stores and the final TMU result (2026-10-23)
+
+The scratch driver above exposed two separate problems. A store-only batch
+supplies no read response for a thread switch. Patch 0023 issues one read
+from a valid buffer address before switching and discards the result;
+`TMUWT` still waits for the stores. Register spills use the same sequence.
+
+The image failures came from postponed spills: the allocator treated the
+final `LDTMU` signal as the end of a request, although the next `MOV` still
+needed to copy its result from `r4`. Inserting a spill's read between them
+replaced that result. On hardware with implicit `r4` results, the allocator
+now waits until that copy has finished. The threaded-spill restriction is
+removed from the candidate.
+
+On the clean scratch candidate:
+
+- All 200 `gles3-texture-units-spill.txt` cases Pass, with 0 MMU errors,
+  resets and oopses. All 13 image failures above are gone.
+- Scalar stores, 4-thread fragment shader: exact after draw and clear at
+  1x1, 17x13, 64x64, 256x256 and 1920x1080.
+- Explicit `uvec4` stores and eight-word batches, 2-thread fragment
+  shaders: exact at 1x1, 17x13, 256x256 and 1920x1080. The largest batch
+  checks 16,588,800 words. Vector requests exceed the four-thread input
+  FIFO allowance, so the compiler selects two threads.
+- Forced spilling in all stages: exact 64x64 readback with 4 fragment
+  spills/fills (4 threads), 6 vertex spills/fills and 6 coordinate
+  spills/fills (1 thread each). This test failed before the boundary fix.
+
+Evidence: `20261023-232253-gles3-threaded-spill-r4-fixed`,
+`20261023-threaded-store-scalar-vector-batch`, and
+`20261023-threaded-store-r4-force-all-spill4` under
+[`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs).
+The scheduler-entity warning remains as recorded above.
+
+The exported series builds as `23.3.6-cd573075` (Mesa branch `d7e482b`,
+`v3d_dri.so` SHA256 `7df059cdb908fa5eb9ab534c3fdfe5412792597a6fd9fa599dc0e4d4498191d9`).
+It is installed alongside `848c0204`; full GLES3/GLES2/EGL validation is
+in progress with explicit `--mesa 23.3.6-cd573075`. `/opt/mesa/current`
+still selects `848c0204`; `/usr/local` and the kernel are unchanged.

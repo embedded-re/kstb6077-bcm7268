@@ -1,0 +1,1380 @@
+#sessionInfo releaseName opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80
+#sessionInfo releaseId 0x067e8832
+#sessionInfo targetName "nullws"
+#sessionInfo logFormatVersion "0.3.4"
+#sessionInfo vendor "Broadcom"
+#sessionInfo renderer "V3D 3.3"
+#sessionInfo commandLineParameters "--deqp-case=dEQP-GLES3.functional.texture.units.all_units.only_2d.0 --deqp-surface-type=window --deqp-gl-config-name=rgba8888d24s8ms0 --deqp-surface-width=256 --deqp-surface-height=256 --deqp-log-filename=/root/gpu-runs/20261023-threaded-spill-r4-boundary/test.qpa --deqp-log-images=disable"
+
+#beginSession
+
+#beginTestCaseResult dEQP-GLES3.functional.texture.units.all_units.only_2d.0
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseResult CasePath="dEQP-GLES3.functional.texture.units.all_units.only_2d.0" Version="0.3.4" CaseType="SelfValidate">
+ <Text>Using 24 texture unit(s) and 24 texture(s)</Text>
+ <Text>glGenTextures(24, 0x0000ffffb1f50640);</Text>
+ <Text>// textures = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 }</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 13);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_R8I, 128, 128, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb2033df0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_R8I, 64, 64, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb202b0c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_R8I, 32, 32, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb2093280);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_R8I, 16, 16, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb216ac60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_R8I, 8, 8, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb216d860);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_R8I, 4, 4, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb2060420);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_R8I, 2, 2, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb21e3af0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_R8I, 1, 1, 0, GL_RED_INTEGER, GL_BYTE, 0xffffb21e3b00);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE1);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 11);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8I, 128, 128, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb2053db0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB8I, 64, 64, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb204fdc0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB8I, 32, 32, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb204e1d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB8I, 16, 16, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb212e650);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB8I, 8, 8, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb2197cc0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGB8I, 4, 4, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb2185410);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGB8I, 2, 2, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb21e3ac0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGB8I, 1, 1, 0, GL_RGB_INTEGER, GL_BYTE, 0xffffb21e3ad0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE2);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 21);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, 128, 128, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb1f68820);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_R8UI, 64, 64, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb1f10310);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_R8UI, 32, 32, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb1f0d490);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_R8UI, 16, 16, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb216b9f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_R8UI, 8, 8, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb216d9a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_R8UI, 4, 4, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20604a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_R8UI, 2, 2, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20611c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_R8UI, 1, 1, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20611d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE3);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 8);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, 128, 128, 0, GL_RED_INTEGER, GL_INT, 0xffffb2099d20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_R32I, 64, 64, 0, GL_RED_INTEGER, GL_INT, 0xffffb2094d30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_R32I, 32, 32, 0, GL_RED_INTEGER, GL_INT, 0xffffb2100fb0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_R32I, 16, 16, 0, GL_RED_INTEGER, GL_INT, 0xffffb2092040);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_R32I, 8, 8, 0, GL_RED_INTEGER, GL_INT, 0xffffb216a7e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_R32I, 4, 4, 0, GL_RED_INTEGER, GL_INT, 0xffffb2163300);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_R32I, 2, 2, 0, GL_RED_INTEGER, GL_INT, 0xffffb219af10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_R32I, 1, 1, 0, GL_RED_INTEGER, GL_INT, 0xffffb21e3a90);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE4);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 16);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, 128, 128, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb1fcfe40);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RG32UI, 64, 64, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb1fc6e50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RG32UI, 32, 32, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb1fbf1e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RG32UI, 16, 16, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb20ab7a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RG32UI, 8, 8, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb2167b60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RG32UI, 4, 4, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb216b3b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RG32UI, 2, 2, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb216c170);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RG32UI, 1, 1, 0, GL_RG_INTEGER, GL_UNSIGNED_INT, 0xffffb21e3b30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE5);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 2);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb2134c10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB8, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb2130c20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB8, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb212f030);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB8, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb212e020);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB8, 8, 8, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb2197ae0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGB8, 4, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb21855d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGB8, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb21e3b70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGB8, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb21e3b80);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE6);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 9);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8I, 128, 128, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb2081d50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA8I, 64, 64, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb207cd60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA8I, 32, 32, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb2078030);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA8I, 16, 16, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb20924f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA8I, 8, 8, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb216a8f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA8I, 4, 4, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb2163260);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA8I, 2, 2, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb219af30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA8I, 1, 1, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb21e3aa0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE7);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 3);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 128, 128, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb211dc50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_R32UI, 64, 64, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb2118c60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_R32UI, 32, 32, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb2202ef0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_R32UI, 16, 16, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb21916e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_R32UI, 8, 8, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb216eed0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_R32UI, 4, 4, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb2163350);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_R32UI, 2, 2, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb219ae70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_R32UI, 1, 1, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb21e3b90);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE8);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 1);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8_SNORM, 128, 128, 0, GL_RG, GL_BYTE, 0xffffb2148bf0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RG8_SNORM, 64, 64, 0, GL_RG, GL_BYTE, 0xffffb2141400);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RG8_SNORM, 32, 32, 0, GL_RG, GL_BYTE, 0xffffb21956a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RG8_SNORM, 16, 16, 0, GL_RG, GL_BYTE, 0xffffb21674c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RG8_SNORM, 8, 8, 0, GL_RG, GL_BYTE, 0xffffb2169120);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RG8_SNORM, 4, 4, 0, GL_RG, GL_BYTE, 0xffffb216c380);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RG8_SNORM, 2, 2, 0, GL_RG, GL_BYTE, 0xffffb21e3b50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RG8_SNORM, 1, 1, 0, GL_RG, GL_BYTE, 0xffffb21e3b60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE9);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 12);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb203dde0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA8, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb202f4e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA8, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb207ab30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA8, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb2092df0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA8, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb216ab30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA8, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb216d810);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb2060400);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb21e3ae0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 15);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16UI, 128, 128, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb1ff9e20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA16UI, 64, 64, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb1ff0e30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA16UI, 32, 32, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb2145ab0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA16UI, 16, 16, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb20aacd0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA16UI, 8, 8, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb2167930);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA16UI, 4, 4, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb216b290);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA16UI, 2, 2, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb216c080);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA16UI, 1, 1, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb21e3b20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE11);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 6);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8UI, 128, 128, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20dbcc0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB8UI, 64, 64, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20d7cd0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB8UI, 32, 32, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb20d60e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB8UI, 16, 16, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb212e340);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB8UI, 8, 8, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb2197be0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGB8UI, 4, 4, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb2185710);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGB8UI, 2, 2, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb21e3a60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGB8UI, 1, 1, 0, GL_RGB_INTEGER, GL_UNSIGNED_BYTE, 0xffffb21e3a70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE12);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 22);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128, 128, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1eecf20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, 64, 64, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1ee3f30);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1edc2c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA16F, 16, 16, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1f555e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA16F, 8, 8, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1edb010);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA16F, 4, 4, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1f508a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA16F, 2, 2, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb216c2f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA16F, 1, 1, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb20611e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE13);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 4);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2UI, 128, 128, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb2107c70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB10_A2UI, 64, 64, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb2102c80);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB10_A2UI, 32, 32, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb20fe490);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB10_A2UI, 16, 16, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb2191b10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB10_A2UI, 8, 8, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb2171a00);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGB10_A2UI, 4, 4, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb21633a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGB10_A2UI, 2, 2, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb219aeb0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGB10_A2UI, 1, 1, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT_2_10_10_10_REV, 0xffffb21e3ba0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE14);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 19);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 128, 128, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1f2fed0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, 64, 64, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1f26ee0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA16F, 32, 32, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1fc3b60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA16F, 16, 16, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb1f54ae0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA16F, 8, 8, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb2167270);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA16F, 4, 4, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb216b680);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA16F, 2, 2, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb216c260);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA16F, 1, 1, 0, GL_RGBA, GL_HALF_FLOAT, 0xffffb20611a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE15);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 128, 128, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb1f15ef0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_R32UI, 64, 64, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb1f63ef0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_R32UI, 32, 32, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb1f0f0c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_R32UI, 16, 16, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb1f0d010);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_R32UI, 8, 8, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb216b8d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_R32UI, 4, 4, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb216d950);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_R32UI, 2, 2, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb2060480);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_R32UI, 1, 1, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0xffffb20611b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE16);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 18);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8_SNORM, 128, 128, 0, GL_RG, GL_BYTE, 0xffffb1f56ea0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RG8_SNORM, 64, 64, 0, GL_RG, GL_BYTE, 0xffffb1fc16a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RG8_SNORM, 32, 32, 0, GL_RG, GL_BYTE, 0xffffb1f54010);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RG8_SNORM, 16, 16, 0, GL_RG, GL_BYTE, 0xffffb2167db0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RG8_SNORM, 8, 8, 0, GL_RG, GL_BYTE, 0xffffb216b560);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RG8_SNORM, 4, 4, 0, GL_RG, GL_BYTE, 0xffffb216c1a0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RG8_SNORM, 2, 2, 0, GL_RG, GL_BYTE, 0xffffb21e3b40);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RG8_SNORM, 1, 1, 0, GL_RG, GL_BYTE, 0xffffb2061190);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE17);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 5);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8I, 128, 128, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb20edca0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA8I, 64, 64, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb20e8cb0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA8I, 32, 32, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb20ff9f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA8I, 16, 16, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb2191210);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA8I, 8, 8, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb2171e70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA8I, 4, 4, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb21632b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA8I, 2, 2, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb219aed0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA8I, 1, 1, 0, GL_RGBA_INTEGER, GL_BYTE, 0xffffb21e3a50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE18);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 17);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32I, 128, 128, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb1f7ee70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA32I, 64, 64, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb1f6de80);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA32I, 32, 32, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb1f5f580);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA32I, 16, 16, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb202dbd0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA32I, 8, 8, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb2093b10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA32I, 4, 4, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb216b7b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA32I, 2, 2, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb216d900);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA32I, 1, 1, 0, GL_RGBA_INTEGER, GL_INT, 0xffffb2060460);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE19);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 7);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16UI, 128, 128, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb20b5cf0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA16UI, 64, 64, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb20acd00);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGBA16UI, 32, 32, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb2143500);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGBA16UI, 16, 16, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb20aa110);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGBA16UI, 8, 8, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb21676d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGBA16UI, 4, 4, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb2169510);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGBA16UI, 2, 2, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb21852b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGBA16UI, 1, 1, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, 0xffffb21e3a80);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 23);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb1ecef60);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_SRGB8, 64, 64, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb1ecaf70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_SRGB8, 32, 32, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb1ec9380);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_SRGB8, 16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb212e980);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_SRGB8, 8, 8, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb2197db0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_SRGB8, 4, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb21854d0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_SRGB8, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb20611f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_SRGB8, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, 0xffffb2061200);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE21);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 24);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16I, 128, 128, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb1eb8f90);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RG16I, 64, 64, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb1eaa690);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RG16I, 32, 32, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb1f115e0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RG16I, 16, 16, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb1f0d920);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RG16I, 8, 8, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb216bb20);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RG16I, 4, 4, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb216d9f0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RG16I, 2, 2, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb20604c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RG16I, 1, 1, 0, GL_RG_INTEGER, GL_SHORT, 0xffffb2061210);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE22);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB9_E5, 128, 128, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb2067d80);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_RGB9_E5, 64, 64, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb2062d90);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_RGB9_E5, 32, 32, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb2079590);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_RGB9_E5, 16, 16, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb2092910);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_RGB9_E5, 8, 8, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb216aa10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_RGB9_E5, 4, 4, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb216d7c0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_RGB9_E5, 2, 2, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb219af50);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_RGB9_E5, 1, 1, 0, GL_RGB, GL_UNSIGNED_INT_5_9_9_9_REV, 0xffffb21e3ab0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glActiveTexture(GL_TEXTURE23);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glBindTexture(GL_TEXTURE_2D, 14);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);</Text>
+ <Text>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glPixelStorei(GL_UNPACK_ALIGNMENT, 1);</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb201ae10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 1, GL_SRGB8_ALPHA8, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb2038720);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 2, GL_SRGB8_ALPHA8, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb202c610);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 3, GL_SRGB8_ALPHA8, 16, 16, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb2093690);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 4, GL_SRGB8_ALPHA8, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb216ad70);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 5, GL_SRGB8_ALPHA8, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb216d8b0);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 6, GL_SRGB8_ALPHA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb2060440);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glTexImage2D(GL_TEXTURE_2D, 7, GL_SRGB8_ALPHA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb21e3b10);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <ShaderProgram LinkStatus="OK">
+  <InfoLog></InfoLog>
+  <VertexShader CompileStatus="OK">
+   <ShaderSource>#version 300 es
+in highp vec4 a_position;
+in highp vec2 a_coord;
+out highp vec2 v_coord;
+
+void main (void)
+{
+    gl_Position = a_position;
+    v_coord = a_coord;
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</VertexShader>
+  <FragmentShader CompileStatus="OK">
+   <ShaderSource>#version 300 es
+layout(location = 0) out mediump vec4 o_color;
+uniform highp isampler2D u_sampler0;
+uniform highp isampler2D u_sampler1;
+uniform highp usampler2D u_sampler2;
+uniform highp isampler2D u_sampler3;
+uniform highp usampler2D u_sampler4;
+uniform highp sampler2D u_sampler5;
+uniform highp isampler2D u_sampler6;
+uniform highp usampler2D u_sampler7;
+uniform highp sampler2D u_sampler8;
+uniform highp sampler2D u_sampler9;
+uniform highp usampler2D u_sampler10;
+uniform highp usampler2D u_sampler11;
+uniform highp sampler2D u_sampler12;
+uniform highp usampler2D u_sampler13;
+uniform highp sampler2D u_sampler14;
+uniform highp usampler2D u_sampler15;
+uniform highp sampler2D u_sampler16;
+uniform highp isampler2D u_sampler17;
+uniform highp isampler2D u_sampler18;
+uniform highp usampler2D u_sampler19;
+uniform highp sampler2D u_sampler20;
+uniform highp isampler2D u_sampler21;
+uniform highp sampler2D u_sampler22;
+uniform highp sampler2D u_sampler23;
+uniform highp mat4 u_trans0;
+uniform highp mat4 u_trans1;
+uniform highp mat4 u_trans2;
+uniform highp mat4 u_trans3;
+uniform highp mat4 u_trans4;
+uniform highp mat4 u_trans5;
+uniform highp mat4 u_trans6;
+uniform highp mat4 u_trans7;
+uniform highp mat4 u_trans8;
+uniform highp mat4 u_trans9;
+uniform highp mat4 u_trans10;
+uniform highp mat4 u_trans11;
+uniform highp mat4 u_trans12;
+uniform highp mat4 u_trans13;
+uniform highp mat4 u_trans14;
+uniform highp mat4 u_trans15;
+uniform highp mat4 u_trans16;
+uniform highp mat4 u_trans17;
+uniform highp mat4 u_trans18;
+uniform highp mat4 u_trans19;
+uniform highp mat4 u_trans20;
+uniform highp mat4 u_trans21;
+uniform highp mat4 u_trans22;
+uniform highp mat4 u_trans23;
+uniform highp vec4 u_texScale0;
+uniform highp vec4 u_texScale1;
+uniform highp vec4 u_texScale2;
+uniform highp vec4 u_texScale3;
+uniform highp vec4 u_texScale4;
+uniform highp vec4 u_texScale5;
+uniform highp vec4 u_texScale6;
+uniform highp vec4 u_texScale7;
+uniform highp vec4 u_texScale8;
+uniform highp vec4 u_texScale9;
+uniform highp vec4 u_texScale10;
+uniform highp vec4 u_texScale11;
+uniform highp vec4 u_texScale12;
+uniform highp vec4 u_texScale13;
+uniform highp vec4 u_texScale14;
+uniform highp vec4 u_texScale15;
+uniform highp vec4 u_texScale16;
+uniform highp vec4 u_texScale17;
+uniform highp vec4 u_texScale18;
+uniform highp vec4 u_texScale19;
+uniform highp vec4 u_texScale20;
+uniform highp vec4 u_texScale21;
+uniform highp vec4 u_texScale22;
+uniform highp vec4 u_texScale23;
+uniform highp vec4 u_texBias0;
+uniform highp vec4 u_texBias1;
+uniform highp vec4 u_texBias2;
+uniform highp vec4 u_texBias3;
+uniform highp vec4 u_texBias4;
+uniform highp vec4 u_texBias5;
+uniform highp vec4 u_texBias6;
+uniform highp vec4 u_texBias7;
+uniform highp vec4 u_texBias8;
+uniform highp vec4 u_texBias9;
+uniform highp vec4 u_texBias10;
+uniform highp vec4 u_texBias11;
+uniform highp vec4 u_texBias12;
+uniform highp vec4 u_texBias13;
+uniform highp vec4 u_texBias14;
+uniform highp vec4 u_texBias15;
+uniform highp vec4 u_texBias16;
+uniform highp vec4 u_texBias17;
+uniform highp vec4 u_texBias18;
+uniform highp vec4 u_texBias19;
+uniform highp vec4 u_texBias20;
+uniform highp vec4 u_texBias21;
+uniform highp vec4 u_texBias22;
+uniform highp vec4 u_texBias23;
+in highp vec2 v_coord;
+
+void main (void)
+{
+    mediump vec4 color = vec4(0.0);
+	color += (1.0/24.0)*(vec4(texture(u_sampler0, vec2(u_trans0*vec4(v_coord, 1.0, 1.0))))*u_texScale0 + u_texBias0);
+	color += (1.0/24.0)*(vec4(texture(u_sampler1, vec2(u_trans1*vec4(v_coord, 1.0, 1.0))))*u_texScale1 + u_texBias1);
+	color += (1.0/24.0)*(vec4(texture(u_sampler2, vec2(u_trans2*vec4(v_coord, 1.0, 1.0))))*u_texScale2 + u_texBias2);
+	color += (1.0/24.0)*(vec4(texture(u_sampler3, vec2(u_trans3*vec4(v_coord, 1.0, 1.0))))*u_texScale3 + u_texBias3);
+	color += (1.0/24.0)*(vec4(texture(u_sampler4, vec2(u_trans4*vec4(v_coord, 1.0, 1.0))))*u_texScale4 + u_texBias4);
+	color += (1.0/24.0)*(vec4(texture(u_sampler5, vec2(u_trans5*vec4(v_coord, 1.0, 1.0))))*u_texScale5 + u_texBias5);
+	color += (1.0/24.0)*(vec4(texture(u_sampler6, vec2(u_trans6*vec4(v_coord, 1.0, 1.0))))*u_texScale6 + u_texBias6);
+	color += (1.0/24.0)*(vec4(texture(u_sampler7, vec2(u_trans7*vec4(v_coord, 1.0, 1.0))))*u_texScale7 + u_texBias7);
+	color += (1.0/24.0)*(vec4(texture(u_sampler8, vec2(u_trans8*vec4(v_coord, 1.0, 1.0))))*u_texScale8 + u_texBias8);
+	color += (1.0/24.0)*(vec4(texture(u_sampler9, vec2(u_trans9*vec4(v_coord, 1.0, 1.0))))*u_texScale9 + u_texBias9);
+	color += (1.0/24.0)*(vec4(texture(u_sampler10, vec2(u_trans10*vec4(v_coord, 1.0, 1.0))))*u_texScale10 + u_texBias10);
+	color += (1.0/24.0)*(vec4(texture(u_sampler11, vec2(u_trans11*vec4(v_coord, 1.0, 1.0))))*u_texScale11 + u_texBias11);
+	color += (1.0/24.0)*(vec4(texture(u_sampler12, vec2(u_trans12*vec4(v_coord, 1.0, 1.0))))*u_texScale12 + u_texBias12);
+	color += (1.0/24.0)*(vec4(texture(u_sampler13, vec2(u_trans13*vec4(v_coord, 1.0, 1.0))))*u_texScale13 + u_texBias13);
+	color += (1.0/24.0)*(vec4(texture(u_sampler14, vec2(u_trans14*vec4(v_coord, 1.0, 1.0))))*u_texScale14 + u_texBias14);
+	color += (1.0/24.0)*(vec4(texture(u_sampler15, vec2(u_trans15*vec4(v_coord, 1.0, 1.0))))*u_texScale15 + u_texBias15);
+	color += (1.0/24.0)*(vec4(texture(u_sampler16, vec2(u_trans16*vec4(v_coord, 1.0, 1.0))))*u_texScale16 + u_texBias16);
+	color += (1.0/24.0)*(vec4(texture(u_sampler17, vec2(u_trans17*vec4(v_coord, 1.0, 1.0))))*u_texScale17 + u_texBias17);
+	color += (1.0/24.0)*(vec4(texture(u_sampler18, vec2(u_trans18*vec4(v_coord, 1.0, 1.0))))*u_texScale18 + u_texBias18);
+	color += (1.0/24.0)*(vec4(texture(u_sampler19, vec2(u_trans19*vec4(v_coord, 1.0, 1.0))))*u_texScale19 + u_texBias19);
+	color += (1.0/24.0)*(vec4(texture(u_sampler20, vec2(u_trans20*vec4(v_coord, 1.0, 1.0))))*u_texScale20 + u_texBias20);
+	color += (1.0/24.0)*(vec4(texture(u_sampler21, vec2(u_trans21*vec4(v_coord, 1.0, 1.0))))*u_texScale21 + u_texBias21);
+	color += (1.0/24.0)*(vec4(texture(u_sampler22, vec2(u_trans22*vec4(v_coord, 1.0, 1.0))))*u_texScale22 + u_texBias22);
+	color += (1.0/24.0)*(vec4(texture(u_sampler23, vec2(u_trans23*vec4(v_coord, 1.0, 1.0))))*u_texScale23 + u_texBias23);
+    o_color = color;
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</FragmentShader>
+</ShaderProgram>
+ <Number Name="VertexCompileTime" Description="Vertex shader compile time" Tag="Time" Unit="ms">30.341999</Number>
+ <Number Name="FragmentCompileTime" Description="Fragment shader compile time" Tag="Time" Unit="ms">7.179000</Number>
+ <Number Name="LinkTime" Description="Link time" Tag="Time" Unit="ms">35.557999</Number>
+ <Text>glClearColor(0.125, 0.25, 0.5, 1);</Text>
+ <Text>glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_COLOR_BUFFER_BIT);</Text>
+ <Text>glUseProgram(1);</Text>
+ <Text>glGetUniformLocation(1, u_sampler0);</Text>
+ <Text>// 0 returned</Text>
+ <Text>glUniform1i(0, 0);</Text>
+ <Text>glGetUniformLocation(1, u_trans0);</Text>
+ <Text>// 24 returned</Text>
+ <Text>glUniformMatrix4fv(24, 1, GL_FALSE, { -0.66752, 0.28644, 0, 0, -0.450396, -0.565448, 0, 0, 0.83812, 0.741326, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale0);</Text>
+ <Text>// 48 returned</Text>
+ <Text>glUniform4fv(48, 1, { 0.00392157, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias0);</Text>
+ <Text>// 72 returned</Text>
+ <Text>glUniform4fv(72, 1, { 0.501961, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler1);</Text>
+ <Text>// 1 returned</Text>
+ <Text>glUniform1i(1, 1);</Text>
+ <Text>glGetUniformLocation(1, u_trans1);</Text>
+ <Text>// 25 returned</Text>
+ <Text>glUniformMatrix4fv(25, 1, GL_FALSE, { -0.626402, -0.657386, 0, 0, 0.248191, -0.464669, 0, 0, 0.300955, 0.930896, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale1);</Text>
+ <Text>// 49 returned</Text>
+ <Text>glUniform4fv(49, 1, { 0.00392157, 0.00392157, 0.00392157, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias1);</Text>
+ <Text>// 73 returned</Text>
+ <Text>glUniform4fv(73, 1, { 0.501961, 0.501961, 0.501961, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler2);</Text>
+ <Text>// 2 returned</Text>
+ <Text>glUniform1i(2, 2);</Text>
+ <Text>glGetUniformLocation(1, u_trans2);</Text>
+ <Text>// 26 returned</Text>
+ <Text>glUniformMatrix4fv(26, 1, GL_FALSE, { 0.769676, -0.117136, 0, 0, 0.252466, 0.545707, 0, 0, -0.215111, 0.438129, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale2);</Text>
+ <Text>// 50 returned</Text>
+ <Text>glUniform4fv(50, 1, { 0.00392157, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias2);</Text>
+ <Text>// 74 returned</Text>
+ <Text>glUniform4fv(74, 1, { -0, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler3);</Text>
+ <Text>// 3 returned</Text>
+ <Text>glUniform1i(3, 3);</Text>
+ <Text>glGetUniformLocation(1, u_trans3);</Text>
+ <Text>// 27 returned</Text>
+ <Text>glUniformMatrix4fv(27, 1, GL_FALSE, { 0.287083, 0.576282, 0, 0, -0.508464, 0.768632, 0, 0, 0.47787, -0.356239, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale3);</Text>
+ <Text>// 51 returned</Text>
+ <Text>glUniform4fv(51, 1, { 2.32831e-10, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias3);</Text>
+ <Text>// 75 returned</Text>
+ <Text>glUniform4fv(75, 1, { 0.5, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler4);</Text>
+ <Text>// 4 returned</Text>
+ <Text>glUniform1i(4, 4);</Text>
+ <Text>glGetUniformLocation(1, u_trans4);</Text>
+ <Text>// 28 returned</Text>
+ <Text>glUniformMatrix4fv(28, 1, GL_FALSE, { 0.871116, -0.386963, 0, 0, 0.486585, 0.281241, 0, 0, -0.649867, 0.158971, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale4);</Text>
+ <Text>// 52 returned</Text>
+ <Text>glUniform4fv(52, 1, { 2.32831e-10, 2.32831e-10, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias4);</Text>
+ <Text>// 76 returned</Text>
+ <Text>glUniform4fv(76, 1, { -0, -0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler5);</Text>
+ <Text>// 5 returned</Text>
+ <Text>glUniform1i(5, 5);</Text>
+ <Text>glGetUniformLocation(1, u_trans5);</Text>
+ <Text>// 29 returned</Text>
+ <Text>glUniformMatrix4fv(29, 1, GL_FALSE, { 0.0753413, 0.679071, 0, 0, -0.62475, 0.200635, 0, 0, 0.747288, -0.252913, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale5);</Text>
+ <Text>// 53 returned</Text>
+ <Text>glUniform4fv(53, 1, { 1, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias5);</Text>
+ <Text>// 77 returned</Text>
+ <Text>glUniform4fv(77, 1, { -0, -0, -0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler6);</Text>
+ <Text>// 6 returned</Text>
+ <Text>glUniform1i(6, 6);</Text>
+ <Text>glGetUniformLocation(1, u_trans6);</Text>
+ <Text>// 30 returned</Text>
+ <Text>glUniformMatrix4fv(30, 1, GL_FALSE, { 0.226526, 0.812823, 0, 0, -0.447633, 0.386143, 0, 0, 0.206196, -0.355067, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale6);</Text>
+ <Text>// 54 returned</Text>
+ <Text>glUniform4fv(54, 1, { 0.00392157, 0.00392157, 0.00392157, 0.00392157 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias6);</Text>
+ <Text>// 78 returned</Text>
+ <Text>glUniform4fv(78, 1, { 0.501961, 0.501961, 0.501961, 0.501961 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler7);</Text>
+ <Text>// 7 returned</Text>
+ <Text>glUniform1i(7, 7);</Text>
+ <Text>glGetUniformLocation(1, u_trans7);</Text>
+ <Text>// 31 returned</Text>
+ <Text>glUniformMatrix4fv(31, 1, GL_FALSE, { -0.930863, 0.382069, 0, 0, -0.687318, -0.379651, 0, 0, 0.90349, 0.269458, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale7);</Text>
+ <Text>// 55 returned</Text>
+ <Text>glUniform4fv(55, 1, { 2.32831e-10, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias7);</Text>
+ <Text>// 79 returned</Text>
+ <Text>glUniform4fv(79, 1, { -0, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler8);</Text>
+ <Text>// 8 returned</Text>
+ <Text>glUniform1i(8, 8);</Text>
+ <Text>glGetUniformLocation(1, u_trans8);</Text>
+ <Text>// 32 returned</Text>
+ <Text>glUniformMatrix4fv(32, 1, GL_FALSE, { -0.705418, -0.0527511, 0, 0, -0.411173, -0.57103, 0, 0, 0.873238, 0.326575, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale8);</Text>
+ <Text>// 56 returned</Text>
+ <Text>glUniform4fv(56, 1, { 0.5, 0.5, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias8);</Text>
+ <Text>// 80 returned</Text>
+ <Text>glUniform4fv(80, 1, { 0.5, 0.5, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler9);</Text>
+ <Text>// 9 returned</Text>
+ <Text>glUniform1i(9, 9);</Text>
+ <Text>glGetUniformLocation(1, u_trans9);</Text>
+ <Text>// 33 returned</Text>
+ <Text>glUniformMatrix4fv(33, 1, GL_FALSE, { 0.625614, 0.341657, 0, 0, 0.155147, 0.661436, 0, 0, 0.0531854, -0.405669, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale9);</Text>
+ <Text>// 57 returned</Text>
+ <Text>glUniform4fv(57, 1, { 1, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias9);</Text>
+ <Text>// 81 returned</Text>
+ <Text>glUniform4fv(81, 1, { -0, -0, -0, -0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler10);</Text>
+ <Text>// 10 returned</Text>
+ <Text>glUniform1i(10, 10);</Text>
+ <Text>glGetUniformLocation(1, u_trans10);</Text>
+ <Text>// 34 returned</Text>
+ <Text>glUniformMatrix4fv(34, 1, GL_FALSE, { -0.227489, 0.608508, 0, 0, -0.66251, -0.15558, 0, 0, 0.527514, 0.111499, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale10);</Text>
+ <Text>// 58 returned</Text>
+ <Text>glUniform4fv(58, 1, { 1.5259e-05, 1.5259e-05, 1.5259e-05, 1.5259e-05 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias10);</Text>
+ <Text>// 82 returned</Text>
+ <Text>glUniform4fv(82, 1, { -0, -0, -0, -0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler11);</Text>
+ <Text>// 11 returned</Text>
+ <Text>glUniform1i(11, 11);</Text>
+ <Text>glGetUniformLocation(1, u_trans11);</Text>
+ <Text>// 35 returned</Text>
+ <Text>glUniformMatrix4fv(35, 1, GL_FALSE, { -0.518043, -0.049548, 0, 0, -0.137852, -0.775248, 0, 0, 0.589349, 0.822569, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale11);</Text>
+ <Text>// 59 returned</Text>
+ <Text>glUniform4fv(59, 1, { 0.00392157, 0.00392157, 0.00392157, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias11);</Text>
+ <Text>// 83 returned</Text>
+ <Text>glUniform4fv(83, 1, { -0, -0, -0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler12);</Text>
+ <Text>// 12 returned</Text>
+ <Text>glUniform1i(12, 12);</Text>
+ <Text>glGetUniformLocation(1, u_trans12);</Text>
+ <Text>// 36 returned</Text>
+ <Text>glUniformMatrix4fv(36, 1, GL_FALSE, { -0.0505351, 0.552993, 0, 0, -0.755507, 0.0417671, 0, 0, 0.607097, -0.0122623, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale12);</Text>
+ <Text>// 60 returned</Text>
+ <Text>glUniform4fv(60, 1, { 0.0005, 0.0005, 0.0005, 0.0005 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias12);</Text>
+ <Text>// 84 returned</Text>
+ <Text>glUniform4fv(84, 1, { 0.5, 0.5, 0.5, 0.5 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler13);</Text>
+ <Text>// 13 returned</Text>
+ <Text>glUniform1i(13, 13);</Text>
+ <Text>glGetUniformLocation(1, u_trans13);</Text>
+ <Text>// 37 returned</Text>
+ <Text>glUniformMatrix4fv(37, 1, GL_FALSE, { 0.244555, -0.79998, 0, 0, 0.514218, 0.0389162, 0, 0, -0.34601, 0.816302, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale13);</Text>
+ <Text>// 61 returned</Text>
+ <Text>glUniform4fv(61, 1, { 0.000977517, 0.000977517, 0.000977517, 0.333333 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias13);</Text>
+ <Text>// 85 returned</Text>
+ <Text>glUniform4fv(85, 1, { 0, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler14);</Text>
+ <Text>// 14 returned</Text>
+ <Text>glUniform1i(14, 14);</Text>
+ <Text>glGetUniformLocation(1, u_trans14);</Text>
+ <Text>// 38 returned</Text>
+ <Text>glUniformMatrix4fv(38, 1, GL_FALSE, { 0.174935, -0.59959, 0, 0, 0.67547, -0.241636, 0, 0, -0.038996, 0.603311, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale14);</Text>
+ <Text>// 62 returned</Text>
+ <Text>glUniform4fv(62, 1, { 0.0005, 0.0005, 0.0005, 0.0005 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias14);</Text>
+ <Text>// 86 returned</Text>
+ <Text>glUniform4fv(86, 1, { 0.5, 0.5, 0.5, 0.5 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler15);</Text>
+ <Text>// 15 returned</Text>
+ <Text>glUniform1i(15, 15);</Text>
+ <Text>glGetUniformLocation(1, u_trans15);</Text>
+ <Text>// 39 returned</Text>
+ <Text>glUniformMatrix4fv(39, 1, GL_FALSE, { -0.378997, -0.790461, 0, 0, 0.502125, -0.712557, 0, 0, 0.0391182, 0.79096, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale15);</Text>
+ <Text>// 63 returned</Text>
+ <Text>glUniform4fv(63, 1, { 2.32831e-10, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias15);</Text>
+ <Text>// 87 returned</Text>
+ <Text>glUniform4fv(87, 1, { -0, 0, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler16);</Text>
+ <Text>// 16 returned</Text>
+ <Text>glUniform1i(16, 16);</Text>
+ <Text>glGetUniformLocation(1, u_trans16);</Text>
+ <Text>// 40 returned</Text>
+ <Text>glUniformMatrix4fv(40, 1, GL_FALSE, { -1.58546, -0.0751972, 0, 0, -0.52061, -0.949342, 0, 0, 1.55641, 0.776585, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale16);</Text>
+ <Text>// 64 returned</Text>
+ <Text>glUniform4fv(64, 1, { 0.5, 0.5, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias16);</Text>
+ <Text>// 88 returned</Text>
+ <Text>glUniform4fv(88, 1, { 0.5, 0.5, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler17);</Text>
+ <Text>// 17 returned</Text>
+ <Text>glUniform1i(17, 17);</Text>
+ <Text>glGetUniformLocation(1, u_trans17);</Text>
+ <Text>// 41 returned</Text>
+ <Text>glUniformMatrix4fv(41, 1, GL_FALSE, { 0.13571, -0.704605, 0, 0, 0.592339, -0.0851352, 0, 0, -0.278867, 0.884495, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale17);</Text>
+ <Text>// 65 returned</Text>
+ <Text>glUniform4fv(65, 1, { 0.00392157, 0.00392157, 0.00392157, 0.00392157 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias17);</Text>
+ <Text>// 89 returned</Text>
+ <Text>glUniform4fv(89, 1, { 0.501961, 0.501961, 0.501961, 0.501961 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler18);</Text>
+ <Text>// 18 returned</Text>
+ <Text>glUniform1i(18, 18);</Text>
+ <Text>glGetUniformLocation(1, u_trans18);</Text>
+ <Text>// 42 returned</Text>
+ <Text>glUniformMatrix4fv(42, 1, GL_FALSE, { -0.487707, 0.67348, 0, 0, -0.599433, -0.214357, 0, 0, 0.815973, 0.17476, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale18);</Text>
+ <Text>// 66 returned</Text>
+ <Text>glUniform4fv(66, 1, { 2.32831e-10, 2.32831e-10, 2.32831e-10, 2.32831e-10 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias18);</Text>
+ <Text>// 90 returned</Text>
+ <Text>glUniform4fv(90, 1, { 0.5, 0.5, 0.5, 0.5 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler19);</Text>
+ <Text>// 19 returned</Text>
+ <Text>glUniform1i(19, 19);</Text>
+ <Text>glGetUniformLocation(1, u_trans19);</Text>
+ <Text>// 43 returned</Text>
+ <Text>glUniformMatrix4fv(43, 1, GL_FALSE, { -0.221524, 0.803724, 0, 0, -0.47471, 0.0361318, 0, 0, 0.689406, 0.00450959, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale19);</Text>
+ <Text>// 67 returned</Text>
+ <Text>glUniform4fv(67, 1, { 1.5259e-05, 1.5259e-05, 1.5259e-05, 1.5259e-05 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias19);</Text>
+ <Text>// 91 returned</Text>
+ <Text>glUniform4fv(91, 1, { -0, -0, -0, -0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler20);</Text>
+ <Text>// 20 returned</Text>
+ <Text>glUniform1i(20, 20);</Text>
+ <Text>glGetUniformLocation(1, u_trans20);</Text>
+ <Text>// 44 returned</Text>
+ <Text>glUniformMatrix4fv(44, 1, GL_FALSE, { 0.454744, 0.593738, 0, 0, -0.221697, 0.822354, 0, 0, -0.0857465, -0.275872, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale20);</Text>
+ <Text>// 68 returned</Text>
+ <Text>glUniform4fv(68, 1, { 1, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias20);</Text>
+ <Text>// 92 returned</Text>
+ <Text>glUniform4fv(92, 1, { -0, -0, -0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler21);</Text>
+ <Text>// 21 returned</Text>
+ <Text>glUniform1i(21, 21);</Text>
+ <Text>glGetUniformLocation(1, u_trans21);</Text>
+ <Text>// 45 returned</Text>
+ <Text>glUniformMatrix4fv(45, 1, GL_FALSE, { 0.603485, -0.609896, 0, 0, 0.652932, 0.197525, 0, 0, -0.360984, 0.6101, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale21);</Text>
+ <Text>// 69 returned</Text>
+ <Text>glUniform4fv(69, 1, { 1.5259e-05, 1.5259e-05, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias21);</Text>
+ <Text>// 93 returned</Text>
+ <Text>glUniform4fv(93, 1, { 0.500008, 0.500008, 0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler22);</Text>
+ <Text>// 22 returned</Text>
+ <Text>glUniform1i(22, 22);</Text>
+ <Text>glGetUniformLocation(1, u_trans22);</Text>
+ <Text>// 46 returned</Text>
+ <Text>glUniformMatrix4fv(46, 1, GL_FALSE, { 0.0232201, 0.610682, 0, 0, -0.652179, 0.352678, 0, 0, 0.473097, -0.290629, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale22);</Text>
+ <Text>// 70 returned</Text>
+ <Text>glUniform4fv(70, 1, { 2e-05, 2e-05, 2e-05, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias22);</Text>
+ <Text>// 94 returned</Text>
+ <Text>glUniform4fv(94, 1, { -0, -0, -0, 0 });</Text>
+ <Text>glGetUniformLocation(1, u_sampler23);</Text>
+ <Text>// 23 returned</Text>
+ <Text>glUniform1i(23, 23);</Text>
+ <Text>glGetUniformLocation(1, u_trans23);</Text>
+ <Text>// 47 returned</Text>
+ <Text>glUniformMatrix4fv(47, 1, GL_FALSE, { 0.723124, 0.0399589, 0, 0, 0.176895, 0.572275, 0, 0, -0.354981, 0.123024, -1, 0, 0, 0, 0, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texScale23);</Text>
+ <Text>// 71 returned</Text>
+ <Text>glUniform4fv(71, 1, { 1, 1, 1, 1 });</Text>
+ <Text>glGetUniformLocation(1, u_texBias23);</Text>
+ <Text>// 95 returned</Text>
+ <Text>glUniform4fv(95, 1, { -0, -0, -0, -0 });</Text>
+ <Text>glGetAttribLocation(1, a_position);</Text>
+ <Text>// 0 returned</Text>
+ <Text>glGetAttribLocation(1, a_coord);</Text>
+ <Text>// 1 returned</Text>
+ <Text>glUseProgram(1);</Text>
+ <Text>glEnableVertexAttribArray(0);</Text>
+ <Text>glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0xffffc52b2238);</Text>
+ <Text>glEnableVertexAttribArray(1);</Text>
+ <Text>glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0xffffc52b2210);</Text>
+ <Text>glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0xffffc52b2200);</Text>
+ <Text>glDisableVertexAttribArray(0);</Text>
+ <Text>glDisableVertexAttribArray(1);</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glDeleteTextures(24, { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 });</Text>
+ <Text>glGetError();</Text>
+ <Text>// GL_NO_ERROR returned</Text>
+ <Text>glReadPixels(0, 0, 128, 128, GL_RGBA, GL_UNSIGNED_BYTE, 0xffffb11294d0)</Text>
+ <ImageSet Name="ComparisonResult" Description="Image comparison result" />
+ <Number Name="TestDuration" Description="Test case duration in microseconds" Tag="Time" Unit="us">2120591</Number>
+ <Result StatusCode="Pass">Pass</Result>
+</TestCaseResult>
+
+#endTestCaseResult
+
+Run took 2.15 seconds
+
+#endSession

@@ -3,7 +3,8 @@
 // more job (a clear of the same framebuffer) that writes nothing through
 // the TMU. Counts per read: exact (the shader's value), old (still the CPU's
 // fill 0xdeadbeef) and other.
-//   kstb-tmu-write-test [W H]          default 64 x 64
+//   kstb-tmu-write-test [W H [words-per-pixel]]   default 64 x 64, 1 word
+// 4 words uses a uvec4 store; 8 words uses a batch of scalar stores.
 // Needs GLES 3.1 SSBOs: MESA_GLES_VERSION_OVERRIDE=3.1, and on 3.3 a kernel
 // with the cache flush (or a scratch driver that exposes SSBOs without it).
 #include <EGL/egl.h>
@@ -46,13 +47,25 @@ static const char *vs =
     "}\n";
 
 static const char *fs =
-    "#version 310 es\nprecision highp float;\n"
+    "precision highp float;\n"
+    "#if WORDS_PER_PIXEL == 4\n"
+    "layout(std430, binding = 0) buffer B { uvec4 v[]; };\n"
+    "#else\n"
     "layout(std430, binding = 0) buffer B { uint v[]; };\n"
+    "#endif\n"
     "uniform uint seed;\nuniform uint width;\n"
     "out vec4 o;\n"
     "void main() {\n"
     "  uint i = uint(gl_FragCoord.y) * width + uint(gl_FragCoord.x);\n"
-    "  v[i] = seed ^ (i * 2654435761u);\n"
+    "#if WORDS_PER_PIXEL == 4\n"
+    "  uvec4 j = uvec4(i * 4u) + uvec4(0u, 1u, 2u, 3u);\n"
+    "  v[i] = uvec4(seed) ^ (j * 2654435761u);\n"
+    "#else\n"
+    "  for (uint j = 0u; j < uint(WORDS_PER_PIXEL); ++j) {\n"
+    "    uint k = i * uint(WORDS_PER_PIXEL) + j;\n"
+    "    v[k] = seed ^ (k * 2654435761u);\n"
+    "  }\n"
+    "#endif\n"
     "  o = vec4(1.0);\n"
     "}\n";
 
@@ -83,9 +96,16 @@ static int count(const char *when, GLuint seed, int n)
 
 int main(int argc, char **argv)
 {
+    if (argc != 1 && argc != 3 && argc != 4) {
+        fprintf(stderr, "usage: %s [W H [1|4|8]]\n", argv[0]);
+        return 1;
+    }
     int w = argc > 2 ? atoi(argv[1]) : 64;
     int h = argc > 2 ? atoi(argv[2]) : 64;
-    int n = w * h;
+    int words = argc > 3 ? atoi(argv[3]) : 1;
+    CHECK(w > 0 && w <= 2048 && h > 0 && h <= 2048);
+    CHECK(words == 1 || words == 4 || words == 8);
+    int n = w * h * words;
     GLuint seed = (GLuint)time(NULL) * 2246822519u;
 
     int fd = open("/dev/dri/renderD128", O_RDWR);
@@ -101,19 +121,24 @@ int main(int argc, char **argv)
     CHECK(eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx));
     GLint nssbo = 0;
     glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &nssbo);
-    printf("%s, %d fragment SSBOs, %dx%d words, seed 0x%08x\n",
-           glGetString(GL_VERSION), nssbo, w, h, seed);
+    printf("%s, %d fragment SSBOs, %dx%d pixels, %d words/pixel, seed 0x%08x\n",
+           glGetString(GL_VERSION), nssbo, w, h, words, seed);
     CHECK(nssbo > 0);
 
     GLuint p = glCreateProgram();
+    char fragment_source[4096];
+    int len = snprintf(fragment_source, sizeof(fragment_source),
+                       "#version 310 es\n#define WORDS_PER_PIXEL %d\n%s", words, fs);
+    CHECK(len > 0 && (size_t)len < sizeof(fragment_source));
     glAttachShader(p, shader(GL_VERTEX_SHADER, vs));
-    glAttachShader(p, shader(GL_FRAGMENT_SHADER, fs));
+    glAttachShader(p, shader(GL_FRAGMENT_SHADER, fragment_source));
     glLinkProgram(p);
     GLint ok;
     glGetProgramiv(p, GL_LINK_STATUS, &ok);
     CHECK(ok);
 
     GLuint *fill = malloc(n * 4);
+    CHECK(fill);
     for (int i = 0; i < n; i++)
         fill[i] = OLD;
     GLuint buf;

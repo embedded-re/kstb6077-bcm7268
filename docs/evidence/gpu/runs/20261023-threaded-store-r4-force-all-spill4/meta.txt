@@ -1,0 +1,3 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-848c0204
+ae5643d9747a816a536874b7093e6bd99de9794a2b9c0184a70306048cd276d9  /tmp/kstb-forced-spill/v3d_dri.so
