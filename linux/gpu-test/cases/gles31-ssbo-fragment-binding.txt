@@ -1,0 +1,9 @@
+dEQP-GLES31.functional.layout_binding.negative.ssbo.fragment_binding_neg
+dEQP-GLES31.functional.layout_binding.negative.ssbo.fragment_binding_neg_array
+dEQP-GLES31.functional.layout_binding.negative.ssbo.fragment_binding_over_max
+dEQP-GLES31.functional.layout_binding.negative.ssbo.fragment_binding_over_max_array
+dEQP-GLES31.functional.layout_binding.ssbo.fragment_binding_array
+dEQP-GLES31.functional.layout_binding.ssbo.fragment_binding_max
+dEQP-GLES31.functional.layout_binding.ssbo.fragment_binding_max_array
+dEQP-GLES31.functional.layout_binding.ssbo.fragment_binding_multiple
+dEQP-GLES31.functional.layout_binding.ssbo.fragment_binding_single

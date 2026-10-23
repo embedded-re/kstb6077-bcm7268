@@ -46,6 +46,8 @@ int main(int argc, char **argv)
            argv[1], glGetString(GL_VENDOR), glGetString(GL_RENDERER),
            glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION));
     printf("GL_EXTENSIONS=%s\n", glGetString(GL_EXTENSIONS));
+    printf("EGL_VENDOR=%s\nEGL_VERSION=%s\n",
+           eglQueryString(dpy, EGL_VENDOR), eglQueryString(dpy, EGL_VERSION));
     printf("EGL_EXTENSIONS=%s\n", eglQueryString(dpy, EGL_EXTENSIONS));
 #define LIMIT(token) limit(#token, token)
     LIMIT(GL_MAX_TEXTURE_SIZE);
@@ -58,6 +60,12 @@ int main(int argc, char **argv)
     LIMIT(GL_MAX_COLOR_ATTACHMENTS);
     LIMIT(GL_MAX_SAMPLES);
     LIMIT(GL_MAX_UNIFORM_BUFFER_BINDINGS);
+    LIMIT(GL_MAX_VERTEX_ATTRIBS);
+    LIMIT(GL_MAX_VERTEX_OUTPUT_COMPONENTS);
+    LIMIT(GL_MAX_FRAGMENT_INPUT_COMPONENTS);
+    LIMIT(GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS);
+    LIMIT(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS);
+    LIMIT(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS);
     if (major == 3 && minor == 1) {
         LIMIT(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS);
         LIMIT(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS);
