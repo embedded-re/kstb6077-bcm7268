@@ -158,6 +158,16 @@ The scheduler-entity warning remains as recorded above.
 
 The exported series builds as `23.3.6-cd573075` (Mesa branch `d7e482b`,
 `v3d_dri.so` SHA256 `7df059cdb908fa5eb9ab534c3fdfe5412792597a6fd9fa599dc0e4d4498191d9`).
-It is installed alongside `848c0204`; full GLES3/GLES2/EGL validation is
-in progress with explicit `--mesa 23.3.6-cd573075`. `/opt/mesa/current`
-still selects `848c0204`; `/usr/local` and the kernel are unchanged.
+It is installed alongside `848c0204`. The
+[full GLES3 run](../docs/evidence/gpu/runs/20261023-232845-gles3-cd573-full/summary.txt)
+completed with 43,908 Pass, 583 NotSupported and 277 QualityWarning,
+0 MMU errors, 0 resets and 0 oopses. All 44,768 statuses match the kernel
+`#29` reference. GLES2 and EGL validation is still in progress with explicit
+`--mesa 23.3.6-cd573075`. `/opt/mesa/current` still selects `848c0204`;
+`/usr/local` and the kernel are unchanged.
+
+This run took 59m38s versus 55m41s for the reference. The 200 texture-unit
+cases took about 205s versus 93s: allowing threaded spills changes some
+shaders from one thread without spills to two threads with spills. These
+are elapsed times from separate conformance runs, not a controlled benchmark;
+the cost needs compiler strategy tuning.

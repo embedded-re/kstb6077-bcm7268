@@ -132,7 +132,7 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0020 | register allocation on 3.3 keeps spill candidates for the 1-thread retry (the 2-thread round cleared them, so big shaders failed to compile with any strategy and the draw was skipped): 3 `texture.units.all_units.only_cube` cases (24 cube lookups), `gles3-texture-units-spill.txt` |
 | 0021 | vector TMU loads on 3.3 only at the vector's alignment (8 bytes vec2, 16 vec3/vec4); the vectorizer's vec2/vec3 loads at 4-byte offsets read wrong data: 6 `ubo.random.scalar_types` cases, `gles3-ubo-vec-align.txt` |
 | 0022 | a sampler view of one level samples without a mip filter: `GL_TEXTURE_MAX_LEVEL` is the max LOD clamp on 3.3, at the base level that clamp is 0 and the TMU then used the magnification filter for minified lookups (a face edge without the neighbouring face): `texture.mipmap.cube.max_level.linear_nearest`, `gles3-mipmap-cube.txt` |
-| 0023 | threaded TMU stores and register spills: a discarded read supplies a response before a store-only thread switch; postponed spills wait until the last TMU result has been copied from `r4`. Focused tests pass; full regressions on candidate `23.3.6-cd573075` are in progress. |
+| 0023 | threaded TMU stores and register spills: a discarded read supplies a response before a store-only thread switch; postponed spills wait until the last TMU result has been copied from `r4`. Focused tests and full GLES3 pass on candidate `23.3.6-cd573075`; GLES2/EGL regressions are in progress. |
 
 ## Where it stands
 
