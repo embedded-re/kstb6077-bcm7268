@@ -13,7 +13,7 @@ line per case: "<case> <result> <detail>". The case that was running when
 the board went down is in $DEQP/running-<module>; the next run records it
 as "Lost" and goes on after it.
 """
-import argparse, os, re, select, subprocess, sys, time
+import argparse, collections, os, re, select, subprocess, sys, time
 
 DEQP = os.environ.get("DEQP", "/root/deqp")
 BIN = {"gles2": "deqp-gles2", "gles3": "deqp-gles3",
@@ -93,6 +93,7 @@ def main():
         p = subprocess.Popen([os.path.join(wd, BIN[mod]), f"--deqp-caselist-file={listfile}"] + ARGS,
                              cwd=wd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         current, seen, buf = None, set(), b""
+        tail = collections.deque(maxlen=40)
         fd = p.stdout.fileno()
         last = time.time()
         while True:
@@ -110,6 +111,7 @@ def main():
             *lines, buf = buf.split(b"\n")
             for line in lines:
                 line = line.decode("utf-8", "replace")
+                tail.append(line)
                 m = CASE.match(line)
                 if m:
                     current = m.group(1)
@@ -125,7 +127,8 @@ def main():
                     current = None
         rc = p.wait()
         if not seen and not current:
-            sys.exit(f"{BIN[mod]} ran no case (exit {rc}): {buf.decode('utf-8', 'replace')[-500:]}")
+            diagnostic = "\n".join(tail) + "\n" + buf.decode("utf-8", "replace")
+            sys.exit(f"{BIN[mod]} ran no case (exit {rc}):\n{diagnostic[-6000:]}")
         if current and current not in seen:     # died or was killed in this case
             what = "Timeout" if rc == -9 else "Crash"
             out.write(f"{current} {what} @uptime={time.monotonic():.3f} exit {rc}\n")
