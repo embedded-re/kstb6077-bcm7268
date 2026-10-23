@@ -1,0 +1,5 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-d7e482bd07), 64x64 pixels, 4096 atomic participants
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 89 inst, 4 threads, 0 loops, 38 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 89 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+aggregates and returned values: exact (0 errors, CAS winner 29, exchange final 3906)

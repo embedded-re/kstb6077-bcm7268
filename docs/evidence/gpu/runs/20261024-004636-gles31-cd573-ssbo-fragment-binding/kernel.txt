@@ -1,0 +1,3 @@
+[96354.997816] kstb-gpu-run sync 96354.760116
+[96355.346480] drm_sched_entity_init: called with uninitialized scheduler
+[96355.392491] drm_sched_entity_init: called with uninitialized scheduler

@@ -1,0 +1,8 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-848c0204
+7df059cdb908fa5eb9ab534c3fdfe5412792597a6fd9fa599dc0e4d4498191d9  /opt/mesa/23.3.6-cd573075/lib/dri/v3d_dri.so
+c2bbdf1d7d9a25d9bb4a99aa7900ef7edfe209b81518b37eac5c2eeab12d69fe  /opt/gpu-test/kstb-gl-caps
+54d6e985efe5cbcec36232e2e56b5a11169553a60f77279683dd3405eb9a6694  /opt/gpu-test/kstb-ssbo-atomic-test
+ccf697a988b592da501cbfa06e6292dc47259982953ad1315d006bcd613c6fa0  /opt/gpu-test/kstb-ssbo-layout-test
+explicit mesa 23.3.6-cd573075
+MESA_SHADER_CACHE_DISABLE=true

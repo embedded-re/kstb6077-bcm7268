@@ -1,0 +1,2 @@
+3789 cases: NotSupported 2955, Pass 833, QualityWarning 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

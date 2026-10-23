@@ -65,7 +65,7 @@ Programs reach a build through `LD_LIBRARY_PATH`/`LIBGL_DRIVERS_PATH`
 ```
 make -C linux/gpu-test install         # C tests (cross-built), scripts, cases/ -> /opt/gpu-test
 # on the box:
-/opt/gpu-test/kstb-gpu-run [--mesa <id>] [--dri DIR] [--name x] gles2|gles3|egl [--cases FILE]
+/opt/gpu-test/kstb-gpu-run [--mesa <id>] [--dri DIR] [--name x] gles2|gles3|gles31|egl [--cases FILE]
 ```
 
 `--dri DIR` runs a scratch `v3d_dri.so` (the quick experiment below) on
@@ -132,25 +132,30 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0020 | register allocation on 3.3 keeps spill candidates for the 1-thread retry (the 2-thread round cleared them, so big shaders failed to compile with any strategy and the draw was skipped): 3 `texture.units.all_units.only_cube` cases (24 cube lookups), `gles3-texture-units-spill.txt` |
 | 0021 | vector TMU loads on 3.3 only at the vector's alignment (8 bytes vec2, 16 vec3/vec4); the vectorizer's vec2/vec3 loads at 4-byte offsets read wrong data: 6 `ubo.random.scalar_types` cases, `gles3-ubo-vec-align.txt` |
 | 0022 | a sampler view of one level samples without a mip filter: `GL_TEXTURE_MAX_LEVEL` is the max LOD clamp on 3.3, at the base level that clamp is 0 and the TMU then used the magnification filter for minified lookups (a face edge without the neighbouring face): `texture.mipmap.cube.max_level.linear_nearest`, `gles3-mipmap-cube.txt` |
-| 0023 | threaded TMU stores and register spills: a discarded read supplies a response before a store-only thread switch; postponed spills wait until the last TMU result has been copied from `r4`. Focused tests and full GLES3 pass on candidate `23.3.6-cd573075`; GLES2/EGL regressions are in progress. |
+| 0023 | threaded TMU stores and register spills: a discarded read supplies a response before a store-only thread switch; postponed spills wait until the last TMU result has been copied from `r4`. Focused tests and full GLES2/GLES3/EGL pass on `23.3.6-cd573075`; see [`gpu-compute.md`](gpu-compute.md). |
 
 ## Where it stands
 
-Build `23.3.6-848c0204` (`v3d_dri.so` `f65f014d…`, patches 0001–0022,
-`/opt/mesa/current` since 2026-10-22) on kernel `#28` from `KRN` (patches
-0001–0004), 2026-10-22, with `kstb-gpu-run` (results, kernel log and
-summary in [`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs),
-`20261022-1[89]*-848c-*`):
+Build `23.3.6-cd573075` (`v3d_dri.so` `7df059cd…`, patches 0001–0023,
+`/opt/mesa/current` since 2026-10-24) on kernel `#29` from `KRN` (patches
+0001–0005), with `kstb-gpu-run`. Results, kernel logs and summaries are in
+[`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs):
+`20261023-232845-gles3-cd573-full`, `20261024-002824-gles2-cd573-full`,
+`20261024-004055-egl-cd573-full`.
 
 | Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
 | EGL, all 3,789 | 833 | 2,955 | 1 | 0 | 0 | 0 / 0 |
 | GLES3, all 44,768 | 43,908 | 583 | 277 | 0 | 0 | 0 / 0 |
-| the eleven focused lists | 1,610 | 29 | 118 | 0 | 0 | 0 / 0 |
 
-No GLES2, GLES3 or EGL case fails. Against `518c06f4` (21 patches), case
-by case: GLES2 and EGL identical, in GLES3 only
+No GLES2, GLES3 or EGL case fails. All 65,722 statuses match `848c0204`
+on kernel `#29`, including warnings and unsupported cases. Fragment SSBO
+stores, atomics and std140/std430 layout tests also pass with the explicit
+GLES3.1 override; images and compute remain unavailable.
+
+The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
+case by case: GLES2 and EGL identical, in GLES3 only
 `texture.mipmap.cube.max_level.linear_nearest` changes (Fail → Pass).
 0022 on and off on one build (`*-lvl-*`): of all 5,895 GLES3 and 807
 GLES2 `texture.*` cases only that one changes, 0 MMU errors and 0 resets
@@ -170,9 +175,8 @@ patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
 ## Open
 
 - TFU jobs get no MMU flush (untested).
-- Threaded shader scratch spilling still hangs; 0001 falls back to one
-  thread. An SSBO store in a 4-thread fragment shader hangs the same way
-  on installed `848c0204`. Candidate patch 0023 removes the fallback and
-  passes the store and spill focused tests; full validation is pending
-  ([`gpu-compute.md`](gpu-compute.md)).
+- Image load/store and compute on V3D 3.3 are still unavailable.
+- Compiler strategy tuning: some shaders now use two threads with spills
+  instead of one without spills and take longer ([`gpu-compute.md`](gpu-compute.md)).
+- `drm_sched_entity_init` warns on context creation for an absent queue.
 - The system default (`/usr/local`) is still the older build.

@@ -1,0 +1,9 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-d7e482bd07)
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 66 inst, 2 threads, 0 loops, 22 uniforms, 17 max-temps, 0:0 spills:fills, 0 sfu-stalls, 66 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL4 - MESA_SHADER_FRAGMENT shader: 78 inst, 2 threads, 0 loops, 28 uniforms, 17 max-temps, 0:0 spills:fills, 0 sfu-stalls, 78 inst-and-stalls, 0 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+std430 64x64 stride=64 binding_offset=4096: exact (0 errors; source and destination guards checked)
+std140 64x64 stride=112 binding_offset=4096: exact (0 errors; source and destination guards checked)

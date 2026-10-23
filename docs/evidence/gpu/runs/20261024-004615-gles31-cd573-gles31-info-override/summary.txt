@@ -1,0 +1,2 @@
+6 cases: Pass 6
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
