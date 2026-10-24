@@ -250,3 +250,36 @@ The former includes the complete candidate diff. Scratch DRI SHA256 is
 `3dbbf5192203850ec38fe6df1c7af39304aa9a64f414b7726dae6e364de923d4`.
 Layers, mip levels, image atomics and graphics regression gates remain.
 This candidate is not installed in the numbered Mesa series.
+
+
+## Image dimensions and atomics (2026-10-24, scratch driver)
+
+On the same scratch DRI (`3dbbf519…`):
+
+- All 60 [2D/array/3D cases](../docs/evidence/gpu/runs/20261024-100434-image33-dimensions/results.json)
+  Pass, spanning 1-, 2-, 4-, 8- and 16-byte texels, mip levels 0–2 and
+  three array layers or 3D slices.
+- All 25 [cube cases](../docs/evidence/gpu/runs/20261024-100553-image33-cube/results.json)
+  Pass across all six faces, including 1x1, mip levels 1/2 and 256x256.
+- All 60 [individual-layer binding cases](../docs/evidence/gpu/runs/20261024-100653-image33-single-layer/results.json)
+  Pass: array layers, 3D slices and cube faces bound as non-layered image2D.
+- [Image atomics](../docs/evidence/gpu/runs/20261024-100517-image33-atomics/results.json)
+  are exact at 1x1, 17x13, 64x64 and 256x256. The CPU checks unsigned
+  add/min/max/and/or/xor/exchange/CAS and signed add/min/max, plus returned
+  value permutations and a single CAS winner. The shader uses four
+  threads, no spills; 65,536 fragments contend at the largest size.
+- All 12 [official early/late fragment-image tests](../docs/evidence/gpu/runs/20261024-100627-gles31-image33-fragment-early/summary.txt)
+  Pass, including depth/stencil tests with and without attachments.
+
+No MMU errors, GPU resets or oopses occurred. The context scheduler warning
+remains. These use an explicit GLES3.1 override, not a claim of conformance.
+
+The first dimension run exposed a separate existing defect: RGBA32F
+`texelFetch` at nonzero mip levels returns zeros when the sampler uses
+GL_NEAREST without mipmapping. A CPU-upload-only probe reproduces it on
+both the candidate and validated cd573075; R32UI is unaffected.
+[Baseline diagnostic evidence](../docs/evidence/gpu/runs/20261024-100401-image33-mip-baseline/results.json)
+records six failed readbacks. `KSTB_CPU_FETCH=1 KSTB_NO_MIP_FILTER=1` in the
+format test reproduces that path. The passing image dimension tests use
+GL_NEAREST_MIPMAP_NEAREST for mip-level readback. The native fetch defect
+remains open; image loads and stores at those mip levels pass independently.

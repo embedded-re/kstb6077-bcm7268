@@ -1,0 +1,402 @@
+[
+  {
+    "test": "r32ui-2d-17x13-mip0",
+    "exit": 0,
+    "start": 129705.666552668,
+    "end": 129705.856412531,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-2d-17x13-mip1",
+    "exit": 0,
+    "start": 129705.85752127,
+    "end": 129706.048440761,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-2d-65x33-mip2",
+    "exit": 0,
+    "start": 129706.049736166,
+    "end": 129706.24044788,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-2d-256x256-mip0",
+    "exit": 0,
+    "start": 129706.241738915,
+    "end": 129706.536505566,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-array-17x13-mip0",
+    "exit": 0,
+    "start": 129706.537802268,
+    "end": 129706.72841213,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-array-17x13-mip1",
+    "exit": 0,
+    "start": 129706.729733869,
+    "end": 129706.920447952,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-array-65x33-mip2",
+    "exit": 0,
+    "start": 129706.92179658,
+    "end": 129707.112468701,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-array-256x256-mip0",
+    "exit": 0,
+    "start": 129707.113911625,
+    "end": 129707.668517677,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-3d-17x13-mip0",
+    "exit": 0,
+    "start": 129707.669969786,
+    "end": 129707.860420129,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-3d-17x13-mip1",
+    "exit": 0,
+    "start": 129707.861869609,
+    "end": 129708.052464396,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-3d-65x33-mip2",
+    "exit": 0,
+    "start": 129708.053940765,
+    "end": 129708.244486108,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r32ui-3d-256x256-mip0",
+    "exit": 0,
+    "start": 129708.246015772,
+    "end": 129708.800521343,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-2d-17x13-mip0",
+    "exit": 0,
+    "start": 129708.802083044,
+    "end": 129708.992459054,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-2d-17x13-mip1",
+    "exit": 0,
+    "start": 129708.993942163,
+    "end": 129709.132457464,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-2d-65x33-mip2",
+    "exit": 0,
+    "start": 129709.133975276,
+    "end": 129709.324412805,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-2d-256x256-mip0",
+    "exit": 0,
+    "start": 129709.325934025,
+    "end": 129709.620432232,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-array-17x13-mip0",
+    "exit": 0,
+    "start": 129709.621969341,
+    "end": 129709.812466277,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-array-17x13-mip1",
+    "exit": 0,
+    "start": 129709.814059645,
+    "end": 129710.004453766,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-array-65x33-mip2",
+    "exit": 0,
+    "start": 129710.006054764,
+    "end": 129710.196466996,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-array-256x256-mip0",
+    "exit": 0,
+    "start": 129710.202822396,
+    "end": 129710.756499597,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-3d-17x13-mip0",
+    "exit": 0,
+    "start": 129710.758167743,
+    "end": 129710.948522234,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-3d-17x13-mip1",
+    "exit": 0,
+    "start": 129710.950207824,
+    "end": 129711.140464686,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-3d-65x33-mip2",
+    "exit": 0,
+    "start": 129711.142178869,
+    "end": 129711.332463657,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "r8ui-3d-256x256-mip0",
+    "exit": 0,
+    "start": 129711.334199025,
+    "end": 129711.888485707,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-2d-17x13-mip0",
+    "exit": 0,
+    "start": 129711.890283038,
+    "end": 129712.080454456,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-2d-17x13-mip1",
+    "exit": 0,
+    "start": 129712.082245231,
+    "end": 129712.272449427,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-2d-65x33-mip2",
+    "exit": 0,
+    "start": 129712.274274165,
+    "end": 129712.464467323,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-2d-256x256-mip0",
+    "exit": 0,
+    "start": 129712.466313543,
+    "end": 129712.760486417,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-array-17x13-mip0",
+    "exit": 0,
+    "start": 129712.7623326,
+    "end": 129712.952427981,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-array-17x13-mip1",
+    "exit": 0,
+    "start": 129712.954263201,
+    "end": 129713.144473322,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-array-65x33-mip2",
+    "exit": 0,
+    "start": 129713.146400653,
+    "end": 129713.336473404,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-array-256x256-mip0",
+    "exit": 0,
+    "start": 129713.338413179,
+    "end": 129713.89253638,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-3d-17x13-mip0",
+    "exit": 0,
+    "start": 129713.894524599,
+    "end": 129714.084504536,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-3d-17x13-mip1",
+    "exit": 0,
+    "start": 129714.086474015,
+    "end": 129714.276455877,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-3d-65x33-mip2",
+    "exit": 0,
+    "start": 129714.278463837,
+    "end": 129714.468468811,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rg8i-3d-256x256-mip0",
+    "exit": 0,
+    "start": 129714.470503475,
+    "end": 129715.024435527,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-2d-17x13-mip0",
+    "exit": 0,
+    "start": 129715.026424191,
+    "end": 129715.216457276,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-2d-17x13-mip1",
+    "exit": 0,
+    "start": 129715.221301084,
+    "end": 129715.408462728,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-2d-65x33-mip2",
+    "exit": 0,
+    "start": 129715.410503207,
+    "end": 129715.600478032,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-2d-256x256-mip0",
+    "exit": 0,
+    "start": 129715.60253603,
+    "end": 129715.948456651,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-array-17x13-mip0",
+    "exit": 0,
+    "start": 129715.950524907,
+    "end": 129716.14046214,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-array-17x13-mip1",
+    "exit": 0,
+    "start": 129716.142582915,
+    "end": 129716.332454704,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-array-65x33-mip2",
+    "exit": 0,
+    "start": 129716.334568701,
+    "end": 129716.524475045,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-array-256x256-mip0",
+    "exit": 0,
+    "start": 129716.526635894,
+    "end": 129717.184485107,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-3d-17x13-mip0",
+    "exit": 0,
+    "start": 129717.186664215,
+    "end": 129717.376441003,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-3d-17x13-mip1",
+    "exit": 0,
+    "start": 129717.378602704,
+    "end": 129717.568464197,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-3d-65x33-mip2",
+    "exit": 0,
+    "start": 129717.57064549,
+    "end": 129717.760491575,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba16f-3d-256x256-mip0",
+    "exit": 0,
+    "start": 129717.762695942,
+    "end": 129718.420481007,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba32f-2d-17x13-mip0",
+    "exit": 0,
+    "start": 129718.422707745,
+    "end": 129718.612465682,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "rgba32f-2d-17x13-mip1",
+    "exit": 1,
+    "start": 129718.614682679,
+    "end": 129718.80442143,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb,surface"
+  }
+]

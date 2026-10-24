@@ -1,5 +1,5 @@
 // Image format conversion, independently checked by native texelFetch.
-// MESA_GLES_VERSION_OVERRIDE=3.1 kstb-image-format-test FORMAT [W H]
+// MESA_GLES_VERSION_OVERRIDE=3.1 kstb-image-format-test FORMAT [W H [2d|array[-single]|3d[-single]|cube[-single] [LEVEL]]]
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES3/gl31.h>
@@ -138,7 +138,7 @@ static size_t check(const struct format *fmt, const uint32_t *data, size_t count
     }
     return errors;
 }
-static GLuint program(const struct format *fmt, int fetch)
+static GLuint program(const struct format *fmt, int fetch, int layered, int volume, int cube, int single)
 {
     char fs[8192],expr[1024];
     const char *prefix=fmt->kind==UINT_KIND?"u":fmt->kind==SINT_KIND?"i":"";
@@ -153,20 +153,30 @@ static GLuint program(const struct format *fmt, int fetch)
         unsigned shift=32-fmt->bits;
         snprintf(expr,sizeof(expr),"(ivec4((uvec4(v)^uvec4(0xdecafbadu,0x13579bdfu,0x8642fecau,0x10293847u))<<%uu)>>%uu)",shift,shift);
     }
+    const char *dim=cube?"Cube":layered?(volume?"3D":"2DArray"):"2D";
+    char fetch_expr[128];
+    snprintf(fetch_expr,sizeof(fetch_expr),cube?"textureLod(tex,cube_coord(p),float(level))":"texelFetch(tex,%s,level)",layered?"ivec3(p,int(layer))":"p");
+    const char *cube_func=cube?
+        "vec3 cube_coord(ivec2 p){ vec2 t=(vec2(p)+vec2(0.5))/vec2(width,height)*2.0-1.0;"
+        " if(layer==0u)return vec3(1,-t.y,-t.x); if(layer==1u)return vec3(-1,-t.y,t.x);"
+        " if(layer==2u)return vec3(t.x,1,t.y); if(layer==3u)return vec3(t.x,-1,-t.y);"
+        " if(layer==4u)return vec3(t.x,-t.y,1); return vec3(-t.x,-t.y,-1); }\n":"";
+    const char *image_dim=single?"2D":dim;
+    const char *coord=layered&&!single?"ivec3(p,int(layer))":"p";
     if (fetch)
         snprintf(fs,sizeof(fs),"#version 310 es\n#extension GL_NV_image_formats : enable\nprecision highp float; precision highp int;\n"
-            "uniform highp %ssampler2D tex; uniform uint width;\n"
+            "uniform highp %ssampler%s tex; uniform uint width,height,layer; uniform int level;\n"
             "layout(std430,binding=0) writeonly buffer B { uvec4 result[]; }; out vec4 color;\n"
-            "void main(){ ivec2 p=ivec2(gl_FragCoord.xy); %s v=texelFetch(tex,p,0);\n"
-            "result[uint(p.y)*width+uint(p.x)]=%s; color=vec4(1.0); }\n",prefix,vec,convert);
+            "%s void main(){ ivec2 p=ivec2(gl_FragCoord.xy); %s v=%s;\n"
+            "result[(layer*height+uint(p.y))*width+uint(p.x)]=%s; color=vec4(1.0); }\n",prefix,dim,cube_func,vec,fetch_expr,convert);
     else
         snprintf(fs,sizeof(fs),"#version 310 es\n#extension GL_NV_image_formats : enable\nprecision highp float; precision highp int;\n"
-            "layout(%s,binding=0) readonly uniform highp %simage2D src;\n"
-            "layout(%s,binding=1) writeonly uniform highp %simage2D dst; uniform uint width;\n"
+            "layout(%s,binding=0) readonly uniform highp %simage%s src;\n"
+            "layout(%s,binding=1) writeonly uniform highp %simage%s dst; uniform uint width,height,layer;\n"
             "layout(std430,binding=0) writeonly buffer B { uvec4 result[]; }; out vec4 color;\n"
-            "void main(){ ivec2 p=ivec2(gl_FragCoord.xy); %s v=imageLoad(src,p);\n"
-            "result[uint(p.y)*width+uint(p.x)]=%s; imageStore(dst,p,%s); color=vec4(1.0); }\n",
-            fmt->name,prefix,fmt->name,prefix,vec,convert,expr);
+            "void main(){ ivec2 p=ivec2(gl_FragCoord.xy); %s v=imageLoad(src,%s);\n"
+            "result[(layer*height+uint(p.y))*width+uint(p.x)]=%s; imageStore(dst,%s,%s); color=vec4(1.0); }\n",
+            fmt->name,prefix,image_dim,fmt->name,prefix,image_dim,vec,coord,convert,coord,expr);
     GLuint p=glCreateProgram(); glAttachShader(p,shader(GL_VERTEX_SHADER,vs)); glAttachShader(p,shader(GL_FRAGMENT_SHADER,fs));
     glLinkProgram(p); GLint ok; glGetProgramiv(p,GL_LINK_STATUS,&ok);
     if(!ok) {char log[4096];glGetProgramInfoLog(p,sizeof(log),NULL,log);fprintf(stderr,"%s\n",log);}
@@ -174,13 +184,21 @@ static GLuint program(const struct format *fmt, int fetch)
 }
 int main(int argc,char **argv)
 {
-    CHECK(argc==2||argc==4);
+    CHECK(argc==2||(argc>=4&&argc<=6));
     const struct format *fmt=NULL;
     for(unsigned i=0;i<sizeof(formats)/sizeof(formats[0]);i++) if(!strcmp(argv[1],formats[i].name)) fmt=&formats[i];
     CHECK(fmt);
-    int w=argc==4?atoi(argv[2]):17,h=argc==4?atoi(argv[3]):13;
+    int w=argc>=4?atoi(argv[2]):17,h=argc>=4?atoi(argv[3]):13;
+    const char *dim=argc>=5?argv[4]:"2d";
+    CHECK(!strcmp(dim,"2d")||!strcmp(dim,"array")||!strcmp(dim,"3d")||!strcmp(dim,"cube")||!strcmp(dim,"array-single")||!strcmp(dim,"3d-single")||!strcmp(dim,"cube-single"));
+    int layered=strcmp(dim,"2d")!=0,volume=!strncmp(dim,"3d",2),cube=!strncmp(dim,"cube",4),depth=cube?6:layered?3:1;
+    int single=strstr(dim,"-single")!=NULL;
+    CHECK(!cube||w==h);
+    int cpu_fetch=getenv("KSTB_CPU_FETCH")!=NULL;
+    int level=argc==6?atoi(argv[5]):0;CHECK(level>=0&&level<=3);
+    GLenum target=cube?GL_TEXTURE_CUBE_MAP:volume?GL_TEXTURE_3D:layered?GL_TEXTURE_2D_ARRAY:GL_TEXTURE_2D;
     CHECK(w>0&&w<=512&&h>0&&h<=512);
-    size_t n=(size_t)w*h; uint32_t *pixels=malloc(n*16); CHECK(pixels);fill(fmt,pixels,n);
+    size_t n=(size_t)w*h*depth; uint32_t *pixels=malloc(n*16); CHECK(pixels);fill(fmt,pixels,n);
     int fd=open("/dev/dri/renderD128",O_RDWR|O_CLOEXEC);CHECK(fd>=0);
     struct gbm_device *gbm=gbm_create_device(fd);CHECK(gbm);
     EGLDisplay dpy=eglGetPlatformDisplay(EGL_PLATFORM_GBM_KHR,gbm,NULL);
@@ -188,7 +206,7 @@ int main(int argc,char **argv)
     const EGLint ca[]={EGL_CONTEXT_MAJOR_VERSION,3,EGL_CONTEXT_MINOR_VERSION,1,EGL_NONE};
     EGLContext ctx=eglCreateContext(dpy,EGL_NO_CONFIG_KHR,EGL_NO_CONTEXT,ca);
     CHECK(ctx!=EGL_NO_CONTEXT&&eglMakeCurrent(dpy,EGL_NO_SURFACE,EGL_NO_SURFACE,ctx));
-    printf("%s, %s %dx%d\n",glGetString(GL_VERSION),fmt->name,w,h);
+    printf("%s, %s %s %dx%dx%d mip %d%s\n",glGetString(GL_VERSION),fmt->name,dim,w,h,depth,level,cpu_fetch?" CPU upload/native-fetch only":"");
     const GLenum integer_formats[4]={GL_RED_INTEGER,GL_RG_INTEGER,GL_RGB_INTEGER,GL_RGBA_INTEGER};
     const GLenum float_formats[4]={GL_RED,GL_RG,GL_RGB,GL_RGBA};
     GLenum format=(fmt->kind<=SINT_KIND?integer_formats:float_formats)[fmt->channels-1];
@@ -198,10 +216,21 @@ int main(int argc,char **argv)
     GLuint tex[2];glGenTextures(2,tex);
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
     for(unsigned i=0;i<2;i++) {
-        glBindTexture(GL_TEXTURE_2D,tex[i]);glTexStorage2D(GL_TEXTURE_2D,1,fmt->internal,w,h);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        if(!i) glTexSubImage2D(GL_TEXTURE_2D,0,0,0,w,h,format,type,pixels);
-        glBindImageTexture(i,tex[i],0,GL_FALSE,0,i?GL_WRITE_ONLY:GL_READ_ONLY,fmt->internal);
+        glBindTexture(target,tex[i]);
+        if(layered&&!cube) glTexStorage3D(target,level+1,fmt->internal,w<<level,h<<level,volume?depth<<level:depth);
+        else glTexStorage2D(target,level+1,fmt->internal,w<<level,h<<level);
+        glTexParameteri(target,GL_TEXTURE_MIN_FILTER,level&&!getenv("KSTB_NO_MIP_FILTER")?GL_NEAREST_MIPMAP_NEAREST:GL_NEAREST);glTexParameteri(target,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        if(!i||cpu_fetch) {
+            if(cube) {
+                size_t pixel_bytes=(fmt->internal==GL_RGB10_A2||fmt->internal==GL_RGB10_A2UI)?4:
+                    fmt->channels*(fmt->kind==FLOAT_KIND?4:fmt->bits/8);
+                for(int face=0;face<6;face++)
+                    glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+face,level,0,0,w,h,format,type,
+                                    (char *)pixels+(size_t)face*w*h*pixel_bytes);
+            } else if(layered) glTexSubImage3D(target,level,0,0,0,w,h,depth,format,type,pixels);
+            else glTexSubImage2D(target,level,0,0,w,h,format,type,pixels);
+        }
+        glBindImageTexture(i,tex[i],level,layered&&!single,0,i?GL_WRITE_ONLY:GL_READ_ONLY,fmt->internal);
     }
     CHECK(glGetError()==GL_NO_ERROR);
     GLuint buf;glGenBuffers(1,&buf);glBindBuffer(GL_SHADER_STORAGE_BUFFER,buf);
@@ -211,14 +240,22 @@ int main(int argc,char **argv)
     glGenFramebuffers(1,&fbo);glBindFramebuffer(GL_FRAMEBUFFER,fbo);glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_RENDERBUFFER,rb);
     CHECK(glCheckFramebufferStatus(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE);glViewport(0,0,w,h);
     size_t errors=0;
-    for(int pass=0;pass<2;pass++) {
-        GLuint p=program(fmt,pass);glUseProgram(p);glUniform1ui(glGetUniformLocation(p,"width"),w);
-        if(pass) {glActiveTexture(GL_TEXTURE0);glBindTexture(GL_TEXTURE_2D,tex[1]);glUniform1i(glGetUniformLocation(p,"tex"),0);}
+    for(int pass=cpu_fetch?1:0;pass<2;pass++) {
+        GLuint p=program(fmt,pass,layered,volume,cube,single);glUseProgram(p);
+        glUniform1ui(glGetUniformLocation(p,"width"),w);
+        glUniform1ui(glGetUniformLocation(p,"height"),h);
+        glUniform1i(glGetUniformLocation(p,"level"),level);
+        if(pass) {glActiveTexture(GL_TEXTURE0);glBindTexture(target,tex[1]);glUniform1i(glGetUniformLocation(p,"tex"),0);}
         glBufferSubData(GL_SHADER_STORAGE_BUFFER,0,n*16,pixels);
-        glDrawArrays(GL_TRIANGLES,0,3);
+        for(int z=0;z<depth;z++) {
+            if(single&&!pass) for(unsigned i=0;i<2;i++)
+                glBindImageTexture(i,tex[i],level,GL_FALSE,z,i?GL_WRITE_ONLY:GL_READ_ONLY,fmt->internal);
+            glUniform1ui(glGetUniformLocation(p,"layer"),z);
+            glDrawArrays(GL_TRIANGLES,0,3);
+        }
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_TEXTURE_FETCH_BARRIER_BIT|GL_BUFFER_UPDATE_BARRIER_BIT);glFinish();CHECK(glGetError()==GL_NO_ERROR);
         const uint32_t *data=glMapBufferRange(GL_SHADER_STORAGE_BUFFER,0,n*16,GL_MAP_READ_BIT);CHECK(data);
-        size_t e=check(fmt,data,n,pass);errors+=e;
+        size_t e=check(fmt,data,n,cpu_fetch?0:pass);errors+=e;
         CHECK(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
         printf("%s %s: %s (%zu errors, %zu words)\n",fmt->name,pass?"store/native-fetch":"image-load",e?"FAIL":"verified",e,n*4);
         glDeleteProgram(p);

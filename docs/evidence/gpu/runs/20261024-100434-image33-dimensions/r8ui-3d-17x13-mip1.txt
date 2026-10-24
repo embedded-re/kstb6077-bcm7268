@@ -1,0 +1,20 @@
+rsc alloc 0xffff936d4070 (format r8_unorm), 4096x1 buffer @0x00001000-0x00002fff
+OpenGL ES 3.1 Mesa 23.3.6 (git-d7e482bd07), r8ui 3d 17x13x3 mip 1
+rsc alloc 0xffff936d45d0 (format r8_uint), 34x26: level 0 (UIF) 34x26x6 -> 64x32x8, stride 64@0x00004000
+rsc alloc 0xffff936d45d0 (format r8_uint), 34x26: level 1 (UB2) 17x13x3 -> 32x16x4, stride 32@0x00003800
+rsc alloc 0xffff93687080 (format r8_uint), 34x26: level 0 (UIF) 34x26x6 -> 64x32x8, stride 64@0x00008000
+rsc alloc 0xffff93687080 (format r8_uint), 34x26: level 1 (UB2) 17x13x3 -> 32x16x4, stride 32@0x00007800
+rsc alloc 0xffff93687320 (format r8_unorm), 10608x1 buffer @0x0000b000-0x0000dfff
+rsc alloc 0xffff93687320 (format r8_unorm), 10608x1 buffer @0x0000e000-0x00010fff
+rsc alloc 0xffff936875c0 (format r8g8b8a8_unorm), 17x13: level 0 (UIF) 17x13x1 -> 32x16x1, stride 128@0x00011000
+rsc alloc 0xffff93687320 (format r8_unorm), 10608x1 buffer @0x0000b000-0x0000dfff
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 189 inst, 2 threads, 0 loops, 34 uniforms, 19 max-temps, 0:0 spills:fills, 0 sfu-stalls, 189 inst-and-stalls, 7 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rsc alloc 0xffff93687320 (format r8_unorm), 10608x1 buffer @0x0000e000-0x00010fff
+SHADER-DB-GLSL4 - MESA_SHADER_FRAGMENT shader: 37 inst, 2 threads, 0 loops, 15 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 0 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rsc alloc 0xffff92f36050 (format r8_unorm), 4096x1 buffer @0x00099000-0x0009afff
+r8ui image-load: verified (0 errors, 2652 words)
+r8ui store/native-fetch: verified (0 errors, 2652 words)
