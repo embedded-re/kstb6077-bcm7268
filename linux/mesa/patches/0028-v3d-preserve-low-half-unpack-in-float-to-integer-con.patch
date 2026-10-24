@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 17:44:03 +0200
+Subject: [PATCH 28/29] v3d: preserve low-half unpack in float-to-integer
+ conversion opcodes
+
+---
+ src/broadcom/qpu/qpu_pack.c         |  2 +-
+ src/broadcom/qpu/tests/qpu_disasm.c | 42 ++++++++++++++++++++++++++++-
+ 2 files changed, 42 insertions(+), 2 deletions(-)
+
+diff --git a/src/broadcom/qpu/qpu_pack.c b/src/broadcom/qpu/qpu_pack.c
+index 08fce4a..5ae4b9c 100644
+--- a/src/broadcom/qpu/qpu_pack.c
++++ b/src/broadcom/qpu/qpu_pack.c
+@@ -1762,7 +1762,7 @@ v3d33_qpu_add_pack(const struct v3d_device_info *devinfo,
+                 }
+                 if (packed == 0)
+                         return false;
+-                opcode |= packed << 2;
++                opcode = (opcode & ~(0x3 << 2)) | packed << 2;
+ 
+                 break;
+ 
+diff --git a/src/broadcom/qpu/tests/qpu_disasm.c b/src/broadcom/qpu/tests/qpu_disasm.c
+index be7b78d..4ea6692 100644
+--- a/src/broadcom/qpu/tests/qpu_disasm.c
++++ b/src/broadcom/qpu/tests/qpu_disasm.c
+@@ -116,11 +116,51 @@ swap_pack(enum v3d_qpu_input_unpack *a, enum v3d_qpu_input_unpack *b)
+         *b = t;
+ }
+ 
++/* A base opcode already contains the no-unpack bit. ORing in the low
++ * half selector changes it into the high half selector instead.
++ */
++static int
++conversion_unpack_test(void)
++{
++        const enum v3d_qpu_add_op ops[] = {
++                V3D_QPU_A_FTOIN, V3D_QPU_A_FTOIZ,
++                V3D_QPU_A_FTOUZ, V3D_QPU_A_FTOC,
++        };
++        const enum v3d_qpu_input_unpack unpacks[] = {
++                V3D_QPU_UNPACK_NONE, V3D_QPU_UNPACK_L, V3D_QPU_UNPACK_H,
++        };
++        const int versions[] = {33, 41, 42};
++        for (unsigned v = 0; v < ARRAY_SIZE(versions); v++) {
++                struct v3d_device_info devinfo = {.ver = versions[v]};
++                for (unsigned op = 0; op < ARRAY_SIZE(ops); op++) {
++                        for (unsigned u = 0; u < ARRAY_SIZE(unpacks); u++) {
++                                struct v3d_qpu_instr instr, decoded;
++                                uint64_t word;
++                                if (!v3d_qpu_instr_unpack(&devinfo, 0x3c003186bb800000ull,
++                                                          &instr))
++                                        return 1;
++                                instr.alu.add.op = ops[op];
++                                instr.alu.add.a.mux = V3D_QPU_MUX_R0;
++                                instr.alu.add.a.unpack = unpacks[u];
++                                if (!v3d_qpu_instr_pack(&devinfo, &instr, &word) ||
++                                    !v3d_qpu_instr_unpack(&devinfo, word, &decoded) ||
++                                    decoded.alu.add.op != ops[op] ||
++                                    decoded.alu.add.a.unpack != unpacks[u]) {
++                                        fprintf(stderr, "conversion unpack failed: v%d op %u unpack %u\n",
++                                                versions[v], ops[op], unpacks[u]);
++                                        return 1;
++                                }
++                        }
++                }
++        }
++        return 0;
++}
++
+ int
+ main(int argc, char **argv)
+ {
+         struct v3d_device_info devinfo = { };
+-        int retval = 0;
++        int retval = conversion_unpack_test();
+ 
+         for (int i = 0; i < ARRAY_SIZE(tests); i++) {
+                 devinfo.ver = tests[i].ver;

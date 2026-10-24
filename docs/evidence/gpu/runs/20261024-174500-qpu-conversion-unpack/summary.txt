@@ -1,0 +1,4 @@
+QPU pack/unpack: 47 existing instruction fixtures and 36 float-to-integer conversion/unpack combinations pass.
+The new test fails with the old conversion packer: v33 op 68 unpack 2 (low-half).
+Cross-built CPU-only test executed on the board; no GPU submission.
+Source: Mesa patch 0028, commit 6f2eda5.

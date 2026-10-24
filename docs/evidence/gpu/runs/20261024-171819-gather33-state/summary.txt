@@ -1,0 +1,26 @@
+12 standalone checks: 12 exit 0
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+r32ui-c0: exit 0
+gather R32UI 4x4 component 0: 0 errors, guards checked
+r32ui-c1: exit 0
+gather R32UI 4x4 component 1: 0 errors, guards checked
+r32ui-c2: exit 0
+gather R32UI 4x4 component 2: 0 errors, guards checked
+r32ui-c3: exit 0
+gather R32UI 4x4 component 3: 0 errors, guards checked
+rgba32ui-c0: exit 0
+gather RGBA32UI 4x4 component 0: 0 errors, guards checked
+rgba32ui-c1: exit 0
+gather RGBA32UI 4x4 component 1: 0 errors, guards checked
+rgba32ui-c2: exit 0
+gather RGBA32UI 4x4 component 2: 0 errors, guards checked
+rgba32ui-c3: exit 0
+gather RGBA32UI 4x4 component 3: 0 errors, guards checked
+rgba16f-c0: exit 0
+gather RGBA16F 4x4 component 0: 0 errors, guards checked
+rgba16f-c1: exit 0
+gather RGBA16F 4x4 component 1: 0 errors, guards checked
+rgba16f-c2: exit 0
+gather RGBA16F 4x4 component 2: 0 errors, guards checked
+rgba16f-c3: exit 0
+gather RGBA16F 4x4 component 3: 0 errors, guards checked

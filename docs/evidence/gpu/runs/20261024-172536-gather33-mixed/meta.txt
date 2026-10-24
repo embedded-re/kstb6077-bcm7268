@@ -1,0 +1,5 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+68bd1dd811f04ebd17398ac033d1d5957c644c0b0e3a46453b27f6634394ea79  /tmp/kstb-gather33/v3d_dri.so
+cce640136c603f313f791bfc53040e93bfd13fb48d1c5befb15277a9560a3fa7  /opt/gpu-test/kstb-gather-test
+scratch Mesa V3D_COMPUTE33=1 GLES 3.1 override

@@ -1,0 +1,10 @@
+[
+  {
+    "test": "shadow-cpu",
+    "exit": 0,
+    "start": 157351.757225822,
+    "end": 157354.700434403,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  }
+]

@@ -1,0 +1,2 @@
+1059 cases: Pass 642, NotSupported 405, Fail 12
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

@@ -1,0 +1,10 @@
+3 standalone checks: 3 exit 0
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+caps-default: exit 0
+requested=3
+GL_VERSION=OpenGL ES 3.0 Mesa 23.3.6 (git-cfe4414fa2)
+caps-optin: exit 0
+requested=3.1
+GL_VERSION=OpenGL ES 3.1 Mesa 23.3.6 (git-cfe4414fa2)
+shadow-cpu: exit 0
+448 shadow gather draws, all 8 functions, finite/infinite borders and references: 0 errors, guards checked

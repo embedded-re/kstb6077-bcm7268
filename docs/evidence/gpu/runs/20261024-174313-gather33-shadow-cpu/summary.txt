@@ -1,0 +1,4 @@
+1 standalone checks: 1 exit 0
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+shadow-cpu: exit 0
+448 shadow gather draws, all 8 functions, finite/infinite borders and references: 0 errors, guards checked

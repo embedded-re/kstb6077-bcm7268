@@ -1,0 +1,498 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-204287b5eb)
+MESA_SHADER_FRAGMENT prog 0 NIR:
+shader: MESA_SHADER_FRAGMENT
+source_sha1: {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000}
+name: TTN
+internal: false
+stage: 4
+next_stage: 0
+num_textures: 1
+inputs_read: 32
+outputs_written: 4
+textures_used: 0x00000000'00000000'00000000'00000001
+textures_used_by_txf: 0x00000000'00000000'00000000'00000001
+samplers_used: 0x00000001
+subgroup_size: 1
+bit_sizes_float: 0x20
+bit_sizes_int: 0x20
+separate_shader: true
+flrp_lowered: true
+origin_upper_left: true
+untyped_color_outputs: true
+inputs: 1
+outputs: 1
+uniforms: 0
+decl_var uniform INTERP_MODE_NONE none sampler2D sampler (0, 0, 0)
+decl_var shader_in INTERP_MODE_NOPERSPECTIVE none vec4 in_0 (VARYING_SLOT_VAR0.xyzw, 0, 0)
+decl_var shader_out INTERP_MODE_FLAT none vec4 out_0 (FRAG_RESULT_DATA0.xyzw, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:   // preds: 
+    32     %8 = load_const (0x00000000)
+    32x4   %9 = @load_input (%8 (0x0)) (base=0, range=1, component=0, dest_type=float32, io location=VARYING_SLOT_VAR0 slots=1)  // in_0
+    32     %2 = f2i32 %9.x
+    32     %3 = f2i32 %9.y
+    32     %4 = f2i32 %9.w
+    32x2   %5 = vec2 %2, %3
+    32x4   %6 = (float32)txf %5 (coord), %4 (lod), 0 (texture)
+                @store_output (%6, %8 (0x0)) (base=0, range=1, wrmask=xyzw, component=0, src_type=float32, io location=FRAG_RESULT_DATA0 slots=1, xfb(), xfb2())  // out_0
+                // succs: b1 
+    block b1:
+}
+
+
+MESA_SHADER_FRAGMENT prog 0/1 NIR:
+shader: MESA_SHADER_FRAGMENT
+source_sha1: {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000}
+name: TTN
+internal: false
+stage: 4
+next_stage: 0
+num_textures: 1
+inputs_read: 32
+outputs_written: 4
+textures_used: 0x00000000'00000000'00000000'00000001
+textures_used_by_txf: 0x00000000'00000000'00000000'00000001
+samplers_used: 0x00000001
+subgroup_size: 1
+divergence_analysis_run: true
+bit_sizes_float: 0x20
+bit_sizes_int: 0x20
+separate_shader: true
+flrp_lowered: true
+origin_upper_left: true
+untyped_color_outputs: true
+inputs: 1
+outputs: 1
+uniforms: 0
+decl_var uniform INTERP_MODE_NONE none sampler2D sampler (0, 0, 0)
+decl_var shader_in INTERP_MODE_NOPERSPECTIVE none vec4 in_0 (VARYING_SLOT_VAR0.xyzw, 0, 0)
+decl_var shader_out INTERP_MODE_FLAT none vec4 out_0 (FRAG_RESULT_DATA0.xyzw, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:      // preds: 
+    con 32    %0 = load_const (0x00000000)
+    div 32    %1 = @load_input (%0 (0x0)) (base=0, range=0, component=0, dest_type=float32, io location=VARYING_SLOT_VAR0 slots=1)  // in_0
+    div 32    %2 = @load_input (%0 (0x0)) (base=0, range=0, component=1, dest_type=float32, io location=VARYING_SLOT_VAR0 slots=1)  // in_0
+    div 32    %3 = @load_input (%0 (0x0)) (base=0, range=0, component=3, dest_type=float32, io location=VARYING_SLOT_VAR0 slots=1)  // in_0
+    div 32    %4 = f2i32 %1
+    div 32    %5 = f2i32 %2
+    div 32    %6 = f2i32 %3
+    div 32x2  %7 = vec2 %4, %5
+    div 32x4  %8 = (float32)txf %7 (coord), %6 (lod), 0 (texture)
+                   @store_output (%8, %0 (0x0)) (base=0, range=1, wrmask=xyzw, component=0, src_type=float32, io location=FRAG_RESULT_DATA0 slots=1, xfb(), xfb2())  // out_0
+                   // succs: b1 
+    block b1:
+}
+
+MESA_SHADER_FRAGMENT prog 0/1 pre-opt VIR:
+BLOCK 0:
+mov t0, rf0
+mov t1, rf1
+mov t2, rf2
+nop null; ldvary
+mov t3, r5
+mov t4, r3
+fadd t5, t4, r5
+nop null; ldvary
+mov t6, r5
+mov t7, r3
+fadd t8, t7, r5
+nop null; ldvary
+mov t9, r5
+mov t10, r3
+fadd t11, t10, r5
+nop null; ldvary
+mov t12, r5
+mov t13, r3
+fadd t14, t13, r5
+nop t15; ldunif (0x00000000 / 0.000000)
+mov t16, t5
+mov t17, t8
+mov t18, t14
+ftoiz t19, t16
+ftoiz t20, t17
+ftoiz t21, t18
+mov t22, t19
+mov t23, t20
+nop t24; ldunif (44 / 0x00000000)
+fadd t25, t21, t24
+mov tmu, t22 (tex[0].p0: 0x00000208)
+mov tmu, t23 (tex[15].p1)
+mov tmul, t25
+nop null; thrsw
+nop null; ldtmu
+mov t26, r4
+nop null; ldtmu
+mov t27, r4
+nop null; ldtmu
+mov t28, r4
+nop null; ldtmu
+mov t29, r4
+mov t30, t26
+mov t31, t27
+mov t32, t28
+mov t33, t29
+vfpack tlb, t30, t31
+vfpack tlb, t32, t33
+
+MESA_SHADER_FRAGMENT prog 0/1 VIR:
+BLOCK 0:
+nop null; ldvary
+mov t4, r3
+fadd t5, t4, r5
+nop null; ldvary
+mov t7, r3
+fadd t8, t7, r5
+nop null; ldvary
+nop null; ldvary
+mov t13, r3
+fadd t14, t13, r5
+ftoiz t19, t5
+ftoiz t20, t8
+ftoiz t21, t14
+nop t34; ldunif (44 / 0x00000000)
+mov t24, t34
+fadd t25, t21, t24
+mov tmu, t19 (tex[0].p0: 0x00000208)
+mov tmu, t20 (tex[15].p1)
+mov tmul, t25
+nop null; thrsw
+nop null; ldtmu
+mov t26, r4
+nop null; ldtmu
+mov t27, r4
+nop null; ldtmu
+mov t28, r4
+nop null; ldtmu
+mov t29, r4
+vfpack tlb, t26, t27
+vfpack tlb, t28, t29
+
+MESA_SHADER_FRAGMENT prog 0/1 QPU:
+0x3d003186bb800000 nop                           ; nop                         ; ldvary
+0x3d003006bbec0000 nop                           ; mov r0, r3                  ; ldvary
+0x3d00308105ee8000 fadd r1, r0, r5               ; mov r2, r3                  ; ldvary
+0x3d0031840582a000 fadd r4, r2, r5               ; nop                         ; ldvary
+0x3c003003f5ef9000 ftoiz r3, r1                  ; mov r0, r3
+0x3c40318205828000 fadd r2, r0, r5               ; nop                         ; ldunif
+0x3c003044f5f7c000 ftoiz r4, r4                  ; mov r1, r5
+0x3c203240f5efa000 ftoiz r0, r2                  ; mov tmu, r3                 ; thrsw
+0x3c20324205f08000 fadd r2, r0, r1               ; mov tmu, r4                 ; thrsw
+0x3c003286bbe80000 nop                           ; mov tmul, r2
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c8030c6bbf00000 nop                           ; mov r3, r4                  ; ldtmu
+0x3c803006bbf00000 nop                           ; mov r0, r4                  ; ldtmu
+0x3ca03046bbf00000 nop                           ; mov r1, r4                  ; thrsw; ldtmu
+0x3c00308735f03000 vfpack tlb, r3, r0            ; mov r2, r4
+0x3c00318735811000 vfpack tlb, r1, r2            ; nop
+
+SHADER-DB-TTN - MESA_SHADER_FRAGMENT shader: 16 inst, 4 threads, 0 loops, 3 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 16 inst-and-stalls, 0 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX shader: 37 inst, 1 threads, 0 loops, 6 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 2 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+MESA_SHADER_FRAGMENT prog 3 NIR:
+shader: MESA_SHADER_FRAGMENT
+source_sha1: {0xc4e5f372, 0x7b46457f, 0x9d7e0314, 0xa76e1ad6, 0xda9b94e1}
+name: GLSL1
+internal: false
+stage: 4
+next_stage: 4
+num_textures: 1
+num_ssbos: 1
+inputs_read: 0
+outputs_written: 4
+textures_used: 0x00000000'00000000'00000000'00000001
+samplers_used: 0x00000001
+subgroup_size: 1
+uses_texture_gather: true
+bit_sizes_float: 0x20
+bit_sizes_int: 0x20
+flrp_lowered: true
+writes_memory: true
+inputs: 1
+outputs: 1
+uniforms: 1
+decl_var uniform INTERP_MODE_NONE none highp sampler2D tex (1, 0, 0)
+decl_var uniform INTERP_MODE_NONE none vec4 gl_FbWposYTransform (0, 0, 0)
+decl_var shader_in INTERP_MODE_NONE none highp vec4 gl_FragCoord (VARYING_SLOT_POS.xyzw, 0, 0)
+decl_var shader_out INTERP_MODE_NONE none highp vec4 color (FRAG_RESULT_DATA0.xyzw, 0, 0)
+decl_var ssbo INTERP_MODE_NONE writeonly highp uvec4[] result (0, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:   // preds: 
+    32    %49 = load_const (0x00000000)
+    32x4  %50 = @load_input (%49 (0x0)) (base=0, range=1, component=0, dest_type=float32, io location=VARYING_SLOT_POS slots=1)  // gl_FragCoord
+    32    %75 = load_const (0x00000004)
+    32    %76 = ishl %49 (0x0), %75 (0x4)
+    32x4  %48 = @load_uniform (%76) (base=0, range=1, dest_type=float32)  // tex
+    32    %52 = load_const (0x3f000000 = 0.500000)
+    32    %65 = fadd %50.x, %52 (0.500000)
+    32    %66 = fadd %50.y, %52 (0.500000)
+    32    %40 = fmul %66, %48.x
+    32    %42 = fadd %40, %48.y
+    32     %2 = load_const (0x00000006)
+    32x4  %72 = load_const (0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000) = (1.000000, 1.000000, 1.000000, 1.000000)
+    32     %4 = f2i32 %65
+    32     %5 = f2i32 %42
+    32     %6 = imul %5, %2 (0x6)
+    32     %7 = iadd %6, %4
+    32    %29 = load_const (0x00000004)
+    32    %30 = ishl %7, %29 (0x4)
+    32    %11 = load_const (0xbf000000 = -0.500000)
+    32    %13 = fadd %42, %11 (-0.500000)
+    32    %14 = load_const (0x3e800000 = 0.250000)
+    32    %15 = fmul %50.x, %14 (0.250000)
+    32    %16 = fmul %13, %14 (0.250000)
+    32x2  %17 = vec2 %15, %16
+    32x4  %18 = (float32)tg4 %17 (coord), 3 (gather_component), 0 (texture), 0 (sampler)
+    32    %19 = f2u32 %18.x
+    32    %20 = f2u32 %18.y
+    32    %21 = f2u32 %18.z
+    32    %22 = f2u32 %18.w
+    32x4  %23 = vec4 %19, %20, %21, %22
+                @store_ssbo (%23, %49 (0x0), %30) (wrmask=xyzw, access=writeonly, align_mul=16, align_offset=0)
+                @store_output (%72 (1.000000, 1.000000, 1.000000, 1.000000), %49 (0x0)) (base=0, range=1, wrmask=xyzw, component=0, src_type=float32, io location=FRAG_RESULT_DATA0 slots=1, xfb(), xfb2())  // color
+                // succs: b1 
+    block b1:
+}
+
+
+MESA_SHADER_FRAGMENT prog 3/1 NIR:
+shader: MESA_SHADER_FRAGMENT
+source_sha1: {0xc4e5f372, 0x7b46457f, 0x9d7e0314, 0xa76e1ad6, 0xda9b94e1}
+name: GLSL1
+internal: false
+stage: 4
+next_stage: 4
+num_textures: 1
+num_ssbos: 1
+inputs_read: 0
+outputs_written: 4
+textures_used: 0x00000000'00000000'00000000'00000001
+samplers_used: 0x00000001
+subgroup_size: 1
+uses_texture_gather: true
+divergence_analysis_run: true
+bit_sizes_float: 0x20
+bit_sizes_int: 0x20
+flrp_lowered: true
+writes_memory: true
+inputs: 1
+outputs: 1
+uniforms: 1
+decl_var uniform INTERP_MODE_NONE none highp sampler2D tex (1, 0, 0)
+decl_var uniform INTERP_MODE_NONE none vec4 gl_FbWposYTransform (0, 0, 0)
+decl_var shader_in INTERP_MODE_NONE none highp vec4 gl_FragCoord (VARYING_SLOT_POS.xyzw, 0, 0)
+decl_var shader_out INTERP_MODE_NONE none highp vec4 color (FRAG_RESULT_DATA0.xyzw, 0, 0)
+decl_var ssbo INTERP_MODE_NONE writeonly highp uvec4[] result (0, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:       // preds: 
+    con 32     %0 = load_const (0x00000000)
+    div 32     %2 = @load_input (%0 (0x0)) (base=0, range=0, component=1, dest_type=float32, io location=VARYING_SLOT_POS slots=1)  // gl_FragCoord
+    con 32     %5 = load_const (0x3f000000 = 0.500000)
+    div 32     %7 = fadd %2, %5 (0.500000)
+    con 32x4   %4 = @load_uniform (%0 (0x0)) (base=0, range=1, dest_type=float32)  // tex
+    div 32     %8 = fmul %7, %4.x
+    div 32     %9 = fadd %8, %4.y
+    div 32     %1 = @load_input (%0 (0x0)) (base=0, range=0, component=0, dest_type=float32, io location=VARYING_SLOT_POS slots=1)  // gl_FragCoord
+    con 32    %17 = load_const (0xbf000000 = -0.500000)
+    div 32    %18 = fadd %9, %17 (-0.500000)
+    con 32    %19 = load_const (0x3e800000 = 0.250000)
+    div 32    %20 = fmul %1, %19 (0.250000)
+    div 32    %21 = fmul %18, %19 (0.250000)
+    div 32x2  %22 = vec2 %20, %21
+    div 32x4  %23 = (float32)tg4 %22 (coord), 3 (gather_component), 0 (texture), 0 (sampler)
+    div 32    %13 = f2i32 %9
+    div 32     %6 = fadd %1, %5 (0.500000)
+    con 32    %10 = load_const (0x00000006)
+    div 32    %14 = imul %13, %10 (0x6)
+    div 32    %12 = f2i32 %6
+    div 32    %24 = f2u32 %23.z
+    div 32    %25 = f2u32 %23.w
+    div 32    %26 = f2u32 %23.y
+    div 32    %27 = f2u32 %23.x
+    div 32    %15 = iadd %14, %12
+    div 32x4  %28 = vec4 %24, %25, %26, %27
+    con 32     %3 = load_const (0x00000004)
+    div 32    %16 = ishl %15, %3 (0x4)
+    con 32x4  %11 = load_const (0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000) = (1.000000, 1.000000, 1.000000, 1.000000)
+                    @store_output (%11 (1.000000, 1.000000, 1.000000, 1.000000), %0 (0x0)) (base=0, range=1, wrmask=xyzw, component=0, src_type=float32, io location=FRAG_RESULT_DATA0 slots=1, xfb(), xfb2())  // color
+                    @store_ssbo (%28, %0 (0x0), %16) (wrmask=xyzw, access=writeonly, align_mul=16, align_offset=0)
+                    // succs: b1 
+    block b1:
+}
+
+MESA_SHADER_FRAGMENT prog 3/1 pre-opt VIR:
+BLOCK 0:
+mov t0, rf0
+mov t1, rf1
+mov t2, rf2
+fxcd t3
+fycd t4
+fmov recip, t0
+fmov t5, r4
+nop t6; ldunif (0x00000000 / 0.000000)
+mov t7, t4
+nop t8; ldunif (0x3f000000 / 0.500000)
+fadd t9, t7, t8
+nop t10; ldunif (push[0])
+nop t11; ldunif (push[1])
+nop t12; ldunif (push[2])
+nop t13; ldunif (push[3])
+fmul t14, t9, t10
+fadd t15, t14, t11
+mov t16, t3
+nop t17; ldunif (0xbf000000 / -0.500000)
+fadd t18, t15, t17
+nop t19; ldunif (0x3e800000 / 0.250000)
+fmul t20, t16, t19
+fmul t21, t18, t19
+mov t22, t20
+mov t23, t21
+mov tmu, t22 (tex[0].p0: 0x00000210)
+mov tmul, t23 (tex[458767].p1)
+nop null; thrsw
+nop null; ldtmu
+mov t24, r4
+nop null; ldtmu
+mov t25, r4
+nop null; ldtmu
+mov t26, r4
+nop null; ldtmu
+mov t27, r4
+ftoiz t28, t15
+fadd t29, t16, t8
+nop t30; ldunif (0x00000006 / 0.000000)
+multop null, t28, t30
+umul24 t31, t28, t30
+ftoiz t32, t29
+ftouz t33, t26
+ftouz t34, t27
+ftouz t35, t25
+ftouz t36, t24
+add t37, t31, t32
+mov t38, t33
+mov t39, t34
+mov t40, t35
+mov t41, t36
+nop t42; ldunif (0x00000004 / 0.000000)
+shl t43, t37, t42
+nop t44; ldunif (0x3f800000 / 1.000000)
+nop t45; ldunif (0x3f800000 / 1.000000)
+mov t46, t44
+mov t47, t45
+mov t48, t44
+mov t49, t44
+nop t50; ldunif (ssbo[0])
+mov tmud, t38
+mov tmud, t39
+mov tmud, t40
+mov tmud, t41
+add tmuau, t50, t43 (0xfffffffc / -nan)
+mov tmua, t50
+nop null; thrsw
+tmuwt t51
+nop null; ldtmu
+mov t52, r4
+mov tlbu, null (0xffffff80 / -nan)
+vfpack tlb, t46, t47
+vfpack tlb, t48, t49
+
+MESA_SHADER_FRAGMENT prog 3/1 VIR:
+BLOCK 0:
+mov t0, rf0
+fxcd t3
+fycd t4
+fmov recip, t0
+fadd t9, t4, 0.500000
+nop t54; ldunif (push[0])
+mov t10, t54
+nop t55; ldunif (push[1])
+mov t11, t55
+fmul t14, t9, t10
+fadd t15, t14, t11
+nop t56; ldunif (0xbf000000 / -0.500000)
+mov t17, t56
+fadd t18, t15, t17
+fmul t20, t3, 0.250000
+fmul t21, t18, 0.250000
+mov tmu, t20 (tex[0].p0: 0x00000210)
+mov tmul, t21 (tex[458767].p1)
+nop null; thrsw
+nop null; ldtmu
+mov t24, r4
+nop null; ldtmu
+mov t25, r4
+nop null; ldtmu
+mov t26, r4
+nop null; ldtmu
+mov t27, r4
+ftoiz t28, t15
+fadd t29, t3, 0.500000
+multop null, t28, 6
+umul24 t31, t28, 6
+ftoiz t32, t29
+ftouz t33, t26
+ftouz t34, t27
+ftouz t35, t25
+ftouz t36, t24
+add t37, t31, t32
+shl t43, t37, 4
+nop t57; ldunif (ssbo[0])
+mov t50, t57
+mov tmud, t33
+mov tmud, t34
+mov tmud, t35
+mov tmud, t36
+add tmuau, t50, t43 (0xfffffffc / -nan)
+mov tmua, t50
+nop null; thrsw
+tmuwt t51
+nop null; ldtmu
+mov tlbu, null (0xffffff80 / -nan)
+nop t58; ldunif (0x3c003c00 / 0.007827)
+mov t53, t58
+mov tlb, t53
+mov tlb, t53
+
+MESA_SHADER_FRAGMENT prog 3/1 QPU:
+0x384034c0bb38c000 fycd r0                       ; fmov recip, rf0             ; ldunif
+0x3c402083bbf48000 fxcd rf3                      ; mov r2, r5                  ; ldunif
+0x3de030c105f78027 fadd r1, r0, 0x3f000000       ; mov r3, r5
+0x54403106bb440000 nop                           ; fmul r4, r1, r2             ; ldunif
+0x3c00200405f63000 fadd rf4, r3, r4              ; mov r0, r5
+0x55e03086bbf800e6 nop                           ; fmul r2, rf3, 0x3e800000
+0x3c20324105eb0100 fadd r1, r0, rf4              ; mov tmu, r2                 ; thrsw
+0x55e030c6bbe40026 nop                           ; fmul r3, r1, 0x3e800000
+0x3de0228505efe0e7 fadd rf5, rf3, 0x3f000000     ; mov tmul, r3
+0x3cc02186f583e140 ftoiz rf6, rf5                ; nop                         ; ldtmu; ldunif
+0x3c803006bbf00000 nop                           ; mov r0, r4                  ; ldtmu
+0x3c803046bbf00000 nop                           ; mov r1, r4                  ; ldtmu
+0x3c803086bbf00000 nop                           ; mov r2, r4                  ; ldtmu
+0x3c0030c2f6f1a000 ftouz r2, r2                  ; mov r3, r4
+0x3c0032c4f5ebe100 ftoiz r4, rf4                 ; mov tmud, r2
+0x29e03183f6f1b006 ftouz r3, r3                  ; multop -, r4, 6
+0x3c0032c1f6ed9000 ftouz r1, r1                  ; mov tmud, r3
+0x0de03100f6f18006 ftouz r0, r0                  ; umul24 r4, r4, 6
+0x3c0032c438e74180 add r4, r4, rf6               ; mov tmud, r1
+0x3de011c47cf7c004 shl r4, r4, 4                 ; mov rf7, r5
+0x3c2032c6bbe00000 nop                           ; mov tmud, r0                ; thrsw
+0x3c20318d388261c0 add tmuau, rf7, r4            ; nop                         ; thrsw
+0x3c003306bbf801c0 nop                           ; mov tmua, rf7
+0x3c003180bb815000 tmuwt r0                      ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c003206bbf80140 nop                           ; mov tlbu, rf5
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3c203046bbf40000 nop                           ; mov r1, r5                  ; thrsw
+0x3c0031c6bbe40000 nop                           ; mov tlb, r1
+0x3c0031c6bbe40000 nop                           ; mov tlb, r1
+
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 30 inst, 2 threads, 0 loops, 9 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 30 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+gather RGBA16F 4x4 component 3: 0 errors, guards checked

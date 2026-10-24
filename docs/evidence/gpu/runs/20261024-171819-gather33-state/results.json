@@ -1,0 +1,98 @@
+[
+  {
+    "test": "r32ui-c0",
+    "exit": 0,
+    "start": 155857.533146209,
+    "end": 155857.668457421,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "r32ui-c1",
+    "exit": 0,
+    "start": 155857.669502828,
+    "end": 155857.804491002,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "r32ui-c2",
+    "exit": 0,
+    "start": 155857.805775631,
+    "end": 155857.944544804,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "r32ui-c3",
+    "exit": 0,
+    "start": 155857.94575773,
+    "end": 155858.084420051,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba32ui-c0",
+    "exit": 0,
+    "start": 155858.085685421,
+    "end": 155858.224481001,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba32ui-c1",
+    "exit": 0,
+    "start": 155858.225808482,
+    "end": 155858.364347803,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba32ui-c2",
+    "exit": 0,
+    "start": 155858.365588025,
+    "end": 155858.504424198,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba32ui-c3",
+    "exit": 0,
+    "start": 155858.505757161,
+    "end": 155858.644474408,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba16f-c0",
+    "exit": 0,
+    "start": 155858.645821519,
+    "end": 155858.836345007,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba16f-c1",
+    "exit": 0,
+    "start": 155858.83776008,
+    "end": 155859.028328864,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba16f-c2",
+    "exit": 0,
+    "start": 155859.029664975,
+    "end": 155859.22031087,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  },
+  {
+    "test": "rgba16f-c3",
+    "exit": 0,
+    "start": 155859.221722833,
+    "end": 155859.412308062,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  }
+]

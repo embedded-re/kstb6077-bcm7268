@@ -1,0 +1,416 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 17:44:03 +0200
+Subject: [PATCH 29/29] v3d: add opt-in texture gather and compute texture
+ descriptors on 3.3
+
+---
+ src/broadcom/compiler/v3d33_tex.c      |  7 +++
+ src/broadcom/compiler/v3d_compiler.h   | 10 +++
+ src/broadcom/compiler/vir.c            | 33 ++++++++++
+ src/gallium/drivers/v3d/v3d_context.c  |  5 ++
+ src/gallium/drivers/v3d/v3d_context.h  |  5 ++
+ src/gallium/drivers/v3d/v3d_program.c  | 10 +++
+ src/gallium/drivers/v3d/v3d_screen.c   |  2 +
+ src/gallium/drivers/v3d/v3d_uniforms.c | 50 ++++++++++++---
+ src/gallium/drivers/v3d/v3dx_emit.c    | 84 +++++++++++++++++++++-----
+ 9 files changed, 182 insertions(+), 24 deletions(-)
+
+diff --git a/src/broadcom/compiler/v3d33_tex.c b/src/broadcom/compiler/v3d33_tex.c
+index 42379f4..1e7de3b 100644
+--- a/src/broadcom/compiler/v3d33_tex.c
++++ b/src/broadcom/compiler/v3d33_tex.c
+@@ -47,6 +47,7 @@ v3d33_vir_emit_tex(struct v3d_compile *c, nir_tex_instr *instr)
+                 V3D33_TEXTURE_UNIFORM_PARAMETER_0_CFG_MODE1_header,
+ 
+                 .fetch_sample_mode = instr->op == nir_texop_txf,
++                .gather_sample_mode = instr->op == nir_texop_tg4,
+         };
+ 
+         struct V3D33_TEXTURE_UNIFORM_PARAMETER_1_CFG_MODE1 p1_unpacked = {
+@@ -152,6 +153,12 @@ v3d33_vir_emit_tex(struct v3d_compile *c, nir_tex_instr *instr)
+          * field.
+          */
+         p1_packed |= unit << 5;
++        if (instr->op == nir_texop_tg4) {
++                p1_packed |= V3D33_TEXTURE_P1_GATHER |
++                             (instr->component << V3D33_TEXTURE_P1_COMPONENT_SHIFT);
++                if (c->key->sampler[unit].gather_compare)
++                        p1_packed |= V3D33_TEXTURE_P1_GATHER_COMPARE;
++        }
+ 
+         /* There is no native support for GL texture rectangle coordinates, so
+          * we have to rescale from ([0, width], [0, height]) to ([0, 1], [0,
+diff --git a/src/broadcom/compiler/v3d_compiler.h b/src/broadcom/compiler/v3d_compiler.h
+index aa48daf..b7f42fc 100644
+--- a/src/broadcom/compiler/v3d_compiler.h
++++ b/src/broadcom/compiler/v3d_compiler.h
+@@ -406,6 +406,7 @@ struct v3d_key {
+         struct {
+                 uint8_t return_size;
+                 uint8_t return_channels;
++                uint8_t gather_compare; /* PIPE_FUNC + 1, zero for native compare */
+         } sampler[V3D_MAX_TEXTURE_SAMPLERS];
+ 
+         uint8_t num_tex_used;
+@@ -936,6 +937,15 @@ struct v3d_compile {
+         bool has_global_address;
+ };
+ 
++/* Software metadata in a 3.3 texture P1 uniform: bits 0..4 are the
++ * hardware return mask and bits 5..9 identify the texture unit. Gather
++ * requests select a separate descriptor for the requested component; bit 19
++ * selects raw F32 depths for a QPU shadow comparison.
++ */
++#define V3D33_TEXTURE_P1_GATHER (1u << 16)
++#define V3D33_TEXTURE_P1_COMPONENT_SHIFT 17
++#define V3D33_TEXTURE_P1_GATHER_COMPARE (1u << 19)
++
+ struct v3d_uniform_list {
+         enum quniform_contents *contents;
+         uint32_t *data;
+diff --git a/src/broadcom/compiler/vir.c b/src/broadcom/compiler/vir.c
+index 4d66df4..b809925 100644
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -637,6 +637,34 @@ lower_tex_packing_cb(const nir_tex_instr *tex, const void *data)
+       nir_lower_tex_packing_16 : nir_lower_tex_packing_none;
+ }
+ 
++/* The 3.3 native F32 gather comparison does not preserve infinite border
++ * depths. Gather raw depths through the TMU and compare on the QPUs instead.
++ */
++static bool
++v3d33_lower_gather_compare(nir_builder *b, nir_instr *instr, void *data)
++{
++        struct v3d_compile *c = data;
++        if (instr->type != nir_instr_type_tex)
++                return false;
++        nir_tex_instr *tex = nir_instr_as_tex(instr);
++        unsigned compare = c->key->sampler[tex->texture_index].gather_compare;
++        if (tex->op != nir_texop_tg4 || !tex->is_shadow || !compare)
++                return false;
++
++        int comparator = nir_tex_instr_src_index(tex, nir_tex_src_comparator);
++        nir_def *reference = tex->src[comparator].src.ssa;
++        tex->is_shadow = false;
++        tex->is_new_style_shadow = false;
++        nir_tex_instr_remove_src(tex, comparator);
++        b->cursor = nir_after_instr(instr);
++        nir_def *result = nir_b2f32(b, nir_compare_func(
++                b, (enum compare_func)(compare - 1), reference, &tex->def));
++        if (result->num_components == 1)
++                result = nir_vec4(b, result, result, result, result);
++        nir_def_rewrite_uses_after(&tex->def, result, result->parent_instr);
++        return true;
++}
++
+ static void
+ v3d_lower_nir(struct v3d_compile *c)
+ {
+@@ -664,6 +692,11 @@ v3d_lower_nir(struct v3d_compile *c)
+         tex_options.lower_tex_packing_cb = lower_tex_packing_cb;
+         tex_options.lower_tex_packing_data = c;
+ 
++        if (c->devinfo->ver == 33)
++                NIR_PASS(_, c->s, nir_shader_instructions_pass,
++                         v3d33_lower_gather_compare,
++                         nir_metadata_block_index | nir_metadata_dominance, c);
++
+         NIR_PASS(_, c->s, nir_lower_tex, &tex_options);
+         NIR_PASS(_, c->s, nir_lower_system_values);
+ 
+diff --git a/src/gallium/drivers/v3d/v3d_context.c b/src/gallium/drivers/v3d/v3d_context.c
+index be78a5d..4a2d55d 100644
+--- a/src/gallium/drivers/v3d/v3d_context.c
++++ b/src/gallium/drivers/v3d/v3d_context.c
+@@ -290,6 +290,11 @@ v3d_context_destroy(struct pipe_context *pctx)
+         if (v3d->sand30_blit_fs)
+                 pctx->delete_fs_state(pctx, v3d->sand30_blit_fs);
+ 
++        for (unsigned stage = 0; stage < ARRAY_SIZE(v3d->tex); stage++) {
++                for (unsigned unit = 0; unit < ARRAY_SIZE(v3d->tex[stage].texture_state); unit++)
++                        v3d_bo_unreference(&v3d->tex[stage].texture_state[unit].bo);
++        }
++
+         v3d_program_fini(pctx);
+ 
+         ralloc_free(v3d);
+diff --git a/src/gallium/drivers/v3d/v3d_context.h b/src/gallium/drivers/v3d/v3d_context.h
+index 4c52148..0864231 100644
+--- a/src/gallium/drivers/v3d/v3d_context.h
++++ b/src/gallium/drivers/v3d/v3d_context.h
+@@ -846,6 +846,11 @@ void v3d_disk_cache_store(struct v3d_context *v3d,
+         v3d_X_thing;                                            \
+ })
+ 
++struct v3d_cl_reloc
++v3d33_emit_texture_state(struct v3d_context *v3d, struct v3d_job *job,
++                         struct v3d_texture_stateobj *stage_tex, int unit,
++                         int gather_component);
++
+ /* FIXME: The same for vulkan/opengl. Common place? define it at the
+  * v3d_packet files?
+  */
+diff --git a/src/gallium/drivers/v3d/v3d_program.c b/src/gallium/drivers/v3d/v3d_program.c
+index afc8b0a..09724d1 100644
+--- a/src/gallium/drivers/v3d/v3d_program.c
++++ b/src/gallium/drivers/v3d/v3d_program.c
+@@ -571,6 +571,16 @@ v3d_setup_shared_key(struct v3d_context *v3d, struct v3d_key *key,
+                 key->sampler[i].return_size =
+                         v3d_get_tex_return_size(devinfo, sampler->format);
+ 
++                struct pipe_sampler_state *sampler_state = texstate->samplers[i];
++                bool border = sampler_state->wrap_s == PIPE_TEX_WRAP_CLAMP_TO_BORDER ||
++                              sampler_state->wrap_t == PIPE_TEX_WRAP_CLAMP_TO_BORDER;
++                if (devinfo->ver == 33 && sampler_state->compare_mode && border &&
++                    sampler->target != PIPE_TEXTURE_CUBE &&
++                    sampler->target != PIPE_TEXTURE_CUBE_ARRAY &&
++                    (sampler->format == PIPE_FORMAT_Z32_FLOAT ||
++                     sampler->format == PIPE_FORMAT_Z32_FLOAT_S8X24_UINT))
++                        key->sampler[i].gather_compare = sampler_state->compare_func + 1;
++
+                 /* For 16-bit, we set up the sampler to always return 2
+                  * channels (meaning no recompiles for most statechanges),
+                  * while for 32 we actually scale the returns with channels.
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index 384f7bc..5620a98 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -200,6 +200,8 @@ v3d_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+                 return V3D_NON_COHERENT_ATOM_SIZE;
+ 
+         case PIPE_CAP_MAX_TEXTURE_GATHER_COMPONENTS:
++                if (screen->has_compute33)
++                        return 4;
+                 if (screen->devinfo.ver < 40)
+                         return 0;
+                 return 4;
+diff --git a/src/gallium/drivers/v3d/v3d_uniforms.c b/src/gallium/drivers/v3d/v3d_uniforms.c
+index a35480d..c20b0b0 100644
+--- a/src/gallium/drivers/v3d/v3d_uniforms.c
++++ b/src/gallium/drivers/v3d/v3d_uniforms.c
+@@ -171,19 +171,21 @@ static void
+ write_texture_p1(struct v3d_job *job,
+                  struct v3d_cl_out **uniforms,
+                  struct v3d_texture_stateobj *texstate,
+-                 uint32_t data)
++                 uint32_t data,
++                 struct v3d_cl_reloc gather_state)
+ {
+-        /* Extract the texture unit from the top bits, and the compiler's
+-         * packed p1 from the bottom.
++        /* Bits 5..9 identify the unit; higher bits select gather variants.
++         * Only the hardware return mask belongs in the final P1 word.
+          */
+-        uint32_t unit = data >> 5;
++        uint32_t unit = (data >> 5) & 0x1f;
+         uint32_t p1 = data & 0x1f;
+ 
+         struct pipe_sampler_view *psview = texstate->textures[unit];
+         struct v3d_sampler_view *sview = v3d_sampler_view(psview);
+ 
+         struct V3D33_TEXTURE_UNIFORM_PARAMETER_1_CFG_MODE1 unpacked = {
+-                .texture_state_record_base_address = texstate->texture_state[unit],
++                .texture_state_record_base_address =
++                        data & V3D33_TEXTURE_P1_GATHER ? gather_state : texstate->texture_state[unit],
+         };
+ 
+         uint32_t packed;
+@@ -289,6 +291,35 @@ v3d_write_uniforms(struct v3d_context *v3d, struct v3d_job *job,
+         struct v3d_uniform_list *uinfo = &shader->prog_data.base->uniforms;
+         const uint32_t *gallium_uniforms = cb->cb[0].user_buffer;
+ 
++        /* Emit descriptors before reserving the uniform stream: allocating
++         * them while writing uniforms could move the indirect BO.
++         */
++        struct v3d_cl_reloc gather_state[PIPE_MAX_SAMPLERS][8] = {0};
++        if (devinfo->ver == 33) {
++                if (stage == PIPE_SHADER_COMPUTE) {
++                        for (unsigned unit = 0; unit < texstate->num_textures; unit++) {
++                                if (!texstate->textures[unit])
++                                        continue;
++                                struct v3d_cl_reloc state = v3d33_emit_texture_state(
++                                        v3d, job, texstate, unit, -1);
++                                texstate->texture_state[unit].offset = state.offset;
++                                v3d_bo_set_reference(&texstate->texture_state[unit].bo,
++                                                     state.bo);
++                        }
++                }
++                for (unsigned i = 0; i < uinfo->count; i++) {
++                        uint32_t data = uinfo->data[i];
++                        if (uinfo->contents[i] != QUNIFORM_TEXTURE_CONFIG_P1 ||
++                            !(data & V3D33_TEXTURE_P1_GATHER))
++                                continue;
++                        unsigned unit = (data >> 5) & 0x1f;
++                        unsigned component = (data >> V3D33_TEXTURE_P1_COMPONENT_SHIFT) & 7;
++                        if (!gather_state[unit][component].bo)
++                                gather_state[unit][component] = v3d33_emit_texture_state(
++                                        v3d, job, texstate, unit, component);
++                }
++        }
++
+         /* The hardware always pre-fetches the next uniform (also when there
+          * aren't any), so we always allocate space for an extra slot. This
+          * fixes MMU exceptions reported since Linux kernel 5.4 when the
+@@ -374,10 +405,13 @@ v3d_write_uniforms(struct v3d_context *v3d, struct v3d_job *job,
+                         break;
+                 }
+ 
+-                case QUNIFORM_TEXTURE_CONFIG_P1:
+-                        write_texture_p1(job, &uniforms, texstate,
+-                                         data);
++                case QUNIFORM_TEXTURE_CONFIG_P1: {
++                        unsigned unit = (data >> 5) & 0x1f;
++                        unsigned variant = (data >> V3D33_TEXTURE_P1_COMPONENT_SHIFT) & 7;
++                        write_texture_p1(job, &uniforms, texstate, data,
++                                         gather_state[unit][variant]);
+                         break;
++                }
+ 
+                 case QUNIFORM_TEXRECT_SCALE_X:
+                 case QUNIFORM_TEXRECT_SCALE_Y:
+diff --git a/src/gallium/drivers/v3d/v3dx_emit.c b/src/gallium/drivers/v3d/v3dx_emit.c
+index 54783df..d062a79 100644
+--- a/src/gallium/drivers/v3d/v3dx_emit.c
++++ b/src/gallium/drivers/v3d/v3dx_emit.c
+@@ -85,8 +85,6 @@ swizzled_border_color(const struct v3d_device_info *devinfo,
+                       struct v3d_sampler_view *sview,
+                       int chan)
+ {
+-        const struct util_format_description *desc =
+-                util_format_description(sview->base.format);
+         uint8_t swiz = chan;
+ 
+         /* If we're doing swizzling in the sampler, then only rearrange the
+@@ -98,7 +96,7 @@ swizzled_border_color(const struct v3d_device_info *devinfo,
+          * border color.
+          */
+         if (v3d_get_tex_return_size(devinfo, sview->base.format) != 32)
+-                swiz = desc->swizzle[swiz];
++                swiz = v3d_get_format_swizzle(devinfo, sview->base.format)[swiz];
+ 
+         switch (swiz) {
+         case PIPE_SWIZZLE_0:
+@@ -110,11 +108,17 @@ swizzled_border_color(const struct v3d_device_info *devinfo,
+         }
+ }
+ 
+-static void
+-emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex,
+-                 int i)
++struct v3d_cl_reloc
++v3d33_emit_texture_state(struct v3d_context *v3d, struct v3d_job *job,
++                         struct v3d_texture_stateobj *stage_tex, int i,
++                         int gather_component)
+ {
+-        struct v3d_job *job = v3d->job;
++        /* Variants 0..3 gather a component; 4..7 return raw F32 depths
++         * for comparisons in the shader. -1 is an ordinary texture lookup.
++         */
++        bool raw_gather = gather_component >= 4;
++        if (raw_gather)
++                gather_component &= 3;
+         struct pipe_sampler_state *psampler = stage_tex->samplers[i];
+         struct v3d_sampler_state *sampler = v3d_sampler_state(psampler);
+         struct pipe_sampler_view *psview = stage_tex->textures[i];
+@@ -123,12 +127,9 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+         struct v3d_resource *rsc = v3d_resource(prsc);
+         const struct v3d_device_info *devinfo = &v3d->screen->devinfo;
+ 
+-        stage_tex->texture_state[i].offset =
+-                v3d_cl_ensure_space(&job->indirect,
+-                                    cl_packet_length(TEXTURE_SHADER_STATE),
+-                                    32);
+-        v3d_bo_set_reference(&stage_tex->texture_state[i].bo,
+-                             job->indirect.bo);
++        v3d_cl_ensure_space(&job->indirect,
++                            cl_packet_length(TEXTURE_SHADER_STATE), 32);
++        struct v3d_cl_reloc state = cl_get_address(&job->indirect);
+ 
+         uint32_t return_size = v3d_get_tex_return_size(devinfo, psview->format);
+ 
+@@ -240,6 +241,46 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+         else if (psampler->max_anisotropy)
+                 unpacked.filter = V3D_TMU_FILTER_ANISOTROPIC_2_1;
+ 
++        if (gather_component >= 0) {
++                /* Gather needs the four neighbors of a linear footprint even
++                 * when the application's sampler uses nearest filtering.
++                 */
++                unpacked.filter = V3D_TMU_FILTER_MIN_LIN_MIP_NONE_MAG_LIN;
++                unpacked.min_level_of_detail = psview->u.tex.first_level;
++                unpacked.max_level_of_detail = psview->u.tex.first_level;
++                unsigned swizzle = return_size == 32 ? gather_component :
++                                   sview->swizzle[gather_component];
++                unpacked.swizzle_r = v3d_translate_pipe_swizzle(swizzle);
++                unpacked.swizzle_g = unpacked.swizzle_r;
++                unpacked.swizzle_b = unpacked.swizzle_r;
++                unpacked.swizzle_a = unpacked.swizzle_r;
++        }
++
++        if (util_format_is_depth_or_stencil(psview->format)) {
++                /* Depth descriptors return 32-bit texels. Their border is
++                 * stored in the native depth representation, across R/G.
++                 */
++                float value = psampler->border_color.f[0];
++                uint32_t depth;
++                switch (psview->format) {
++                case PIPE_FORMAT_Z16_UNORM:
++                        depth = lroundf(CLAMP(value, 0.0f, 1.0f) * 65535.0f);
++                        break;
++                case PIPE_FORMAT_S8_UINT_Z24_UNORM:
++                case PIPE_FORMAT_X8Z24_UNORM:
++                        depth = (uint32_t)llround((double)CLAMP(value, 0.0f, 1.0f) *
++                                                   16777215.0) << 8;
++                        break;
++                default:
++                        depth = fui(value);
++                        break;
++                }
++                unpacked.border_color_red = depth & 0xffff;
++                unpacked.border_color_green = depth >> 16;
++                unpacked.border_color_blue = 0;
++                unpacked.border_color_alpha = 0;
++        }
++
+         uint8_t view_state[cl_packet_length(TEXTURE_SHADER_STATE)];
+         memcpy(view_state, sview->texture_shader_state, sizeof(view_state));
+         /* Z32F is an R32F texture on 3.3, which the TMU doesn't compare;
+@@ -257,7 +298,8 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+                                                      &type_field);
+                 for (int i = 0; i < ARRAY_SIZE(view_state); i++)
+                         view_state[i] &= ~mask[i];
+-                unpacked.texture_type = TEXTURE_DATA_FORMAT_DEPTH_COMP32F;
++                unpacked.texture_type = raw_gather ? TEXTURE_DATA_FORMAT_R32F :
++                                                      TEXTURE_DATA_FORMAT_DEPTH_COMP32F;
+         }
+ 
+         uint8_t packed[cl_packet_length(TEXTURE_SHADER_STATE)];
+@@ -269,14 +311,24 @@ emit_one_texture(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex
+         /* TMU indirect structs need to be 32b aligned. */
+         v3d_cl_ensure_space(&job->indirect, ARRAY_SIZE(packed), 32);
+         cl_emit_prepacked(&job->indirect, &packed);
++        /* A later descriptor or uniform allocation can replace indirect.bo
++         * before a P1 uniform takes its reference to this descriptor.
++         */
++        v3d_job_add_bo(job, state.bo);
++        return state;
+ }
+ 
+ static void
+ emit_textures(struct v3d_context *v3d, struct v3d_texture_stateobj *stage_tex)
+ {
+         for (int i = 0; i < stage_tex->num_textures; i++) {
+-                if (stage_tex->textures[i])
+-                        emit_one_texture(v3d, stage_tex, i);
++                if (stage_tex->textures[i]) {
++                        struct v3d_cl_reloc state = v3d33_emit_texture_state(
++                                v3d, v3d->job, stage_tex, i, -1);
++                        stage_tex->texture_state[i].offset = state.offset;
++                        v3d_bo_set_reference(&stage_tex->texture_state[i].bo,
++                                             state.bo);
++                }
+         }
+ }
+ #endif /* V3D_VERSION < 40 */

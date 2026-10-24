@@ -1,0 +1,26 @@
+[
+  {
+    "test": "caps-default",
+    "exit": 0,
+    "start": 157432.409126326,
+    "end": 157432.492460043,
+    "gles_override": null,
+    "v3d_debug": null
+  },
+  {
+    "test": "caps-optin",
+    "exit": 0,
+    "start": 157432.493468413,
+    "end": 157432.576477834,
+    "gles_override": null,
+    "v3d_debug": null
+  },
+  {
+    "test": "shadow-cpu",
+    "exit": 0,
+    "start": 157432.577731278,
+    "end": 157435.472451857,
+    "gles_override": "3.1",
+    "v3d_debug": "fs,shaderdb"
+  }
+]

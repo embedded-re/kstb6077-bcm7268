@@ -487,3 +487,66 @@ The watchdog was active and compute was disabled for these graphics runs.
 - [EGL full](../docs/evidence/gpu/runs/20261024-165241-egl-f5f33-full/summary.txt): 833 Pass, 2,955 NotSupported, 1 QualityWarning.
 
 `/opt/mesa/current` remains `fe7dda5e`; this collector does not change it.
+
+## Texture gather and an opt-in GLES 3.1 context (2026-10-24)
+
+Build `23.3.6-f37c1f42` adds patches 0028–0029. Its DRI SHA256 is
+`d9f4ff7d0739636ee3dd57359f21f8d91ed044e86fc57bcced66aad58096e485`.
+With `V3D_COMPUTE33=1`, a GLES 3.1 context now succeeds **without a version
+override**. With the flag unset it reports GLES 3.0. The package is installed
+alongside the selected build; `/opt/mesa/current` remains `fe7dda5e` and
+`/usr/local` is unchanged. This is an experimental capability milestone;
+full GLES 3.1 conformance has not yet been established.
+[Numbered-build context queries and shadow smoke](../docs/evidence/gpu/runs/20261024-174434-gather33-numbered-smoke/summary.txt).
+
+Gather uses the native TMU gather flag and separate texture descriptors for
+each selected component. The descriptors select a linear footprint and the
+base mip level independently of the application's filtering state. Ordinary
+lookups retain their own descriptors. Compute now emits texture descriptors
+before allocating its uniform stream. Descriptor BOs remain referenced by
+the job across indirect-buffer changes; context destruction releases the
+cached ordinary descriptor references.
+
+Patch 0028 fixes float-to-integer instruction packing: ORing the low-half
+unpack selector into an opcode with its no-unpack bit already set encoded
+the high-half selector. The CPU regression covers all four conversions,
+three unpack modes and V3D 3.3/4.1/4.2; all 36 combinations and 47 existing
+instruction fixtures pass. The new test fails with the original packer.
+[Instruction tests](../docs/evidence/gpu/runs/20261024-174500-qpu-conversion-unpack/summary.txt).
+
+The gather checks also exercise corrected hardware-format border swizzles
+for packed color formats and native depth border packing. Floating-point
+2D/array shadow gathers with border wrapping gather raw depths and compare
+on the QPUs, preserving infinite border values. Cubemap shadow gathers
+retain native comparisons.
+
+- The 1,059-case official gather-related subset finishes with **654 Pass,
+  405 NotSupported, zero failures and zero GPU faults** on the final scratch
+  path. The unsupported cases require optional extensions: 396 require
+  `GL_EXT_gpu_shader5`, and nine negative coverage cases require GLES 3.2 and/or cube-array
+  support. This is a subset result, not full GLES 3.1 conformance.
+  [Gather results](../docs/evidence/gpu/runs/20261024-174029-gles31-gather33-border-compare/summary.txt).
+- All 48 mixed gather/texelFetch checks pass: three formats (R32UI,
+  RGBA32UI, RGBA16F), four components, identity or B/A/zero/one swizzles,
+  fragment or compute execution, a 17x13 source and guarded result buffers.
+  [Mixed reads](../docs/evidence/gpu/runs/20261024-172807-gather33-mixed/summary.txt).
+- The numbered build passes **448 CPU-checked shadow draws**: all eight
+  comparison functions, seven border values and eight reference values,
+  including positive and negative infinity. Result-buffer guards remain
+  intact. [Numbered-build shadow checks](../docs/evidence/gpu/runs/20261024-174434-gather33-numbered-smoke/summary.txt).
+
+Retained experiments show the progression: the first complete gather run
+had 70 border failures; forcing full-word returns and changing normalized
+border encoding still left 40 failures. Native return widths plus corrected
+border packing/swizzles reduced this to two infinite-border shadow failures.
+Applying QPU comparisons to every F32 shadow gather fixed those two but
+failed 12 cube cases. Restricting that path to non-cube border wrapping
+passes the complete gather subset. The initial mixed-read failure records
+the independently fixed low-half conversion bug.
+
+Reproduce the focused suite with `cases/gles31-gather.txt` and
+`V3D_COMPUTE33=1 kstb-gpu-run --mesa 23.3.6-f37c1f42 gles31 --cases ...`.
+`kstb-gather-test [width height component]` checks mixed reads; its source
+lists the format, swizzle and compute switches. `kstb-gather-shadow-test`
+runs the 448 shadow checks. The numbered-build focused regressions and full
+37,654-case GLES 3.1 run are the next validation gate.

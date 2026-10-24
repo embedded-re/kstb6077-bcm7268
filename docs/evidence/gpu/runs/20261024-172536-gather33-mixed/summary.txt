@@ -1,0 +1,20 @@
+9 standalone checks: 8 exit 0, 1 exit 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+r32ui-c0-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 0: 0 errors, guards checked
+r32ui-c1-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 1: 0 errors, guards checked
+r32ui-c2-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 2: 0 errors, guards checked
+r32ui-c3-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 3: 0 errors, guards checked
+rgba32ui-c0-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 0: 0 errors, guards checked
+rgba32ui-c1-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 1: 0 errors, guards checked
+rgba32ui-c2-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 2: 0 errors, guards checked
+rgba32ui-c3-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 3: 0 errors, guards checked
+rgba16f-c0-fragment-identity: exit 1
+gather + fetch fragment RGBA16F 17x13 component 0: 570 errors, guards checked

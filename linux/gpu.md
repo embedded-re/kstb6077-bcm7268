@@ -154,9 +154,18 @@ GLES3.1 override; fragment image loads, stores and atomics also pass.
 
 Build `23.3.6-f5f33af0` (patches 0001–0027) adds opt-in render-only compute:
 195/195 official compute cases pass with no GPU faults. It is installed
-alongside the selected build, with full graphics regression running.
+alongside the selected build; its full graphics regression passes with
+all 65,722 statuses identical to the kernel #29 reference.
 `V3D_COMPUTE33=1` enables the experiment; default GLES remains 3.0. See
 [`gpu-compute.md`](gpu-compute.md) for limits, tests and retained failures.
+
+Build `23.3.6-f37c1f42` (patches 0001–0029) adds texture gather and fixes
+low-half float-to-integer conversion packing. `V3D_COMPUTE33=1` creates a
+GLES 3.1 context without a version override; the default remains GLES 3.0.
+The gather subset has 654 Pass / 405 optional-extension NotSupported,
+zero failures or GPU faults; the numbered build passes 448 CPU-checked
+shadow gathers. Full GLES 3.1 validation is pending. See
+[`gpu-compute.md`](gpu-compute.md) for evidence and the retained experiments.
 
 The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
 case by case: GLES2 and EGL identical, in GLES3 only

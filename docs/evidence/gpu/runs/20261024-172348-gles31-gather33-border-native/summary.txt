@@ -1,0 +1,2 @@
+70 cases: Fail 40, Pass 30
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
