@@ -1,0 +1,10 @@
+4,1719,147548730399,-;drm_sched_entity_init: called with uninitialized scheduler
+3,1720,147548821831,-;v3d f1200000.gpu: MMU error from client ? (0xd) at 0x86f00, pte invalid
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+3,1721,147548830546,-;v3d f1200000.gpu: MMU error from client ? (0xe) at 0x77e00, pte invalid
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+3,1722,147548839326,-;v3d f1200000.gpu: MMU error from client ? (0xf) at 0xb8d00, write violation, pte invalid
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu

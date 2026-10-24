@@ -1,0 +1,34 @@
+[
+  {
+    "test": "indirect",
+    "exit": 0,
+    "start": 147773.709421312,
+    "end": 147773.896476742,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "gpu-indirect",
+    "exit": 0,
+    "start": 147773.897570444,
+    "end": 147774.088489721,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "chain",
+    "exit": 0,
+    "start": 147774.089809831,
+    "end": 147774.54040846,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "gpu-indirect-chain",
+    "exit": 0,
+    "start": 147774.541709088,
+    "end": 147774.992525421,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  }
+]

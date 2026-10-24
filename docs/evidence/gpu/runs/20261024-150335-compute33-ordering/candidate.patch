@@ -1,0 +1,390 @@
+From c073df275efbf98fcce3f5a0dd2041bac75c7e75 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 15:04:02 +0200
+Subject: [PATCH] v3d: add opt-in render-only compute dispatch on 3.3
+
+---
+ src/broadcom/compiler/nir_to_vir.c    |  32 +++++
+ src/broadcom/compiler/vir.c           |   4 +-
+ src/broadcom/qpu/qpu_instr.c          |   3 +-
+ src/gallium/drivers/v3d/v3d_program.c |   2 +-
+ src/gallium/drivers/v3d/v3d_screen.c  |  18 ++-
+ src/gallium/drivers/v3d/v3d_screen.h  |   1 +
+ src/gallium/drivers/v3d/v3dx_draw.c   | 187 ++++++++++++++++++++++++++
+ 7 files changed, 238 insertions(+), 9 deletions(-)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index c6130cb..8f87f98 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -4508,6 +4508,38 @@ nir_to_vir(struct v3d_compile *c)
+                 }
+                 break;
+         case MESA_SHADER_COMPUTE:
++                if (c->devinfo->ver == 33) {
++                        /* One 128-invocation raster line per workgroup. The
++                         * integer ID tile supplies local index and WG XYZ.
++                         * Lines have one implicit varying even without inputs.
++                         */
++                        vir_NOP(c)->qpu.sig.ldvary = true;
++                        struct qreg id[4];
++                        for (unsigned i = 0; i < 4; i++) {
++                                struct qinst *read = vir_NOP(c);
++                                if (!i) {
++                                        read->qpu.sig.ldtlbu = true;
++                                        read->uniform = vir_get_uniform_index(
++                                                c, QUNIFORM_CONSTANT, 0xffffff7b);
++                                } else {
++                                        read->qpu.sig.ldtlb = true;
++                                }
++                                id[i] = vir_MOV(c, vir_reg(QFILE_MAGIC,
++                                                           V3D_QPU_WADDR_R3));
++                        }
++                        c->local_invocation_index_bits = 7;
++                        struct qreg local = vir_AND(c, id[0],
++                                                    vir_uniform_ui(c, 127));
++                        c->cs_payload[0] = vir_OR(c, id[1],
++                                vir_SHL(c, id[2], vir_uniform_ui(c, 16)));
++                        c->cs_payload[1] = vir_OR(c, id[3],
++                                vir_SHL(c, local, vir_uniform_ui(c, 25)));
++                        vir_SETMSF_dest(c, vir_nop_reg(),
++                                vir_XOR(c, vir_SHR(c, id[0],
++                                                  vir_uniform_ui(c, 15)),
++                                        vir_uniform_ui(c, 1)));
++                        break;
++                }
+                 /* Set up the TSO for barriers, assuming we do some. */
+                 if (c->devinfo->ver < 42) {
+                         vir_BARRIERID_dest(c, vir_reg(QFILE_MAGIC,
+diff --git a/src/broadcom/compiler/vir.c b/src/broadcom/compiler/vir.c
+index b8146e0..ae3b1f0 100644
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -582,7 +582,9 @@ vir_compile_init(const struct v3d_compiler *compiler,
+         c->program_id = program_id;
+         c->variant_id = variant_id;
+         c->compile_strategy_idx = compile_strategy_idx;
+-        c->threads = strategy->max_threads;
++        c->threads = (c->devinfo->ver == 33 &&
++                      s->info.stage == MESA_SHADER_COMPUTE) ?
++                     1 : strategy->max_threads;
+         c->debug_output = debug_output;
+         c->debug_output_data = debug_output_data;
+         c->compilation_result = V3D_COMPILATION_SUCCEEDED;
+diff --git a/src/broadcom/qpu/qpu_instr.c b/src/broadcom/qpu/qpu_instr.c
+index 44f2061..2da953d 100644
+--- a/src/broadcom/qpu/qpu_instr.c
++++ b/src/broadcom/qpu/qpu_instr.c
+@@ -893,7 +893,8 @@ v3d_qpu_writes_r3(const struct v3d_device_info *devinfo,
+         if (qpu_writes_magic_waddr_explicitly(devinfo, inst, V3D_QPU_WADDR_R3))
+                 return true;
+ 
+-        return (devinfo->ver < 41 && inst->sig.ldvary) || inst->sig.ldvpm;
++        return (devinfo->ver < 41 && (inst->sig.ldvary ||
++                inst->sig.ldtlb || inst->sig.ldtlbu)) || inst->sig.ldvpm;
+ }
+ 
+ bool
+diff --git a/src/gallium/drivers/v3d/v3d_program.c b/src/gallium/drivers/v3d/v3d_program.c
+index 13eb9e9..afc8b0a 100644
+--- a/src/gallium/drivers/v3d/v3d_program.c
++++ b/src/gallium/drivers/v3d/v3d_program.c
+@@ -1122,7 +1122,7 @@ v3d_program_init(struct pipe_context *pctx)
+         pctx->bind_gs_state = v3d_gp_state_bind;
+         pctx->bind_vs_state = v3d_vp_state_bind;
+ 
+-        if (v3d->screen->has_csd) {
++        if (v3d->screen->has_csd || v3d->screen->has_compute33) {
+                 pctx->create_compute_state = v3d_create_compute_state;
+                 pctx->delete_compute_state = v3d_shader_state_delete;
+                 pctx->bind_compute_state = v3d_compute_state_bind;
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index 9f7412f..b569ecf 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -182,7 +182,7 @@ v3d_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+                 return PIPE_TEXTURE_TRANSFER_BLIT;
+ 
+         case PIPE_CAP_COMPUTE:
+-                return screen->has_csd && screen->devinfo.ver >= 41;
++                return screen->has_csd || screen->has_compute33;
+ 
+         case PIPE_CAP_GENERATE_MIPMAP:
+                 return v3d_has_feature(screen, DRM_V3D_PARAM_SUPPORTS_TFU);
+@@ -367,7 +367,7 @@ v3d_screen_get_shader_param(struct pipe_screen *pscreen, enum pipe_shader_type s
+         case PIPE_SHADER_FRAGMENT:
+                 break;
+         case PIPE_SHADER_COMPUTE:
+-                if (!screen->has_csd)
++                if (!screen->has_csd && !screen->has_compute33)
+                         return 0;
+                 break;
+         case PIPE_SHADER_GEOMETRY:
+@@ -465,7 +465,8 @@ v3d_screen_get_shader_param(struct pipe_screen *pscreen, enum pipe_shader_type s
+         case PIPE_SHADER_CAP_MAX_SHADER_IMAGES:
+                 if (screen->has_cache_flush) {
+                         if (screen->devinfo.ver == 33)
+-                                return shader == PIPE_SHADER_FRAGMENT ? 8 : 0;
++                                return (shader == PIPE_SHADER_FRAGMENT ||
++                                        (shader == PIPE_SHADER_COMPUTE && screen->has_compute33)) ? 8 : 0;
+                         if (screen->devinfo.ver < 41)
+                                 return 0;
+                         else
+@@ -489,7 +490,7 @@ v3d_get_compute_param(struct pipe_screen *pscreen, enum pipe_shader_ir ir_type,
+ {
+         struct v3d_screen *screen = v3d_screen(pscreen);
+ 
+-        if (!screen->has_csd)
++        if (!screen->has_csd && !screen->has_compute33)
+                 return 0;
+ 
+ #define RET(x) do {                                     \
+@@ -519,14 +520,16 @@ v3d_get_compute_param(struct pipe_screen *pscreen, enum pipe_shader_ir ir_type,
+ 
+         case PIPE_COMPUTE_CAP_MAX_BLOCK_SIZE:
+                 /* GL_MAX_COMPUTE_WORK_GROUP_SIZE */
+-                RET(((uint64_t []) { 256, 256, 256 }));
++                RET(((uint64_t []) { screen->has_compute33 ? 128 : 256,
++                                    screen->has_compute33 ? 128 : 256,
++                                    screen->has_compute33 ? 128 : 256 }));
+ 
+         case PIPE_COMPUTE_CAP_MAX_THREADS_PER_BLOCK:
+         case PIPE_COMPUTE_CAP_MAX_VARIABLE_THREADS_PER_BLOCK:
+                 /* GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: This is
+                  * limited by WG_SIZE in the CSD.
+                  */
+-                RET((uint64_t []) { 256 });
++                RET((uint64_t []) { screen->has_compute33 ? 128 : 256 });
+ 
+         case PIPE_COMPUTE_CAP_MAX_GLOBAL_SIZE:
+                 RET((uint64_t []) { 1024 * 1024 * 1024 });
+@@ -1005,6 +1008,9 @@ v3d_screen_create(int fd, const struct pipe_screen_config *config,
+         screen->has_csd = v3d_has_feature(screen, DRM_V3D_PARAM_SUPPORTS_CSD);
+         screen->has_cache_flush =
+                 v3d_has_feature(screen, DRM_V3D_PARAM_SUPPORTS_CACHE_FLUSH);
++        screen->has_compute33 = screen->devinfo.ver == 33 &&
++                screen->has_cache_flush &&
++                debug_get_bool_option("V3D_COMPUTE33", false);
+         screen->has_perfmon = v3d_has_feature(screen, DRM_V3D_PARAM_SUPPORTS_PERFMON);
+ 
+         v3d_fence_init(screen);
+diff --git a/src/gallium/drivers/v3d/v3d_screen.h b/src/gallium/drivers/v3d/v3d_screen.h
+index 1da9b83..74ddbfc 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.h
++++ b/src/gallium/drivers/v3d/v3d_screen.h
+@@ -80,6 +80,7 @@ struct v3d_screen {
+         uint32_t prim_types;
+ 
+         bool has_csd;
++        bool has_compute33; /* Experimental render-only compute. */
+         bool has_cache_flush;
+         bool has_perfmon;
+         bool nonmsaa_texture_size_limit;
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index a7561f3..c9c7f17 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1394,6 +1394,189 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+                 v3d_flush(pctx);
+ }
+ 
++#if V3D_VERSION == 33
++/* Experimental render-only compute, deliberately separate from the CSD path.
++ * A 64x32 RGBA16UI tile supplies 16 groups of 128 invocation IDs. The NV
++ * shader record accepts raster coordinates directly, without a binner or VS.
++ */
++static void
++v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
++{
++        struct v3d_context *v3d = v3d_context(pctx);
++        struct v3d_screen *screen = v3d->screen;
++        const unsigned wg_size = info->block[0] * info->block[1] * info->block[2];
++        v3d_flush(pctx);
++        v3d_predraw_check_stage_inputs(pctx, PIPE_SHADER_COMPUTE);
++        v3d_update_compiled_cs(v3d);
++        struct v3d_compiled_shader *cs = v3d->prog.compute;
++        if (!cs->resource || !wg_size || wg_size > 128 ||
++            cs->prog_data.compute->shared_size ||
++            cs->prog_data.base->has_control_barrier) {
++                fprintf(stderr, "compute33: unsupported experimental dispatch\n");
++                return;
++        }
++        if (info->indirect) {
++                struct pipe_transfer *transfer;
++                void *map = pipe_buffer_map_range(pctx, info->indirect,
++                        info->indirect_offset, 12, PIPE_MAP_READ, &transfer);
++                if (!map)
++                        return;
++                memcpy(v3d->compute_num_workgroups, map, 12);
++                pipe_buffer_unmap(pctx, transfer);
++        } else {
++                memcpy(v3d->compute_num_workgroups, info->grid, 12);
++        }
++        uint64_t count = 1;
++        for (unsigned d = 0; d < 3; d++) {
++                if (v3d->compute_num_workgroups[d] > 65535)
++                        return;
++                count *= v3d->compute_num_workgroups[d];
++        }
++        for (uint64_t first = 0; first < count; first += 16) {
++                const unsigned groups = MIN2(count - first, 16);
++                struct v3d_job *job = v3d_job_create(v3d);
++                struct v3d_bo *cl = v3d_bo_alloc(screen, 16384, "compute33_cl");
++                struct v3d_bo *ids = v3d_bo_alloc(screen, 20480, "compute33_ids");
++                struct v3d_bo *color = v3d_bo_alloc(screen, 20480, "compute33_color");
++                v3d_job_add_bo(job, cl);
++                v3d_job_add_bo(job, ids);
++                v3d_job_add_bo(job, color);
++                struct v3d_bo *code = v3d_resource(cs->resource)->bo;
++                v3d_job_add_bo(job, code);
++                struct v3d_cl_reloc uniforms = v3d_write_uniforms(v3d, job, cs,
++                                                               PIPE_SHADER_COMPUTE);
++                v3d_job_add_bo(job, uniforms.bo);
++                uint8_t *map = v3d_bo_map_unsynchronized(cl);
++                uint8_t *id_map = v3d_bo_map_unsynchronized(ids);
++                memset(map, 0, cl->size);
++                memset(id_map, 0, ids->size);
++                for (unsigned y = 0; y < groups * 2; y++) {
++                        for (unsigned x = 0; x < 64; x++) {
++                                unsigned local = (y & 1) * 64 + x;
++                                uint64_t group = first + y / 2;
++                                uint16_t id[4] = {
++                                        local | (local >= wg_size ? 0x8000 : 0),
++                                        group % v3d->compute_num_workgroups[0],
++                                        (group / v3d->compute_num_workgroups[0]) %
++                                                v3d->compute_num_workgroups[1],
++                                        group / ((uint64_t)v3d->compute_num_workgroups[0] *
++                                                 v3d->compute_num_workgroups[1]),
++                                };
++                                /* 8-byte pixels, 4x2 utiles, 8x4 UIF blocks;
++                                 * a 32-row image needs no XOR.
++                                 */
++                                unsigned off = ((x & 3) << 3) + ((y & 1) << 5) +
++                                        (((x >> 2) & 1) << 6) + (((y >> 1) & 1) << 7) +
++                                        (((((x >> 3) >> 2) * 32) + ((x >> 3) & 3) +
++                                          (y >> 2) * 4) << 8);
++                                memcpy(id_map + off, id, sizeof(id));
++                        }
++                }
++                /* Fixed render state, also exercised by the raw NV probes.
++                 * RT0 is RGBA16UI; framebuffer stores are disabled.
++                 */
++                static const uint8_t header[] = {
++                        0x79,0,0x40,0,0x20,0,0x41,0,0xff,
++                        0x79,2,0x15,0x18,4,0,0,0,0,
++                        0x79,1,4,3,0,0,0,0,0,
++                        0x79,3,0,0,0,0,0,0,0,
++                        0x0b,0x13,0x49,0x11,0x58,0x61,0x5b,0,0,0x80,0x3f,
++                        0x5c,0,0,0,0,0x69,0,0,0,0x40,
++                        0x6c,0,0,0,0,0,0,0,0,
++                        0x6d,0,0,0,0,0,0,0x80,0x3f,
++                        0x6b,0,0,0,0,0x40,0,0x20,0,0x60,1,0x70,0,
++                        0x57,0,0,0,0,
++                };
++                STATIC_ASSERT(sizeof(header) == 93);
++                memcpy(map, header, sizeof(header));
++                memcpy(map + 14, &color->offset, 4);
++                struct v3d_cl rcl = { .job = job, .bo = cl, .base = map,
++                        .size = cl->size, .next = (void *)(map + sizeof(header)) };
++                /* GFXH-1742: initialize the TLB after changing its format. */
++                cl_emit(&rcl, TILE_COORDINATES, tile);
++                cl_emit(&rcl, STORE_TILE_BUFFER_GENERAL, store) {
++                        store.buffer_to_store = NONE;
++                }
++                cl_emit(&rcl, FLUSH_VCD_CACHE, flush);
++                cl_emit(&rcl, LOAD_TILE_BUFFER_GENERAL, load) {
++                        load.address = cl_address(ids, 0);
++                        load.raw_mode = true;
++                        load.buffer_to_load = RENDER_TARGET_0;
++                        load.padded_height_of_output_image_in_uif_blocks = 8;
++                }
++                cl_emit(&rcl, TILE_COORDINATES, tile);
++                cl_emit(&rcl, PRIM_LIST_FORMAT, fmt) {
++                        fmt.primitive_type = LIST_LINES;
++                }
++                struct v3d_cl_out *r = rcl.next;
++                cl_u8(&r, 68); /* NV_SHADER_STATE */
++                cl_u32(&r, (cl->offset + 0x400) | 2);
++                const uint8_t primitives[] = {0x31,0x23,0,0,0,0,0x1b,0,0,0};
++                memcpy(r, primitives, sizeof(primitives));
++                cl_advance(&r, sizeof(primitives));
++                for (unsigned i = 1; i < groups; i++) {
++                        cl_u8(&r, 0x27); cl_u8(&r, 2);
++                }
++                cl_u8(&r, 0xe3);
++                rcl.next = r;
++                cl_emit(&rcl,
++                             STORE_MULTI_SAMPLE_RESOLVED_TILE_COLOR_BUFFER_EXTENDED, store) {
++                        store.disable_color_buffer_write = 0xff;
++                        store.disable_color_buffers_clear_on_write = true;
++                        store.disable_z_buffer_clear_on_write = true;
++                        store.disable_stencil_buffer_clear_on_write = true;
++                        /* END_OF_RENDERING terminates the frame. */
++                        store.last_tile_of_frame = false;
++                }
++                cl_emit(&rcl, END_OF_RENDERING, end);
++                uint32_t record[] = {
++                        0x80, 0x10000, 0, (code->offset + cs->offset) | 4,
++                        uniforms.bo->offset + uniforms.offset, 0,0,0,0,
++                        cl->offset + 0x800, 0x2096, 4,
++                        cl->offset + 0x900, 0x209a, 0,
++                };
++                memcpy(map + 0x400, record, sizeof(record));
++                uint16_t *xy = (void *)(map + 0x800);
++                for (unsigned i = 0; i < groups; i++) {
++                        xy[i*4] = 128; xy[i*4+1] = 256 + 512*i;
++                        xy[i*4+2] = 64*256+128; xy[i*4+3] = 256 + 512*i;
++                }
++                uint32_t zw[] = {0, 0x3f800000};
++                memcpy(map + 0x900, zw, sizeof(zw));
++                job->submit.rcl_start = cl->offset;
++                job->submit.rcl_end = cl->offset + ((uint8_t *)rcl.next - map);
++                job->submit.flags = DRM_V3D_SUBMIT_CL_FLUSH_CACHE;
++                job->submit.in_sync_rcl = v3d->out_sync;
++                job->submit.out_sync = v3d->out_sync;
++                int ret = v3d_ioctl(screen->fd, DRM_IOCTL_V3D_SUBMIT_CL,
++                                    &job->submit);
++                if (ret)
++                        fprintf(stderr, "compute33 submit: %s\n", strerror(errno));
++                v3d_job_free(v3d, job);
++                v3d_bo_unreference(&uniforms.bo);
++                v3d_bo_unreference(&cl);
++                v3d_bo_unreference(&ids);
++                v3d_bo_unreference(&color);
++                if (ret)
++                        break;
++        }
++        u_foreach_bit(i, v3d->ssbo[PIPE_SHADER_COMPUTE].enabled_mask) {
++                struct v3d_resource *rsc = v3d_resource(
++                        v3d->ssbo[PIPE_SHADER_COMPUTE].sb[i].buffer);
++                rsc->writes++;
++                rsc->compute_written = true;
++        }
++        u_foreach_bit(i, v3d->shaderimg[PIPE_SHADER_COMPUTE].enabled_mask) {
++                struct v3d_resource *rsc = v3d_resource(
++                        v3d->shaderimg[PIPE_SHADER_COMPUTE].si[i].base.resource);
++                rsc->writes++;
++                rsc->compute_written = true;
++        }
++        v3d->sync_on_last_compute_job = true;
++        v3d->dirty = ~0;
++}
++#endif
++
+ #if V3D_VERSION >= 41
+ #define V3D_CSD_CFG012_WG_COUNT_SHIFT 16
+ #define V3D_CSD_CFG012_WG_OFFSET_SHIFT 0
+@@ -1795,6 +1978,10 @@ v3dX(draw_init)(struct pipe_context *pctx)
+         pctx->clear = v3d_clear;
+         pctx->clear_render_target = v3d_clear_render_target;
+         pctx->clear_depth_stencil = v3d_clear_depth_stencil;
++#if V3D_VERSION == 33
++        if (v3d_context(pctx)->screen->has_compute33)
++                pctx->launch_grid = v3d33_launch_grid;
++#endif
+ #if V3D_VERSION >= 41
+         if (v3d_context(pctx)->screen->has_csd)
+                 pctx->launch_grid = v3d_launch_grid;
+-- 
+2.56.0
+

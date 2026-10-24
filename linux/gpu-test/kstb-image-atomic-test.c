@@ -1,4 +1,5 @@
 // Fragment image atomics, with aggregate and returned-value checks on the CPU.
+// KSTB_COMPUTE=1 selects compute (8x4 local size), otherwise fragment.
 // MESA_GLES_VERSION_OVERRIDE=3.1 kstb-image-atomic-test [W H]
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -39,9 +40,9 @@ static const char *fs =
     "layout(std430, binding=0) buffer B { uint u[12]; int s[4]; uint r[]; };\n"
     "layout(r32ui,binding=0) coherent uniform highp uimage2D ui;\n"
     "layout(r32i,binding=1) coherent uniform highp iimage2D si;\n"
-    "uniform uint width; uniform uint count;\nout vec4 color;\n"
+    "uniform uint width; uniform uint count;\n%s\n"
     "void main() {\n"
-    " uint i = uint(gl_FragCoord.y) * width + uint(gl_FragCoord.x);\n"
+    " %s\n"
     " uint bit = 1u << (i & 31u);\n"
     " r[3u*i] = imageAtomicAdd(ui, ivec2(0,0), 1u);\n"
     " imageAtomicMin(ui, ivec2(1,0), i); imageAtomicMax(ui, ivec2(2,0), i);\n"
@@ -53,7 +54,7 @@ static const char *fs =
     " imageAtomicAdd(si, ivec2(0,0), -1);\n"
     " int v = int(i) - int(count/2u);\n"
     " imageAtomicMin(si, ivec2(1,0), v); imageAtomicMax(si, ivec2(2,0), v);\n"
-    " color = vec4(1.0);\n}\n";
+    " %s\n}\n";
 
 int main(int argc, char **argv)
 {
@@ -89,8 +90,16 @@ int main(int argc, char **argv)
     CHECK(eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx));
     printf("%s, %dx%d pixels, %u atomic participants\n", glGetString(GL_VERSION), w, h, n);
     GLuint p = glCreateProgram();
-    glAttachShader(p, shader(GL_VERTEX_SHADER, vs));
-    glAttachShader(p, shader(GL_FRAGMENT_SHADER, fs));
+    int compute = getenv("KSTB_COMPUTE") != NULL;
+    char source[8192];
+    snprintf(source, sizeof(source), fs,
+        compute ? "layout(local_size_x=8,local_size_y=4) in;" : "out vec4 color;",
+        compute ? "if(gl_GlobalInvocationID.x>=width || gl_GlobalInvocationID.y>=count/width) return; uint i=gl_GlobalInvocationID.y*width+gl_GlobalInvocationID.x;" :
+                  "uint i=uint(gl_FragCoord.y)*width+uint(gl_FragCoord.x);",
+        compute ? "" : "color=vec4(1.0);");
+    printf("stage: %s\n", compute ? "compute" : "fragment");
+    if (!compute) glAttachShader(p, shader(GL_VERTEX_SHADER, vs));
+    glAttachShader(p, shader(compute ? GL_COMPUTE_SHADER : GL_FRAGMENT_SHADER, source));
     glLinkProgram(p);
     GLint ok;
     glGetProgramiv(p, GL_LINK_STATUS, &ok);
@@ -122,7 +131,8 @@ int main(int argc, char **argv)
     glUniform1ui(glGetUniformLocation(p, "width"), w);
     glUniform1ui(glGetUniformLocation(p, "count"), n);
     glViewport(0, 0, w, h);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    if (compute) glDispatchCompute((w+7)/8,(h+3)/4,1);
+    else glDrawArrays(GL_TRIANGLES, 0, 3);
     glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT|GL_FRAMEBUFFER_BARRIER_BIT);
     glFinish();
     CHECK(glGetError() == GL_NO_ERROR);

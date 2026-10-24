@@ -388,3 +388,33 @@ scheduler warning remains. The watchdog was active.
 These probes use single-threaded QPU programs and raw DRM submission.
 They establish the ID and memory paths needed for compute; they do not yet
 implement `glDispatchCompute`, shared memory or workgroup barriers.
+
+## Opt-in Mesa compute dispatch (2026-10-24)
+
+A scratch driver from Mesa `c073df2` implements `glDispatchCompute` on
+V3D 3.3 using render-only NV submissions. `V3D_COMPUTE33=1` and the explicit
+GLES 3.1 override select this experiment. The installed/default driver still
+reports GLES 3.0. Shared memory and workgroup barriers are not supported by
+this candidate; this is not GLES 3.1 conformance.
+
+- Seven ID tests pass for local sizes 1, 17, 32, 105 and 128, including
+  three-dimensional workgroups, padding lanes and dispatches spanning several
+  render jobs. All 12 words per invocation and both 4096-byte guards match.
+- SSBO and image atomics pass at 1x1, 17x13, 64x64 and 256x256: all integer
+  operations, returned-value permutations and CAS winner checks. The same
+  tests also pass through the fragment path (16 tests total).
+- Four ordering tests pass: CPU-generated indirect dispatch, GPU-generated
+  indirect dispatch, a compute consumer that transforms the producer's entire
+  buffer, and GPU-generated indirect dispatch followed by that consumer.
+  Each uses 10,710 invocations and checks guards.
+- All passing runs have zero MMU errors, resets and oopses. The initial
+  experiment exposed a missing QPU scheduler dependency for pre-4.1 TLB reads
+  into r3; that failed run logged MMU faults. The candidate fixes the dependency.
+
+Evidence: [IDs](../docs/evidence/gpu/runs/20261024-150050-compute33-id-matrix/summary.txt),
+[atomics](../docs/evidence/gpu/runs/20261024-150238-compute33-atomic-matrix/summary.txt),
+[ordering and candidate patch](../docs/evidence/gpu/runs/20261024-150335-compute33-ordering/summary.txt),
+[initial failed scheduler experiment](../docs/evidence/gpu/runs/20261024-145950-compute33-first/results.json).
+`kstb-compute-test` checks IDs; `KSTB_INDIRECT=1`, `KSTB_GPU_INDIRECT=1`
+(with indirect) and `KSTB_CHAIN=1` select the ordering tests.
+`KSTB_COMPUTE=1` selects compute in the existing SSBO/image atomic tests.
