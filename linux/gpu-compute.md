@@ -465,7 +465,7 @@ Earlier failed experiments are retained: a fixed 128-invocation raster line
 hung with padded looped barriers; padded IDs caused four invalid reads despite
 41 API-level Pass results; and the first 195-case run had six failures and
 five resets. The final passing runs above include the corresponding fixes.
-The full GLES3/GLES2/EGL graphics regression is running on the numbered build;
+The full GLES3/GLES2/EGL graphics regression subsequently passed on the numbered build;
 `/opt/mesa/current` still points to `fe7dda5e`.
 
 `KSTB_BARRIER=1 KSTB_BARRIER_ROUNDS=31 kstb-compute-test` runs the exchange test.
@@ -473,3 +473,17 @@ The full GLES3/GLES2/EGL graphics regression is running on the numbered build;
 `KSTB_BROADCAST_AGGREGATE=1` and `KSTB_BROADCAST_BOOL=1` exercise accumulated
 results without intermediate SSBO writes. Official lists are
 `cases/gles31-compute-basic.txt` (41) and `cases/gles31-compute.txt` (195).
+
+## Full compute-candidate graphics regression (2026-10-24)
+
+Numbered build `23.3.6-f5f33af0` completes the 200 focused spill/texture
+cases and all 65,722 GLES3/GLES2/EGL cases. Every full-suite status matches
+the kernel #29 / 848c0204 reference, with zero MMU errors, resets or oopses.
+The watchdog was active and compute was disabled for these graphics runs.
+
+- [GLES3 focused-spill](../docs/evidence/gpu/runs/20261024-153624-gles3-f5f33-focused-spill/summary.txt): 200 Pass.
+- [GLES3 full](../docs/evidence/gpu/runs/20261024-153951-gles3-f5f33-full/summary.txt): 43,908 Pass, 583 NotSupported, 277 QualityWarning.
+- [GLES2 full](../docs/evidence/gpu/runs/20261024-163957-gles2-f5f33-full/summary.txt): 17,041 Pass, 119 NotSupported, 5 QualityWarning.
+- [EGL full](../docs/evidence/gpu/runs/20261024-165241-egl-f5f33-full/summary.txt): 833 Pass, 2,955 NotSupported, 1 QualityWarning.
+
+`/opt/mesa/current` remains `fe7dda5e`; this collector does not change it.
