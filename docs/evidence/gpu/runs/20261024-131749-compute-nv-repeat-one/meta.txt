@@ -1,0 +1,6 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+32906a1d71c6d2fa8db5e58dda15fa3b13a4bac8f9b8ec83d4a3fc1980536335  /tmp/kstb-compute-probe/render-only.py
+b78ed4d79b0cd140ff9fe7e32487aa79cf5f2d3f2a641e3591a19a095724f67f  /tmp/kstb-compute-probe/v3dpack.py
+0b784cfb882786b481d70b7d42d6da0d5f438974e5c39a668aa16815f1b84778  /tmp/kstb-compute-probe/v3d_packet_v33.xml
+raw DRM SUBMIT_CL, bcl_start=bcl_end=0; no Mesa loading

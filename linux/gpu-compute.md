@@ -328,3 +328,33 @@ errors, resets or oopses occurred; the known scheduler warning remains.
 
 `/opt/mesa/current` now selects fe7dda5e; cd573075 is retained. Kernel #29
 and `/usr/local` are unchanged. Compute and default GLES3.1 remain off.
+
+
+## Render-only compute submission probe (2026-10-24)
+
+`kstb-compute-render-test` submits a 64x32 RGBA16F tile directly to the
+render queue, with an empty bin list. Pre-shaded integer XY and constant
+ZW attributes feed the NV shader record (opcode 68), followed by compressed
+line primitives. Only the fragment shader runs. No Mesa driver is loaded.
+The CPU checks all 2,048 texels plus a trailing memory guard, and verifies
+that exactly one render job and no bin job completed.
+
+All sixteen [line-count cases](../docs/evidence/gpu/runs/20261024-132002-compute-nv-line-matrix/results.json)
+Pass, from 128 through 2,048 fragment invocations. Four
+[repeated submissions](../docs/evidence/gpu/runs/20261024-131749-compute-nv-repeat-one/results.json)
+also Pass. These runs have no MMU errors, GPU resets or oopses; only the
+known scheduler warning appears. The watchdog was active.
+
+The prototype initially set the general-store `Last Tile of Frame` flag:
+the first submission passed but the next hung and the kernel reset the
+GPU (ERR_STAT 0x1000). Leaving that flag clear, matching Mesa and the
+vendor, fixes repeated submissions. A
+[control without the dummy initialization store](../docs/evidence/gpu/runs/20261024-131850-compute-nv-no-dummy-control/results.json)
+also passes four repetitions, isolating the flag from the dummy-store
+change. The shipped probe retains Mesa's GFXH-1742 initialization sequence
+when changing tile-buffer format.
+
+This proves render-only NV submission and fragment coverage, not the
+compute API. ID-image reads, shared memory, workgroup barriers and Mesa
+`glDispatchCompute` integration remain under development. The numbered
+Mesa build, kernel and system selection are unchanged by these raw probes.

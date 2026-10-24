@@ -1,0 +1,3 @@
+submit render-only, lines 13 RCL bytes 166
+completed one render job, no bin job, seconds 0.0005720740009564906
+white texels 1664 expected 1664 errors 0

@@ -17,7 +17,7 @@ CFLAGS  = -O2 -Wall -I$(MESA)/include
 LDFLAGS = -L$(MESA)/lib -Wl,-rpath,/opt/mesa/current/lib
 
 TESTS   = $(patsubst %.c,%,$(wildcard kstb-*.c))
-SCRIPTS = kstb-gpu-run kstb-deqp kstb-v3d-gl v3dpack.py
+SCRIPTS = kstb-compute-render-test kstb-gpu-run kstb-deqp kstb-v3d-gl v3dpack.py
 CASES   = $(wildcard cases/*.txt)
 
 all: $(addprefix $(OUT)/,$(TESTS))
@@ -36,6 +36,7 @@ $(OUT)/%: %.c $(MESA)/include/EGL/egl.h
 install: all
 	ssh $(BOARD) 'mkdir -p /opt/gpu-test/cases'
 	scp -q $(addprefix $(OUT)/,$(TESTS)) $(SCRIPTS) $(BOARD):/opt/gpu-test/
+	scp -q $(B)/mesa/src/broadcom/cle/v3d_packet_v33.xml $(BOARD):/opt/gpu-test/
 	scp -q $(CASES) $(BOARD):/opt/gpu-test/cases/
 	@echo "/opt/gpu-test: $(words $(TESTS)) tests, $(words $(SCRIPTS)) scripts, $(words $(CASES)) case lists"
 

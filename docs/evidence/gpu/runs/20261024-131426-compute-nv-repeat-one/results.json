@@ -1,0 +1,18 @@
+[
+  {
+    "test": "repeat-1",
+    "exit": 0,
+    "start": 141224.597028251,
+    "end": 141225.044382048,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "repeat-2",
+    "exit": 1,
+    "start": 141225.045438861,
+    "end": 141225.600469695,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  }
+]

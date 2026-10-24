@@ -1,0 +1,34 @@
+[
+  {
+    "test": "repeat-1",
+    "exit": 0,
+    "start": 141488.1935352,
+    "end": 141488.644392363,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "repeat-2",
+    "exit": 0,
+    "start": 141488.645473881,
+    "end": 141489.096426488,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "repeat-3",
+    "exit": 0,
+    "start": 141489.097724413,
+    "end": 141489.548354799,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  },
+  {
+    "test": "repeat-4",
+    "exit": 0,
+    "start": 141489.549639649,
+    "end": 141490.000357368,
+    "gles_override": null,
+    "v3d_debug": "shaderdb,surface"
+  }
+]
