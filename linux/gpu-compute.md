@@ -202,3 +202,26 @@ Without an override it stops at context creation with `EGL_BAD_MATCH`,
 before running cases. With the explicit override all six info cases Pass,
 with no GPU faults. This validates the test plumbing, not GLES3.1 conformance;
 images and compute are not implemented. See the [build notes](gpu-test/deqp/README.md).
+
+## First image load/store probe (2026-10-24, scratch driver)
+
+A scratch driver implements R32UI image accesses with general TMU memory
+operations. The shader computes addresses from the resource's tiling,
+stride and base uniforms. Out-of-bounds loads return zero and stores are
+discarded. A harmless read in uniform control flow supplies the final
+thread switch when the last image access was conditional.
+
+`kstb-image-test` compares image loads through an SSBO with CPU inputs,
+and image stores through independent framebuffer readback. Thirteen cases
+Pass: 1x1 through 513x257, including negative and overflowing coordinates
+and fully inactive image accesses. The source/destination layouts cover
+LINEARTILE, UBLINEAR one/two columns, UIF and UIF XOR. The fragment shader
+uses two threads, with no spills. There are 0 MMU errors, resets and oopses;
+the scheduler warning remains.
+
+[Evidence and the exact candidate diff](../docs/evidence/gpu/runs/20261024-093340-image33-threaded/results.json)
+are saved with scratch DRI SHA256
+`862ebe0452b8934ee2a6e310b5a2fa5e7514d3fc3ac26039c34eafbd3b6ef6b5`.
+Only R32UI is enabled for this probe. Other formats, dimensions, image
+atomics and full regression gates remain; this is not installed in the
+numbered Mesa series. `/opt/mesa/current` still uses validated `cd573075`.
