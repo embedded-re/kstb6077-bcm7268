@@ -225,3 +225,28 @@ are saved with scratch DRI SHA256
 Only R32UI is enabled for this probe. Other formats, dimensions, image
 atomics and full regression gates remain; this is not installed in the
 numbered Mesa series. `/opt/mesa/current` still uses validated `cd573075`.
+
+
+## Image format and tiling probes (2026-10-24, scratch driver)
+
+`kstb-image-format-test` verifies all 33 ES3.1 / NV_image_formats formats
+supported by the candidate: signed/unsigned 8-, 16- and 32-bit components,
+half/full floats, normalized bytes, RGB10_A2, RGB10_A2UI and R11F_G11F_B10F.
+Image loads are checked against CPU uploads through an SSBO. Stores are
+checked by a second shader using native texture fetches, independently of
+the candidate's image address calculation. Integer and representable float
+checks are exact; normalized image loads allow 4e-7 absolute error, native
+texture readback of stores allows 0.0005 (texture conversion precision).
+
+All 264 cases Pass: 33 formats at 1x1, 4x17, 8x17, 16x9, 17x13, 65x33,
+256x256 and 256x512. These cover LINEARTILE, UBLINEAR one/two columns,
+UIF and UIF XOR for texel sizes from 1 to 16 bytes. No MMU errors, resets
+or oopses occurred; only the known context scheduler warning was logged.
+The watchdog was active throughout.
+
+Evidence: [17x13](../docs/evidence/gpu/runs/20261024-095545-image33-nvformats/results.json),
+[boundary and larger layouts](../docs/evidence/gpu/runs/20261024-095710-image33-nvformats-layouts/results.json).
+The former includes the complete candidate diff. Scratch DRI SHA256 is
+`3dbbf5192203850ec38fe6df1c7af39304aa9a64f414b7726dae6e364de923d4`.
+Layers, mip levels, image atomics and graphics regression gates remain.
+This candidate is not installed in the numbered Mesa series.

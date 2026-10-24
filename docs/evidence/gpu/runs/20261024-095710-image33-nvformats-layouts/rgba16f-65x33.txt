@@ -1,0 +1,23 @@
+rsc alloc 0xffffa868a840 (format r8_unorm), 4096x1 buffer @0x00001000-0x00002fff
+OpenGL ES 3.1 Mesa 23.3.6 (git-d7e482bd07), rgba16f 65x33
+rsc alloc 0xffffa868adb0 (format r16g16b16a16_float), 65x33: level 0 (UIF) 65x33x1 -> 96x36x1, stride 768@0x00003000
+rsc alloc 0xffffa86208a0 (format r32g32b32a32_float), 65x33: level 0 (UIF) 65x33x1 -> 80x36x1, stride 1280@0x0000a000
+rsc alloc 0xffffa8621590 (format r8_unorm), 1048576x1 buffer @0x00016000-0x00116fff
+SHADER-DB-TTN - MESA_SHADER_FRAGMENT shader: 16 inst, 4 threads, 0 loops, 3 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 16 inst-and-stalls, 0 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX shader: 37 inst, 1 threads, 0 loops, 6 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 2 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rsc alloc 0xffffa85cdda0 (format r16g16b16a16_float), 65x33: level 0 (UIF) 65x33x1 -> 96x36x1, stride 768@0x0019e000
+rsc alloc 0xffffa85cd290 (format r8_unorm), 34320x1 buffer @0x001a5000-0x001adfff
+rsc alloc 0xffffa85cd290 (format r8_unorm), 34320x1 buffer @0x001ae000-0x001b6fff
+rsc alloc 0xffffa85cd4d0 (format r8g8b8a8_unorm), 65x33: level 0 (UIF) 65x33x1 -> 96x40x1, stride 384@0x001b7000
+rsc alloc 0xffffa85cd290 (format r8_unorm), 34320x1 buffer @0x001a5000-0x001adfff
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 187 inst, 2 threads, 0 loops, 29 uniforms, 17 max-temps, 0:0 spills:fills, 0 sfu-stalls, 187 inst-and-stalls, 11 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rsc alloc 0xffffa85cd290 (format r8_unorm), 34320x1 buffer @0x001ae000-0x001b6fff
+SHADER-DB-GLSL4 - MESA_SHADER_FRAGMENT shader: 33 inst, 2 threads, 0 loops, 10 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 33 inst-and-stalls, 0 nops
+rsc alloc 0xffffa85cd920 (format r8_unorm), 4096x1 buffer @0x001bc000-0x001bdfff
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rgba16f image-load: verified (0 errors, 8580 words)
+rgba16f store/native-fetch: verified (0 errors, 8580 words)

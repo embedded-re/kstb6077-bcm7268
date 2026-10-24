@@ -1,0 +1,559 @@
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index a05ff72..c6130cb 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -739,6 +739,9 @@ ntq_emit_tmu_general(struct v3d_compile *c, nir_intrinsic_instr *instr,
+                                 c->tmu.store_base = is_global ?
+                                         (dynamic_src ? ntq_get_src(c, instr->src[offset_src], 0) :
+                                          vir_uniform_ui(c, const_offset)) : base_offset;
++                                if (is_global)
++                                        c->tmu.store_base = vir_AND(c, c->tmu.store_base,
++                                                                   vir_uniform_ui(c, ~3u));
+                         }
+                         ntq_add_pending_tmu_flush(c, &instr->def,
+                                                   component_mask);
+@@ -3454,6 +3457,17 @@ ntq_emit_intrinsic(struct v3d_compile *c, nir_intrinsic_instr *instr)
+                 c->has_general_tmu_load = true;
+                 break;
+ 
++        case nir_intrinsic_image_texel_address:
++                assert(c->devinfo->ver == 33);
++                v3d33_vir_emit_image_address(c, instr);
++                break;
++
++        case nir_intrinsic_image_samples:
++                ntq_store_def(c, &instr->def, 0,
++                              vir_uniform(c, QUNIFORM_IMAGE_SAMPLES,
++                                          nir_src_as_uint(instr->src[0])));
++                break;
++
+         case nir_intrinsic_image_store:
+         case nir_intrinsic_image_atomic:
+         case nir_intrinsic_image_atomic_swap:
+@@ -4611,6 +4625,20 @@ vir_emit_last_thrsw(struct v3d_compile *c,
+ {
+         *restore_last_thrsw = c->last_thrsw;
+ 
++        if (c->devinfo->ver == 33 && c->threads > 1 && c->last_thrsw &&
++            !c->last_thrsw_at_top_level) {
++                /* A conditional access may not run in every thread. Issue
++                 * a harmless read in uniform control flow so every thread
++                 * can execute the final switch, including discarded lanes.
++                 */
++                struct qinst *read = vir_MOV_dest(c,
++                        vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_TMUA),
++                        vir_uniform(c, QUNIFORM_TMU_DUMMY_ADDRESS, 0));
++                read->ldtmu_count = 1;
++                vir_emit_thrsw(c);
++                vir_LDTMU(c);
++        }
++
+         /* On V3D before 4.1, we need a TMU op to be outstanding when thread
+          * switching, so disable threads if we didn't do any TMU ops (each of
+          * which would have emitted a THRSW).
+diff --git a/src/broadcom/compiler/v3d33_tex.c b/src/broadcom/compiler/v3d33_tex.c
+index 31dfd5d..42379f4 100644
+--- a/src/broadcom/compiler/v3d33_tex.c
++++ b/src/broadcom/compiler/v3d33_tex.c
+@@ -22,6 +22,7 @@
+  */
+ 
+ #include "v3d_compiler.h"
++#include "common/v3d_tiling.h"
+ 
+ /* We don't do any address packing. */
+ #define __gen_user_data void
+@@ -197,3 +198,90 @@ v3d33_vir_emit_tex(struct v3d_compile *c, nir_tex_instr *instr)
+                         ntq_store_def(c, &instr->def, i, vir_LDTMU(c));
+         }
+ }
++
++static struct qreg
++image_select_tiling(struct v3d_compile *c, struct qreg tiling, unsigned mode,
++                    struct qreg match, struct qreg other)
++{
++        vir_set_pf(c, vir_SUB_dest(c, vir_nop_reg(), tiling,
++                                   vir_uniform_ui(c, mode)), V3D_QPU_PF_PUSHZ);
++        return vir_MOV(c, vir_SEL(c, V3D_QPU_COND_IFA, match, other));
++}
++
++void
++v3d33_vir_emit_image_address(struct v3d_compile *c, nir_intrinsic_instr *intr)
++{
++        unsigned unit = nir_src_as_uint(intr->src[0]);
++        unsigned cpp = util_format_get_blocksize(nir_intrinsic_format(intr));
++        unsigned log_cpp = util_logbase2(cpp);
++        unsigned log_uw = cpp <= 2 ? 3 : cpp <= 8 ? 2 : 1;
++        unsigned log_uh = cpp == 1 ? 3 : cpp <= 4 ? 2 : 1;
++        enum glsl_sampler_dim dim = nir_intrinsic_image_dim(intr);
++        bool array = nir_intrinsic_image_array(intr);
++        struct qreg zero = vir_uniform_ui(c, 0);
++        struct qreg x = ntq_get_src(c, intr->src[1], 0);
++        struct qreg y = (dim == GLSL_SAMPLER_DIM_1D || dim == GLSL_SAMPLER_DIM_BUF) ?
++                        zero : ntq_get_src(c, intr->src[1], 1);
++        struct qreg z = zero;
++        if (dim == GLSL_SAMPLER_DIM_3D || dim == GLSL_SAMPLER_DIM_CUBE ||
++            (array && dim != GLSL_SAMPLER_DIM_1D))
++                z = ntq_get_src(c, intr->src[1], 2);
++        else if (array)
++                z = ntq_get_src(c, intr->src[1], 1);
++        if (dim == GLSL_SAMPLER_DIM_MS) {
++                struct qreg sample = ntq_get_src(c, intr->src[2], 0);
++                x = vir_ADD(c, vir_SHL(c, x, vir_uniform_ui(c, 1)),
++                            vir_AND(c, sample, vir_uniform_ui(c, 1)));
++                y = vir_ADD(c, vir_SHL(c, y, vir_uniform_ui(c, 1)),
++                            vir_AND(c, vir_SHR(c, sample, vir_uniform_ui(c, 1)),
++                                    vir_uniform_ui(c, 1)));
++        }
++        struct qreg tiling = vir_uniform(c, QUNIFORM_IMAGE_TILING, unit);
++        struct qreg base = vir_uniform(c, QUNIFORM_IMAGE_BASE, unit);
++        struct qreg stride = vir_uniform(c, QUNIFORM_IMAGE_STRIDE, unit);
++        struct qreg layer_stride = vir_uniform(c, QUNIFORM_IMAGE_LAYER_STRIDE, unit);
++        struct qreg height = vir_uniform(c, QUNIFORM_IMAGE_PADDED_HEIGHT, unit);
++
++        struct qreg in_utile = vir_ADD(c,
++                vir_SHL(c, vir_AND(c, x, vir_uniform_ui(c, (1u << log_uw) - 1)),
++                        vir_uniform_ui(c, log_cpp)),
++                vir_SHL(c, vir_AND(c, y, vir_uniform_ui(c, (1u << log_uh) - 1)),
++                        vir_uniform_ui(c, log_uw + log_cpp)));
++        struct qreg lt = vir_ADD(c, in_utile,
++                vir_SHL(c, vir_ADD(c,
++                        vir_SHR(c, x, vir_uniform_ui(c, log_uw)),
++                        vir_SHR(c, y, vir_uniform_ui(c, log_uh))),
++                        vir_uniform_ui(c, 6)));
++        struct qreg in_uif = vir_ADD(c, in_utile,
++                vir_ADD(c,
++                        vir_SHL(c, vir_AND(c, vir_SHR(c, x, vir_uniform_ui(c, log_uw)),
++                                          vir_uniform_ui(c, 1)), vir_uniform_ui(c, 6)),
++                        vir_SHL(c, vir_AND(c, vir_SHR(c, y, vir_uniform_ui(c, log_uh)),
++                                          vir_uniform_ui(c, 1)), vir_uniform_ui(c, 7))));
++        struct qreg bx = vir_SHR(c, x, vir_uniform_ui(c, log_uw + 1));
++        struct qreg by = vir_SHR(c, y, vir_uniform_ui(c, log_uh + 1));
++        struct qreg ub1 = vir_ADD(c, in_uif,
++                vir_SHL(c, vir_ADD(c, bx, by), vir_uniform_ui(c, 8)));
++        struct qreg ub2 = vir_ADD(c, in_uif,
++                vir_SHL(c, vir_ADD(c, bx, vir_SHL(c, by, vir_uniform_ui(c, 1))),
++                        vir_uniform_ui(c, 8)));
++        struct qreg xor_y = vir_XOR(c, by,
++                vir_SHL(c, vir_AND(c, bx, vir_uniform_ui(c, 4)), vir_uniform_ui(c, 2)));
++        struct qreg uif_y = image_select_tiling(c, tiling, V3D_TILING_UIF_XOR, xor_y, by);
++        struct qreg uif_height = vir_SHR(c, height, vir_uniform_ui(c, log_uh + 1));
++        struct qreg block = vir_ADD(c,
++                vir_UMUL(c, vir_SHR(c, bx, vir_uniform_ui(c, 2)),
++                         vir_SHL(c, uif_height, vir_uniform_ui(c, 2))),
++                vir_ADD(c, vir_AND(c, bx, vir_uniform_ui(c, 3)),
++                           vir_SHL(c, uif_y, vir_uniform_ui(c, 2))));
++        struct qreg offset = vir_ADD(c, in_uif, vir_SHL(c, block, vir_uniform_ui(c, 8)));
++        struct qreg raster = vir_ADD(c, vir_SHL(c, x, vir_uniform_ui(c, log_cpp)),
++                                      vir_UMUL(c, y, stride));
++        offset = image_select_tiling(c, tiling, V3D_TILING_UBLINEAR_2_COLUMN, ub2, offset);
++        offset = image_select_tiling(c, tiling, V3D_TILING_UBLINEAR_1_COLUMN, ub1, offset);
++        offset = image_select_tiling(c, tiling, V3D_TILING_LINEARTILE, lt, offset);
++        offset = image_select_tiling(c, tiling, V3D_TILING_RASTER, raster, offset);
++        struct qreg address = vir_ADD(c, base,
++                vir_ADD(c, offset, vir_UMUL(c, z, layer_stride)));
++        ntq_store_def(c, &intr->def, 0, address);
++}
+diff --git a/src/broadcom/compiler/v3d_compiler.h b/src/broadcom/compiler/v3d_compiler.h
+index dfb884c..aa48daf 100644
+--- a/src/broadcom/compiler/v3d_compiler.h
++++ b/src/broadcom/compiler/v3d_compiler.h
+@@ -301,6 +301,13 @@ enum quniform_contents {
+         QUNIFORM_IMAGE_HEIGHT,
+         QUNIFORM_IMAGE_DEPTH,
+         QUNIFORM_IMAGE_ARRAY_SIZE,
++        QUNIFORM_IMAGE_BASE,
++        QUNIFORM_IMAGE_STRIDE,
++        QUNIFORM_IMAGE_LAYER_STRIDE,
++        QUNIFORM_IMAGE_TILING,
++        QUNIFORM_IMAGE_PADDED_HEIGHT,
++        QUNIFORM_IMAGE_SAMPLES,
++        QUNIFORM_TMU_DUMMY_ADDRESS,
+ 
+         QUNIFORM_LINE_WIDTH,
+ 
+@@ -1189,6 +1196,9 @@ bool v3d_nir_lower_logic_ops(nir_shader *s, struct v3d_compile *c);
+ bool v3d_nir_lower_scratch(nir_shader *s);
+ bool v3d_nir_lower_txf_ms(nir_shader *s);
+ bool v3d_nir_lower_image_load_store(nir_shader *s);
++bool v3d33_nir_lower_image_load_store(nir_shader *s);
++void v3d33_vir_emit_image_address(struct v3d_compile *c,
++                                nir_intrinsic_instr *instr);
+ bool v3d_nir_lower_load_store_bitsize(nir_shader *s);
+ 
+ void v3d33_vir_vpm_read_setup(struct v3d_compile *c, int num_components);
+diff --git a/src/broadcom/compiler/v3d_nir_lower_image_load_store.c b/src/broadcom/compiler/v3d_nir_lower_image_load_store.c
+index 5f83633..7226de9 100644
+--- a/src/broadcom/compiler/v3d_nir_lower_image_load_store.c
++++ b/src/broadcom/compiler/v3d_nir_lower_image_load_store.c
+@@ -227,3 +227,149 @@ v3d_nir_lower_image_load_store(nir_shader *s)
+                                             nir_metadata_block_index |
+                                             nir_metadata_dominance, NULL);
+ }
++
++/* 3.3 images use ordinary TMU memory accesses. The texel-address intrinsic
++ * retains the image index and coordinates until VIR can load the resource's
++ * actual tiling parameters from uniforms.
++ */
++static nir_def *
++v3d33_unpack_image(nir_builder *b, nir_def *raw, enum pipe_format format)
++{
++        const struct util_format_description *desc = util_format_description(format);
++        const struct util_format_channel_description *chan = &desc->channel[0];
++        unsigned count = util_format_get_nr_components(format);
++        unsigned bits[4];
++        for (unsigned i = 0; i < count; i++)
++                bits[i] = desc->channel[i].size;
++
++        nir_def *value;
++        if (format == PIPE_FORMAT_R11G11B10_FLOAT) {
++                value = nir_format_unpack_11f11f10f(b, raw);
++        } else if (chan->size == 32) {
++                value = raw;
++        } else {
++                if (chan->type == UTIL_FORMAT_TYPE_SIGNED)
++                        value = nir_format_unpack_sint(b, raw, bits, count);
++                else
++                        value = nir_format_unpack_uint(b, raw, bits, count);
++
++                if (chan->normalized) {
++                        value = chan->type == UTIL_FORMAT_TYPE_SIGNED ?
++                                nir_format_snorm_to_float(b, value, bits) :
++                                nir_format_unorm_to_float(b, value, bits);
++                } else if (chan->type == UTIL_FORMAT_TYPE_FLOAT) {
++                        assert(chan->size == 16);
++                        value = nir_unpack_half_2x16_split_x(b, value);
++                }
++        }
++
++        nir_def *components[4];
++        for (unsigned i = 0; i < 4; i++) {
++                if (i < count)
++                        components[i] = nir_channel(b, value, i);
++                else if (i == 3)
++                        components[i] = chan->pure_integer ? nir_imm_int(b, 1) :
++                                                           nir_imm_float(b, 1.0f);
++                else
++                        components[i] = nir_imm_int(b, 0);
++        }
++        return nir_vec4(b, components[0], components[1], components[2], components[3]);
++}
++
++static bool
++v3d33_lower_image(nir_builder *b, nir_intrinsic_instr *intr, void *data)
++{
++        bool load = intr->intrinsic == nir_intrinsic_image_load;
++        bool store = intr->intrinsic == nir_intrinsic_image_store;
++        bool atomic = intr->intrinsic == nir_intrinsic_image_atomic;
++        bool swap = intr->intrinsic == nir_intrinsic_image_atomic_swap;
++        if (!load && !store && !atomic && !swap)
++                return false;
++
++        enum pipe_format format = nir_intrinsic_format(intr);
++        assert(format != PIPE_FORMAT_NONE);
++        unsigned cpp = util_format_get_blocksize(format);
++        assert(util_is_power_of_two_nonzero(cpp) && cpp <= 16);
++        enum glsl_sampler_dim dim = nir_intrinsic_image_dim(intr);
++        bool array = nir_intrinsic_image_array(intr);
++        unsigned coords = nir_image_intrinsic_coord_components(intr);
++        unsigned size_components = coords - (dim == GLSL_SAMPLER_DIM_CUBE && !array);
++
++        if (store)
++                v3d_nir_lower_image_store(b, intr);
++        b->cursor = nir_before_instr(&intr->instr);
++        nir_def *size = nir_image_size(b, size_components, 32, intr->src[0].ssa,
++                                       nir_imm_int(b, 0), .image_dim = dim,
++                                       .image_array = array);
++        if (dim == GLSL_SAMPLER_DIM_CUBE) {
++                nir_def *layers = array ? nir_imul_imm(b, nir_channel(b, size, 2), 6) :
++                                         nir_imm_int(b, 6);
++                size = nir_vec3(b, nir_channel(b, size, 0), nir_channel(b, size, 1), layers);
++        }
++        nir_def *coord = nir_trim_vector(b, intr->src[1].ssa, coords);
++        nir_def *valid = nir_ball(b, nir_ult(b, coord, size));
++        /* Address computation is outside the conditional so discarded lanes
++         * also have valid addresses for the store-only thread-switch read.
++         * Clamping affects only that address, not out-of-bounds semantics.
++         */
++        nir_def *limit = nir_iadd_imm(b, nir_umax(b, size, nir_imm_int(b, 1)), -1);
++        nir_def *safe = nir_umin(b, coord, limit);
++        nir_def *c[4];
++        for (unsigned i = 0; i < 4; i++)
++                c[i] = i < coords ? nir_channel(b, safe, i) : nir_imm_int(b, 0);
++        nir_def *sample = nir_imm_int(b, 0);
++        if (dim == GLSL_SAMPLER_DIM_MS) {
++                nir_def *samples = nir_image_samples(b, 32, intr->src[0].ssa,
++                                                      .image_dim = dim,
++                                                      .image_array = array);
++                sample = intr->src[2].ssa;
++                valid = nir_iand(b, valid, nir_ult(b, sample, samples));
++                sample = nir_umin(b, sample,
++                                  nir_iadd_imm(b, nir_umax(b, samples, nir_imm_int(b, 1)), -1));
++        }
++        nir_def *addr = nir_image_texel_address(b, 32, intr->src[0].ssa,
++                        nir_vec4(b, c[0], c[1], c[2], c[3]), sample,
++                        .image_dim = dim, .image_array = array, .format = format,
++                        .access = nir_intrinsic_access(intr));
++        nir_def *address = nir_vec2(b, addr, nir_imm_int(b, 0));
++        enum gl_access_qualifier access = nir_intrinsic_access(intr);
++        unsigned raw_bits = cpp < 4 ? cpp * 8 : 32;
++        unsigned raw_components = DIV_ROUND_UP(cpp, 4);
++        nir_def *result = NULL;
++        nir_def *zero = store ? NULL : nir_imm_zero(b, load ? 4 : 1, 32);
++        nir_push_if(b, valid);
++        if (load) {
++                nir_def *raw = nir_load_global_2x32(b, raw_components, raw_bits, address,
++                                                   .align_mul = MIN2(cpp, 4),
++                                                   .access = access);
++                if (raw_bits < 32)
++                        raw = nir_u2u32(b, raw);
++                result = v3d33_unpack_image(b, raw, format);
++        } else if (store) {
++                nir_def *value = intr->src[3].ssa;
++                if (raw_bits < 32)
++                        value = nir_u2uN(b, value, raw_bits);
++                nir_store_global_2x32(b, value, address,
++                                      .write_mask = BITFIELD_MASK(raw_components),
++                                      .align_mul = MIN2(cpp, 4), .access = access);
++        } else if (atomic) {
++                result = nir_global_atomic_2x32(b, 32, address, intr->src[3].ssa,
++                                                .atomic_op = nir_intrinsic_atomic_op(intr));
++        } else {
++                result = nir_global_atomic_swap_2x32(b, 32, address, intr->src[3].ssa,
++                             intr->src[4].ssa, .atomic_op = nir_intrinsic_atomic_op(intr));
++        }
++        nir_pop_if(b, NULL);
++        if (!store) {
++                result = nir_if_phi(b, result, zero);
++                nir_def_rewrite_uses(&intr->def, result);
++        }
++        nir_instr_remove(&intr->instr);
++        return true;
++}
++
++bool
++v3d33_nir_lower_image_load_store(nir_shader *s)
++{
++        return nir_shader_intrinsics_pass(s, v3d33_lower_image, nir_metadata_none, NULL);
++}
+diff --git a/src/broadcom/compiler/vir.c b/src/broadcom/compiler/vir.c
+index 0d7ae56..b8146e0 100644
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -1609,7 +1609,10 @@ v3d_attempt_compile(struct v3d_compile *c)
+ 
+         NIR_PASS(_, c->s, v3d_nir_lower_io, c);
+         NIR_PASS(_, c->s, v3d_nir_lower_txf_ms);
+-        NIR_PASS(_, c->s, v3d_nir_lower_image_load_store);
++        if (c->devinfo->ver == 33)
++                NIR_PASS(_, c->s, v3d33_nir_lower_image_load_store);
++        else
++                NIR_PASS(_, c->s, v3d_nir_lower_image_load_store);
+ 
+         NIR_PASS(_, c->s, nir_opt_idiv_const, 8);
+         nir_lower_idiv_options idiv_options = {
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index eccdbd7..0f1ee6d 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -464,6 +464,8 @@ v3d_screen_get_shader_param(struct pipe_screen *pscreen, enum pipe_shader_type s
+ 
+         case PIPE_SHADER_CAP_MAX_SHADER_IMAGES:
+                 if (screen->has_cache_flush) {
++                        if (screen->devinfo.ver == 33)
++                                return shader == PIPE_SHADER_FRAGMENT ? 8 : 0;
+                         if (screen->devinfo.ver < 41)
+                                 return 0;
+                         else
+@@ -695,6 +697,47 @@ v3d_screen_is_format_supported(struct pipe_screen *pscreen,
+         }
+ 
+         if (usage & PIPE_BIND_SHADER_IMAGE) {
++                /* Scratch 3.3 gates: ES 3.1 and NV_image_formats. */
++                if (screen->devinfo.ver == 33) {
++                        switch (format) {
++                        case PIPE_FORMAT_R32_UINT:
++                        case PIPE_FORMAT_R32_SINT:
++                        case PIPE_FORMAT_R32_FLOAT:
++                        case PIPE_FORMAT_R32G32B32A32_UINT:
++                        case PIPE_FORMAT_R32G32B32A32_SINT:
++                        case PIPE_FORMAT_R32G32B32A32_FLOAT:
++                        case PIPE_FORMAT_R16G16B16A16_UINT:
++                        case PIPE_FORMAT_R16G16B16A16_SINT:
++                        case PIPE_FORMAT_R16G16B16A16_FLOAT:
++                        case PIPE_FORMAT_R8G8B8A8_UINT:
++                        case PIPE_FORMAT_R8G8B8A8_SINT:
++                        case PIPE_FORMAT_R8G8B8A8_UNORM:
++                        case PIPE_FORMAT_R8G8B8A8_SNORM:
++                        case PIPE_FORMAT_R32G32_FLOAT:
++                        case PIPE_FORMAT_R16G16_FLOAT:
++                        case PIPE_FORMAT_R11G11B10_FLOAT:
++                        case PIPE_FORMAT_R16_FLOAT:
++                        case PIPE_FORMAT_R10G10B10A2_UINT:
++                        case PIPE_FORMAT_R32G32_UINT:
++                        case PIPE_FORMAT_R16G16_UINT:
++                        case PIPE_FORMAT_R8G8_UINT:
++                        case PIPE_FORMAT_R16_UINT:
++                        case PIPE_FORMAT_R8_UINT:
++                        case PIPE_FORMAT_R32G32_SINT:
++                        case PIPE_FORMAT_R16G16_SINT:
++                        case PIPE_FORMAT_R8G8_SINT:
++                        case PIPE_FORMAT_R16_SINT:
++                        case PIPE_FORMAT_R8_SINT:
++                        case PIPE_FORMAT_R10G10B10A2_UNORM:
++                        case PIPE_FORMAT_R8G8_UNORM:
++                        case PIPE_FORMAT_R8_UNORM:
++                        case PIPE_FORMAT_R8G8_SNORM:
++                        case PIPE_FORMAT_R8_SNORM:
++                                return true;
++                        default:
++                                return false;
++                        }
++                }
+                 switch (format) {
+                 /* FIXME: maybe we can implement a swizzle-on-writes to add
+                  * support for BGRA-alike formats.
+diff --git a/src/gallium/drivers/v3d/v3d_uniforms.c b/src/gallium/drivers/v3d/v3d_uniforms.c
+index 64c217d..a35480d 100644
+--- a/src/gallium/drivers/v3d/v3d_uniforms.c
++++ b/src/gallium/drivers/v3d/v3d_uniforms.c
+@@ -94,6 +94,9 @@ get_image_size(struct v3d_shaderimg_stateobj *shaderimg,
+ {
+         struct v3d_image_view *image = &shaderimg->si[data];
+ 
++        if (!image->base.resource)
++                return 0;
++
+         switch (contents) {
+         case QUNIFORM_IMAGE_WIDTH:
+                 if (image->base.resource->target == PIPE_BUFFER) {
+@@ -103,6 +106,25 @@ get_image_size(struct v3d_shaderimg_stateobj *shaderimg,
+                         return u_minify(image->base.resource->width0,
+                                         image->base.u.tex.level);
+                 }
++        case QUNIFORM_IMAGE_SAMPLES:
++                return MAX2(image->base.resource->nr_samples, 1);
++        case QUNIFORM_IMAGE_STRIDE:
++        case QUNIFORM_IMAGE_LAYER_STRIDE:
++        case QUNIFORM_IMAGE_TILING:
++        case QUNIFORM_IMAGE_PADDED_HEIGHT: {
++                struct pipe_resource *prsc = image->base.resource;
++                struct v3d_resource *rsc = v3d_resource(prsc);
++                unsigned level = prsc->target == PIPE_BUFFER ? 0 : image->base.u.tex.level;
++                struct v3d_resource_slice *slice = &rsc->slices[level];
++                switch (contents) {
++                case QUNIFORM_IMAGE_STRIDE: return slice->stride;
++                case QUNIFORM_IMAGE_LAYER_STRIDE:
++                        return prsc->target == PIPE_TEXTURE_3D ? slice->size : rsc->cube_map_stride;
++                case QUNIFORM_IMAGE_TILING: return slice->tiling;
++                case QUNIFORM_IMAGE_PADDED_HEIGHT: return slice->padded_height;
++                default: unreachable("bad image layout parameter");
++                }
++        }
+         case QUNIFORM_IMAGE_HEIGHT:
+                 assert(image->base.resource->target != PIPE_BUFFER);
+                 return u_minify(image->base.resource->height0,
+@@ -287,6 +309,10 @@ v3d_write_uniforms(struct v3d_context *v3d, struct v3d_job *job,
+                 uint32_t data = uinfo->data[i];
+ 
+                 switch (uinfo->contents[i]) {
++                case QUNIFORM_TMU_DUMMY_ADDRESS:
++                        cl_aligned_reloc(&job->indirect, &uniforms,
++                                         uniform_stream.bo, uniform_stream.offset);
++                        break;
+                 case QUNIFORM_CONSTANT:
+                         cl_aligned_u32(&uniforms, data);
+                         break;
+@@ -328,6 +354,26 @@ v3d_write_uniforms(struct v3d_context *v3d, struct v3d_job *job,
+                                            &v3d->shaderimg[stage], data);
+                         break;
+ 
++                case QUNIFORM_IMAGE_BASE: {
++                        struct pipe_image_view *view = &v3d->shaderimg[stage].si[data].base;
++                        if (!view->resource) {
++                                /* All accesses are bounds-checked. Discarded
++                                 * lanes still need a mapped address for the
++                                 * store-only thread-switch read.
++                                 */
++                                cl_aligned_reloc(&job->indirect, &uniforms,
++                                                 uniform_stream.bo, uniform_stream.offset);
++                        } else {
++                                struct v3d_resource *rsc = v3d_resource(view->resource);
++                                unsigned offset = view->resource->target == PIPE_BUFFER ?
++                                        rsc->slices[0].offset + view->u.buf.offset :
++                                        v3d_layer_offset(view->resource, view->u.tex.level,
++                                                         view->u.tex.first_layer);
++                                cl_aligned_reloc(&job->indirect, &uniforms, rsc->bo, offset);
++                        }
++                        break;
++                }
++
+                 case QUNIFORM_TEXTURE_CONFIG_P1:
+                         write_texture_p1(job, &uniforms, texstate,
+                                          data);
+@@ -356,6 +402,11 @@ v3d_write_uniforms(struct v3d_context *v3d, struct v3d_job *job,
+                 case QUNIFORM_IMAGE_HEIGHT:
+                 case QUNIFORM_IMAGE_DEPTH:
+                 case QUNIFORM_IMAGE_ARRAY_SIZE:
++                case QUNIFORM_IMAGE_STRIDE:
++                case QUNIFORM_IMAGE_LAYER_STRIDE:
++                case QUNIFORM_IMAGE_TILING:
++                case QUNIFORM_IMAGE_PADDED_HEIGHT:
++                case QUNIFORM_IMAGE_SAMPLES:
+                         cl_aligned_u32(&uniforms,
+                                        get_image_size(&v3d->shaderimg[stage],
+                                                       uinfo->contents[i],
+@@ -468,6 +519,7 @@ v3d_set_shader_uniform_dirty_flags(struct v3d_compiled_shader *shader)
+ 
+         for (int i = 0; i < shader->prog_data.base->uniforms.count; i++) {
+                 switch (shader->prog_data.base->uniforms.contents[i]) {
++                case QUNIFORM_TMU_DUMMY_ADDRESS:
+                 case QUNIFORM_CONSTANT:
+                         break;
+                 case QUNIFORM_UNIFORM:
+@@ -516,6 +568,12 @@ v3d_set_shader_uniform_dirty_flags(struct v3d_compiled_shader *shader)
+                 case QUNIFORM_IMAGE_HEIGHT:
+                 case QUNIFORM_IMAGE_DEPTH:
+                 case QUNIFORM_IMAGE_ARRAY_SIZE:
++                case QUNIFORM_IMAGE_BASE:
++                case QUNIFORM_IMAGE_STRIDE:
++                case QUNIFORM_IMAGE_LAYER_STRIDE:
++                case QUNIFORM_IMAGE_TILING:
++                case QUNIFORM_IMAGE_PADDED_HEIGHT:
++                case QUNIFORM_IMAGE_SAMPLES:
+                         dirty |= V3D_DIRTY_SHADER_IMAGE;
+                         break;
+ 
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index 92d22b1..a7561f3 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1107,6 +1107,12 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+                 }
+ 
+                 u_foreach_bit(i, v3d->shaderimg[s].enabled_mask) {
++                        struct v3d_resource *rsc =
++                                v3d_resource(v3d->shaderimg[s].si[i].base.resource);
++                        /* Image writes must invalidate sampler shadows and
++                         * preserve contents when later bound as an FBO.
++                         */
++                        rsc->writes++;
+                         v3d_job_add_write_resource(job,
+                                                    v3d->shaderimg[s].si[i].base.resource);
+                         job->tmu_dirty_rcl = true;
+diff --git a/src/gallium/drivers/v3d/v3dx_state.c b/src/gallium/drivers/v3d/v3dx_state.c
+index 9c3b01e..ab916d9 100644
+--- a/src/gallium/drivers/v3d/v3dx_state.c
++++ b/src/gallium/drivers/v3d/v3dx_state.c
+@@ -1467,9 +1467,8 @@ v3d_create_image_view_texture_shader_state(struct v3d_context *v3d,
+                                                       iview->base.format);
+         };
+ #else /* V3D_VERSION < 40 */
+-        /* V3D 3.x doesn't use support shader image load/store operations on
+-         * textures, so it would get lowered in the shader to general memory
+-         * accesses.
++        /* V3D 3.x image accesses use layout uniforms and general TMU memory
++         * operations, without a texture shader state record.
+          */
+ #endif
+ }

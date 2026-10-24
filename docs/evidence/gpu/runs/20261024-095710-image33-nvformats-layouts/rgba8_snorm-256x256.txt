@@ -1,0 +1,18 @@
+rsc alloc 0xffffb0891840 (format r8_unorm), 4096x1 buffer @0x00001000-0x00002fff
+OpenGL ES 3.1 Mesa 23.3.6 (git-d7e482bd07), rgba8_snorm 256x256
+rsc alloc 0xffffb0891db0 (format r8g8b8a8_snorm), 256x256: level 0 (UIF^) 256x256x1 -> 256x256x1, stride 1024@0x00003000
+rsc alloc 0xffffb08278a0 (format r8g8b8a8_snorm), 256x256: level 0 (UIF^) 256x256x1 -> 256x256x1, stride 1024@0x00043000
+rsc alloc 0xffffb0827b40 (format r8_unorm), 1048576x1 buffer @0x00083000-0x00183fff
+rsc alloc 0xffffb0827b40 (format r8_unorm), 1048576x1 buffer @0x00184000-0x00284fff
+rsc alloc 0xffffb0827de0 (format r8g8b8a8_unorm), 256x256: level 0 (UIF^) 256x256x1 -> 256x256x1, stride 1024@0x00285000
+rsc alloc 0xffffb0827b40 (format r8_unorm), 1048576x1 buffer @0x00083000-0x00183fff
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 216 inst, 2 threads, 0 loops, 37 uniforms, 17 max-temps, 0:0 spills:fills, 0 sfu-stalls, 216 inst-and-stalls, 13 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rsc alloc 0xffffb0827b40 (format r8_unorm), 1048576x1 buffer @0x00184000-0x00284fff
+SHADER-DB-GLSL4 - MESA_SHADER_FRAGMENT shader: 33 inst, 2 threads, 0 loops, 10 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 33 inst-and-stalls, 0 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX shader: 24 inst, 1 threads, 0 loops, 7 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 24 inst-and-stalls, 2 nops
+rsc alloc 0xffffafd8c4c0 (format r8_unorm), 4096x1 buffer @0x0034c000-0x0034dfff
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 6 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+rgba8_snorm image-load: verified (0 errors, 262144 words)
+rgba8_snorm store/native-fetch: verified (0 errors, 262144 words)
