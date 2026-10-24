@@ -287,8 +287,8 @@ remains open; image loads and stores at those mip levels pass independently.
 
 The candidate also passes all 200
 [spill-heavy texture-unit cases](../docs/evidence/gpu/runs/20261024-100853-gles3-image33-focused-spill/summary.txt),
-with no MMU errors, resets or oopses. Full GLES3/GLES2/EGL regression is
-still running; the candidate remains outside the numbered Mesa series.
+with no MMU errors, resets or oopses. Full GLES3/GLES2/EGL regression subsequently passed (see below); the
+candidate remains outside the installed numbered Mesa series.
 
 
 The implementation is exported as Mesa patch 0024. `make -C linux/mesa
@@ -297,4 +297,18 @@ check` and the reproducible build pass; candidate artifact
 `084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208`.
 Building the committed source with the scratch driver's previous Git
 version string reproduces its exact `3dbbf519…` binary. The candidate
-artifact has not been installed; full graphics regression remains pending.
+artifact has not been installed. Full graphics regression passed as recorded below.
+
+
+## Full image-candidate graphics regression (2026-10-24)
+
+The scratch image driver (`3dbbf519…`) completes all 65,722 GLES3, GLES2
+and EGL cases with statuses identical to the kernel #29 / 848c0204 reference.
+No MMU errors, GPU resets or oopses occurred. The watchdog was active.
+
+- [GLES3 evidence](../docs/evidence/gpu/runs/20261024-101221-gles3-image33-full/summary.txt): 43,908 Pass, 583 NotSupported, 277 QualityWarning.
+- [GLES2 evidence](../docs/evidence/gpu/runs/20261024-111231-gles2-image33-full/summary.txt): 17,041 Pass, 119 NotSupported, 5 QualityWarning.
+- [EGL evidence](../docs/evidence/gpu/runs/20261024-112509-egl-image33-full/summary.txt): 833 Pass, 2,955 NotSupported, 1 QualityWarning.
+
+The numbered artifact fe7dda5e still needs installation and smoke checks;
+`/opt/mesa/current` remains cd573075. Compute and default GLES3.1 remain off.
