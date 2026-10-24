@@ -1,0 +1,98 @@
+48 standalone checks: 48 exit 0
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+r32ui-c0-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 0: 0 errors, guards checked
+r32ui-c1-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 1: 0 errors, guards checked
+r32ui-c2-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 2: 0 errors, guards checked
+r32ui-c3-fragment-identity: exit 0
+gather + fetch fragment R32UI 17x13 component 3: 0 errors, guards checked
+rgba32ui-c0-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 0: 0 errors, guards checked
+rgba32ui-c1-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 1: 0 errors, guards checked
+rgba32ui-c2-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 2: 0 errors, guards checked
+rgba32ui-c3-fragment-identity: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 3: 0 errors, guards checked
+rgba16f-c0-fragment-identity: exit 0
+gather + fetch fragment RGBA16F 17x13 component 0: 0 errors, guards checked
+rgba16f-c1-fragment-identity: exit 0
+gather + fetch fragment RGBA16F 17x13 component 1: 0 errors, guards checked
+rgba16f-c2-fragment-identity: exit 0
+gather + fetch fragment RGBA16F 17x13 component 2: 0 errors, guards checked
+rgba16f-c3-fragment-identity: exit 0
+gather + fetch fragment RGBA16F 17x13 component 3: 0 errors, guards checked
+r32ui-c0-fragment-swizzle: exit 0
+gather + fetch fragment R32UI 17x13 component 0: 0 errors, guards checked
+r32ui-c1-fragment-swizzle: exit 0
+gather + fetch fragment R32UI 17x13 component 1: 0 errors, guards checked
+r32ui-c2-fragment-swizzle: exit 0
+gather + fetch fragment R32UI 17x13 component 2: 0 errors, guards checked
+r32ui-c3-fragment-swizzle: exit 0
+gather + fetch fragment R32UI 17x13 component 3: 0 errors, guards checked
+rgba32ui-c0-fragment-swizzle: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 0: 0 errors, guards checked
+rgba32ui-c1-fragment-swizzle: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 1: 0 errors, guards checked
+rgba32ui-c2-fragment-swizzle: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 2: 0 errors, guards checked
+rgba32ui-c3-fragment-swizzle: exit 0
+gather + fetch fragment RGBA32UI 17x13 component 3: 0 errors, guards checked
+rgba16f-c0-fragment-swizzle: exit 0
+gather + fetch fragment RGBA16F 17x13 component 0: 0 errors, guards checked
+rgba16f-c1-fragment-swizzle: exit 0
+gather + fetch fragment RGBA16F 17x13 component 1: 0 errors, guards checked
+rgba16f-c2-fragment-swizzle: exit 0
+gather + fetch fragment RGBA16F 17x13 component 2: 0 errors, guards checked
+rgba16f-c3-fragment-swizzle: exit 0
+gather + fetch fragment RGBA16F 17x13 component 3: 0 errors, guards checked
+r32ui-c0-compute-identity: exit 0
+gather + fetch compute R32UI 17x13 component 0: 0 errors, guards checked
+r32ui-c1-compute-identity: exit 0
+gather + fetch compute R32UI 17x13 component 1: 0 errors, guards checked
+r32ui-c2-compute-identity: exit 0
+gather + fetch compute R32UI 17x13 component 2: 0 errors, guards checked
+r32ui-c3-compute-identity: exit 0
+gather + fetch compute R32UI 17x13 component 3: 0 errors, guards checked
+rgba32ui-c0-compute-identity: exit 0
+gather + fetch compute RGBA32UI 17x13 component 0: 0 errors, guards checked
+rgba32ui-c1-compute-identity: exit 0
+gather + fetch compute RGBA32UI 17x13 component 1: 0 errors, guards checked
+rgba32ui-c2-compute-identity: exit 0
+gather + fetch compute RGBA32UI 17x13 component 2: 0 errors, guards checked
+rgba32ui-c3-compute-identity: exit 0
+gather + fetch compute RGBA32UI 17x13 component 3: 0 errors, guards checked
+rgba16f-c0-compute-identity: exit 0
+gather + fetch compute RGBA16F 17x13 component 0: 0 errors, guards checked
+rgba16f-c1-compute-identity: exit 0
+gather + fetch compute RGBA16F 17x13 component 1: 0 errors, guards checked
+rgba16f-c2-compute-identity: exit 0
+gather + fetch compute RGBA16F 17x13 component 2: 0 errors, guards checked
+rgba16f-c3-compute-identity: exit 0
+gather + fetch compute RGBA16F 17x13 component 3: 0 errors, guards checked
+r32ui-c0-compute-swizzle: exit 0
+gather + fetch compute R32UI 17x13 component 0: 0 errors, guards checked
+r32ui-c1-compute-swizzle: exit 0
+gather + fetch compute R32UI 17x13 component 1: 0 errors, guards checked
+r32ui-c2-compute-swizzle: exit 0
+gather + fetch compute R32UI 17x13 component 2: 0 errors, guards checked
+r32ui-c3-compute-swizzle: exit 0
+gather + fetch compute R32UI 17x13 component 3: 0 errors, guards checked
+rgba32ui-c0-compute-swizzle: exit 0
+gather + fetch compute RGBA32UI 17x13 component 0: 0 errors, guards checked
+rgba32ui-c1-compute-swizzle: exit 0
+gather + fetch compute RGBA32UI 17x13 component 1: 0 errors, guards checked
+rgba32ui-c2-compute-swizzle: exit 0
+gather + fetch compute RGBA32UI 17x13 component 2: 0 errors, guards checked
+rgba32ui-c3-compute-swizzle: exit 0
+gather + fetch compute RGBA32UI 17x13 component 3: 0 errors, guards checked
+rgba16f-c0-compute-swizzle: exit 0
+gather + fetch compute RGBA16F 17x13 component 0: 0 errors, guards checked
+rgba16f-c1-compute-swizzle: exit 0
+gather + fetch compute RGBA16F 17x13 component 1: 0 errors, guards checked
+rgba16f-c2-compute-swizzle: exit 0
+gather + fetch compute RGBA16F 17x13 component 2: 0 errors, guards checked
+rgba16f-c3-compute-swizzle: exit 0
+gather + fetch compute RGBA16F 17x13 component 3: 0 errors, guards checked

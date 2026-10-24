@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 22:45:20 +0200
+Subject: [PATCH 30/30] v3d: order 3.3 TMU requests after sample-mask updates
+
+---
+ src/broadcom/compiler/qpu_schedule.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/src/broadcom/compiler/qpu_schedule.c b/src/broadcom/compiler/qpu_schedule.c
+index 5e74161..72458fd 100644
+--- a/src/broadcom/compiler/qpu_schedule.c
++++ b/src/broadcom/compiler/qpu_schedule.c
+@@ -81,6 +81,7 @@ struct schedule_state {
+         struct schedule_node *last_tmu_config;
+         struct schedule_node *last_tmu_read;
+         struct schedule_node *last_tlb;
++        struct schedule_node *last_msf;
+         struct schedule_node *last_vpm;
+         struct schedule_node *last_unif;
+         struct schedule_node *last_rtop;
+@@ -226,6 +227,14 @@ process_waddr_deps(struct schedule_state *state, struct schedule_node *n,
+         if (!magic) {
+                 add_write_dep(state, &state->last_rf[waddr], n);
+         } else if (v3d_qpu_magic_waddr_is_tmu(state->devinfo, waddr)) {
++                if (state->devinfo->ver == 33 &&
++                    (waddr == V3D_QPU_WADDR_TMUA || waddr == V3D_QPU_WADDR_TMUAU)) {
++                        /* General stores and atomics consume MSF. In
++                         * particular a uniform-address counter operation
++                         * must not pass the initial compute padding mask.
++                         */
++                        add_read_dep(state, state->last_msf, n);
++                }
+                 if (can_reorder_tmu_write(state->devinfo, waddr))
+                         add_read_dep(state, state->last_tmu_write, n);
+                 else
+@@ -390,6 +399,8 @@ calculate_deps(struct schedule_state *state, struct schedule_node *n)
+                 break;
+ 
+         case V3D_QPU_A_SETMSF:
++                add_write_dep(state, &state->last_msf, n);
++                FALLTHROUGH;
+         case V3D_QPU_A_SETREVF:
+                 add_write_dep(state, &state->last_tlb, n);
+                 break;

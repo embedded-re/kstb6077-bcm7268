@@ -1,0 +1,26 @@
+[
+  {
+    "test": "inc",
+    "exit": 1,
+    "start": 175264.269223171,
+    "end": 175264.508408265,
+    "gles_override": "3.1",
+    "v3d_debug": "cs,shaderdb"
+  },
+  {
+    "test": "dec",
+    "exit": 1,
+    "start": 175264.509444783,
+    "end": 175264.748471988,
+    "gles_override": "3.1",
+    "v3d_debug": "cs,shaderdb"
+  },
+  {
+    "test": "get_inc",
+    "exit": 0,
+    "start": 175264.749775579,
+    "end": 175264.992515558,
+    "gles_override": "3.1",
+    "v3d_debug": "cs,shaderdb"
+  }
+]

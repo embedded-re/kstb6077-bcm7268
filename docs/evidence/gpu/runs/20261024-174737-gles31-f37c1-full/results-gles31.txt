@@ -1,0 +1,432 @@
+dEQP-GLES31.functional.atomic_counter.get.1_counter_1_call_1_thread Pass @uptime=157616.533 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_1_call_10_threads Pass @uptime=157616.544 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_1_call_5000_threads Pass @uptime=157619.001 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_5_calls_1_thread Pass @uptime=157619.016 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_5_calls_10_threads Pass @uptime=157619.028 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_100_calls_1_thread Pass @uptime=157619.040 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.1_counter_100_calls_10_threads Pass @uptime=157619.052 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.4_counters_100_calls_1_thread Pass @uptime=157619.068 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.4_counters_100_calls_10_threads Pass @uptime=157619.085 (Pass)
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_1_thread Fail @uptime=157619.096 (Fail)
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_10_threads Fail @uptime=157619.108 (Fail)
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_5000_threads ResourceError @uptime=157621.597 (Failed to allocate memory during test execution)
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_copy_image Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_draw_buffers_indexed Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_geometry_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_gpu_shader5 Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_primitive_bounding_box Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_shader_io_blocks Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_tessellation_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_texture_border_clamp Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_texture_buffer Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_texture_cube_map_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.ext_texture_srgb_decode Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.khr_blend_equation_advanced Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.khr_debug Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.khr_texture_compression_astc_ldr Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_sample_shading Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_sample_variables Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_shader_image_atomic Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_shader_multisample_interpolation Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_texture_stencil8 Missing not run
+dEQP-GLES31.functional.android_extension_pack.extensions.oes_texture_storage_multisample_2d_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.limits.max_fragment_atomic_counter_buffers Missing not run
+dEQP-GLES31.functional.android_extension_pack.limits.max_fragment_atomic_counters Missing not run
+dEQP-GLES31.functional.android_extension_pack.limits.max_fragment_image_uniforms Missing not run
+dEQP-GLES31.functional.android_extension_pack.limits.max_fragment_shader_storage_blocks Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_geometry_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_gpu_shader5 Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_primitive_bounding_box Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_shader_io_blocks Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_tessellation_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_texture_buffer Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.ext_texture_cube_map_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.oes_sample_variables Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.oes_shader_image_atomic Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.oes_shader_multisample_interpolation Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_directive.oes_texture_storage_multisample_2d_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.extension_macros.android_extension_pack_es31a Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.implementation_limits.max_fragment_atomic_counter_buffers Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.implementation_limits.max_fragment_atomic_counters Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.implementation_limits.max_fragment_image_uniforms Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es31.implementation_limits.max_fragment_shader_storage_blocks Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_geometry_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_gpu_shader5 Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_primitive_bounding_box Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_shader_io_blocks Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_tessellation_shader Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_texture_buffer Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.ext_texture_cube_map_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.oes_sample_variables Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.oes_shader_image_atomic Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.oes_shader_multisample_interpolation Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_directive.oes_texture_storage_multisample_2d_array Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.extension_macros.android_extension_pack_es31a Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.implementation_limits.max_fragment_atomic_counter_buffers Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.implementation_limits.max_fragment_atomic_counters Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.implementation_limits.max_fragment_image_uniforms Missing not run
+dEQP-GLES31.functional.android_extension_pack.shaders.es32.implementation_limits.max_fragment_shader_storage_blocks Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.1_counter_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_1_call_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_1_call_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.4_counters_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_1_call_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_1_call_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec.8_counters_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_1_call_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_1_call_5000_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.1_counter_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.4_counters_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.4_counters_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.4_counters_1_call_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.4_counters_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.4_counters_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.8_counters_100_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.8_counters_100_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.8_counters_1_call_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.8_counters_5_calls_10_threads Missing not run
+dEQP-GLES31.functional.atomic_counter.dec_branch.8_counters_5_calls_1_thread Missing not run
+dEQP-GLES31.functional.atomic_counter.get.4_counters_1_call_1_thread Pass @uptime=157621.893 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.4_counters_1_call_10_threads Pass @uptime=157621.904 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.4_counters_5_calls_1_thread Pass @uptime=157621.924 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.4_counters_5_calls_10_threads Pass @uptime=157621.944 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_1_call_1_thread Pass @uptime=157621.960 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_1_call_10_threads Pass @uptime=157621.976 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_5_calls_1_thread Pass @uptime=157622.004 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_5_calls_10_threads Pass @uptime=157622.033 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_100_calls_1_thread Pass @uptime=157622.049 (Pass)
+dEQP-GLES31.functional.atomic_counter.get.8_counters_100_calls_10_threads Pass @uptime=157622.066 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_1_call_10_threads Pass @uptime=157622.076 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_1_call_5000_threads Pass @uptime=157624.525 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_5_calls_1_thread Pass @uptime=157624.544 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_5_calls_10_threads Pass @uptime=157624.564 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_100_calls_1_thread Pass @uptime=157624.576 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.1_counter_100_calls_10_threads Pass @uptime=157624.588 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.4_counters_1_call_10_threads Pass @uptime=157624.604 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.4_counters_5_calls_1_thread Pass @uptime=157624.636 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.4_counters_5_calls_10_threads Pass @uptime=157624.668 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.4_counters_100_calls_1_thread Pass @uptime=157624.688 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.4_counters_100_calls_10_threads Pass @uptime=157624.705 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.8_counters_1_call_10_threads Pass @uptime=157624.725 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.8_counters_5_calls_1_thread Pass @uptime=157624.777 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.8_counters_5_calls_10_threads Pass @uptime=157624.829 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.8_counters_100_calls_1_thread Pass @uptime=157624.857 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_branch.8_counters_100_calls_10_threads Pass @uptime=157624.882 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_1_call_1_thread Pass @uptime=157624.892 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_1_call_10_threads Pass @uptime=157624.904 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_1_call_5000_threads Pass @uptime=157627.410 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_5_calls_1_thread Pass @uptime=157627.428 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_5_calls_10_threads Pass @uptime=157627.444 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_100_calls_1_thread Pass @uptime=157627.456 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_100_calls_10_threads Pass @uptime=157627.469 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_1_call_1_thread Pass @uptime=157627.484 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_1_call_10_threads Pass @uptime=157627.500 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_5_calls_1_thread Pass @uptime=157627.537 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_5_calls_10_threads Pass @uptime=157627.573 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_100_calls_1_thread Pass @uptime=157627.593 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.4_counters_100_calls_10_threads Pass @uptime=157627.614 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_1_call_1_thread Pass @uptime=157627.637 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_1_call_10_threads Pass @uptime=157627.661 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_5_calls_1_thread Pass @uptime=157627.737 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_5_calls_10_threads Pass @uptime=157627.817 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_100_calls_1_thread Pass @uptime=157627.849 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc.8_counters_100_calls_10_threads Pass @uptime=157627.883 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_1_call_10_threads Pass @uptime=157627.896 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_1_call_5000_threads Pass @uptime=157630.402 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_5_calls_1_thread Pass @uptime=157630.424 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_5_calls_10_threads Pass @uptime=157630.444 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_100_calls_1_thread Pass @uptime=157630.460 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.1_counter_100_calls_10_threads Pass @uptime=157630.477 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.4_counters_1_call_10_threads Pass @uptime=157630.497 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.4_counters_5_calls_1_thread Pass @uptime=157630.561 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.4_counters_5_calls_10_threads Pass @uptime=157630.625 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.4_counters_100_calls_1_thread Pass @uptime=157630.649 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.4_counters_100_calls_10_threads Pass @uptime=157630.674 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.8_counters_1_call_10_threads Pass @uptime=157630.705 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.8_counters_5_calls_1_thread Pass @uptime=157630.861 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.8_counters_5_calls_10_threads Pass @uptime=157631.033 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.8_counters_100_calls_1_thread Pass @uptime=157631.073 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_branch.8_counters_100_calls_10_threads Pass @uptime=157631.116 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_1_call_1_thread Pass @uptime=157631.128 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_1_call_10_threads Pass @uptime=157631.140 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_1_call_5000_threads Pass @uptime=157633.630 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_5_calls_1_thread Pass @uptime=157633.645 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_5_calls_10_threads Pass @uptime=157633.660 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_100_calls_1_thread Pass @uptime=157633.672 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.1_counter_100_calls_10_threads Pass @uptime=157633.685 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_1_call_1_thread Pass @uptime=157633.700 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_1_call_10_threads Pass @uptime=157633.716 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_5_calls_1_thread Pass @uptime=157633.753 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_5_calls_10_threads Pass @uptime=157633.789 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_100_calls_1_thread Pass @uptime=157633.809 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.4_counters_100_calls_10_threads Pass @uptime=157633.830 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_1_call_1_thread Pass @uptime=157633.853 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_1_call_10_threads Pass @uptime=157633.877 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_5_calls_1_thread Pass @uptime=157633.957 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_5_calls_10_threads Pass @uptime=157634.037 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_100_calls_1_thread Pass @uptime=157634.069 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec.8_counters_100_calls_10_threads Pass @uptime=157634.103 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_1_call_10_threads Pass @uptime=157634.116 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_1_call_5000_threads Pass @uptime=157636.622 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_5_calls_1_thread Pass @uptime=157636.644 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_5_calls_10_threads Pass @uptime=157636.668 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_100_calls_1_thread Pass @uptime=157636.684 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.1_counter_100_calls_10_threads Pass @uptime=157636.701 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.4_counters_1_call_10_threads Pass @uptime=157636.721 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.4_counters_5_calls_1_thread Pass @uptime=157636.785 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.4_counters_5_calls_10_threads Pass @uptime=157636.849 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.4_counters_100_calls_1_thread Pass @uptime=157636.873 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.4_counters_100_calls_10_threads Pass @uptime=157636.898 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.8_counters_1_call_10_threads Pass @uptime=157636.929 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.8_counters_5_calls_1_thread Pass @uptime=157637.093 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.8_counters_5_calls_10_threads Pass @uptime=157637.249 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.8_counters_100_calls_1_thread Pass @uptime=157637.289 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_dec_branch.8_counters_100_calls_10_threads Pass @uptime=157637.331 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_1_call_1_thread Pass @uptime=157637.344 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_1_call_10_threads Pass @uptime=157637.356 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_100_calls_1_thread Pass @uptime=157637.368 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_100_calls_10_threads Pass @uptime=157637.381 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_1_call_1_thread Fail @uptime=157637.649 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_1_call_10_threads Fail @uptime=157637.660 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_1_call_5000_threads Fail @uptime=157640.102 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_5_calls_1_thread Fail @uptime=157640.117 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_5_calls_10_threads Fail @uptime=157640.128 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_100_calls_1_thread Pass @uptime=157640.140 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.1_counter_100_calls_10_threads Pass @uptime=157640.152 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_1_call_1_thread Fail @uptime=157640.164 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_1_call_10_threads Fail @uptime=157640.176 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_5_calls_1_thread Fail @uptime=157640.196 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_5_calls_10_threads Fail @uptime=157640.216 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_100_calls_1_thread Pass @uptime=157640.232 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.4_counters_100_calls_10_threads Pass @uptime=157640.245 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_1_call_1_thread Fail @uptime=157640.260 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_1_call_10_threads Fail @uptime=157640.277 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_5_calls_1_thread Fail @uptime=157640.305 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_5_calls_10_threads Fail @uptime=157640.333 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_100_calls_1_thread Pass @uptime=157640.353 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc.8_counters_100_calls_10_threads Pass @uptime=157640.370 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_1_call_10_threads Pass @uptime=157640.380 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_1_call_5000_threads Pass @uptime=157642.849 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_5_calls_1_thread Pass @uptime=157642.868 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_5_calls_10_threads Pass @uptime=157642.888 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_100_calls_1_thread Pass @uptime=157642.900 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.1_counter_100_calls_10_threads Pass @uptime=157642.912 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.4_counters_1_call_10_threads Pass @uptime=157642.928 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.4_counters_5_calls_1_thread Pass @uptime=157642.960 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.4_counters_5_calls_10_threads Pass @uptime=157642.992 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.4_counters_100_calls_1_thread Pass @uptime=157643.008 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.4_counters_100_calls_10_threads Pass @uptime=157643.025 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.8_counters_1_call_10_threads Pass @uptime=157643.045 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.8_counters_5_calls_1_thread Pass @uptime=157643.097 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.8_counters_5_calls_10_threads Pass @uptime=157643.145 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.8_counters_100_calls_1_thread Pass @uptime=157643.169 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_branch.8_counters_100_calls_10_threads Pass @uptime=157643.194 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_1_call_1_thread Fail @uptime=157643.204 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_1_call_10_threads Fail @uptime=157643.216 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_1_call_5000_threads Fail @uptime=157645.726 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_5_calls_1_thread Fail @uptime=157645.741 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_5_calls_10_threads Fail @uptime=157645.756 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_100_calls_1_thread Pass @uptime=157645.768 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.1_counter_100_calls_10_threads Pass @uptime=157645.781 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_1_call_1_thread Fail @uptime=157645.796 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_1_call_10_threads Fail @uptime=157645.812 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_5_calls_1_thread Fail @uptime=157645.840 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_5_calls_10_threads Fail @uptime=157645.868 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_100_calls_1_thread Pass @uptime=157645.887 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.4_counters_100_calls_10_threads Pass @uptime=157645.901 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_1_call_1_thread Fail @uptime=157645.921 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_1_call_10_threads Fail @uptime=157645.941 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_5_calls_1_thread Fail @uptime=157645.993 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_5_calls_10_threads Fail @uptime=157646.053 (Fail)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_100_calls_1_thread Pass @uptime=157646.077 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec.8_counters_100_calls_10_threads Pass @uptime=157646.102 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_1_call_10_threads Pass @uptime=157646.116 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_1_call_5000_threads Pass @uptime=157648.630 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_5_calls_1_thread Pass @uptime=157648.652 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_5_calls_10_threads Pass @uptime=157648.672 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_100_calls_1_thread Pass @uptime=157648.688 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.1_counter_100_calls_10_threads Pass @uptime=157648.704 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.4_counters_1_call_10_threads Pass @uptime=157648.724 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.4_counters_5_calls_1_thread Pass @uptime=157648.769 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.4_counters_5_calls_10_threads Pass @uptime=157648.813 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.4_counters_100_calls_1_thread Pass @uptime=157648.833 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.4_counters_100_calls_10_threads Pass @uptime=157648.853 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.8_counters_1_call_10_threads Pass @uptime=157648.881 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.8_counters_5_calls_10_threads Pass @uptime=157648.965 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.8_counters_100_calls_1_thread Pass @uptime=157649.001 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.8_counters_100_calls_10_threads Pass @uptime=157649.047 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_1_call_5000_threads Pass @uptime=157651.563 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_5_calls_1_thread Pass @uptime=157651.580 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.1_counter_5_calls_10_threads Pass @uptime=157651.596 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_1_call_1_thread Pass @uptime=157651.616 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_1_call_10_threads Pass @uptime=157651.636 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_5_calls_1_thread Pass @uptime=157651.685 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_5_calls_10_threads Pass @uptime=157651.733 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_100_calls_1_thread Pass @uptime=157651.753 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.4_counters_100_calls_10_threads Pass @uptime=157651.774 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_1_call_1_thread Pass @uptime=157651.801 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_1_call_10_threads Pass @uptime=157651.829 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_5_calls_1_thread Pass @uptime=157651.873 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_5_calls_10_threads Pass @uptime=157651.917 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_100_calls_1_thread Pass @uptime=157651.965 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec.8_counters_100_calls_10_threads Pass @uptime=157652.025 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_1_call_10_threads Pass @uptime=157652.040 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_1_call_5000_threads Pass @uptime=157654.551 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_5_calls_1_thread Pass @uptime=157654.576 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_5_calls_10_threads Pass @uptime=157654.600 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_100_calls_1_thread Pass @uptime=157654.616 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.1_counter_100_calls_10_threads Pass @uptime=157654.633 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.4_counters_1_call_10_threads Pass @uptime=157654.656 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.4_counters_5_calls_1_thread Pass @uptime=157654.737 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.4_counters_5_calls_10_threads Pass @uptime=157654.817 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.4_counters_100_calls_1_thread Pass @uptime=157654.845 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.4_counters_100_calls_10_threads Pass @uptime=157654.874 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.8_counters_1_call_10_threads Pass @uptime=157654.913 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.8_counters_5_calls_1_thread Pass @uptime=157654.985 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.8_counters_5_calls_10_threads Pass @uptime=157655.065 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.8_counters_100_calls_1_thread Pass @uptime=157655.137 (Pass)
+dEQP-GLES31.functional.atomic_counter.get_inc_dec_branch.8_counters_100_calls_10_threads Pass @uptime=157655.216 (Pass)
+dEQP-GLES31.functional.atomic_counter.inc_dec_branch.8_counters_5_calls_1_thread Pass @uptime=157655.558 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_inc.8_counters_1_call_1_thread Pass @uptime=157655.581 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_inc.8_counters_1_call_1000_threads Pass @uptime=157655.857 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_inc.8_counters_5_calls_1_thread Pass @uptime=157655.937 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_inc.8_counters_5_calls_1000_threads Pass @uptime=157656.290 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_dec.8_counters_1_call_1_thread Pass @uptime=157656.313 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_dec.8_counters_1_call_1000_threads Pass @uptime=157656.588 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_dec.8_counters_5_calls_1_thread Pass @uptime=157656.669 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.get_dec.8_counters_5_calls_1000_threads Pass @uptime=157657.010 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.inc_dec.8_counters_1_call_1_thread Fail @uptime=157657.033 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.inc_dec.8_counters_1_call_1000_threads Fail @uptime=157657.303 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.inc_dec.8_counters_5_calls_1_thread Fail @uptime=157657.353 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reverse_offset.inc_dec.8_counters_5_calls_1000_threads Fail @uptime=157657.662 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_inc.8_counters_1_call_1_thread Pass @uptime=157657.685 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_inc.8_counters_1_call_1000_threads Pass @uptime=157657.960 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_inc.8_counters_5_calls_1_thread Pass @uptime=157658.037 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_inc.8_counters_5_calls_1000_threads Pass @uptime=157658.378 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_dec.8_counters_1_call_1_thread Pass @uptime=157658.401 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_dec.8_counters_1_call_1000_threads Pass @uptime=157658.676 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_dec.8_counters_5_calls_1_thread Pass @uptime=157658.753 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.get_dec.8_counters_5_calls_1000_threads Pass @uptime=157659.094 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.inc_dec.8_counters_1_call_1_thread Fail @uptime=157659.113 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.inc_dec.8_counters_1_call_1000_threads Fail @uptime=157659.383 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.inc_dec.8_counters_5_calls_1_thread Fail @uptime=157659.433 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.first_offset_set.inc_dec.8_counters_5_calls_1000_threads Fail @uptime=157659.741 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_inc.8_counters_1_call_1_thread Pass @uptime=157659.765 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_inc.8_counters_1_call_1000_threads Pass @uptime=157660.040 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_inc.8_counters_5_calls_1_thread Pass @uptime=157660.117 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_inc.8_counters_5_calls_1000_threads Pass @uptime=157660.454 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_dec.8_counters_1_call_1_thread Pass @uptime=157660.477 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_dec.8_counters_1_call_1000_threads Pass @uptime=157660.751 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_dec.8_counters_5_calls_1_thread Pass @uptime=157660.829 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.get_dec.8_counters_5_calls_1000_threads Pass @uptime=157661.170 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.inc_dec.8_counters_1_call_1_thread Fail @uptime=157661.189 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.inc_dec.8_counters_1_call_1000_threads Fail @uptime=157661.459 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.inc_dec.8_counters_5_calls_1_thread Fail @uptime=157661.509 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.default_offset_set.inc_dec.8_counters_5_calls_1000_threads Fail @uptime=157661.818 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_inc.8_counters_1_call_1_thread Pass @uptime=157661.841 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_inc.8_counters_1_call_1000_threads Pass @uptime=157662.116 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_inc.8_counters_5_calls_1_thread Pass @uptime=157662.193 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_inc.8_counters_5_calls_1000_threads Pass @uptime=157662.530 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_dec.8_counters_1_call_1_thread Pass @uptime=157662.553 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_dec.8_counters_1_call_1000_threads Pass @uptime=157662.828 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_dec.8_counters_5_calls_1_thread Pass @uptime=157662.905 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.get_dec.8_counters_5_calls_1000_threads Pass @uptime=157663.246 (Pass)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.inc_dec.8_counters_1_call_1_thread Fail @uptime=157663.265 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.inc_dec.8_counters_1_call_1000_threads Fail @uptime=157663.535 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.inc_dec.8_counters_5_calls_1_thread Fail @uptime=157663.585 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.reset_default_offset.inc_dec.8_counters_5_calls_1000_threads Fail @uptime=157663.894 (Fail)
+dEQP-GLES31.functional.atomic_counter.layout.invalid.invalid_binding Pass @uptime=157663.903 (Compile failed)
+dEQP-GLES31.functional.atomic_counter.layout.invalid.invalid_default_binding Pass @uptime=157663.909 (Compile failed)
+dEQP-GLES31.functional.atomic_counter.layout.invalid.invalid_offset_align Pass @uptime=157663.916 (Compile failed)
+dEQP-GLES31.functional.atomic_counter.layout.invalid.invalid_offset_overlap Pass @uptime=157663.922 (Compile failed)
+dEQP-GLES31.functional.atomic_counter.layout.invalid.invalid_default_offset Pass @uptime=157663.928 (Compile failed)
+dEQP-GLES31.functional.blend_equation_advanced.basic.multiply NotSupported @uptime=157663.935 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.screen NotSupported @uptime=157663.942 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.overlay NotSupported @uptime=157663.950 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.darken NotSupported @uptime=157663.955 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.lighten NotSupported @uptime=157663.960 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.colordodge NotSupported @uptime=157663.970 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.colorburn NotSupported @uptime=157663.976 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.hardlight NotSupported @uptime=157663.982 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.softlight NotSupported @uptime=157663.988 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.difference NotSupported @uptime=157663.993 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.exclusion NotSupported @uptime=157663.999 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.hsl_hue NotSupported @uptime=157664.004 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.hsl_saturation NotSupported @uptime=157664.010 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.hsl_color NotSupported @uptime=157664.015 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.basic.hsl_luminosity NotSupported @uptime=157664.021 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.multiply NotSupported @uptime=157664.026 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.screen NotSupported @uptime=157664.032 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.overlay NotSupported @uptime=157664.038 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.darken NotSupported @uptime=157664.043 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.lighten NotSupported @uptime=157664.049 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.colordodge NotSupported @uptime=157664.054 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.colorburn NotSupported @uptime=157664.059 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.hardlight NotSupported @uptime=157664.065 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.softlight NotSupported @uptime=157664.071 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.difference NotSupported @uptime=157664.076 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.exclusion NotSupported @uptime=157664.083 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.hsl_hue NotSupported @uptime=157664.090 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.hsl_saturation NotSupported @uptime=157664.096 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.hsl_color NotSupported @uptime=157664.102 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.barrier.hsl_luminosity NotSupported @uptime=157664.108 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.multiply NotSupported @uptime=157664.114 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.screen NotSupported @uptime=157664.120 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.overlay NotSupported @uptime=157664.125 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.darken NotSupported @uptime=157664.131 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.lighten NotSupported @uptime=157664.136 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.colordodge NotSupported @uptime=157664.153 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.colorburn NotSupported @uptime=157664.158 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.hardlight NotSupported @uptime=157664.164 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.softlight NotSupported @uptime=157664.170 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.difference NotSupported @uptime=157664.176 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.exclusion NotSupported @uptime=157664.183 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.hsl_hue NotSupported @uptime=157664.188 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.hsl_saturation NotSupported @uptime=157664.194 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.hsl_color NotSupported @uptime=157664.199 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent.hsl_luminosity NotSupported @uptime=157664.204 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.blend_equation_advanced.coherent_msaa.colorburn NotSupported @uptime=157664.210 (GL_KHR_blend_equation_advanced is not supported at es31fAdvancedBlendTests.cpp:257)
+dEQP-GLES31.functional.compute.basic.empty Pass @uptime=157664.401 (Pass)
+dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_single_invocation Pass @uptime=157664.420 (Pass)
+dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_single_group Pass @uptime=157664.440 (Pass)
+dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_multiple_invocations Pass @uptime=157664.456 (Pass)
+dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_multiple_groups Pass @uptime=157664.476 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_ssbo_single_invocation Pass @uptime=157664.492 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_ssbo_multiple_invocations Pass @uptime=157664.508 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_ssbo_multiple_groups Pass @uptime=157664.524 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_rw_single_invocation Pass @uptime=157664.540 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_rw_multiple_groups Pass @uptime=157664.556 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_unsized_arr_single_invocation Pass @uptime=157664.572 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_unsized_arr_multiple_groups Pass @uptime=157664.588 (Pass)
+dEQP-GLES31.functional.compute.basic.write_multiple_arr_single_invocation Pass @uptime=157664.608 (Pass)
+dEQP-GLES31.functional.compute.basic.write_multiple_arr_multiple_groups Pass @uptime=157664.629 (Pass)
+dEQP-GLES31.functional.compute.basic.write_multiple_unsized_arr_single_invocation Pass @uptime=157664.648 (Pass)
+dEQP-GLES31.functional.compute.basic.write_multiple_unsized_arr_multiple_groups Pass @uptime=157664.669 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_local_barrier_single_invocation Pass @uptime=157664.680 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_local_barrier_single_group Pass @uptime=157664.696 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_local_barrier_multiple_groups Pass @uptime=157664.720 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_cmd_barrier_single Pass @uptime=157664.736 (Pass)
+dEQP-GLES31.functional.compute.basic.ssbo_cmd_barrier_multiple Pass @uptime=157665.032 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_var_single_invocation Pass @uptime=157665.044 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_var_single_group Pass @uptime=157665.060 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_var_multiple_invocations Pass @uptime=157665.088 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_var_multiple_groups Pass @uptime=157665.116 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_atomic_op_single_invocation Pass @uptime=157665.128 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_atomic_op_single_group Pass @uptime=157665.144 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_atomic_op_multiple_invocations Pass @uptime=157665.172 (Pass)
+dEQP-GLES31.functional.compute.basic.shared_atomic_op_multiple_groups Pass @uptime=157665.196 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_image_to_ssbo_small Pass @uptime=157667.229 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_image_to_ssbo_large Pass @uptime=157675.503 (Pass)
+dEQP-GLES31.functional.compute.basic.copy_ssbo_to_image_small Pass @uptime=157676.578 (Pass)

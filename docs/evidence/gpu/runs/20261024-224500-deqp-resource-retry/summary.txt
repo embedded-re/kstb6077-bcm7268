@@ -1,0 +1,1 @@
+Host-only mock dEQP integration: ResourceError exits 1, remaining real case passes in a fresh process, genuinely absent case is Missing. No GPU work.

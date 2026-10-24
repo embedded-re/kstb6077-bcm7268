@@ -1,0 +1,33 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-cfe4414fa2)
+MESA_SHADER_FRAGMENT prog 1 NIR:
+shader: MESA_SHADER_FRAGMENT
+source_sha1: {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000}
+name: ff-fs
+internal: true
+stage: 4
+next_stage: 0
+outputs_written: 2
+subgroup_size: 1
+separate_shader: true
+flrp_lowered: true
+inputs: 0
+outputs: 1
+uniforms: 1
+decl_var uniform INTERP_MODE_NONE none vec4 state.currentAttribMaybeVPClamped[2] (0, 0, 0)
+decl_var shader_out INTERP_MODE_NONE none vec4 FRAG_RESULT_COLOR (FRAG_RESULT_COLOR.xyzw, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:  // preds: 
+    32    %3 = load_const (0x00000000)
+    32    %6 = load_const (0x00000004)
+    32    %7 = ishl %3 (0x0), %6 (0x4)
+    32x4  %4 = @load_uniform (%7) (base=0, range=1, dest_type=float32)  // state.currentAttribMaybeVPClamped[2]
+               @store_output (%4, %3 (0x0)) (base=0, range=1, wrmask=xyzw, component=0, src_type=float32, io location=FRAG_RESULT_COLOR slots=1, xfb(), xfb2())  // FRAG_RESULT_COLOR
+               // succs: b1 
+    block b1:
+}
+
+
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 87 inst, 2 threads, 0 loops, 20 uniforms, 12 max-temps, 0:0 spills:fills, 0 sfu-stalls, 87 inst-and-stalls, 7 nops
+gather + fetch compute RGBA32UI 17x13 component 3: 0 errors, guards checked

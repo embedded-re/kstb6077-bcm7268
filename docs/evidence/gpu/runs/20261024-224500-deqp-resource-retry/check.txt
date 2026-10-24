@@ -1,0 +1,5 @@
+gles31: 3 cases, 0 done before, 3 to run
+  1 run, 2 left, 0 s
+  2 run, 0 left, 0 s
+3 cases: ResourceError 1, Pass 1, Missing 1
+PASS: retry after positive ResourceError exit; genuinely absent case stays Missing

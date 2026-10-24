@@ -548,5 +548,42 @@ Reproduce the focused suite with `cases/gles31-gather.txt` and
 `V3D_COMPUTE33=1 kstb-gpu-run --mesa 23.3.6-f37c1f42 gles31 --cases ...`.
 `kstb-gather-test [width height component]` checks mixed reads; its source
 lists the format, swizzle and compute switches. `kstb-gather-shadow-test`
-runs the 448 shadow checks. The numbered-build focused regressions and full
-37,654-case GLES 3.1 run are the next validation gate.
+runs the 448 shadow checks. The numbered-build focused regressions pass. Its first full GLES 3.1
+attempt exposed the counter mask-ordering issue described below.
+
+## Compute counter mask ordering (2026-10-24)
+
+Patch 0030, build `23.3.6-b1e71af4`, orders V3D 3.3 TMUA/TMUAU requests
+against SETMSF updates. Its DRI SHA256 is
+`20670af7459e8f4288f4435cee612c30c843d35c63dfc24dc7527d2993da9f3f`.
+
+The first full GLES 3.1 attempt on `f37c1f42` exposed a compute case with
+one valid invocation: a counter initialized to 2 became 18 instead of 3.
+The scheduled atomic request preceded the initial padding-lane mask. A
+scheduler dependency fixes this while retaining the native increment and
+decrement operations. Forcing an explicit atomic-add operand alone did not
+fix the ordering and was discarded.
+[Reproducer before the fix](../docs/evidence/gpu/runs/20261024-224103-atomic-counter-first/summary.txt),
+[after the fix](../docs/evidence/gpu/runs/20261024-224329-atomic-counter-msf-order/summary.txt).
+
+The numbered package passes, without a GLES version override and with zero
+MMU errors, resets or oopses:
+
+- [298/298 atomic-counter cases](../docs/evidence/gpu/runs/20261024-224610-gles31-b1e71-counter/summary.txt), including padded workgroups, branches, offsets and returned values.
+- [195/195 compute cases](../docs/evidence/gpu/runs/20261024-224704-gles31-b1e71-compute/summary.txt).
+- [1,059 gather-related cases](../docs/evidence/gpu/runs/20261024-224738-gles31-b1e71-gather/summary.txt): 654 Pass and 405 optional-extension NotSupported.
+- [48/48 mixed gather/texelFetch checks](../docs/evidence/gpu/runs/20261024-224600-b1e71-numbered-mixed/summary.txt).
+
+The initial full run was intentionally stopped and is not a conformance
+total. Its bad decrement wrapped around; CTS then tried to allocate a
+16 GB CPU array while checking the returned-value range. The runner also
+marked unexecuted cases after ResourceError as Missing. `kstb-deqp` now
+retries the remaining cases after any nonzero process exit. A host-only
+integration check verifies that a real remaining case runs in a fresh
+process while a genuinely absent case is still Missing.
+[Incomplete diagnostic run](../docs/evidence/gpu/runs/20261024-174737-gles31-f37c1-full/README.txt),
+[runner check](../docs/evidence/gpu/runs/20261024-224500-deqp-resource-retry/summary.txt).
+
+The new full GLES 3.1 run uses the corrected runner and stops for a failing
+result or GPU fault. Full GLES 3.1 and post-0030 graphics regressions remain
+pending; the selected build and system default have not changed.

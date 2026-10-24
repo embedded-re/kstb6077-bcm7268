@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Thu, 22 Oct 2026 16:25:42 +0200
-Subject: [PATCH 20/29] v3d: 3.3 register allocation keeps spill candidates for
+Subject: [PATCH 20/30] v3d: 3.3 register allocation keeps spill candidates for
  1 thread
 
 On 3.3 a shader that doesn't allocate is retried in the same compile

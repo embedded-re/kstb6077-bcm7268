@@ -1,0 +1,12 @@
+[157616.234757] kstb-gpu-run sync 157615.932225
+[157616.684200] drm_sched_entity_init: called with uninitialized scheduler
+[157616.730674] drm_sched_entity_init: called with uninitialized scheduler
+[157621.883500] __vm_enough_memory: pid: 17701, comm: deqp-gles31, bytes: 17179869184 not enough memory for the allocation
+[157622.043289] drm_sched_entity_init: called with uninitialized scheduler
+[157622.089834] drm_sched_entity_init: called with uninitialized scheduler
+[157637.800096] drm_sched_entity_init: called with uninitialized scheduler
+[157637.847297] drm_sched_entity_init: called with uninitialized scheduler
+[157655.637128] drm_sched_entity_init: called with uninitialized scheduler
+[157655.684190] drm_sched_entity_init: called with uninitialized scheduler
+[157664.557513] drm_sched_entity_init: called with uninitialized scheduler
+[157664.604715] drm_sched_entity_init: called with uninitialized scheduler

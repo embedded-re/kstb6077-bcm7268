@@ -1,0 +1,8 @@
+3 standalone checks: 3 exit 0
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+inc: exit 0
+
+dec: exit 0
+
+get_inc: exit 0
+

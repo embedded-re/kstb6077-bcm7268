@@ -1,0 +1,52 @@
+#sessionInfo releaseName opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80
+#sessionInfo releaseId 0x067e8832
+#sessionInfo targetName "nullws"
+#sessionInfo logFormatVersion "0.3.4"
+#sessionInfo vendor "Broadcom"
+#sessionInfo renderer "V3D 3.3"
+#sessionInfo commandLineParameters "--deqp-case=dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_1_thread --deqp-surface-type=window --deqp-gl-config-name=rgba8888d24s8ms0 --deqp-surface-width=256 --deqp-surface-height=256 --deqp-log-filename=/root/gpu-runs/20261024-224329-atomic-counter-msf-order/dec.qpa"
+
+#beginSession
+
+#beginTestCaseResult dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_1_thread
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseResult CasePath="dEQP-GLES31.functional.atomic_counter.dec.1_counter_1_call_1_thread" Version="0.3.4" CaseType="SelfValidate">
+ <ShaderProgram LinkStatus="OK">
+  <InfoLog></InfoLog>
+  <ComputeShader CompileStatus="OK">
+   <ShaderSource>#version 310 es
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout(binding = 1, std430) buffer Output {
+    uint decrement[1];
+} sb_in;
+
+layout(binding=0) uniform atomic_uint counter0;
+
+void main (void)
+{
+	{
+		uint id = (gl_GlobalInvocationID.x);
+		sb_in.decrement[id + 0u] = atomicCounterDecrement(counter0) + 1u;
+	}
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</ComputeShader>
+</ShaderProgram>
+ <Number Name="ComputeCompileTime" Description="Compute shader compile time" Tag="Time" Unit="ms">30.421000</Number>
+ <Number Name="LinkTime" Description="Link time" Tag="Time" Unit="ms">2.516000</Number>
+ <Section Name="Counter info" Description="Show initial value, current value and expected value of each counter.">
+  <Text>atomic_uint counter0 initial value: 2, value: 1, expected: 1</Text>
+</Section>
+ <Section Name="counter0 check uniqueness and linearity" Description="Check that counter0 returned only unique and linear values.">
+  <Text>atomicCounterDecrement(counter0) returned only unique values.</Text>
+</Section>
+ <Number Name="TestDuration" Description="Test case duration in microseconds" Tag="Time" Unit="us">46045</Number>
+ <Result StatusCode="Pass">Pass</Result>
+</TestCaseResult>
+
+#endTestCaseResult
+
+Run took 0.09 seconds
+
+#endSession

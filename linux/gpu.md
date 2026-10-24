@@ -167,6 +167,11 @@ zero failures or GPU faults; the numbered build passes 448 CPU-checked
 shadow gathers. Full GLES 3.1 validation is pending. See
 [`gpu-compute.md`](gpu-compute.md) for evidence and the retained experiments.
 
+Build `23.3.6-b1e71af4` adds patch 0030: compute atomics remain after
+padding-mask initialization. All 298 atomic-counter and 195 compute cases
+pass, as do the gather subset and 48 mixed-read checks, without a version
+override or GPU faults. Its full GLES 3.1 validation is in progress.
+
 The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
 case by case: GLES2 and EGL identical, in GLES3 only
 `texture.mipmap.cube.max_level.linear_nearest` changes (Fail → Pass).

@@ -1,0 +1,2 @@
+432 cases: Pass 253, Missing 88, NotSupported 46, Fail 44, ResourceError 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

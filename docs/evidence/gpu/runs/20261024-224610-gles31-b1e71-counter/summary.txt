@@ -1,0 +1,2 @@
+298 cases: Pass 298
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

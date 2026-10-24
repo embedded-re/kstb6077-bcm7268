@@ -1,0 +1,282 @@
+Writing test log into /root/gpu-runs/20261024-224329-atomic-counter-msf-order/get_inc.qpa
+dEQP Core opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80 (0x067e8832) starting..
+  target implementation = 'nullws'
+ERROR: Waiver file '' could not be opened. No tests will be waived.
+
+Test case 'dEQP-GLES31.functional.atomic_counter.get_inc.1_counter_1_call_1_thread'..
+MESA_SHADER_COMPUTE prog 0 NIR:
+shader: MESA_SHADER_COMPUTE
+source_sha1: {0xf79660fa, 0x21eb18d1, 0x948873a5, 0xefb10e1d, 0xff730451}
+name: GLSL1
+internal: false
+workgroup-size: 1, 1, 1
+shared-size: 0
+stage: 5
+next_stage: 4
+num_ssbos: 2
+system_values_read: 0x00000000'00000440'00000000
+subgroup_size: 1
+bit_sizes_int: 0x20
+flrp_lowered: true
+writes_memory: true
+ptr_size: 0
+inputs: 0
+outputs: 0
+uniforms: 0
+decl_var ssbo INTERP_MODE_NONE writeonly Output sb_in (0, 0, 1)
+decl_var ssbo INTERP_MODE_NONE none uint[] counter0 (0, 0, 1)
+decl_function main (0 params) 
+
+impl main {
+    block b0:   // preds: 
+    32    %69 = load_const (0x00000001 = 0.000000)
+    32x3  %50 = @load_workgroup_id () ()
+    32    %56 = load_const (0x00000000)
+    32    %63 = @load_ssbo (%69 (0x1), %56 (0x0)) (access=none, align_mul=4, align_offset=0)
+    32    %96 = load_const (0x00000002)
+    32    %95 = ishl %50.x, %96 (0x2)
+                @store_ssbo (%63, %56 (0x0), %95) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+    32    %66 = @ssbo_atomic (%69 (0x1), %56 (0x0), %69 (0x1)) (access=none, atomic_op=iadd)
+    32    %97 = load_const (0x00000004)
+    32    %93 = iadd %97 (0x4), %95
+                @store_ssbo (%66, %56 (0x0), %93) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+    32    %68 = @load_ssbo (%69 (0x1), %56 (0x0)) (access=none, align_mul=4, align_offset=0)
+    32    %98 = load_const (0x00000008)
+    32    %91 = iadd %98 (0x8), %95
+                @store_ssbo (%68, %56 (0x0), %91) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+                // succs: b1 
+    block b1:
+}
+
+
+MESA_SHADER_COMPUTE prog 0/1 NIR:
+shader: MESA_SHADER_COMPUTE
+source_sha1: {0xf79660fa, 0x21eb18d1, 0x948873a5, 0xefb10e1d, 0xff730451}
+name: GLSL1
+internal: false
+workgroup-size: 1, 1, 1
+shared-size: 0
+stage: 5
+next_stage: 4
+num_ssbos: 2
+system_values_read: 0x00000000'00000440'00000000
+subgroup_size: 1
+divergence_analysis_run: true
+bit_sizes_int: 0x20
+flrp_lowered: true
+writes_memory: true
+ptr_size: 0
+inputs: 0
+outputs: 0
+uniforms: 0
+decl_var ssbo INTERP_MODE_NONE writeonly Output sb_in (0, 0, 1)
+decl_var ssbo INTERP_MODE_NONE none uint[] counter0 (0, 0, 1)
+decl_function main (0 params) 
+
+impl main {
+    block b0:       // preds: 
+    div 32x3   %1 = @load_workgroup_id () ()
+    con 32     %2 = load_const (0x00000000)
+    con 32     %0 = load_const (0x00000001 = 0.000000)
+    con 32     %3 = @load_ssbo (%0 (0x1), %2 (0x0)) (access=none, align_mul=1073741824, align_offset=0)
+    con 32     %4 = load_const (0x00000002)
+    div 32     %5 = ishl %1.x, %4 (0x2)
+                    @store_ssbo (%3, %2 (0x0), %5) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+    con 32     %7 = load_const (0x00000004)
+    div 32     %8 = iadd %7 (0x4), %5
+    div 32     %6 = @ssbo_atomic (%0 (0x1), %2 (0x0), %0 (0x1)) (access=none, atomic_op=iadd)
+                    @store_ssbo (%6, %2 (0x0), %8) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+    con 32     %9 = @load_ssbo (%0 (0x1), %2 (0x0)) (access=none, align_mul=1073741824, align_offset=0)
+    con 32    %10 = load_const (0x00000008)
+    div 32    %11 = iadd %10 (0x8), %5
+                    @store_ssbo (%9, %2 (0x0), %11) (wrmask=x, access=writeonly, align_mul=4, align_offset=0)
+                    // succs: b1 
+    block b1:
+}
+
+MESA_SHADER_COMPUTE prog 0/1 pre-opt VIR:
+BLOCK 0:
+nop null; ldvary
+nop t0; ldunif (67 / 0x00000000)
+mov tmua, t0
+nop null; thrsw
+nop null; ldtmu
+mov t1, r4
+nop null; ldtlbu (0xffffff7b / -nan)
+mov t2, r3
+nop null; ldtlb
+mov t3, r3
+nop null; ldtlb
+mov t4, r3
+nop null; ldtlb
+mov t5, r3
+nop t6; ldunif (0x0000007f / 0.000000)
+and t7, t2, t6
+nop t8; ldunif (0x00000010 / 0.000000)
+shl t9, t4, t8
+or t10, t3, t9
+nop t11; ldunif (0x00000019 / 0.000000)
+shl t12, t7, t11
+or t13, t5, t12
+nop t14; ldunif (0x00000007 / 0.000000)
+shr t15, t2, t14
+nop t16; ldunif (0x0000000f / 0.000000)
+and t17, t15, t16
+shl t18, t17, t8
+or t19, t13, t18
+shr t20, t2, t16
+nop t21; ldunif (0x00000001 / 0.000000)
+xor t22, t20, t21
+setmsf null, t22
+nop t23; ldunif (0x0000ffff / 0.000000)
+and t24, t10, t23
+shr t25, t10, t8
+and t26, t19, t23
+nop t27; ldunif (0x00000000 / 0.000000)
+nop t28; ldunif (ssbo[1])
+mov tmuau, t28 (0xffffff7f / -nan)
+nop t29; ldunif (0x00000002 / 0.000000)
+shl t30, t24, t29
+nop t31; ldunif (ssbo[0])
+nop null; thrsw
+nop null; ldtmu
+mov t32, r4
+mov t33, t32
+mov tmud, t33
+add tmua, t31, t30
+nop t34; ldunif (0x00000004 / 0.000000)
+add t35, t34, t30
+mov tmuau, t28 (0xffffffc7 / -nan)
+nop null; thrsw
+tmuwt t36
+nop null; ldtmu
+mov t37, r4
+mov t38, t37
+mov tmud, t38
+add tmua, t31, t35
+mov tmuau, t28 (0xffffff7f / -nan)
+nop t39; ldunif (0x00000008 / 0.000000)
+add t40, t39, t30
+nop null; thrsw
+tmuwt t41
+nop null; ldtmu
+mov t42, r4
+mov t43, t42
+mov tmud, t43
+add tmua, t31, t40
+mov tmua, t31
+nop null; thrsw
+tmuwt t44
+nop null; ldtmu
+mov t45, r4
+
+MESA_SHADER_COMPUTE prog 0/1 VIR:
+BLOCK 0:
+nop null; ldvary
+nop t46; ldunif (67 / 0x00000000)
+mov t0, t46
+mov tmua, t0
+nop null; thrsw
+nop null; ldtmu
+nop null; ldtlbu (0xffffff7b / -nan)
+mov t2, r3
+nop null; ldtlb
+mov t3, r3
+nop null; ldtlb
+mov t4, r3
+nop null; ldtlb
+nop t47; ldunif (0x00000010 / 0.000000)
+mov t8, t47
+shl t9, t4, t8
+or t10, t3, t9
+shr t20, t2, 15
+xor t22, t20, 1
+setmsf null, t22
+nop t48; ldunif (0x0000ffff / 0.000000)
+mov t23, t48
+and t24, t10, t23
+nop t49; ldunif (ssbo[1])
+mov t28, t49
+mov tmuau, t28 (0xffffff7f / -nan)
+shl t30, t24, 2
+nop t50; ldunif (ssbo[0])
+mov t31, t50
+nop null; thrsw
+nop null; ldtmu
+mov t32, r4
+mov tmud, t32
+add tmua, t31, t30
+add t35, 4, t30
+mov tmuau, t28 (0xffffffc7 / -nan)
+nop null; thrsw
+tmuwt t36
+nop null; ldtmu
+mov t37, r4
+mov tmud, t37
+add tmua, t31, t35
+mov tmuau, t28 (0xffffff7f / -nan)
+add t40, 8, t30
+nop null; thrsw
+tmuwt t41
+nop null; ldtmu
+mov t42, r4
+mov tmud, t42
+add tmua, t31, t40
+mov tmua, t31
+nop null; thrsw
+tmuwt t44
+nop null; ldtmu
+
+MESA_SHADER_COMPUTE prog 0/1 QPU:
+0x3d003186bb800000 nop                           ; nop                         ; ldvary
+0x3c003186bb800000 nop                           ; nop
+0x3c603186bb800000 nop                           ; nop                         ; thrsw; ldunif
+0x3c003006bbf40000 nop                           ; mov r0, r5
+0x3c003306bbe00000 nop                           ; mov tmua, r0
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3e203186bb800000 nop                           ; nop                         ; ldtlbu
+0x3c403046bbec0000 nop                           ; mov r1, r3                  ; ldunif
+0x3c403006bbf40000 nop                           ; mov r0, r5                  ; ldunif
+0x3e003186bb800000 nop                           ; nop                         ; ldtlb
+0x3e003086bbec0000 nop                           ; mov r2, r3                  ; ldtlb
+0x3e003106bbec0000 nop                           ; mov r4, r3                  ; ldtlb
+0x3c0031837c804000 shl r3, r4, r0                ; nop
+0x3c403084b6f5a000 or r4, r2, r3                 ; mov r2, r5                  ; ldunif
+0x3de010c07df7900f shr r0, r1, 15                ; mov rf3, r5
+0x3de03181b7838001 xor r1, r0, 1                 ; nop
+0x3c003186ba831000 setmsf -, r1                  ; nop
+0x3c203343b5f940c0 and r3, r4, r2                ; mov tmuau, rf3              ; thrsw
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3de001447cf7b002 shl rf4, r3, 2                ; mov rf5, r5
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3de022c638f37104 add rf6, 4, rf4               ; mov tmud, r4
+0x3c20318c3883e144 add tmua, rf5, rf4            ; nop                         ; thrsw
+0x3c003346bbf800c0 nop                           ; mov tmuau, rf3
+0x3de0218738837108 add rf7, 8, rf4               ; nop
+0x3c003180bb815000 tmuwt r0                      ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c003046bbf00000 nop                           ; mov r1, r4
+0x3c2032c6bbe40000 nop                           ; mov tmud, r1                ; thrsw
+0x3c00318c3883e146 add tmua, rf5, rf6            ; nop
+0x3c003346bbf800c0 nop                           ; mov tmuau, rf3
+0x3c003182bb815000 tmuwt r2                      ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c0030c6bbf00000 nop                           ; mov r3, r4
+0x3c2032c6bbec0000 nop                           ; mov tmud, r3                ; thrsw
+0x3c20318c3883e147 add tmua, rf5, rf7            ; nop                         ; thrsw
+0x3c003306bbf80140 nop                           ; mov tmua, rf5
+0x3c203184bb815000 tmuwt r4                      ; nop                         ; thrsw
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c003186bb800000 nop                           ; nop
+
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 40 inst, 2 threads, 0 loops, 9 uniforms, 5 max-temps, 0:0 spills:fills, 0 sfu-stalls, 40 inst-and-stalls, 2 nops
+  Pass (Pass)
+
+DONE!
+
+Test run totals:
+  Passed:        1/1 (100.0%)
+  Failed:        0/1 (0.0%)
+  Not supported: 0/1 (0.0%)
+  Warnings:      0/1 (0.0%)
+  Waived:        0/1 (0.0%)

@@ -139,8 +139,10 @@ def main():
         if os.path.exists(running):
             os.remove(running)
         rest = [c for c in chunk if c not in seen]
-        if rest and (rc < 0 or current):
-            todo = rest + todo                  # run the rest of the chunk again
+        if rest and (rc != 0 or current):
+            # ResourceError can abort dEQP with a positive exit code. Cases
+            # after that result still exist and must run in a fresh process.
+            todo = rest + todo
         elif rest:
             for c in rest:                      # deqp skipped them (not in its tree)
                 out.write(f"{c} Missing not run\n")
