@@ -1,0 +1,6 @@
+41 cases: Pass 41
+kernel: 4 MMU errors, 0 GPU resets, 0 oops
+  mmu ? (0x4) @ 0xa9100                    dEQP-GLES31.functional.compute.basic.copy_ssbo_multiple_invocations Pass
+  mmu ? (0x4) @ 0xa9700                    dEQP-GLES31.functional.compute.basic.copy_ssbo_multiple_invocations Pass
+  mmu ? (0x0) @ 0xaa100                    dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_multiple_invocations Pass
+  mmu ? (0x0) @ 0xa7f00                    dEQP-GLES31.functional.compute.basic.ubo_to_ssbo_multiple_invocations Pass

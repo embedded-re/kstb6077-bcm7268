@@ -1,0 +1,57 @@
+import os,subprocess,threading,time,datetime,json,shutil
+build='23.3.6-f5f33af0'
+out='/root/gpu-runs/'+datetime.datetime.now().strftime('%Y%m%d-%H%M%S')+'-f5f33-compute-smoke'
+os.makedirs(out)
+shutil.copyfile(__file__,out+'/run.py')
+base=dict(os.environ)
+line=subprocess.check_output(['kstb-mesa','env',build],text=True).strip()
+assert line.startswith('export ')
+for kv in line[7:].split():
+ k,v=kv.split('=',1);base[k]=v
+for k in ('MESA_GLES_VERSION_OVERRIDE','MESA_GLSL_VERSION_OVERRIDE','V3D_DEBUG'):base.pop(k,None)
+base['MESA_SHADER_CACHE_DISABLE']='true'
+base['LINES']='1'
+base.update(V3D_COMPUTE33='1', MESA_GLES_VERSION_OVERRIDE='3.1', LIBGL_DRIVERS_PATH='/opt/mesa/23.3.6-f5f33af0/lib/dri')
+with open(out+'/meta.txt','w') as f:
+ subprocess.run(['sh','-c','uname -a; readlink /opt/mesa/current; sha256sum /opt/mesa/23.3.6-f5f33af0/lib/dri/v3d_dri.so /opt/gpu-test/kstb-compute-test /opt/gpu-test/kstb-compute-broadcast-test /opt/gpu-test/kstb-ssbo-atomic-test /opt/gpu-test/kstb-image-atomic-test'],stdout=f,check=True)
+ f.write('numbered Mesa; compute opt-in and GLES3.1 override except default-caps\n')
+stop=threading.Event()
+def logs():
+ fd=os.open('/dev/kmsg',os.O_RDONLY|os.O_NONBLOCK);os.lseek(fd,0,os.SEEK_END)
+ with open(out+'/kernel.txt','w') as f:
+  while not stop.is_set():
+   try:f.write(os.read(fd,8192).decode());f.flush()
+   except BlockingIOError:time.sleep(.1)
+ os.close(fd)
+t=threading.Thread(target=logs);t.start()
+subprocess.run('watchdog -T 30 -t 5 /dev/watchdog',shell=True,check=True)
+tests=[('default-caps','kstb-gl-caps',['3'],False),('ids','kstb-compute-test',['7','5','3','17','3','2'],True),('barrier','kstb-compute-test',['7','5','3','17','3','2'],True),('ordering','kstb-compute-test',['7','5','3','17','3','2'],True),('broadcast','kstb-compute-broadcast-test',[],True),('aggregate','kstb-compute-broadcast-test',[],True),('bool','kstb-compute-broadcast-test',[],True),('ssbo','kstb-ssbo-atomic-test',['256','256'],True),('image','kstb-image-atomic-test',['256','256'],True)]
+results=[]
+try:
+ for label,binary,args,override in tests:
+  env=base.copy()
+  env.pop('MESA_GLES_VERSION_OVERRIDE',None)
+  if label=='default-caps':env.pop('V3D_COMPUTE33',None)
+  if label=='barrier':env.update(KSTB_BARRIER='1',KSTB_BARRIER_ROUNDS='31')
+  if label=='ordering':env.update(KSTB_INDIRECT='1',KSTB_GPU_INDIRECT='1',KSTB_CHAIN='1')
+  if label=='aggregate':env['KSTB_BROADCAST_AGGREGATE']='1'
+  if label=='bool':env['KSTB_BROADCAST_BOOL']='1'
+  if label in ('ssbo','image'):env['KSTB_COMPUTE']='1' 
+
+  if override:env['MESA_GLES_VERSION_OVERRIDE']='3.1'
+  if binary!='kstb-gl-caps':env['V3D_DEBUG']='shaderdb'
+  start=time.monotonic()
+  with open(out+'/'+label+'.txt','w') as f:
+   try:
+    r=subprocess.run(['/opt/gpu-test/'+binary]+args,env=env,stdout=f,stderr=subprocess.STDOUT,timeout=20)
+    status=r.returncode
+   except subprocess.TimeoutExpired:status='Timeout'
+  results.append(dict(test=label,exit=status,start=start,end=time.monotonic(),gles_override=env.get('MESA_GLES_VERSION_OVERRIDE'),v3d_debug=env.get('V3D_DEBUG')))
+  open(out+'/results.json','w').write(json.dumps(results,indent=2)+'\n')
+  print(label,status,flush=True)
+  if status:break
+finally:
+ subprocess.run('killall watchdog; sleep 1; printf V > /dev/watchdog',shell=True)
+ time.sleep(1);stop.set();t.join()
+ print(out,flush=True)
+assert len(results)==len(tests) and all(x['exit']==0 for x in results)

@@ -1,0 +1,15 @@
+dEQP-GLES31.functional.compute.shared_var.work_group_size.float_64_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_128_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_13_2_4
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_1_128_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_1_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_1_1_64
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_1_64_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.mat4_64_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_128_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_13_2_4
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_1_128_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_1_1_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_1_1_64
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_1_64_1
+dEQP-GLES31.functional.compute.shared_var.work_group_size.vec4_64_1_1

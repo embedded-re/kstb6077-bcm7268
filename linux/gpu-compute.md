@@ -429,3 +429,47 @@ also pass, with zero MMU faults, resets or oopses. This checks each invocation's
 own shared-memory access; cross-invocation exchange still needs an execution
 barrier. `KSTB_SHARED=1 kstb-compute-test` selects this test.
 [Evidence and incremental patch](../docs/evidence/gpu/runs/20261024-150624-compute33-shared/summary.txt).
+
+## Threaded compute and workgroup barriers (2026-10-24)
+
+Patches 0025–0027 implement render-only compute on V3D 3.3. The numbered
+build `23.3.6-f5f33af0` is installed alongside the selected `fe7dda5e` build;
+its DRI SHA256 is `09c969dc3a2fb5d24f4971ab73e47d022d47f1f715f183e7955daf36dc57d069`.
+The series exports, applies and builds successfully. Kernel #29 and
+`/usr/local` are unchanged. Compute remains disabled unless
+`V3D_COMPUTE33=1` is set; tests also explicitly override GLES to 3.1.
+
+The implementation runs two-thread shaders through NV shader records, with
+no binning or vertex shader. Each workgroup uses a two-row raster line rounded
+to 16 invocations; up to 16 workgroups share a 64x32 RGBA16UI ID tile. The ID
+image supplies local index, workgroup XYZ and a shared-memory allocation slot.
+Padding lanes use invocation 0's addresses, with their writes masked off.
+The per-workgroup shared-memory limit is 16 KB and invocation limit is 128.
+Barriers use YCD/SYNCU, a quorum matching the launched QPU batches, and the
+vendor's `0xffffffe0` / `0xffffffeb` configurations. TSY commands stay out of
+thread-switch delay slots.
+
+- **195/195 official compute cases pass**, with zero MMU errors, resets and
+  oopses, in both the scratch driver and the numbered package. This is the
+  compute subset of the union GLES 3.1 mustpass list, not full GLES 3.1
+  conformance. [Numbered-build results](../docs/evidence/gpu/runs/20261024-153415-gles31-f5f33-compute-full/summary.txt).
+- Seven workgroup shapes pass 31 rounds of cross-invocation shared-memory
+  exchange (62 execution barriers), including partial groups and multiple
+  render jobs. [Barrier checks](../docs/evidence/gpu/runs/20261024-153144-compute33-barrier-loops/summary.txt).
+- Sixteen SSBO/image atomic tests and four indirect/producer-consumer tests
+  pass on the final scratch driver. The numbered package passes nine further
+  smoke checks, including three conditional scalar broadcast variants.
+  [Numbered-build smokes](../docs/evidence/gpu/runs/20261024-153533-f5f33-compute-smoke/summary.txt).
+
+Earlier failed experiments are retained: a fixed 128-invocation raster line
+hung with padded looped barriers; padded IDs caused four invalid reads despite
+41 API-level Pass results; and the first 195-case run had six failures and
+five resets. The final passing runs above include the corresponding fixes.
+The full GLES3/GLES2/EGL graphics regression is running on the numbered build;
+`/opt/mesa/current` still points to `fe7dda5e`.
+
+`KSTB_BARRIER=1 KSTB_BARRIER_ROUNDS=31 kstb-compute-test` runs the exchange test.
+`kstb-compute-broadcast-test` records intermediate scalar broadcasts;
+`KSTB_BROADCAST_AGGREGATE=1` and `KSTB_BROADCAST_BOOL=1` exercise accumulated
+results without intermediate SSBO writes. Official lists are
+`cases/gles31-compute-basic.txt` (41) and `cases/gles31-compute.txt` (195).

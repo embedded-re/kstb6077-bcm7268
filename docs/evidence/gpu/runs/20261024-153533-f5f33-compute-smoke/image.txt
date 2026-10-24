@@ -1,0 +1,4 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-204287b5eb), 256x256 pixels, 65536 atomic participants
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 1158 inst, 2 threads, 0 loops, 187 uniforms, 23 max-temps, 0:0 spills:fills, 0 sfu-stalls, 1158 inst-and-stalls, 55 nops
+stage: compute
+aggregates and returned values: exact (0 errors, CAS winner 1, exchange final 65274)

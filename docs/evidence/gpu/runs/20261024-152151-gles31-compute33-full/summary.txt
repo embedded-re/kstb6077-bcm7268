@@ -1,0 +1,7 @@
+195 cases: Pass 189, Fail 6
+kernel: 0 MMU errors, 5 GPU resets, 0 oops
+  reset                                    dEQP-GLES31.functional.compute.shared_var.work_group_size.float_1_64_1 Fail
+  reset                                    dEQP-GLES31.functional.compute.shared_var.work_group_size.float_128_1_1 Fail
+  reset                                    dEQP-GLES31.functional.compute.shared_var.work_group_size.float_1_128_1 Fail
+  reset                                    dEQP-GLES31.functional.compute.shared_var.work_group_size.float_13_2_4 Fail
+  reset                                    dEQP-GLES31.functional.compute.shared_var.work_group_size.float_64_1_1 Fail

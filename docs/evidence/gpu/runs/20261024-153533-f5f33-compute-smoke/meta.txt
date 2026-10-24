@@ -1,0 +1,8 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+09c969dc3a2fb5d24f4971ab73e47d022d47f1f715f183e7955daf36dc57d069  /opt/mesa/23.3.6-f5f33af0/lib/dri/v3d_dri.so
+153f1be87abc5aa70a9b833d452a09340cf195e809002aa8ec2b6f1148a00281  /opt/gpu-test/kstb-compute-test
+b5c939007c99a5fb7793368c3d8456f2a9ba82a62d7c0144033577f294444ac1  /opt/gpu-test/kstb-compute-broadcast-test
+74424bff4528b1e881837227e5de31c3cc04490dfec451df290ce45e28294a12  /opt/gpu-test/kstb-ssbo-atomic-test
+cbb547780a2e7f18be997bfc4a3eca4bb11cc542f83e9838bca38d9232ed3ffe  /opt/gpu-test/kstb-image-atomic-test
+numbered Mesa; compute opt-in and GLES3.1 override except default-caps

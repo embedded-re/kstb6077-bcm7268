@@ -1,0 +1,852 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-de6969c8ce)
+MESA_SHADER_COMPUTE prog 0 NIR:
+shader: MESA_SHADER_COMPUTE
+source_sha1: {0x174f4b47, 0xe57c075e, 0xb19f4a5a, 0xc31c31d0, 0x96fad493}
+name: GLSL1
+internal: false
+workgroup-size: 64, 1, 1
+shared-size: 4
+stage: 5
+next_stage: 4
+num_ssbos: 1
+system_values_read: 0x00000000'00000040'00000000
+shared_size: 4
+subgroup_size: 1
+bit_sizes_int: 0x21
+flrp_lowered: true
+writes_memory: true
+ptr_size: 0
+inputs: 0
+outputs: 0
+uniforms: 30
+decl_var uniform INTERP_MODE_NONE none highp float[15] val (1, 0, 0)
+decl_var uniform INTERP_MODE_NONE none highp float[15] ref (2, 15, 0)
+decl_var ssbo INTERP_MODE_NONE writeonly highp uvec4[] result (0, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:    // preds: 
+    32      %0 = load_const (0x00000000 = 0.000000)
+    32      %1 = load_const (0x00000040 = 64)
+    32      %3 = load_const (0x00000001)
+    32     %34 = @load_local_invocation_index () ()
+                 // succs: b1 
+    loop {
+        block b1:    // preds: b0 b7
+        32      %6 = phi b0: %0 (0x0), b7: %24
+        1       %7 = uge %6, %1 (0x40)
+                     // succs: b2 b3 
+        if %7 {
+            block b2:// preds: b1
+            break
+            // succs: b8 
+        } else {
+            block b3:  // preds: b1, succs: b4 
+        }
+        block b4:    // preds: b3
+        1       %8 = ieq %6, %34
+                     // succs: b5 b6 
+        if %8 {
+            block b5:    // preds: b4
+            32     %60 = load_const (0x00000010 = 16)
+            32     %61 = load_const (0x0000ffff = 65535)
+            32     %62 = iand %6, %61 (0xffff)
+            32    %108 = load_const (0x00008889 = 34953)
+            32     %64 = ushr %6, %60 (0x10)
+            32    %109 = load_const (0x00008888 = 34952)
+            32     %66 = imul %62, %108 (0x8889)
+            32     %67 = imul %62, %109 (0x8888)
+            32     %68 = imul %64, %108 (0x8889)
+            32     %69 = imul %64, %109 (0x8888)
+            32    %124 = load_const (0x88880000 = -2004353024 = 2290614272)
+            32    %119 = imul %62, %124 (0x88880000)
+            32     %71 = uadd_carry %66, %119
+            32     %72 = iadd %69, %71
+            32    %125 = load_const (0x88888889 = -2004318071 = 2290649225)
+            32    %123 = imul %62, %125 (0x88888889)
+            32     %74 = ushr %67, %60 (0x10)
+            32     %75 = iadd %72, %74
+            32    %126 = load_const (0x88890000 = -2004287488 = 2290679808)
+            32    %117 = imul %64, %126 (0x88890000)
+            32     %77 = uadd_carry %123, %117
+            32     %78 = iadd %75, %77
+            32     %80 = ushr %68, %60 (0x10)
+            32     %81 = iadd %78, %80
+            32     %46 = load_const (0x00000003)
+            32     %47 = ushr %81, %46 (0x3)
+            32     %48 = load_const (0x0000000f = 15)
+            32     %49 = imul %47, %48 (0xf)
+            32    %106 = ineg %49
+            32    %107 = iadd %6, %106
+            32    %130 = load_const (0x00000004)
+            32    %131 = ishl %107, %130 (0x4)
+            32     %37 = @load_uniform (%131) (base=0, range=15, dest_type=float32)  // val
+                         @store_shared (%37, %0 (0x0)) (base=0, wrmask=x, align_mul=256, align_offset=0)
+                         // succs: b7 
+        } else {
+            block b6:  // preds: b4, succs: b7 
+        }
+        block b7:    // preds: b5 b6
+                     @barrier () (execution_scope=WORKGROUP, memory_scope=WORKGROUP, mem_semantics=ACQ|REL, mem_modes=shared)
+        32     %13 = @load_shared (%0 (0x0)) (base=0, align_mul=256, align_offset=0)
+        32     %82 = load_const (0x00000010 = 16)
+        32     %83 = load_const (0x0000ffff = 65535)
+        32     %84 = iand %6, %83 (0xffff)
+        32    %110 = load_const (0x00008889 = 34953)
+        32     %86 = ushr %6, %82 (0x10)
+        32    %111 = load_const (0x00008888 = 34952)
+        32     %88 = imul %84, %110 (0x8889)
+        32     %89 = imul %84, %111 (0x8888)
+        32     %90 = imul %86, %110 (0x8889)
+        32     %91 = imul %86, %111 (0x8888)
+        32    %127 = load_const (0x88880000 = -2004353024 = 2290614272)
+        32    %115 = imul %84, %127 (0x88880000)
+        32     %93 = uadd_carry %88, %115
+        32     %94 = iadd %91, %93
+        32    %128 = load_const (0x88888889 = -2004318071 = 2290649225)
+        32    %121 = imul %84, %128 (0x88888889)
+        32     %96 = ushr %89, %82 (0x10)
+        32     %97 = iadd %94, %96
+        32    %129 = load_const (0x88890000 = -2004287488 = 2290679808)
+        32    %113 = imul %86, %129 (0x88890000)
+        32     %99 = uadd_carry %121, %113
+        32    %100 = iadd %97, %99
+        32    %102 = ushr %90, %82 (0x10)
+        32    %103 = iadd %100, %102
+        32     %54 = load_const (0x00000003)
+        32     %55 = ushr %103, %54 (0x3)
+        32     %56 = load_const (0x0000000f = 15)
+        32     %57 = imul %55, %56 (0xf)
+        32    %104 = ineg %57
+        32    %105 = iadd %6, %104
+        32    %132 = load_const (0x00000004)
+        32    %133 = ishl %105, %132 (0x4)
+        32     %40 = @load_uniform (%133) (base=240, range=15, dest_type=float32)
+        32     %18 = load_const (0x00000006)
+        32     %19 = ishl %6, %18 (0x6)
+        32     %20 = iadd %19, %34
+        32     %29 = load_const (0x00000004)
+        32     %30 = ishl %20, %29 (0x4)
+        32x4   %23 = vec4 %13, %40, %6, %34
+                     @store_ssbo (%23, %0 (0x0), %30) (wrmask=xyzw, access=writeonly, align_mul=16, align_offset=0)
+                     @barrier () (execution_scope=WORKGROUP, memory_scope=WORKGROUP, mem_semantics=ACQ|REL, mem_modes=shared)
+        32     %24 = iadd %6, %3 (0x1)
+                     // succs: b1 
+    }
+    block b8:  // preds: b2, succs: b9 
+    block b9:
+}
+
+
+MESA_SHADER_COMPUTE prog 0/1 NIR:
+shader: MESA_SHADER_COMPUTE
+source_sha1: {0x174f4b47, 0xe57c075e, 0xb19f4a5a, 0xc31c31d0, 0x96fad493}
+name: GLSL1
+internal: false
+workgroup-size: 64, 1, 1
+shared-size: 4
+stage: 5
+next_stage: 4
+num_ssbos: 1
+system_values_read: 0x00000000'00000040'00000000
+shared_size: 4
+subgroup_size: 1
+divergence_analysis_run: true
+bit_sizes_int: 0x21
+flrp_lowered: true
+writes_memory: true
+ptr_size: 0
+inputs: 0
+outputs: 0
+uniforms: 30
+decl_var uniform INTERP_MODE_NONE none highp float[15] val (1, 0, 0)
+decl_var uniform INTERP_MODE_NONE none highp float[15] ref (2, 15, 0)
+decl_var ssbo INTERP_MODE_NONE writeonly highp uvec4[] result (0, 0, 0)
+decl_function main (0 params) 
+
+impl main {
+    block b0:       // preds: 
+    div 32    %75 = @decl_reg () (num_components=1, num_array_elems=0, bit_size=32, divergent=0)
+    div 32     %3 = @load_local_invocation_index () ()
+    con 32     %0 = load_const (0x00000000)
+    con 32    %87 = mov %0 (0x0)
+                    @store_reg (%87, %75) (base=0, wrmask=x, legacy_fsat=0)
+    con 32     %1 = load_const (0x00000040 = 64)
+    con 32     %2 = load_const (0x00000001)
+    con 32     %4 = load_const (0x00000010 = 16)
+    con 32     %5 = load_const (0x0000ffff = 65535)
+    con 32     %6 = load_const (0x00008889 = 34953)
+    con 32     %7 = load_const (0x00008888 = 34952)
+    con 32     %8 = load_const (0x88880000 = -2004353024 = 2290614272)
+    con 32     %9 = load_const (0x88888889 = -2004318071 = 2290649225)
+    con 32    %10 = load_const (0x88890000 = -2004287488 = 2290679808)
+    con 32    %11 = load_const (0x00000003)
+    con 32    %12 = load_const (0x0000000f = 15)
+    con 32    %13 = load_const (0x00000004)
+    con 32    %14 = load_const (0x00000006)
+                    // succs: b1 
+    loop {
+        block b1:       // preds: b0 b7
+        con 32    %86 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        con 32    %16 = uge32 %86, %1 (0x40)
+                        // succs: b2 b3 
+        if %16 {
+            block b2:// preds: b1
+            break
+            // succs: b8 
+        } else {
+            block b3:  // preds: b1, succs: b4 
+        }
+        block b4:       // preds: b3
+        con 32    %85 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        div 32    %17 = ieq32 %85, %3
+                        // succs: b5 b6 
+        if %17 {
+            block b5:       // preds: b4
+            con 32    %84 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+            con 32    %18 = iand %84, %5 (0xffff)
+            con 32    %83 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+            con 32    %20 = imul %18, %6 (0x8889)
+            con 32    %24 = imul %18, %8 (0x88880000)
+            con 32    %19 = ushr %83, %4 (0x10)
+            con 32    %21 = imul %18, %7 (0x8888)
+            con 32    %25 = uadd_carry %20, %24
+            con 32    %23 = imul %19, %7 (0x8888)
+            con 32    %27 = imul %18, %9 (0x88888889)
+            con 32    %30 = imul %19, %10 (0x88890000)
+            con 32    %28 = ushr %21, %4 (0x10)
+            con 32    %26 = iadd %23, %25
+            con 32    %22 = imul %19, %6 (0x8889)
+            con 32    %31 = uadd_carry %27, %30
+            con 32    %29 = iadd %26, %28
+            con 32    %33 = ushr %22, %4 (0x10)
+            con 32    %32 = iadd %29, %31
+            con 32    %34 = iadd %32, %33
+            con 32    %35 = ushr %34, %11 (0x3)
+            con 32    %36 = imul %35, %12 (0xf)
+            con 32    %82 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+            con 32    %71 = isub %82, %36
+            con 32    %39 = ishl %71, %13 (0x4)
+            con 32    %40 = @load_uniform (%39) (base=0, range=15, dest_type=float32)  // val
+                            @store_shared (%40, %0 (0x0)) (base=0, wrmask=x, align_mul=1073741824, align_offset=0)
+                            // succs: b7 
+        } else {
+            block b6:  // preds: b4, succs: b7 
+        }
+        block b7:       // preds: b5 b6
+        con 32    %81 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        con 32    %42 = iand %81, %5 (0xffff)
+        con 32    %80 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        con 32    %44 = imul %42, %6 (0x8889)
+        con 32    %48 = imul %42, %8 (0x88880000)
+        con 32    %43 = ushr %80, %4 (0x10)
+        con 32    %45 = imul %42, %7 (0x8888)
+        con 32    %49 = uadd_carry %44, %48
+        con 32    %47 = imul %43, %7 (0x8888)
+        con 32    %51 = imul %42, %9 (0x88888889)
+        con 32    %54 = imul %43, %10 (0x88890000)
+        con 32    %52 = ushr %45, %4 (0x10)
+        con 32    %50 = iadd %47, %49
+        con 32    %46 = imul %43, %6 (0x8889)
+        con 32    %55 = uadd_carry %51, %54
+        con 32    %53 = iadd %50, %52
+        con 32    %57 = ushr %46, %4 (0x10)
+        con 32    %56 = iadd %53, %55
+        con 32    %58 = iadd %56, %57
+        con 32    %59 = ushr %58, %11 (0x3)
+                        @barrier () (execution_scope=WORKGROUP, memory_scope=WORKGROUP, mem_semantics=ACQ|REL, mem_modes=shared)
+        con 32    %60 = imul %59, %12 (0xf)
+        con 32    %79 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        con 32    %41 = @load_shared (%0 (0x0)) (base=0, align_mul=1073741824, align_offset=0)
+        con 32    %70 = isub %79, %60
+        con 32    %78 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        con 32    %63 = ishl %70, %13 (0x4)
+        con 32    %65 = ishl %78, %14 (0x6)
+        div 32    %66 = iadd %65, %3
+        con 32    %77 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+        div 32    %67 = ishl %66, %13 (0x4)
+        con 32    %64 = @load_uniform (%63) (base=240, range=15, dest_type=float32)
+        div 32x4  %68 = vec4 %41, %64, %77, %3
+                        @store_ssbo (%68, %0 (0x0), %67) (wrmask=xyzw, access=writeonly, align_mul=16, align_offset=0)
+        con 32    %76 = @load_reg (%75) (base=0, legacy_fabs=0, legacy_fneg=0)
+                        @barrier () (execution_scope=WORKGROUP, memory_scope=WORKGROUP, mem_semantics=ACQ|REL, mem_modes=shared)
+        con 32    %69 = iadd %76, %2 (0x1)
+                        @store_reg (%69, %75) (base=0, wrmask=x, legacy_fsat=0)
+                        // succs: b1 
+    }
+    block b8:  // preds: b2, succs: b9 
+    block b9:
+}
+
+MESA_SHADER_COMPUTE prog 0/1 pre-opt VIR:
+BLOCK 0:
+nop null; ldvary
+nop t0; ldunif (67 / 0x00000000)
+mov tmua, t0
+nop null; thrsw
+nop null; ldtmu
+mov t1, r4
+ycd t2
+eidx.pushz null
+nop t3; ldunif (0x00000004 / 0.000000)
+mov.ifa t2, t3
+mov syncu, t2 (0xffffffe0 / -nan)
+nop null; ldtlbu (0xffffff7b / -nan)
+mov t4, r3
+nop null; ldtlb
+mov t5, r3
+nop null; ldtlb
+mov t6, r3
+nop null; ldtlb
+mov t7, r3
+nop t8; ldunif (0x0000007f / 0.000000)
+and t9, t4, t8
+nop t10; ldunif (0x00000010 / 0.000000)
+shl t11, t6, t10
+or t12, t5, t11
+nop t13; ldunif (0x00000019 / 0.000000)
+shl t14, t9, t13
+or t15, t7, t14
+nop t16; ldunif (0x00000007 / 0.000000)
+shr t17, t4, t16
+nop t18; ldunif (0x0000000f / 0.000000)
+and t19, t17, t18
+shl t20, t19, t10
+or t21, t15, t20
+nop t22; ldunif (shared_offset)
+nop t23; ldunif (0x00000004 / 0.000000)
+multop null, t19, t23
+umul24 t24, t19, t23
+add t25, t22, t24
+shr t26, t4, t18
+nop t27; ldunif (0x00000001 / 0.000000)
+xor t28, t26, t27
+setmsf null, t28
+shr t30, t21, t13
+nop t31; ldunif (0x00000000 / 0.000000)
+mov t29, t31
+nop t33; ldunif (0x00000040 / 0.000000)
+nop t34; ldunif (0x00000010 / 0.000000)
+nop t35; ldunif (0x0000ffff / 0.000000)
+nop t36; ldunif (0x00008889 / 0.000000)
+nop t37; ldunif (0x00008888 / 0.000000)
+nop t38; ldunif (0x88880000 / -0.000000)
+nop t39; ldunif (0x88888889 / -0.000000)
+nop t40; ldunif (0x88890000 / -0.000000)
+nop t41; ldunif (0x00000003 / 0.000000)
+nop t42; ldunif (0x0000000f / 0.000000)
+nop t43; ldunif (0x00000006 / 0.000000)
+-> BLOCK 1
+BLOCK 1:
+sub.pushc null, t29, t33
+nop t44; ldunif (0xffffffff / -nan)
+nop t45; ldunif (0x00000000 / 0.000000)
+mov t46, t45
+mov.ifna t46, t44
+mov t47, t46
+bu.allnap  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 2, 4
+BLOCK 4:
+xor.pushz null, t29, t30
+nop t48; ldunif (0xffffffff / -nan)
+nop t49; ldunif (0x00000000 / 0.000000)
+mov t50, t49
+mov.ifa t50, t48
+mov t51, t50
+mov t52, t49
+nop t53; ldunif (0x00000006 / 0.000000)
+mov.ifna t52, t53
+mov.pushz null, t52
+bu.allna  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 6, 5
+BLOCK 5:
+and t54, t29, t35
+multop null, t54, t36
+umul24 t55, t54, t36
+multop null, t54, t38
+umul24 t56, t54, t38
+shr t57, t29, t34
+multop null, t54, t37
+umul24 t58, t54, t37
+add.pushc null, t55, t56
+nop t59; ldunif (0x00000001 / 0.000000)
+nop t60; ldunif (0x00000000 / 0.000000)
+mov t61, t60
+mov.ifa t61, t59
+mov t62, t61
+multop null, t57, t37
+umul24 t63, t57, t37
+multop null, t54, t39
+umul24 t64, t54, t39
+multop null, t57, t40
+umul24 t65, t57, t40
+shr t66, t58, t34
+add t67, t63, t62
+multop null, t57, t36
+umul24 t68, t57, t36
+add.pushc null, t64, t65
+mov t69, t60
+mov.ifa t69, t59
+mov t70, t69
+add t71, t67, t66
+shr t72, t68, t34
+add t73, t71, t70
+add t74, t73, t72
+shr t75, t74, t41
+multop null, t75, t42
+umul24 t76, t75, t42
+sub t77, t29, t76
+shl t78, t77, t23
+nop t79; ldunif (ubo[0]+0x0)
+mov.pushz null, t52
+nop t81; ldunif (0x000001dc / 0.000000)
+umin t82, t78, t81
+add t80, t79, t82
+nop t83; ldunif (67 / 0x00000000)
+mov t84, t83
+mov.ifa t84, t80
+mov tmua, t84
+nop null; thrsw
+nop null; ldtmu
+mov t85, r4
+mov t86, t85
+mov tmud, t86
+mov.pushz null, t52
+mov.ifa tmua, t25
+mov tmua, t25
+nop null; thrsw
+tmuwt t87
+nop null; ldtmu
+mov t88, r4
+-> BLOCK 6
+BLOCK 6:
+and t89, t29, t35
+multop null, t89, t36
+umul24 t90, t89, t36
+multop null, t89, t38
+umul24 t91, t89, t38
+shr t92, t29, t34
+multop null, t89, t37
+umul24 t93, t89, t37
+add.pushc null, t90, t91
+nop t94; ldunif (0x00000001 / 0.000000)
+nop t95; ldunif (0x00000000 / 0.000000)
+mov t96, t95
+mov.ifa t96, t94
+mov t97, t96
+multop null, t92, t37
+umul24 t98, t92, t37
+multop null, t89, t39
+umul24 t99, t89, t39
+multop null, t92, t40
+umul24 t100, t92, t40
+shr t101, t93, t34
+add t102, t98, t97
+multop null, t92, t36
+umul24 t103, t92, t36
+add.pushc null, t99, t100
+mov t104, t95
+mov.ifa t104, t94
+mov t105, t104
+add t106, t102, t101
+shr t107, t103, t34
+add t108, t106, t105
+add t109, t108, t107
+shr t110, t109, t41
+ycd syncu (0xffffffeb / -nan)
+nop null; thrsw
+multop null, t110, t42
+umul24 t111, t110, t42
+mov tmuau, t25 (0xffffff7f / -nan)
+sub t112, t29, t111
+shl t113, t112, t23
+shl t114, t29, t43
+add t115, t114, t30
+shl t116, t115, t23
+nop t117; ldunif (ubo[0]+0xf0)
+nop t118; ldunif (0x000000ec / 0.000000)
+umin t119, t113, t118
+add tmuau, t117, t119 (0xffffff7f / -nan)
+nop null; thrsw
+nop null; ldtmu
+mov t120, r4
+mov t121, t120
+nop null; ldtmu
+mov t122, r4
+mov t123, t122
+mov t124, t121
+mov t125, t123
+mov t126, t29
+mov t127, t30
+nop t128; ldunif (ssbo[0])
+mov tmud, t124
+mov tmud, t125
+mov tmud, t126
+mov tmud, t127
+add tmuau, t128, t116 (0xfffffffc / -nan)
+mov tmua, t128
+nop null; thrsw
+tmuwt t129
+nop null; ldtmu
+mov t130, r4
+ycd syncu (0xffffffeb / -nan)
+nop null; thrsw
+add t29, t29, t27
+bu  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 1
+BLOCK 2:
+nop t132; ldunif (67 / 0x00000000)
+mov tmua, t132
+nop null; thrsw
+nop null; ldtmu
+mov t133, r4
+
+MESA_SHADER_COMPUTE prog 0/1 VIR:
+BLOCK 0:
+nop null; ldvary
+nop t134; ldunif (67 / 0x00000000)
+mov t0, t134
+mov tmua, t0
+nop null; thrsw
+nop null; ldtmu
+ycd t2
+eidx.pushz null
+mov.ifa t2, 4
+mov syncu, t2 (0xffffffe0 / -nan)
+nop null; ldtlbu (0xffffff7b / -nan)
+mov t4, r3
+nop null; ldtlb
+nop null; ldtlb
+nop null; ldtlb
+mov t7, r3
+nop t135; ldunif (0x0000007f / 0.000000)
+mov t8, t135
+and t9, t4, t8
+nop t136; ldunif (0x00000010 / 0.000000)
+mov t10, t136
+nop t137; ldunif (0x00000019 / 0.000000)
+mov t13, t137
+shl t14, t9, t13
+or t15, t7, t14
+shr t17, t4, 7
+and t19, t17, 15
+shl t20, t19, t10
+or t21, t15, t20
+nop t138; ldunif (shared_offset)
+mov t22, t138
+multop null, t19, 4
+umul24 t24, t19, 4
+add t25, t22, t24
+shr t26, t4, 15
+xor t28, t26, 1
+setmsf null, t28
+shr t30, t21, t13
+mov t29, 0
+nop t139; ldunif (0x00000040 / 0.000000)
+mov t33, t139
+nop t140; ldunif (0x00000010 / 0.000000)
+mov t34, t140
+nop t141; ldunif (0x0000ffff / 0.000000)
+mov t35, t141
+nop t142; ldunif (0x00008889 / 0.000000)
+mov t36, t142
+nop t143; ldunif (0x00008888 / 0.000000)
+mov t37, t143
+nop t144; ldunif (0x88880000 / -0.000000)
+mov t38, t144
+nop t145; ldunif (0x88888889 / -0.000000)
+mov t39, t145
+nop t146; ldunif (0x88890000 / -0.000000)
+mov t40, t146
+-> BLOCK 1
+BLOCK 1:
+sub.pushc null, t29, t33
+bu.allnap  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 2, 4
+BLOCK 4:
+xor.pushz null, t29, t30
+mov t52, 0
+mov.ifna t52, 6
+mov.pushz null, t52
+bu.allna  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 6, 5
+BLOCK 5:
+and t54, t29, t35
+multop null, t54, t36
+umul24 t55, t54, t36
+multop null, t54, t38
+umul24 t56, t54, t38
+shr t57, t29, t34
+multop null, t54, t37
+umul24 t58, t54, t37
+add.pushc null, t55, t56
+mov t61, 0
+mov.ifa t61, 1
+multop null, t57, t37
+umul24 t63, t57, t37
+multop null, t54, t39
+umul24 t64, t54, t39
+multop null, t57, t40
+umul24 t65, t57, t40
+shr t66, t58, t34
+add t67, t63, t61
+multop null, t57, t36
+umul24 t68, t57, t36
+add.pushc null, t64, t65
+mov t69, 0
+mov.ifa t69, 1
+add t71, t67, t66
+shr t72, t68, t34
+add t73, t71, t69
+add t74, t73, t72
+shr t75, t74, 3
+multop null, t75, 15
+umul24 t76, t75, 15
+sub t77, t29, t76
+shl t78, t77, 4
+nop t147; ldunif (ubo[0]+0x0)
+mov t79, t147
+mov.pushz null, t52
+nop t148; ldunif (0x000001dc / 0.000000)
+mov t81, t148
+umin t82, t78, t81
+add t80, t79, t82
+nop t149; ldunif (67 / 0x00000000)
+mov t83, t149
+mov t84, t83
+mov.ifa t84, t80
+mov tmua, t84
+nop null; thrsw
+nop null; ldtmu
+mov t85, r4
+mov tmud, t85
+mov.pushz null, t52
+mov.ifa tmua, t25
+mov tmua, t25
+nop null; thrsw
+tmuwt t87
+nop null; ldtmu
+-> BLOCK 6
+BLOCK 6:
+and t89, t29, t35
+multop null, t89, t36
+umul24 t90, t89, t36
+multop null, t89, t38
+umul24 t91, t89, t38
+shr t92, t29, t34
+multop null, t89, t37
+umul24 t93, t89, t37
+add.pushc null, t90, t91
+mov t96, 0
+mov.ifa t96, 1
+multop null, t92, t37
+umul24 t98, t92, t37
+multop null, t89, t39
+umul24 t99, t89, t39
+multop null, t92, t40
+umul24 t100, t92, t40
+shr t101, t93, t34
+add t102, t98, t96
+multop null, t92, t36
+umul24 t103, t92, t36
+add.pushc null, t99, t100
+mov t104, 0
+mov.ifa t104, 1
+add t106, t102, t101
+shr t107, t103, t34
+add t108, t106, t104
+add t109, t108, t107
+shr t110, t109, 3
+ycd syncu (0xffffffeb / -nan)
+nop null; thrsw
+multop null, t110, 15
+umul24 t111, t110, 15
+mov tmuau, t25 (0xffffff7f / -nan)
+sub t112, t29, t111
+shl t113, t112, 4
+shl t114, t29, 6
+add t115, t114, t30
+shl t116, t115, 4
+nop t150; ldunif (ubo[0]+0xf0)
+mov t117, t150
+nop t151; ldunif (0x000000ec / 0.000000)
+mov t118, t151
+umin t119, t113, t118
+add tmuau, t117, t119 (0xffffff7f / -nan)
+nop null; thrsw
+nop null; ldtmu
+mov t120, r4
+nop null; ldtmu
+mov t122, r4
+nop t152; ldunif (ssbo[0])
+mov t128, t152
+mov tmud, t120
+mov tmud, t122
+mov tmud, t29
+mov tmud, t30
+add tmuau, t128, t116 (0xfffffffc / -nan)
+mov tmua, t128
+nop null; thrsw
+tmuwt t129
+nop null; ldtmu
+ycd syncu (0xffffffeb / -nan)
+nop null; thrsw
+add t29, t29, 1
+bu  262, r:unif (0x00000000 / 0.000000)
+-> BLOCK 1
+BLOCK 2:
+nop t153; ldunif (67 / 0x00000000)
+mov t132, t153
+mov tmua, t132
+nop null; thrsw
+nop null; ldtmu
+
+MESA_SHADER_COMPUTE prog 0/1 QPU:
+0x3dc01146bbfc0000 nop                           ; mov rf5, 0                  ; ldvary
+0x3c003186bb800000 nop                           ; nop
+0x3c603186bb800000 nop                           ; nop                         ; thrsw; ldunif
+0x3c003006bbf40000 nop                           ; mov r0, r5
+0x3c003306bbe00000 nop                           ; mov tmua, r0
+0x3c803181bb80f000 ycd r1                        ; nop                         ; ldtmu
+0x3c007186bb802000 eidx.pushz -                  ; nop
+0x3dec3046bbfc0004 nop                           ; mov.ifa r1, 4
+0x3c003446bbe40000 nop                           ; mov syncu, r1
+0x3e203186bb800000 nop                           ; nop                         ; ldtlbu
+0x3c4010c6bbec0000 nop                           ; mov rf3, r3                 ; ldunif
+0x3e003186bb800000 nop                           ; nop                         ; ldtlb
+0x3e003186bb800000 nop                           ; nop                         ; ldtlb
+0x3e003186bb800000 nop                           ; nop                         ; ldtlb
+0x3c003086bbec0000 nop                           ; mov r2, r3
+0x3c4030c6bbf40000 nop                           ; mov r3, r5                  ; ldunif
+0x3c403004b5f5e0c0 and r4, rf3, r3               ; mov r0, r5                  ; ldunif
+0x3c403046bbf40000 nop                           ; mov r1, r5                  ; ldunif
+0x3c0031837c80c000 shl r3, r4, r1                ; nop
+0x3c003184b681a000 or r4, r2, r3                 ; nop
+0x3de031827d83e0c7 shr r2, rf3, 7                ; nop
+0x3de03183b583a00f and r3, r2, 15                ; nop
+0x29e031807cec3004 shl r0, r3, r0                ; multop -, r3, 4
+0x3c403102b6f44000 or r2, r4, r0                 ; mov r4, r5                  ; ldunif
+0x3c4001c67df4a000 shr rf6, r2, r1               ; mov rf7, r5                 ; ldunif
+0x3c401206bbf40000 nop                           ; mov rf8, r5                 ; ldunif
+0x3c401246bbf40000 nop                           ; mov rf9, r5                 ; ldunif
+0x3c401286bbf40000 nop                           ; mov rf10, r5                ; ldunif
+0x3c4012c6bbf40000 nop                           ; mov rf11, r5                ; ldunif
+0x3c401306bbf40000 nop                           ; mov rf12, r5                ; ldunif
+0x0de03006bbec0004 nop                           ; umul24 r0, r3, 4
+0x3de013437df7e0cf shr r3, rf3, 15               ; mov rf13, r5
+0x3c40218438804000 add rf4, r4, r0               ; nop                         ; ldunif
+0x3de01384b7f7b001 xor r4, r3, 1                 ; mov rf14, r5
+0x3c003186ba834000 setmsf -, r4                  ; nop
+0x3c00f1863c83e147 sub.pushc -, rf5, rf7         ; nop
+0x0200031f0020d000 bu.allnap  792, r:unif
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c007186b783e146 xor.pushz -, rf5, rf6         ; nop
+0x3de013c6bbfc0000 nop                           ; mov rf15, 0
+0x3dee13c6bbfc0006 nop                           ; mov.ifna rf15, 6
+0x3c047186bbf803c0 nop                           ; mov.pushz -, rf15
+0x0200013f0000d000 bu.allna  312, r:unif
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c403180b583e149 and r0, rf5, rf9              ; nop                         ; ldunif
+0x28003186bbc00280 nop                           ; multop -, r0, rf10
+0x0c003046bbc00280 nop                           ; umul24 r1, r0, rf10
+0x28003186bbc00300 nop                           ; multop -, r0, rf12
+0x0c003086bbc00300 nop                           ; umul24 r2, r0, rf12
+0x2800f18638c112c0 add.pushc -, r1, r2           ; multop -, r0, rf11
+0x3c0031837d83e148 shr r3, rf5, rf8              ; nop
+0x0c003106bbc002c0 nop                           ; umul24 r4, r0, rf11
+0x280031847def420b shr r4, r4, rf8               ; multop -, r3, rf11
+0x0c003086bbcc02c0 nop                           ; umul24 r2, r3, rf11
+0x28003186bbc00340 nop                           ; multop -, r0, rf13
+0x0c003006bbc00340 nop                           ; umul24 r0, r0, rf13
+0x3de03046bbfc0000 nop                           ; mov r1, 0
+0x28003186bbcc0380 nop                           ; multop -, r3, rf14
+0x3dec3046bbfc0001 nop                           ; mov.ifa r1, 1
+0x0c00140138cca380 add r1, r2, r1                ; umul24 rf16, r3, rf14
+0x2800f18638cf8290 add.pushc -, r0, rf16         ; multop -, r3, rf10
+0x0c00308438ce1280 add r4, r1, r4                ; umul24 r2, r3, rf10
+0x3de030c07dff2200 shr r0, r2, rf8               ; mov r3, 0
+0x3dec30c6bbfc0001 nop                           ; mov.ifa r3, 1
+0x3c04718138f9c3c0 add r1, r4, r3                ; mov.pushz -, rf15
+0x3c00318238801000 add r2, r1, r0                ; nop
+0x3de030837df7a003 shr r3, r2, 3                 ; mov r2, r5
+0x29e03186bbec000f nop                           ; multop -, r3, 15
+0x0de03106bbec000f nop                           ; umul24 r4, r3, 15
+0x3c4031803c826140 sub r0, rf5, r4               ; nop                         ; ldunif
+0x3de031017cf78004 shl r1, r0, 4                 ; mov r4, r5
+0x3c4031807a821000 umin r0, r1, r4               ; nop                         ; ldunif
+0x3c00304338f42000 add r3, r2, r0                ; mov r1, r5
+0x3c203086bbe40000 nop                           ; mov r2, r1                  ; thrsw
+0x3c0c3086bbec0000 nop                           ; mov.ifa r2, r3
+0x3c003306bbe80000 nop                           ; mov tmua, r2
+0x3c847186bbf803c0 nop                           ; mov.pushz -, rf15           ; ldtmu
+0x3c0030c6bbf00000 nop                           ; mov r3, r4
+0x3c2032c6bbec0000 nop                           ; mov tmud, r3                ; thrsw
+0x3c0c3306bbf80100 nop                           ; mov.ifa tmua, rf4
+0x3c003306bbf80100 nop                           ; mov tmua, rf4
+0x3c003184bb815000 tmuwt r4                      ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c003180b583e149 and r0, rf5, rf9              ; nop
+0x28003191bbc0f280 ycd syncu                     ; multop -, r0, rf10
+0x0c003046bbc00280 nop                           ; umul24 r1, r0, rf10
+0x28003186bbc00300 nop                           ; multop -, r0, rf12
+0x0c003086bbc00300 nop                           ; umul24 r2, r0, rf12
+0x2800f18638c112c0 add.pushc -, r1, r2           ; multop -, r0, rf11
+0x3c0031837d83e148 shr r3, rf5, rf8              ; nop
+0x0c003106bbc002c0 nop                           ; umul24 r4, r0, rf11
+0x280031847def420b shr r4, r4, rf8               ; multop -, r3, rf11
+0x0c003086bbcc02c0 nop                           ; umul24 r2, r3, rf11
+0x28003186bbc00340 nop                           ; multop -, r0, rf13
+0x0c003006bbc00340 nop                           ; umul24 r0, r0, rf13
+0x3de03046bbfc0000 nop                           ; mov r1, 0
+0x28003186bbcc0380 nop                           ; multop -, r3, rf14
+0x3dec3046bbfc0001 nop                           ; mov.ifa r1, 1
+0x0c00144138cca380 add r1, r2, r1                ; umul24 rf17, r3, rf14
+0x2800f18638cf8291 add.pushc -, r0, rf17         ; multop -, r3, rf10
+0x0c00308438ce1280 add r4, r1, r4                ; umul24 r2, r3, rf10
+0x3de030c07dff2200 shr r0, r2, rf8               ; mov r3, 0
+0x3dec30c6bbfc0001 nop                           ; mov.ifa r3, 1
+0x3c2031813881c000 add r1, r4, r3                ; nop                         ; thrsw
+0x3c00318238801000 add r2, r1, r0                ; nop
+0x3de021927d83a003 shr rf18, r2, 3               ; nop
+0x29e03186bbf8048f nop                           ; multop -, rf18, 15
+0x3c003346bbf80100 nop                           ; mov tmuau, rf4
+0x0de030c6bbf8048f nop                           ; umul24 r3, rf18, 15
+0x3c4031843c81e140 sub r4, rf5, r3               ; nop                         ; ldunif
+0x3de030c07cf7c004 shl r0, r4, 4                 ; mov r3, r5
+0x3c403186bb800000 nop                           ; nop                         ; ldunif
+0x3de031017cf7e146 shl r1, rf5, 6                ; mov r4, r5
+0x042030807ac60180 umin r0, r0, r4               ; add r2, r1, rf6             ; thrsw
+0x05e023537c0fa004 shl rf19, r2, 4               ; add tmuau, r3, r0
+0x3c003186bb800000 nop                           ; nop
+0x3cc03186bb800000 nop                           ; nop                         ; ldtmu; ldunif
+0x3c803046bbf00000 nop                           ; mov r1, r4                  ; ldtmu
+0x3c0032c6bbe40000 nop                           ; mov tmud, r1
+0x3c003086bbf00000 nop                           ; mov r2, r4
+0x3c0032c6bbe80000 nop                           ; mov tmud, r2
+0x3de022c538fbe141 add rf5, rf5, 1               ; mov tmud, rf5
+0x3c0030c6bbf40000 nop                           ; mov r3, r5
+0x3c2032c6bbf80180 nop                           ; mov tmud, rf6               ; thrsw
+0x3c00318d388334c0 add tmuau, r3, rf19           ; nop
+0x3c003306bbec0000 nop                           ; mov tmua, r3
+0x3c003184bb815000 tmuwt r4                      ; nop
+0x3c803186bb800000 nop                           ; nop                         ; ldtmu
+0x3c203191bb80f000 ycd syncu                     ; nop                         ; thrsw
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x02fffcc8ff00d000 bu  -824, r:unif
+0x3c00f1863c83e147 sub.pushc -, rf5, rf7         ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+0x3c603186bb800000 nop                           ; nop                         ; thrsw; ldunif
+0x3c203006bbf40000 nop                           ; mov r0, r5                  ; thrsw
+0x3c003306bbe00000 nop                           ; mov tmua, r0
+0x3ca03186bb800000 nop                           ; nop                         ; thrsw; ldtmu
+0x3c003186bb800000 nop                           ; nop
+0x3c003186bb800000 nop                           ; nop
+
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 145 inst, 2 threads, 1 loops, 30 uniforms, 18 max-temps, 0:0 spills:fills, 0 sfu-stalls, 145 inst-and-stalls, 14 nops
+shared broadcast intermediate checks: 0 errors

@@ -50,7 +50,21 @@ int main(int argc, char **argv)
     CHECK(ctx != EGL_NO_CONTEXT && eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx));
     printf("%s\n", glGetString(GL_VERSION));
 
-    int shared=getenv("KSTB_SHARED")!=NULL;
+    int barrier=getenv("KSTB_BARRIER")!=NULL;
+    int shared=getenv("KSTB_SHARED")!=NULL || barrier;
+    unsigned rounds=getenv("KSTB_BARRIER_ROUNDS")?strtoul(getenv("KSTB_BARRIER_ROUNDS"),NULL,0):1;
+    CHECK(rounds>0 && rounds<=1024);
+    char shared_ops[2048];
+    if(barrier) snprintf(shared_ops,sizeof(shared_ops),
+        "uint si=(gl_LocalInvocationIndex*17u+37u)&4095u;"
+        "uint hash=v.x*2654435761u ^ (v.y<<12u) ^ (v.z<<24u);"
+        "uint peer=(gl_LocalInvocationIndex+17u)%%%uu;"
+        "for(uint round=0u;round<%uu;round++) {"
+        "tile[si]=hash^(round*0x9e3779b9u); barrier();"
+        "shared_mix=shared_mix*33u+tile[(peer*17u+37u)&4095u]; barrier(); }"
+        "tile[si]=hash; memoryBarrierShared();"
+        "uint old=atomicAdd(tile[si],5u); memoryBarrierShared();"
+        "shared_mix^=tile[si]^old;",b[0]*b[1]*b[2],rounds);
     char source[4096];
     snprintf(source,sizeof(source),
         "#version 310 es\nprecision highp int;\n"
@@ -64,7 +78,7 @@ int main(int argc, char **argv)
         "result[i+2u]=uvec4(gl_LocalInvocationID,"
         "(gl_NumWorkGroups.y+65536u*gl_NumWorkGroups.z)^shared_mix); }\n",b[0],b[1],b[2],
         shared ? "shared uint tile[4096];" : "",
-        shared ? "uint si=(gl_LocalInvocationIndex*17u+37u)&4095u;"
+        barrier ? shared_ops : shared ? "uint si=(gl_LocalInvocationIndex*17u+37u)&4095u;"
                  "uint hash=v.x*2654435761u ^ (v.y<<12u) ^ (v.z<<24u);"
                  "tile[si]=hash; memoryBarrierShared();"
                  "uint old=atomicAdd(tile[si],5u); memoryBarrierShared();"
@@ -136,6 +150,17 @@ int main(int argc, char **argv)
             if(shared && field==11) {
                 uint32_t hash=x*2654435761u^(y<<12)^(z<<24);
                 words[field]^=(hash+5)^hash;
+                if(barrier) {
+                    unsigned local=x%b[0]+b[0]*(y%b[1]+b[1]*(z%b[2]));
+                    unsigned peer=(local+17)%(b[0]*b[1]*b[2]);
+                    unsigned px=(x/b[0])*b[0]+peer%b[0];
+                    unsigned py=(y/b[1])*b[1]+(peer/b[0])%b[1];
+                    unsigned pz=(z/b[2])*b[2]+peer/(b[0]*b[1]);
+                    uint32_t peer_hash=px*2654435761u^(py<<12)^(pz<<24), mix=0;
+                    for(unsigned round=0;round<rounds;round++)
+                        mix=mix*33u+(peer_hash^(round*0x9e3779b9u));
+                    words[field]^=mix;
+                }
             }
             expected=words[field]^(chain?0x13579bdfu:0);
         }

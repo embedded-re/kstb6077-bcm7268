@@ -1,0 +1,58 @@
+[
+  {
+    "test": "full16",
+    "exit": 0,
+    "start": 148335.87308003,
+    "end": 148336.164478387,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "full17",
+    "exit": 0,
+    "start": 148336.165536126,
+    "end": 148336.300464687,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "pad32",
+    "exit": 0,
+    "start": 148336.305153867,
+    "end": 148336.440441501,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "pad1",
+    "exit": 0,
+    "start": 148336.44176987,
+    "end": 148336.580429463,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "pad17",
+    "exit": 0,
+    "start": 148336.581690425,
+    "end": 148336.772426814,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "pad105",
+    "exit": 0,
+    "start": 148336.773756628,
+    "end": 148336.912486406,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  },
+  {
+    "test": "multi128",
+    "exit": 0,
+    "start": 148336.917220068,
+    "end": 148337.15636848,
+    "gles_override": "3.1",
+    "v3d_debug": "shaderdb"
+  }
+]

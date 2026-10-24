@@ -1,0 +1,62 @@
+#sessionInfo releaseName opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80
+#sessionInfo releaseId 0x067e8832
+#sessionInfo targetName "nullws"
+#sessionInfo logFormatVersion "0.3.4"
+#sessionInfo vendor "Broadcom"
+#sessionInfo renderer "V3D 3.3"
+#sessionInfo commandLineParameters "--deqp-case=dEQP-GLES31.functional.compute.shared_var.work_group_size.float_64_1_1 --deqp-surface-type=window --deqp-surface-width=256 --deqp-surface-height=256 --deqp-gl-config-name=rgba8888d24s8ms0 --deqp-log-filename=/root/gpu-runs/20261024-153030-compute33-float-isolate/test.qpa"
+
+#beginSession
+
+#beginTestCaseResult dEQP-GLES31.functional.compute.shared_var.work_group_size.float_64_1_1
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseResult CasePath="dEQP-GLES31.functional.compute.shared_var.work_group_size.float_64_1_1" Version="0.3.4" CaseType="SelfValidate">
+ <ShaderProgram LinkStatus="OK">
+  <InfoLog></InfoLog>
+  <ComputeShader CompileStatus="OK">
+   <ShaderSource>#version 310 es
+layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+const uint LOCAL_SIZE = gl_WorkGroupSize.x*gl_WorkGroupSize.y*gl_WorkGroupSize.z;
+shared highp float s_var;
+uniform highp float u_val[15];
+uniform highp float u_ref[15];
+uniform uint u_numIters;
+layout(binding = 0) buffer Result
+{
+    bool isOk[LOCAL_SIZE];
+};
+
+void main (void)
+{
+    bool allOk = true;
+    for (uint ndx = 0u; ndx &lt; u_numIters; ndx++)
+    {
+        if (ndx == gl_LocalInvocationIndex)
+            s_var = u_val[ndx%uint(u_val.length())];
+
+        barrier();
+
+        if (s_var != u_ref[ndx%uint(u_ref.length())])
+            allOk = false;
+
+        barrier();
+    }
+
+    isOk[gl_LocalInvocationIndex] = allOk;
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</ComputeShader>
+</ShaderProgram>
+ <Number Name="ComputeCompileTime" Description="Compute shader compile time" Tag="Time" Unit="ms">31.531000</Number>
+ <Number Name="LinkTime" Description="Link time" Tag="Time" Unit="ms">7.085000</Number>
+ <Text>64 / 64 values passed</Text>
+ <Number Name="TestDuration" Description="Test case duration in microseconds" Tag="Time" Unit="us">67870</Number>
+ <Result StatusCode="Pass">Pass</Result>
+</TestCaseResult>
+
+#endTestCaseResult
+
+Run took 0.11 seconds
+
+#endSession

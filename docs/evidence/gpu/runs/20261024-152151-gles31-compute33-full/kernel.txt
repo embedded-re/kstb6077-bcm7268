@@ -1,0 +1,31 @@
+[148870.632338] kstb-gpu-run sync 148870.336138
+[148870.938256] drm_sched_entity_init: called with uninitialized scheduler
+[148870.984984] drm_sched_entity_init: called with uninitialized scheduler
+[148895.308738] drm_sched_entity_init: called with uninitialized scheduler
+[148895.354208] drm_sched_entity_init: called with uninitialized scheduler
+[148896.175569] drm_sched_entity_init: called with uninitialized scheduler
+[148896.221317] drm_sched_entity_init: called with uninitialized scheduler
+[148896.831437] drm_sched_entity_init: called with uninitialized scheduler
+[148896.877337] drm_sched_entity_init: called with uninitialized scheduler
+[148897.800430] drm_sched_entity_init: called with uninitialized scheduler
+[148897.847198] drm_sched_entity_init: called with uninitialized scheduler
+[148898.769434] drm_sched_entity_init: called with uninitialized scheduler
+[148898.815242] drm_sched_entity_init: called with uninitialized scheduler
+[148899.531494] drm_sched_entity_init: called with uninitialized scheduler
+[148899.577095] drm_sched_entity_init: called with uninitialized scheduler
+[148900.191212] drm_sched_entity_init: called with uninitialized scheduler
+[148900.237773] drm_sched_entity_init: called with uninitialized scheduler
+[148900.951814] drm_sched_entity_init: called with uninitialized scheduler
+[148900.997699] drm_sched_entity_init: called with uninitialized scheduler
+[148902.408231] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[148902.416506] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[148903.496214] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[148903.504540] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[148904.552217] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[148904.560631] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[148905.608215] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[148905.616662] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[148905.765946] drm_sched_entity_init: called with uninitialized scheduler
+[148905.813586] drm_sched_entity_init: called with uninitialized scheduler
+[148906.952217] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[148906.960887] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000

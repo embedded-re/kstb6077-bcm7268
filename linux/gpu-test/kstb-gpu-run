@@ -158,7 +158,7 @@ def main():
         m.write(f"args {' '.join(rest)}\n")
         for k in ("LD_LIBRARY_PATH", "LIBGL_DRIVERS_PATH", "DEQP_EGL_PLATFORM", "DEQP_SURFACE_TYPE",
                   "MESA_GLES_VERSION_OVERRIDE", "MESA_GLSL_VERSION_OVERRIDE",
-                  "MESA_SHADER_CACHE_DISABLE", "V3D_DEBUG"):
+                  "MESA_SHADER_CACHE_DISABLE", "V3D_DEBUG", "V3D_COMPUTE33"):
             m.write(f"{k}={env.get(k, '(unset)')}\n")
 
     stop = threading.Event()

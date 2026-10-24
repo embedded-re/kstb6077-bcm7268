@@ -1,0 +1,2 @@
+CLEAN: 4 standalone test results
+0 MMU errors, 0 resets, 0 oopses

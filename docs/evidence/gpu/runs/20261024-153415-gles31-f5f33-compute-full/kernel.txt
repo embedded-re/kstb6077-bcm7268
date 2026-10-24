@@ -1,0 +1,21 @@
+[149614.761133] kstb-gpu-run sync 149614.464148
+[149615.067516] drm_sched_entity_init: called with uninitialized scheduler
+[149615.113507] drm_sched_entity_init: called with uninitialized scheduler
+[149639.440888] drm_sched_entity_init: called with uninitialized scheduler
+[149639.487388] drm_sched_entity_init: called with uninitialized scheduler
+[149640.304123] drm_sched_entity_init: called with uninitialized scheduler
+[149640.350114] drm_sched_entity_init: called with uninitialized scheduler
+[149640.962233] drm_sched_entity_init: called with uninitialized scheduler
+[149641.009042] drm_sched_entity_init: called with uninitialized scheduler
+[149642.035636] drm_sched_entity_init: called with uninitialized scheduler
+[149642.082381] drm_sched_entity_init: called with uninitialized scheduler
+[149643.110263] drm_sched_entity_init: called with uninitialized scheduler
+[149643.156159] drm_sched_entity_init: called with uninitialized scheduler
+[149643.873838] drm_sched_entity_init: called with uninitialized scheduler
+[149643.920264] drm_sched_entity_init: called with uninitialized scheduler
+[149644.536344] drm_sched_entity_init: called with uninitialized scheduler
+[149644.582174] drm_sched_entity_init: called with uninitialized scheduler
+[149645.295967] drm_sched_entity_init: called with uninitialized scheduler
+[149645.342194] drm_sched_entity_init: called with uninitialized scheduler
+[149645.951933] drm_sched_entity_init: called with uninitialized scheduler
+[149645.998109] drm_sched_entity_init: called with uninitialized scheduler

@@ -1,0 +1,3 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-de6969c8ce)
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 122 inst, 2 threads, 1 loops, 37 uniforms, 19 max-temps, 0:0 spills:fills, 0 sfu-stalls, 122 inst-and-stalls, 12 nops
+compute IDs local=128x1x1 grid=17x1x1 invocations=2176: exact (0 errors, guards checked)

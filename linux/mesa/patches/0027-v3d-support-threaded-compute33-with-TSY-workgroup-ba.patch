@@ -1,0 +1,268 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 15:32:16 +0200
+Subject: [PATCH 27/27] v3d: support threaded compute33 with TSY workgroup
+ barriers
+
+---
+ src/broadcom/compiler/nir_to_vir.c   | 70 ++++++++++++++++++++++++----
+ src/broadcom/compiler/qpu_schedule.c | 16 ++++++-
+ src/broadcom/compiler/vir.c          |  2 +-
+ src/gallium/drivers/v3d/v3dx_draw.c  | 21 ++++++---
+ 4 files changed, 92 insertions(+), 17 deletions(-)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index f2381fb..54b09eb 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -460,6 +460,7 @@ emit_tmu_general_address_write(struct v3d_compile *c,
+                                struct qreg base_offset,
+                                uint32_t const_offset,
+                                uint32_t dest_components,
++                               bool is_load,
+                                uint32_t *tmu_writes)
+ {
+         if (mode == MODE_COUNT) {
+@@ -480,6 +481,15 @@ emit_tmu_general_address_write(struct v3d_compile *c,
+         else
+                 tmua = vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_TMUAU);
+ 
++        /* A 3.3 thread must issue a read even when its active-lane mask
++         * is empty. Otherwise THRSW/LDTMU can wait forever. Route inactive
++         * compute lanes to mapped uniform storage without issuing stores
++         * or atomics for those lanes.
++         */
++        bool safe_load = c->devinfo->ver == 33 &&
++                c->s->info.stage == MESA_SHADER_COMPUTE && is_load &&
++                vir_in_nonuniform_control_flow(c);
++        struct qreg address = safe_load ? vir_get_temp(c) : tmua;
+         struct qinst *tmu;
+         if (dynamic_src) {
+                 struct qreg offset = base_offset;
+@@ -500,22 +510,28 @@ emit_tmu_general_address_write(struct v3d_compile *c,
+                                 data = vir_UMIN(c, data,
+                                                 vir_uniform_ui(c, size - base - bytes));
+                 }
+-                tmu = vir_ADD_dest(c, tmua, offset, data);
++                tmu = vir_ADD_dest(c, address, offset, data);
+         } else {
+                 if (const_offset != 0) {
+-                        tmu = vir_ADD_dest(c, tmua, base_offset,
++                        tmu = vir_ADD_dest(c, address, base_offset,
+                                            vir_uniform_ui(c, const_offset));
+                 } else {
+-                        tmu = vir_MOV_dest(c, tmua, base_offset);
++                        tmu = vir_MOV_dest(c, address, base_offset);
+                 }
+         }
+ 
++        if (safe_load) {
++                address = vir_SEL(c, V3D_QPU_COND_IFA, address,
++                        vir_uniform(c, QUNIFORM_TMU_DUMMY_ADDRESS, 0));
++                tmu = vir_MOV_dest(c, tmua, address);
++        }
++
+         if (config != ~0) {
+                 tmu->uniform =
+                         vir_get_uniform_index(c, QUNIFORM_CONSTANT, config);
+         }
+ 
+-        if (vir_in_nonuniform_control_flow(c))
++        if (vir_in_nonuniform_control_flow(c) && !safe_load)
+                 vir_set_cond(tmu, V3D_QPU_COND_IFA);
+ 
+         tmu->ldtmu_count = dest_components;
+@@ -708,7 +724,7 @@ ntq_emit_tmu_general(struct v3d_compile *c, nir_intrinsic_instr *instr,
+                 emit_tmu_general_address_write(c, mode, instr, config,
+                                                dynamic_src, offset_src,
+                                                base_offset, const_offset,
+-                                               dest_components, &tmu_writes);
++                                               dest_components, is_load, &tmu_writes);
+ 
+                 assert(tmu_writes > 0);
+                 if (mode == MODE_COUNT) {
+@@ -3645,7 +3661,12 @@ ntq_emit_intrinsic(struct v3d_compile *c, nir_intrinsic_instr *instr)
+                          * (actually supergroup) to block until the last
+                          * invocation reaches the TSY op.
+                          */
+-                        if (c->devinfo->ver >= 42) {
++                        if (c->devinfo->ver == 33) {
++                                struct qinst *sync = vir_YCD_dest(c,
++                                        vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_SYNCU));
++                                sync->uniform = vir_get_uniform_index(c,
++                                        QUNIFORM_CONSTANT, 0xffffffeb);
++                        } else if (c->devinfo->ver >= 42) {
+                                 vir_BARRIERID_dest(c, vir_reg(QFILE_MAGIC,
+                                                               V3D_QPU_WADDR_SYNCB));
+                         } else {
+@@ -4509,11 +4530,42 @@ nir_to_vir(struct v3d_compile *c)
+                 break;
+         case MESA_SHADER_COMPUTE:
+                 if (c->devinfo->ver == 33) {
+-                        /* One 128-invocation raster line per workgroup. The
++                        /* One two-row raster line per workgroup. The
+                          * integer ID tile supplies local index and WG XYZ.
+                          * Lines have one implicit varying even without inputs.
+                          */
+                         vir_NOP(c)->qpu.sig.ldvary = true;
++                        if (c->threads > 1) {
++                                struct qinst *read = vir_MOV_dest(c,
++                                        vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_TMUA),
++                                        vir_uniform(c, QUNIFORM_TMU_DUMMY_ADDRESS, 0));
++                                read->ldtmu_count = 1;
++                                vir_emit_thrsw(c);
++                                vir_LDTMU(c);
++                                c->lock_scoreboard_on_first_thrsw = true;
++                                c->emitted_tlb_load = true;
++                        }
++                        if (c->s->info.uses_control_barrier) {
++                                /* TSY quorum is the number of raster QPU
++                                 * batches rounded up to 16 lanes. Element 0
++                                 * supplies quorum; other elements supply YCD.
++                                 */
++                                struct qreg quorum = vir_YCD(c);
++                                vir_set_pf(c, vir_EIDX_dest(c, vir_nop_reg()),
++                                           V3D_QPU_PF_PUSHZ);
++                                vir_set_cond(vir_MOV_dest(c, quorum,
++                                                vir_uniform_ui(c, DIV_ROUND_UP(
++                                                        c->s->info.workgroup_size[0] *
++                                                        c->s->info.workgroup_size[1] *
++                                                        c->s->info.workgroup_size[2], 16))),
++                                             V3D_QPU_COND_IFA);
++                                c->defs[quorum.index] = NULL;
++                                struct qinst *init = vir_MOV_dest(c,
++                                        vir_reg(QFILE_MAGIC, V3D_QPU_WADDR_SYNCU),
++                                        quorum);
++                                init->uniform = vir_get_uniform_index(c,
++                                        QUNIFORM_CONSTANT, 0xffffffe0);
++                        }
+                         struct qreg id[4];
+                         for (unsigned i = 0; i < 4; i++) {
+                                 struct qinst *read = vir_NOP(c);
+@@ -4881,7 +4933,9 @@ v3d_nir_to_vir(struct v3d_compile *c)
+         /* Attempt to allocate registers for the temporaries.  If we fail,
+          * reduce thread count and try again.
+          */
+-        int min_threads = (c->devinfo->ver >= 41) ? 2 : 1;
++        int min_threads = (c->devinfo->ver >= 41 ||
++                           (c->devinfo->ver == 33 &&
++                            c->s->info.stage == MESA_SHADER_COMPUTE)) ? 2 : 1;
+         struct qpu_reg *temp_registers;
+         while (true) {
+                 temp_registers = v3d_register_allocate(c);
+diff --git a/src/broadcom/compiler/qpu_schedule.c b/src/broadcom/compiler/qpu_schedule.c
+index c3049d1..5e74161 100644
+--- a/src/broadcom/compiler/qpu_schedule.c
++++ b/src/broadcom/compiler/qpu_schedule.c
+@@ -2064,6 +2064,17 @@ qpu_inst_before_thrsw_valid_in_delay_slot(struct v3d_compile *c,
+                                           const struct qinst *qinst,
+                                           uint32_t slot)
+ {
++        /* 3.3 TSY commands must be issued with or before the THRSW
++         * signal, rather than in its delay slots.
++         */
++        if (c->devinfo->ver == 33 && slot > 0 &&
++            qinst->qpu.type == V3D_QPU_INSTR_TYPE_ALU &&
++            ((qinst->qpu.alu.add.magic_write &&
++              v3d_qpu_magic_waddr_is_tsy(qinst->qpu.alu.add.waddr)) ||
++             (qinst->qpu.alu.mul.magic_write &&
++              v3d_qpu_magic_waddr_is_tsy(qinst->qpu.alu.mul.waddr))))
++                return false;
++
+         /* No scheduling SFU when the result would land in the other
+          * thread.  The simulator complains for safety, though it
+          * would only occur for dead code in our case.
+@@ -2199,7 +2210,10 @@ qpu_inst_after_thrsw_valid_in_delay_slot(struct v3d_compile *c,
+          * cannot place it in its delay slots, or we would be moving the sync
+          * to the thrsw before it instead.
+          */
+-        if (qinst->qpu.alu.add.op == V3D_QPU_A_BARRIERID)
++        if (qinst->qpu.alu.add.op == V3D_QPU_A_BARRIERID ||
++            (c->devinfo->ver == 33 &&
++             v3d_qpu_magic_waddr_is_tsy(qinst->qpu.alu.add.waddr) &&
++             qinst->qpu.alu.add.magic_write))
+                 return false;
+ 
+         return true;
+diff --git a/src/broadcom/compiler/vir.c b/src/broadcom/compiler/vir.c
+index ae3b1f0..4d66df4 100644
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -584,7 +584,7 @@ vir_compile_init(const struct v3d_compiler *compiler,
+         c->compile_strategy_idx = compile_strategy_idx;
+         c->threads = (c->devinfo->ver == 33 &&
+                       s->info.stage == MESA_SHADER_COMPUTE) ?
+-                     1 : strategy->max_threads;
++                     2 : strategy->max_threads;
+         c->debug_output = debug_output;
+         c->debug_output_data = debug_output_data;
+         c->compilation_result = V3D_COMPILATION_SUCCEEDED;
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index 0f10dd7..1cfe521 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1396,7 +1396,8 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+ 
+ #if V3D_VERSION == 33
+ /* Experimental render-only compute, deliberately separate from the CSD path.
+- * A 64x32 RGBA16UI tile supplies 16 groups of 128 invocation IDs. The NV
++ * A 64x32 RGBA16UI tile supplies IDs for 16 workgroups. Each group
++ * uses a two-row line rounded to 16 invocations. The NV
+  * shader record accepts raster coordinates directly, without a binner or VS.
+  */
+ static void
+@@ -1410,8 +1411,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+         v3d_update_compiled_cs(v3d);
+         struct v3d_compiled_shader *cs = v3d->prog.compute;
+         if (!cs->resource || !wg_size || wg_size > 128 ||
+-            cs->prog_data.compute->shared_size > 16384 ||
+-            cs->prog_data.base->has_control_barrier) {
++            cs->prog_data.compute->shared_size > 16384) {
+                 fprintf(stderr, "compute33: unsupported experimental dispatch\n");
+                 return;
+         }
+@@ -1432,6 +1432,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                         return;
+                 count *= v3d->compute_num_workgroups[d];
+         }
++        const unsigned line_width = align(wg_size, 16) / 2;
+         for (uint64_t first = 0; first < count; first += 16) {
+                 const unsigned groups = MIN2(count - first, 16);
+                 struct v3d_job *job = v3d_job_create(v3d);
+@@ -1457,10 +1458,14 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 memset(id_map, 0, ids->size);
+                 for (unsigned y = 0; y < groups * 2; y++) {
+                         for (unsigned x = 0; x < 64; x++) {
+-                                unsigned local = (y & 1) * 64 + x;
++                                unsigned local = (y & 1) * line_width + x;
+                                 uint64_t group = first + y / 2;
++                                /* MSF masks writes, not reads. Give padding
++                                 * lanes invocation 0's valid addresses.
++                                 */
+                                 uint16_t id[4] = {
+-                                        local | ((y / 2) << 7) | (local >= wg_size ? 0x8000 : 0),
++                                        (local < wg_size ? local : 0) | ((y / 2) << 7) |
++                                                (local >= wg_size ? 0x8000 : 0),
+                                         group % v3d->compute_num_workgroups[0],
+                                         (group / v3d->compute_num_workgroups[0]) %
+                                                 v3d->compute_num_workgroups[1],
+@@ -1535,7 +1540,9 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 }
+                 cl_emit(&rcl, END_OF_RENDERING, end);
+                 uint32_t record[] = {
+-                        0x80, 0x10000, 0, (code->offset + cs->offset) | 4,
++                        0x80, 0x10000, 0, (code->offset + cs->offset) | 4 |
++                        (cs->prog_data.base->threads == 4 ? 2 :
++                         cs->prog_data.base->threads == 2 ? 1 : 0),
+                         uniforms.bo->offset + uniforms.offset, 0,0,0,0,
+                         cl->offset + 0x800, 0x2096, 4,
+                         cl->offset + 0x900, 0x209a, 0,
+@@ -1544,7 +1551,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 uint16_t *xy = (void *)(map + 0x800);
+                 for (unsigned i = 0; i < groups; i++) {
+                         xy[i*4] = 128; xy[i*4+1] = 256 + 512*i;
+-                        xy[i*4+2] = 64*256+128; xy[i*4+3] = 256 + 512*i;
++                        xy[i*4+2] = line_width*256+128; xy[i*4+3] = 256 + 512*i;
+                 }
+                 uint32_t zw[] = {0, 0x3f800000};
+                 memcpy(map + 0x900, zw, sizeof(zw));

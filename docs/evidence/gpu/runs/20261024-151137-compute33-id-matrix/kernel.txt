@@ -1,0 +1,62 @@
+4,1760,148255786471,-;drm_sched_entity_init: called with uninitialized scheduler
+4,1761,148264268193,-;kstb-compute-te invoked oom-killer: gfp_mask=0x140dca(GFP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), order=0, oom_score_adj=0
+4,1762,148264281813,-;CPU: 3 UID: 0 PID: 12557 Comm: kstb-compute-te Tainted: G           O        6.18.57-kstb #29 NONE 
+4,1763,148264281825,-;Tainted: [O]=OOT_MODULE
+4,1764,148264281827,-;Hardware name: KaonMedia KSTB6077 (DT)
+4,1765,148264281832,-;Call trace:
+4,1766,148264281835,-; show_stack+0x18/0x24 (C)
+4,1767,148264281859,-; __dump_stack+0x28/0x38
+4,1768,148264281865,-; dump_stack_lvl+0x54/0x6c
+4,1769,148264281871,-; dump_stack+0x18/0x24
+4,1770,148264281876,-; dump_header+0x40/0x100
+4,1771,148264281884,-; oom_kill_process+0xc4/0x57c
+4,1772,148264281893,-; out_of_memory+0x3d8/0x460
+4,1773,148264281899,-; __alloc_pages_may_oom+0xd0/0x19c
+4,1774,148264281908,-; __alloc_pages_slowpath+0x31c/0x420
+4,1775,148264281913,-; __alloc_frozen_pages_noprof+0x1b4/0x1d0
+4,1776,148264281918,-; __folio_alloc_noprof+0x14/0x30
+4,1777,148264281924,-; vma_alloc_zeroed_movable_folio+0x34/0x40
+4,1778,148264281931,-; handle_mm_fault+0x620/0xefc
+4,1779,148264281942,-; do_page_fault+0x144/0x670
+4,1780,148264281947,-; do_translation_fault+0x34/0x44
+4,1781,148264281952,-; do_mem_abort+0x3c/0x8c
+4,1782,148264281957,-; el0_da+0x48/0x88
+4,1783,148264281968,-; el0t_64_sync_handler+0x70/0xdc
+4,1784,148264281974,-; el0t_64_sync+0x198/0x19c
+4,1785,148264281982,-;Mem-Info:
+4,1786,148264416301,-;active_anon:44762 inactive_anon:439392 isolated_anon:0\x0a active_file:204 inactive_file:353 isolated_file:0\x0a unevictable:56 dirty:13 writeback:0\x0a slab_reclaimable:1796 slab_unreclaimable:3965\x0a mapped:2283 shmem:46182 pagetables:1090\x0a sec_pagetables:0 bounce:0\x0a kernel_misc_reclaimable:0\x0a free:3439 free_pcp:365 free_cma:0
+4,1787,148264472289,-;Node 0 active_anon:179048kB inactive_anon:1757568kB active_file:816kB inactive_file:1412kB unevictable:224kB isolated(anon):0kB isolated(file):0kB mapped:9132kB dirty:52kB writeback:0kB shmem:184728kB kernel_stack:1504kB pagetables:4360kB sec_pagetables:0kB all_unreclaimable? no Balloon:0kB
+4,1788,148264504417,c;DMA free:13756kB boost:0kB min:5652kB low:7648kB high:9644kB reserved_highatomic:0KB free_highatomic:0KB active_anon:179048kB inactive_anon:1757568kB active_file:816kB inactive_file:1412kB unevictable:224kB writepending:52kB zspages:0kB present:2054144kB managed:1999188kB mlocked:0kB bounce:0kB free_pcp:1460kB local_pcp:0kB free_cma:0kB
+4,1789,148264544634,-;lowmem_reserve[]: 0 0 0 0
+4,1790,148264551602,c;DMA: 442*4kB (UE) 334*8kB (UE) 140*16kB (UE) 95*32kB (UME) 33*64kB (UME) 7*128kB (UME) 4*256kB (UME) 0*512kB 0*1024kB 0*2048kB 0*4096kB = 13752kB
+4,1791,148264572850,-;46772 total pagecache pages
+4,1792,148264580371,-;0 pages in swap cache
+4,1793,148264587386,-;Free swap  = 0kB
+4,1794,148264593987,-;Total swap = 0kB
+4,1795,148264600402,-;513536 pages RAM
+4,1796,148264606679,-;0 pages HighMem/MovableOnly
+4,1797,148264613879,-;13739 pages reserved
+4,1798,148264620447,-;16384 pages cma reserved
+6,1799,148264627346,-;Tasks state (memory values in pages):
+6,1800,148264635403,-;[  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+6,1801,148264650041,-;[    427]     0   427     1898      268      224       44         0    45056        0             0 udevd
+6,1802,148264664299,-;[    551]     0   551      491      112       64       48         0    45056        0             0 sh
+6,1803,148264678301,-;[    552]     0   552      491       82       64       18         0    36864        0             0 sh
+6,1804,148264692306,-;[    723]     0   723      427       50        0       50         0    36864        0             0 syslogd
+6,1805,148264706753,-;[    745]   100   745      420       79       32       47         0    32768        0             0 dbus-daemon
+6,1806,148264721550,-;[    835]     0   835      423       65        0       65         0    40960        0             0 udhcpc
+6,1807,148264735899,-;[    905]    86   905      703      127       64       63         0    36864        0             0 avahi-daemon
+6,1808,148264750788,-;[    906]    86   906      632       54        0       54         0    36864        0             0 avahi-daemon
+6,1809,148264765656,-;[    930]   101   930      385      100       32       68         0    36864        0             0 chronyd
+6,1810,148264780088,-;[    931]   101   931      373       64        0       64         0    36864        0             0 chronyd
+6,1811,148264794478,-;[    952]     0   952      425       48        0       48         0    36864        0             0 crond
+6,1812,148264808660,-;[    972]     0   972      219       41        0       41         0    36864        0             0 seatd
+6,1813,148264822818,-;[    973]     0   973      217       69        0       69         0    32768        0             0 logger
+6,1814,148264837063,-;[    997]     0   997     1567      291      265       26         0    45056        0         -1000 sshd
+6,1815,148264851117,-;[  12544]     0 12544     1740      344      288       56         0    45056        0             0 sshd-session
+6,1816,148264865896,-;[  12546]     0 12546     1807      427      360       67         0    45056        0             0 sshd-session
+6,1817,148264880654,-;[  12547]     0 12547     4391     1764     1464      300         0    69632        0             0 python3
+6,1818,148264894990,-;[  12556]     0 12556      422       11        0       11         0    36864        0             0 watchdog
+6,1819,148264909412,-;[  12557]     0 12557   440098   437213   435232       99      1882  3563520        0             0 kstb-compute-te
+6,1820,148264924456,-;oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),task=kstb-compute-te,pid=12557,uid=0
+3,1821,148264937193,-;Out of memory: Killed process 12557 (kstb-compute-te) total-vm:1760392kB, anon-rss:1740928kB, file-rss:396kB, shmem-rss:7528kB, UID:0 pgtables:3480kB oom_score_adj:0

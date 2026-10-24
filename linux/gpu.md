@@ -136,13 +136,11 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 
 ## Where it stands
 
-Build `23.3.6-cd573075` (`v3d_dri.so` `7df059cd…`, patches 0001–0023,
-`/opt/mesa/current` since 2026-10-24) on kernel `#29` from `KRN` (patches
-0001–0005), with `kstb-gpu-run`. Results, kernel logs and summaries are in
-[`../docs/evidence/gpu/runs/`](../docs/evidence/gpu/runs):
-`20261023-232845-gles3-cd573-full`, `20261024-002824-gles2-cd573-full`,
-`20261024-004055-egl-cd573-full`.
-
+The selected build is `23.3.6-fe7dda5e` (`v3d_dri.so` `084ed6ac…`, patches
+0001–0024), on kernel `#29` from `KRN` (patches 0001–0005). Its image
+implementation passed all GLES3/GLES2/EGL regression cases; the tested scratch
+code was verified against the numbered artifact. Details and evidence are in
+[`gpu-compute.md`](gpu-compute.md).
 | Run | Pass | NotSupported | QualityWarning | Fail | Crash | MMU errors / resets |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | GLES2, all 17,165 | 17,041 | 119 | 5 | 0 | 0 | 0 / 0 |
@@ -152,7 +150,13 @@ Build `23.3.6-cd573075` (`v3d_dri.so` `7df059cd…`, patches 0001–0023,
 No GLES2, GLES3 or EGL case fails. All 65,722 statuses match `848c0204`
 on kernel `#29`, including warnings and unsupported cases. Fragment SSBO
 stores, atomics and std140/std430 layout tests also pass with the explicit
-GLES3.1 override; images and compute remain unavailable.
+GLES3.1 override; fragment image loads, stores and atomics also pass.
+
+Build `23.3.6-f5f33af0` (patches 0001–0027) adds opt-in render-only compute:
+195/195 official compute cases pass with no GPU faults. It is installed
+alongside the selected build, with full graphics regression running.
+`V3D_COMPUTE33=1` enables the experiment; default GLES remains 3.0. See
+[`gpu-compute.md`](gpu-compute.md) for limits, tests and retained failures.
 
 The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
 case by case: GLES2 and EGL identical, in GLES3 only
@@ -175,7 +179,8 @@ patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
 ## Open
 
 - TFU jobs get no MMU flush (untested).
-- Image load/store and compute on V3D 3.3 are still unavailable.
+- GLES 3.1 remains opt-in; texture gather and the full GLES 3.1 regression remain outstanding.
+- RGBA32F texelFetch at a nonzero mip with GL_NEAREST returns zero; the tracked image tests use a mipmapped filter.
 - Compiler strategy tuning: some shaders now use two threads with spills
   instead of one without spills and take longer ([`gpu-compute.md`](gpu-compute.md)).
 - `drm_sched_entity_init` warns on context creation for an absent queue.

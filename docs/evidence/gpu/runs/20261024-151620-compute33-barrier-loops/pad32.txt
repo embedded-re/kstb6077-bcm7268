@@ -1,0 +1,16 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-de6969c8ce)
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 126 inst, 2 threads, 1 loops, 36 uniforms, 24 max-temps, 0:0 spills:fills, 0 sfu-stalls, 126 inst-and-stalls, 9 nops
+word 1024: 0xa5a5a5a5 expected 0
+word 1025: 0xa5a5a5a5 expected 0
+word 1026: 0xa5a5a5a5 expected 0
+word 1027: 0xa5a5a5a5 expected 0
+word 1028: 0xa5a5a5a5 expected 0
+word 1029: 0xa5a5a5a5 expected 0
+word 1030: 0xa5a5a5a5 expected 0
+word 1031: 0xa5a5a5a5 expected 0x3
+word 1032: 0xa5a5a5a5 expected 0
+word 1033: 0xa5a5a5a5 expected 0
+word 1034: 0xa5a5a5a5 expected 0
+word 1035: 0xa5a5a5a5 expected 0xd7ea125d
+FAIL line 172: !errors
+compute IDs local=8x2x2 grid=3x2x2 invocations=384: FAIL (4608 errors, guards checked)
