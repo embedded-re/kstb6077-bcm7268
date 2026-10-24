@@ -1,0 +1,3 @@
+submit render-only, lines 13 RCL bytes 166
+completed one render job, no bin job, seconds 0.0005707029777113348
+ID read/XOR/store verified texels 2048 expected 2048 active 1664 errors 0

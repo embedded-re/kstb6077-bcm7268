@@ -1,0 +1,3 @@
+submit render-only, lines 13 RCL bytes 162
+completed one render job, no bin job, seconds 0.0018123310001101345
+NV ID to vector TMU stores 1664 invocations, errors 0

@@ -332,7 +332,7 @@ and `/usr/local` are unchanged. Compute and default GLES3.1 remain off.
 
 ## Render-only compute submission probe (2026-10-24)
 
-`kstb-compute-render-test` submits a 64x32 RGBA16F tile directly to the
+`kstb-compute-render-test` submits a 64x32 RGBA16UI tile directly to the
 render queue, with an empty bin list. Pre-shaded integer XY and constant
 ZW attributes feed the NV shader record (opcode 68), followed by compressed
 line primitives. Only the fragment shader runs. No Mesa driver is loaded.
@@ -358,3 +358,33 @@ This proves render-only NV submission and fragment coverage, not the
 compute API. ID-image reads, shared memory, workgroup barriers and Mesa
 `glDispatchCompute` integration remain under development. The numbered
 Mesa build, kernel and system selection are unchanged by these raw probes.
+
+
+## Compute ID and memory-write probes (2026-10-24)
+
+The vendor ID tile uses **RGBA16UI**, as confirmed by internal type 5 and
+output format 24 in the packet definitions. Earlier handoff notes called
+it RGBA16F; that label was incorrect. The numeric packet fields used by
+the render probe already match the vendor's integer configuration.
+
+`kstb-compute-id-test` reads all four 16-bit ID fields into zero-extended
+32-bit QPU registers using integer TLB config `0xffffff7b`. It XORs the low
+bit of R/B, repacks the four components and writes them to the tile buffer.
+All sixteen [coverage cases](../docs/evidence/gpu/runs/20261024-133950-compute-nv-id-matrix/results.json)
+Pass; all fields vary and include nonzero high components. Unshaded pixels
+must retain the source ID image. Float-format reads were a prototype
+mistake: they cycled through R/G and failed the full-field reference.
+
+`kstb-compute-store-test` uses those IDs to derive a linear destination
+address, then writes all four fields as a vector of 32-bit words through
+the TMU. It requests kernel cache cleaning, performs no framebuffer
+output, and checks both buffer guards plus all inactive records. Exactly
+one render job and one cache-clean job, with no bin job, must complete.
+All sixteen [line-count cases](../docs/evidence/gpu/runs/20261024-134411-compute-nv-store-matrix/results.json)
+Pass, from 128 through 2,048 invocations (32,768 output bytes at the largest
+size). No MMU errors, GPU resets or oopses occurred; only the known context
+scheduler warning remains. The watchdog was active.
+
+These probes use single-threaded QPU programs and raw DRM submission.
+They establish the ID and memory paths needed for compute; they do not yet
+implement `glDispatchCompute`, shared memory or workgroup barriers.

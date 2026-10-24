@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Render-only NV shader probe. One 64x32 RGBA16F tile; no bin/vertex shader.
+# Render-only NV shader probe. One 64x32 RGBA16UI tile; no bin/vertex shader.
 # The CPU checks every texel and a trailing guard after the render job.
 import ctypes, fcntl, mmap, os, struct, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
