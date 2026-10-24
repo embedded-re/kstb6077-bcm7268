@@ -288,7 +288,7 @@ remains open; image loads and stores at those mip levels pass independently.
 The candidate also passes all 200
 [spill-heavy texture-unit cases](../docs/evidence/gpu/runs/20261024-100853-gles3-image33-focused-spill/summary.txt),
 with no MMU errors, resets or oopses. Full GLES3/GLES2/EGL regression subsequently passed (see below); the
-candidate remains outside the installed numbered Mesa series.
+candidate subsequently passed numbered-build smoke checks (below).
 
 
 The implementation is exported as Mesa patch 0024. `make -C linux/mesa
@@ -297,7 +297,7 @@ check` and the reproducible build pass; candidate artifact
 `084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208`.
 Building the committed source with the scratch driver's previous Git
 version string reproduces its exact `3dbbf519…` binary. The candidate
-artifact has not been installed. Full graphics regression passed as recorded below.
+artifact was subsequently installed after full graphics regression passed.
 
 
 ## Full image-candidate graphics regression (2026-10-24)
@@ -310,5 +310,21 @@ No MMU errors, GPU resets or oopses occurred. The watchdog was active.
 - [GLES2 evidence](../docs/evidence/gpu/runs/20261024-111231-gles2-image33-full/summary.txt): 17,041 Pass, 119 NotSupported, 5 QualityWarning.
 - [EGL evidence](../docs/evidence/gpu/runs/20261024-112509-egl-image33-full/summary.txt): 833 Pass, 2,955 NotSupported, 1 QualityWarning.
 
-The numbered artifact fe7dda5e still needs installation and smoke checks;
-`/opt/mesa/current` remains cd573075. Compute and default GLES3.1 remain off.
+The numbered artifact fe7dda5e subsequently passed installation smoke checks
+and is now selected under `/opt/mesa/current` (below). Compute and default
+GLES3.1 remain off.
+
+
+## Numbered image build selected (2026-10-24)
+
+`23.3.6-fe7dda5e` was installed alongside cd573075 after the full regression.
+The installed DRI hash matches the build artifact (`084ed6ac…`). All 46
+[standalone smoke cases](../docs/evidence/gpu/runs/20261024-130558-fe7dda5e-image-smoke/results.json)
+Pass: 33 formats, four contended atomic sizes, six layered/non-layered mip
+cases and three coordinate-boundary cases. All 21
+[official fragment smoke cases](../docs/evidence/gpu/runs/20261024-130624-gles31-fe7dda5e-fragment-smoke/summary.txt)
+Pass: twelve image early/late tests and nine SSBO binding tests. No MMU
+errors, resets or oopses occurred; the known scheduler warning remains.
+
+`/opt/mesa/current` now selects fe7dda5e; cd573075 is retained. Kernel #29
+and `/usr/local` are unchanged. Compute and default GLES3.1 remain off.

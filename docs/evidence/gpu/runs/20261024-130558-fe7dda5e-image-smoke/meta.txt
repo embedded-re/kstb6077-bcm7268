@@ -1,0 +1,7 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-cd573075
+084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208  /opt/mesa/23.3.6-fe7dda5e/lib/dri/v3d_dri.so
+084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208  /opt/mesa/23.3.6-fe7dda5e/lib/dri/v3d_dri.so
+b69ceaa7beb9eaa60279b0e6e3534521e1e9b7ccee1fe32e615eba54ec58d156  /opt/gpu-test/kstb-image-format-test
+explicit mesa 23.3.6-fe7dda5e
+MESA_SHADER_CACHE_DISABLE=true

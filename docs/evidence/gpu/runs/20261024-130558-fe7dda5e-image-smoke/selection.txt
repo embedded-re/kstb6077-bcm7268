@@ -1,0 +1,3 @@
+current: 23.3.6-fe7dda5e (was 23.3.6-cd573075)
+23.3.6-fe7dda5e
+084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208  /opt/mesa/current/lib/dri/v3d_dri.so
