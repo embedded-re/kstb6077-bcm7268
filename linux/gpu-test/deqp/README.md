@@ -36,3 +36,10 @@ GLES3.1 override, six info and nine fragment SSBO binding cases Pass;
 see [the results](../../gpu-compute.md). A version override does not
 establish GLES3.1 conformance; compute and image features need separate
 implementation and hardware tests before being exposed by default.
+
+`result-reasons.py results-gles3.txt ...` inventories every non-Pass
+outcome by status, exact CTS reason and test family. It records input hashes
+and rejects duplicate or malformed rows. `--json` includes every case name.
+A skip reason records the observed condition; it does not prove a hardware
+limit. The [kernel #29 baseline inventory](../../../docs/evidence/gpu/runs/20261024-232200-baseline-reasons/README.md)
+covers all 3,940 skips and quality warnings and lists the unresolved causes.

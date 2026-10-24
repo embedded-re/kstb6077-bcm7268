@@ -1,0 +1,2 @@
+/tmp/kstb-gpu-audit/neural-hidden.comp
+/tmp/kstb-gpu-audit/neural-logits.comp

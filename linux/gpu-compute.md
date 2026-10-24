@@ -587,3 +587,11 @@ process while a genuinely absent case is still Missing.
 The new full GLES 3.1 run uses the corrected runner and stops for a failing
 result or GPU fault. Full GLES 3.1 and post-0030 graphics regressions remain
 pending; the selected build and system default have not changed.
+
+`kstb-neural-test [batch]` prepares a real two-dispatch compute workload:
+a deterministic dense 32 -> 16 ReLU -> 8 network, with CPU comparisons for
+every hidden value, output and predicted class, plus guarded output buffers.
+`--cpu-only [batch]` runs the reference without opening the GPU. The source
+cross-builds and its CPU reference runs on the board for batches 1, 65 and
+257; GPU execution is still pending behind the full GLES 3.1 suite.
+[Reference preparation](../docs/evidence/gpu/runs/20261024-232200-neural-cpu/README.md).

@@ -1,0 +1,5 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+a00f8f60a6816f0655c5d0ecf19afef40087b21e76d64aff2baaa4f4add76cc0  /opt/gpu-test/kstb-neural-test
+dense 32 -> 16 ReLU -> 8, batch 1; CPU 0.004 ms; class checksum 0x10c56d3
+dense 32 -> 16 ReLU -> 8, batch 65; CPU 0.102 ms; class checksum 0x7ad72d7
+dense 32 -> 16 ReLU -> 8, batch 257; CPU 0.410 ms; class checksum 0xdae64da0
