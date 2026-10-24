@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 11:58:15 +0200
-Subject: [PATCH 09/23] v3d: clamp dynamic uniform offsets to the uploaded
+Subject: [PATCH 09/24] v3d: clamp dynamic uniform offsets to the uploaded
  block before 4.0
 
 Dynamic load_uniform offsets went past the uniform BO (MMU errors in

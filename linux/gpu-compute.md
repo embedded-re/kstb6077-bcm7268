@@ -289,3 +289,12 @@ The candidate also passes all 200
 [spill-heavy texture-unit cases](../docs/evidence/gpu/runs/20261024-100853-gles3-image33-focused-spill/summary.txt),
 with no MMU errors, resets or oopses. Full GLES3/GLES2/EGL regression is
 still running; the candidate remains outside the numbered Mesa series.
+
+
+The implementation is exported as Mesa patch 0024. `make -C linux/mesa
+check` and the reproducible build pass; candidate artifact
+`mesa-23.3.6-fe7dda5e.tar` has DRI SHA256
+`084ed6ac8d1f1b528704d7aa36335274de8bd0f4028b6fc4b5e1fb0f3a522208`.
+Building the committed source with the scratch driver's previous Git
+version string reproduces its exact `3dbbf519…` binary. The candidate
+artifact has not been installed; full graphics regression remains pending.

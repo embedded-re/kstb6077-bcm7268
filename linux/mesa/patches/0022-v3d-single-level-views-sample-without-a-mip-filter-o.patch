@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Thu, 22 Oct 2026 18:35:14 +0200
-Subject: [PATCH 22/23] v3d: single-level views sample without a mip filter on
+Subject: [PATCH 22/24] v3d: single-level views sample without a mip filter on
  3.3
 
 3.3 has no max level field, so GL_TEXTURE_MAX_LEVEL is the TMU's max
