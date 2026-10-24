@@ -418,3 +418,14 @@ Evidence: [IDs](../docs/evidence/gpu/runs/20261024-150050-compute33-id-matrix/su
 `kstb-compute-test` checks IDs; `KSTB_INDIRECT=1`, `KSTB_GPU_INDIRECT=1`
 (with indirect) and `KSTB_CHAIN=1` select the ordering tests.
 `KSTB_COMPUTE=1` selects compute in the existing SSBO/image atomic tests.
+
+### Shared memory without an execution barrier
+
+The next scratch candidate allocates 16 KB per workgroup, with disjoint slots
+for the 16 workgroups in each render job. Seven ID shapes pass with a dynamic
+shared-memory store, `memoryBarrierShared`, `atomicAdd`, another memory
+barrier and a readback checked on the CPU. Padding lanes and all SSBO guards
+also pass, with zero MMU faults, resets or oopses. This checks each invocation's
+own shared-memory access; cross-invocation exchange still needs an execution
+barrier. `KSTB_SHARED=1 kstb-compute-test` selects this test.
+[Evidence and incremental patch](../docs/evidence/gpu/runs/20261024-150624-compute33-shared/summary.txt).

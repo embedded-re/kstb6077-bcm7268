@@ -1,0 +1,4 @@
+7 shared-memory ID tests passed
+16384 bytes shared memory per workgroup; per-invocation store, atomicAdd and readback
+No cross-invocation exchange or execution barrier in these tests
+0 MMU errors, resets, oopses, or timeouts

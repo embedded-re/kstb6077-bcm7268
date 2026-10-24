@@ -1,0 +1,91 @@
+From 5483ef146d48e98005593466060ee2c53fb37143 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sat, 24 Oct 2026 15:10:02 +0200
+Subject: [PATCH] v3d: allocate per-workgroup shared memory for compute33
+
+---
+ src/broadcom/compiler/nir_to_vir.c   | 11 +++++++++++
+ src/gallium/drivers/v3d/v3d_screen.c |  2 +-
+ src/gallium/drivers/v3d/v3dx_draw.c  | 10 ++++++++--
+ 3 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/src/broadcom/compiler/nir_to_vir.c b/src/broadcom/compiler/nir_to_vir.c
+index 8f87f98..f2381fb 100644
+--- a/src/broadcom/compiler/nir_to_vir.c
++++ b/src/broadcom/compiler/nir_to_vir.c
+@@ -4534,6 +4534,17 @@ nir_to_vir(struct v3d_compile *c)
+                                 vir_SHL(c, id[2], vir_uniform_ui(c, 16)));
+                         c->cs_payload[1] = vir_OR(c, id[3],
+                                 vir_SHL(c, local, vir_uniform_ui(c, 25)));
++                        struct qreg slot = vir_AND(c,
++                                vir_SHR(c, id[0], vir_uniform_ui(c, 7)),
++                                vir_uniform_ui(c, 15));
++                        c->cs_payload[1] = vir_OR(c, c->cs_payload[1],
++                                vir_SHL(c, slot, vir_uniform_ui(c, 16)));
++                        if (c->s->info.shared_size) {
++                                c->cs_shared_offset = vir_ADD(c,
++                                        vir_uniform(c, QUNIFORM_SHARED_OFFSET, 0),
++                                        vir_UMUL(c, slot, vir_uniform_ui(c,
++                                                c->s->info.shared_size)));
++                        }
+                         vir_SETMSF_dest(c, vir_nop_reg(),
+                                 vir_XOR(c, vir_SHR(c, id[0],
+                                                   vir_uniform_ui(c, 15)),
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index b569ecf..384f7bc 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -536,7 +536,7 @@ v3d_get_compute_param(struct pipe_screen *pscreen, enum pipe_shader_ir ir_type,
+ 
+         case PIPE_COMPUTE_CAP_MAX_LOCAL_SIZE:
+                 /* GL_MAX_COMPUTE_SHARED_MEMORY_SIZE */
+-                RET((uint64_t []) { 32768 });
++                RET((uint64_t []) { screen->has_compute33 ? 16384 : 32768 });
+ 
+         case PIPE_COMPUTE_CAP_MAX_PRIVATE_SIZE:
+         case PIPE_COMPUTE_CAP_MAX_INPUT_SIZE:
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index c9c7f17..0f10dd7 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1410,7 +1410,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+         v3d_update_compiled_cs(v3d);
+         struct v3d_compiled_shader *cs = v3d->prog.compute;
+         if (!cs->resource || !wg_size || wg_size > 128 ||
+-            cs->prog_data.compute->shared_size ||
++            cs->prog_data.compute->shared_size > 16384 ||
+             cs->prog_data.base->has_control_barrier) {
+                 fprintf(stderr, "compute33: unsupported experimental dispatch\n");
+                 return;
+@@ -1443,6 +1443,11 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 v3d_job_add_bo(job, color);
+                 struct v3d_bo *code = v3d_resource(cs->resource)->bo;
+                 v3d_job_add_bo(job, code);
++                if (cs->prog_data.compute->shared_size) {
++                        v3d->compute_shared_memory = v3d_bo_alloc(screen,
++                                cs->prog_data.compute->shared_size * groups,
++                                "compute33_shared");
++                }
+                 struct v3d_cl_reloc uniforms = v3d_write_uniforms(v3d, job, cs,
+                                                                PIPE_SHADER_COMPUTE);
+                 v3d_job_add_bo(job, uniforms.bo);
+@@ -1455,7 +1460,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                                 unsigned local = (y & 1) * 64 + x;
+                                 uint64_t group = first + y / 2;
+                                 uint16_t id[4] = {
+-                                        local | (local >= wg_size ? 0x8000 : 0),
++                                        local | ((y / 2) << 7) | (local >= wg_size ? 0x8000 : 0),
+                                         group % v3d->compute_num_workgroups[0],
+                                         (group / v3d->compute_num_workgroups[0]) %
+                                                 v3d->compute_num_workgroups[1],
+@@ -1554,6 +1559,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                         fprintf(stderr, "compute33 submit: %s\n", strerror(errno));
+                 v3d_job_free(v3d, job);
+                 v3d_bo_unreference(&uniforms.bo);
++                v3d_bo_unreference(&v3d->compute_shared_memory);
+                 v3d_bo_unreference(&cl);
+                 v3d_bo_unreference(&ids);
+                 v3d_bo_unreference(&color);
+-- 
+2.56.0
+

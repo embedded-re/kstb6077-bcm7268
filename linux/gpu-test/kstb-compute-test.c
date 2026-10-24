@@ -50,18 +50,25 @@ int main(int argc, char **argv)
     CHECK(ctx != EGL_NO_CONTEXT && eglMakeCurrent(dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx));
     printf("%s\n", glGetString(GL_VERSION));
 
+    int shared=getenv("KSTB_SHARED")!=NULL;
     char source[4096];
     snprintf(source,sizeof(source),
         "#version 310 es\nprecision highp int;\n"
         "layout(local_size_x=%u,local_size_y=%u,local_size_z=%u) in;\n"
-        "layout(std430,binding=0) writeonly buffer D { uvec4 result[]; };\n"
+        "%s\nlayout(std430,binding=0) writeonly buffer D { uvec4 result[]; };\n"
         "void main() { uvec3 v=gl_GlobalInvocationID;"
         "uvec3 size=gl_NumWorkGroups*gl_WorkGroupSize;"
-        "uint i=3u*(v.x+size.x*(v.y+size.y*v.z));"
+        "uint i=3u*(v.x+size.x*(v.y+size.y*v.z)); uint shared_mix=0u; %s"
         "result[i]=uvec4(v,gl_LocalInvocationIndex);"
         "result[i+1u]=uvec4(gl_WorkGroupID,gl_NumWorkGroups.x);"
         "result[i+2u]=uvec4(gl_LocalInvocationID,"
-        "gl_NumWorkGroups.y+65536u*gl_NumWorkGroups.z); }\n",b[0],b[1],b[2]);
+        "(gl_NumWorkGroups.y+65536u*gl_NumWorkGroups.z)^shared_mix); }\n",b[0],b[1],b[2],
+        shared ? "shared uint tile[4096];" : "",
+        shared ? "uint si=(gl_LocalInvocationIndex*17u+37u)&4095u;"
+                 "uint hash=v.x*2654435761u ^ (v.y<<12u) ^ (v.z<<24u);"
+                 "tile[si]=hash; memoryBarrierShared();"
+                 "uint old=atomicAdd(tile[si],5u); memoryBarrierShared();"
+                 "shared_mix=tile[si]^old;" : "");
     GLuint prog=glCreateProgram(); glAttachShader(prog,shader(GL_COMPUTE_SHADER,source));
     glLinkProgram(prog); GLint linked; glGetProgramiv(prog,GL_LINK_STATUS,&linked);
     if(!linked) { char log[4096]; glGetProgramInfoLog(prog,sizeof(log),NULL,log); fprintf(stderr,"%s\n",log); }
@@ -126,6 +133,10 @@ int main(int argc, char **argv)
             unsigned z=record/((size_t)b[0]*g[0]*b[1]*g[1]);
             uint32_t words[12]={x,y,z,x%b[0]+b[0]*(y%b[1]+b[1]*(z%b[2])),
                 x/b[0],y/b[1],z/b[2],g[0],x%b[0],y%b[1],z%b[2],g[1]+65536*g[2]};
+            if(shared && field==11) {
+                uint32_t hash=x*2654435761u^(y<<12)^(z<<24);
+                words[field]^=(hash+5)^hash;
+            }
             expected=words[field]^(chain?0x13579bdfu:0);
         }
         if(data[i]!=expected) { if(errors<12) fprintf(stderr,"word %zu: %#x expected %#x\n",i,data[i],expected); errors++; }
