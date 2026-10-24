@@ -283,3 +283,9 @@ records six failed readbacks. `KSTB_CPU_FETCH=1 KSTB_NO_MIP_FILTER=1` in the
 format test reproduces that path. The passing image dimension tests use
 GL_NEAREST_MIPMAP_NEAREST for mip-level readback. The native fetch defect
 remains open; image loads and stores at those mip levels pass independently.
+
+
+The candidate also passes all 200
+[spill-heavy texture-unit cases](../docs/evidence/gpu/runs/20261024-100853-gles3-image33-focused-spill/summary.txt),
+with no MMU errors, resets or oopses. Full GLES3/GLES2/EGL regression is
+still running; the candidate remains outside the numbered Mesa series.
