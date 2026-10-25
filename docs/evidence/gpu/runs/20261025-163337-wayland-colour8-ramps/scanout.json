@@ -1,0 +1,10 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "pitch": 7680,
+  "format": "ARGB8888",
+  "alpha_counts": {
+    "255": 2073600
+  },
+  "ramp_pixels_checked": 1024
+}

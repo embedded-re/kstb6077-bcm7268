@@ -1,0 +1,1 @@
+PASS: 1920x1080 screenshot; 1024 exact ramp pixels (grey/red/green/blue, 256 levels each); three exact RGB corner markers.

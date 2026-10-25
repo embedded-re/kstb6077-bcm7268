@@ -1,0 +1,4 @@
+Cross-build: clang --target=aarch64-alpine-linux-musl -O2 -Wall, Wayland/EGL/GLES2, successful without warnings.
+Shell: sh -n linux/rootfs/usr/bin/tv passed.
+Rebuilt binary matches installed/tested SHA256: 1ec30b574edd359131fc837e9aab7c525fbfe05c41c64a41806c74d59cdbb080
+Offline analyze.py: passed.

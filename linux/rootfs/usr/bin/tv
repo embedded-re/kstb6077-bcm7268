@@ -17,8 +17,10 @@ esac
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp/xdg-$(id -u)}
 mkdir -p -m 700 "$XDG_RUNTIME_DIR"
 # Select Mesa only for this session. Keep the system and normal tv defaults.
+config=/etc/kstb-tv/sway.conf
 case $mode in
 	gpu)
+		config=/etc/kstb-tv/sway-gpu.conf
 		mesa_id=${KSTB_TV_MESA:-23.3.6-40ea9bc5}
 		mesa_env=$(/usr/sbin/kstb-mesa env "$mesa_id") || exit 1
 		eval "$mesa_env"
@@ -36,4 +38,4 @@ case $mode in
 esac
 export WLR_LIBINPUT_NO_DEVICES=1	# start even without a keyboard
 export TV_CMD="$*"
-exec sway -c /etc/kstb-tv/sway.conf > "$XDG_RUNTIME_DIR/tv.log" 2>&1
+exec sway -c "$config" > "$XDG_RUNTIME_DIR/tv.log" 2>&1

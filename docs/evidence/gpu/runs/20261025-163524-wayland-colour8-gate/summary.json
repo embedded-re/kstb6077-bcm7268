@@ -1,0 +1,17 @@
+{
+  "final_sessions": 5,
+  "native_frames": 1793,
+  "checked_client_pixels": 30810,
+  "scanout_format": "ARGB8888",
+  "scanout_ramp_pixels": 1024,
+  "screenshot_ramp_pixels": 1024,
+  "opaque_alpha_pixels": 2073600,
+  "native_fence_chains": 100,
+  "fps": [
+    59.785,
+    59.662,
+    59.721
+  ],
+  "gpu_faults": 0,
+  "dmabuf_objects_after_exit": 0
+}

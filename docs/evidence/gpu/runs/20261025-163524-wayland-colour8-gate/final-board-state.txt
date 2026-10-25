@@ -1,0 +1,64 @@
+Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+tty1
+
+Dma-buf Objects:
+size    	flags   	mode    	count   	exp_name	ino     	name
+
+Total 0 objects, 0 bytes
+plane[33]: plane-0
+	crtc=crtc-0
+	fb=38
+		allocated by = [fbcon]
+		refcount=2
+		format=RG16 little-endian (0x36314752)
+		modifier=0x0
+		size=1920x1080
+		layers:
+			size[0]=1920x1080
+			pitch[0]=3840
+			offset[0]=0
+			obj[0]:
+				name=0
+				refcount=3
+				start=00100000
+				size=4149248
+				imported=no
+				dma_addr=0x0000000077500000
+				vaddr=000000007333e65a
+	crtc-pos=1920x1080+0+0
+	src-pos=1920.000000x1080.000000+0.000000+0.000000
+	rotation=1
+	normalized-zpos=0
+	color-encoding=ITU-R BT.601 YCbCr
+	color-range=YCbCr limited range
+	color_mgmt_changed=0
+crtc[35]: crtc-0
+	enable=1
+	active=1
+	self_refresh_active=0
+	planes_changed=1
+	mode_changed=0
+	active_changed=0
+	connectors_changed=0
+	color_mgmt_changed=0
+	plane_mask=1
+	connector_mask=1
+	encoder_mask=1
+	mode: "1920x1080": 60 148352 1920 2008 2052 2200 1080 1084 1089 1125 0x48 0x5
+connector[37]: HDMI-A-1
+	crtc=crtc-0
+	self_refresh_aware=0
+	interlace_allowed=0
+	ycbcr_420_allowed=0
+	max_requested_bpc=0
+	colorspace=Default
+	broadcast_rgb=Automatic
+	is_limited_range=n
+	output_bpc=0
+	output_format=RGB
+	tmds_char_rate=0
+b5a5f2f50bc52f52cad69998a8844a57179e59bb471132cb8ab4be2e3fd4f6ef  /usr/bin/tv
+a8bfcee9f00480fbbe3e7255286e023587c35d4996856aa24279ffa5720081b5  /etc/kstb-tv/sway.conf
+30157401d84972dd6572a92ba81252bd5a21268686aae0223b3aacd308a0b8c4  /etc/kstb-tv/sway-gpu.conf
+1ec30b574edd359131fc837e9aab7c525fbfe05c41c64a41806c74d59cdbb080  /opt/gpu-test/kstb-wayland-gles-test

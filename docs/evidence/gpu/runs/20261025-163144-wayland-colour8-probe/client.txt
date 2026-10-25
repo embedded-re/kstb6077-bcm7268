@@ -1,0 +1,54 @@
+configure 3 800x600
+GL renderer: V3D 3.3; GL version: OpenGL ES 3.0 Mesa 23.3.6 (git-3263da570e)
+configure 4 960x640
+FRAME 60 size 960x640 fps 59.981 cpu_ms 44.531
+FRAME 120 size 960x640 fps 59.927 cpu_ms 63.167
+FRAME 180 size 960x640 fps 59.940 cpu_ms 81.866
+FRAME 240 size 960x640 fps 59.957 cpu_ms 100.728
+FRAME 300 size 960x640 fps 59.940 cpu_ms 120.660
+FRAME 360 size 960x640 fps 59.941 cpu_ms 139.570
+FRAME 420 size 960x640 fps 59.940 cpu_ms 158.387
+configure 5 640x480
+configure 6 640x480
+FRAME 474 size 640x480 fps 53.942 cpu_ms 193.364
+FRAME 534 size 640x480 fps 59.940 cpu_ms 213.205
+FRAME 594 size 640x480 fps 59.927 cpu_ms 231.750
+FRAME 654 size 640x480 fps 59.938 cpu_ms 251.761
+FRAME 714 size 640x480 fps 59.878 cpu_ms 273.884
+FRAME 775 size 640x480 fps 60.000 cpu_ms 295.589
+FRAME 835 size 640x480 fps 59.960 cpu_ms 314.578
+FRAME 888 size 640x480 fps 52.890 cpu_ms 341.891
+configure 7 1920x1080
+configure 8 1920x1080
+FRAME 949 size 1920x1080 fps 60.001 cpu_ms 378.819
+FRAME 1009 size 1920x1080 fps 59.940 cpu_ms 397.842
+FRAME 1069 size 1920x1080 fps 59.940 cpu_ms 417.337
+FRAME 1129 size 1920x1080 fps 59.940 cpu_ms 436.253
+FRAME 1189 size 1920x1080 fps 59.940 cpu_ms 455.264
+FRAME 1249 size 1920x1080 fps 59.940 cpu_ms 473.977
+FRAME 1301 size 1920x1080 fps 51.914 cpu_ms 498.133
+configure 9 640x480
+configure 10 640x480
+FRAME 1362 size 640x480 fps 60.958 cpu_ms 524.799
+FRAME 1422 size 640x480 fps 59.942 cpu_ms 543.557
+FRAME 1482 size 640x480 fps 59.959 cpu_ms 562.664
+FRAME 1542 size 640x480 fps 59.940 cpu_ms 582.321
+FRAME 1602 size 640x480 fps 59.938 cpu_ms 600.992
+FRAME 1662 size 640x480 fps 59.942 cpu_ms 620.173
+FRAME 1715 size 640x480 fps 52.910 cpu_ms 644.468
+FRAME 1775 size 640x480 fps 59.974 cpu_ms 671.225
+FRAME 1835 size 640x480 fps 59.919 cpu_ms 691.362
+FRAME 1895 size 640x480 fps 59.943 cpu_ms 710.856
+FRAME 1955 size 640x480 fps 59.966 cpu_ms 730.439
+FRAME 2015 size 640x480 fps 59.941 cpu_ms 750.511
+FRAME 2075 size 640x480 fps 59.939 cpu_ms 770.459
+FRAME 2135 size 640x480 fps 59.942 cpu_ms 790.554
+FRAME 2195 size 640x480 fps 59.940 cpu_ms 810.403
+FRAME 2255 size 640x480 fps 59.931 cpu_ms 830.571
+FRAME 2315 size 640x480 fps 59.920 cpu_ms 850.309
+FRAME 2375 size 640x480 fps 59.943 cpu_ms 870.645
+FRAME 2435 size 640x480 fps 59.967 cpu_ms 891.095
+FRAME 2495 size 640x480 fps 59.941 cpu_ms 911.369
+FRAME 2555 size 640x480 fps 59.939 cpu_ms 931.485
+FRAME 2615 size 640x480 fps 59.941 cpu_ms 951.444
+PASS: frames 2671 elapsed 45.010842 fps 59.341 process_cpu_ms 970.303 configures 8 marker_checks 135

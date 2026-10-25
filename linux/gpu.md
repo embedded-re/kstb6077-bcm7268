@@ -13,11 +13,14 @@ timers enabled. Original #29 backups and modules are retained. The selected
 Mesa remains `fe7dda5e`; the latest separately installed package is
 **23.3.6-40ea9bc5** (33 patches, Wayland client platform). Compute optimization is parked after the
 GEMM/coprocessor value gate. GPU composition now works with **`tv --gpu`**:
-Sway uses V3D GLES and display-allocated RGB565 buffers shared with V3D.
+Sway uses V3D GLES and display-allocated ARGB8888 buffers shared with V3D.
+GPU mode now preserves all 256 levels per RGB channel; exact scanout-buffer
+ramps and opaque alpha are verified. CPU mode retains RGB565.
 A native GLES Wayland client now passes resize/fullscreen/restart tests at
 59.6–59.8 FPS, with checked pixels and linux-dmabuf protocol evidence.
 `tv --gpu` keeps composition enabled to avoid a measured direct-scanout
 fullscreen stall. Normal `tv` and system libraries remain unchanged.
+[Eight-bit colour and reliability evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).
 [Native app and pacing evidence](../docs/evidence/gpu/runs/20261025-160828-wayland-gles-gate/README.md).
 [Earlier GPU terminal and fallback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
 [Compute value decision](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).

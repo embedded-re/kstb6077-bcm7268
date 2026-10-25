@@ -1,0 +1,38 @@
+
+Dma-buf Objects:
+size    	flags   	mode    	count   	exp_name	ino     	name
+08294400	00000000	02080005	00000004	drm	00000122	<none>
+	write fence:drm_sched v3d_render seq 1311 unsignalled
+	write fence:drm_sched v3d_render seq 1378 unsignalled
+	Attached Devices:
+Total 0 devices attached
+
+08294400	00000000	02080005	00000004	drm	00000121	<none>
+	write fence:drm_sched v3d_render seq 1311 unsignalled
+	write fence:detached-driver signaled-timeline seq 1377 signalled
+	Attached Devices:
+Total 0 devices attached
+
+08294400	00000000	02080005	00000011	drm	00000118	<none>
+	write fence:detached-driver signaled-timeline seq 1310 signalled
+	Attached Devices:
+	f1200000.gpu
+	f1200000.gpu
+Total 2 devices attached
+
+08294400	00000000	02080005	00000011	drm	00000112	<none>
+	write fence:drm_sched v3d_render seq 1311 unsignalled
+	Attached Devices:
+	f1200000.gpu
+	f1200000.gpu
+Total 2 devices attached
+
+08294400	00000000	02080005	00000010	drm	00000111	<none>
+	write fence:detached-driver signaled-timeline seq 435 signalled
+	Attached Devices:
+	f1200000.gpu
+	f1200000.gpu
+Total 2 devices attached
+
+
+Total 5 objects, 41472000 bytes

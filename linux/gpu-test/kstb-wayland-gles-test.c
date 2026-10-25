@@ -1,4 +1,4 @@
-// Native GPU Wayland client: animated GLES2 triangle and checked colour markers.
+// Native GPU Wayland client: animated triangle, checked markers and 256-level colour ramps.
 // kstb-wayland-gles-test [seconds]; compositor may resize or fullscreen it.
 #define _POSIX_C_SOURCE 200809L
 #include "xdg-shell-client-protocol.h"
@@ -195,13 +195,26 @@ int main(int argc, char **argv) {
     GLint ok;
     glGetProgramiv(program, GL_LINK_STATUS, &ok);
     CHECK(ok);
-    glUseProgram(program);
+    GLuint ramp_vs = shader(GL_VERTEX_SHADER,
+                            "attribute vec2 pos;void main(){gl_Position=vec4(pos,0,1);}");
+    GLuint ramp_fs = shader(GL_FRAGMENT_SHADER,
+                            "precision highp float;uniform float base_y;void main(){"
+                            "float v=(floor(gl_FragCoord.x)-32.0)/255.0;"
+                            "float row=floor((gl_FragCoord.y-base_y)/16.0);"
+                            "vec3 c=vec3(v);if(row==1.0)c=vec3(v,0,0);"
+                            "if(row==2.0)c=vec3(0,v,0);if(row==3.0)c=vec3(0,0,v);"
+                            "gl_FragColor=vec4(c,1);}");
+    GLuint ramp_program = glCreateProgram();
+    glAttachShader(ramp_program, ramp_vs);
+    glAttachShader(ramp_program, ramp_fs);
+    glBindAttribLocation(ramp_program, 0, "pos");
+    glLinkProgram(ramp_program);
+    glGetProgramiv(ramp_program, GL_LINK_STATUS, &ok);
+    CHECK(ok);
+    GLint base_y = glGetUniformLocation(ramp_program, "base_y");
+    static const GLfloat quad[] = {-1, -1, 1, -1, -1, 1, 1, 1};
     static const GLfloat vertices[] = {0, .75, 1,  .15, .1,  -.7, -.5, .1,
                                        1, .2,  .7, -.5, .15, .25, 1};
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), vertices);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), vertices + 2);
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
     glDisable(GL_DITHER);
     GLint rotation = glGetUniformLocation(program, "rot"),
           aspect = glGetUniformLocation(program, "aspect");
@@ -213,6 +226,11 @@ int main(int argc, char **argv) {
         glDisable(GL_SCISSOR_TEST);
         glClearColor(.025, .04, .09, 1);
         glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(program);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), vertices);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), vertices + 2);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
         glUniform2f(rotation, cosf(t * .8), sinf(t * .8));
         glUniform1f(aspect, (float)height / width);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -225,10 +243,28 @@ int main(int argc, char **argv) {
         marker(width - 24, 0, 0, 1, 0);
         marker(0, height - 24, 0, 0, 1);
         glDisable(GL_SCISSOR_TEST);
+        // Four deterministic 256-level ramps: grey, red, green, blue.
+        glViewport(32, height - 96, 256, 64);
+        glUseProgram(ramp_program);
+        glUniform1f(base_y, height - 96);
+        glDisableVertexAttribArray(1);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, quad);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         if (frames % 60 == 0) {
             check_marker(8, 8, 255, 0, 0);
             check_marker(width - 8, 8, 0, 255, 0);
             check_marker(8, height - 8, 0, 0, 255);
+            for (int row = 0; row < 4; row++) {
+                unsigned char pixels[256][4];
+                glReadPixels(32, height - 88 + 16 * row, 256, 1, GL_RGBA,
+                             GL_UNSIGNED_BYTE, pixels);
+                for (int i = 0; i < 256; i++) {
+                    for (int c = 0; c < 3; c++)
+                        CHECK(pixels[i][c] == (row == 0 || row == c + 1 ? i : 0));
+                    CHECK(pixels[i][3] == 255);
+                    checks++;
+                }
+            }
         }
         CHECK(glGetError() == GL_NO_ERROR);
         struct wl_callback *cb = wl_surface_frame(surface);
@@ -264,6 +300,9 @@ int main(int argc, char **argv) {
     glDeleteProgram(program);
     glDeleteShader(vs);
     glDeleteShader(fs);
+    glDeleteProgram(ramp_program);
+    glDeleteShader(ramp_vs);
+    glDeleteShader(ramp_fs);
     eglMakeCurrent(egl, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroySurface(egl, target);
     eglDestroyContext(egl, context);
