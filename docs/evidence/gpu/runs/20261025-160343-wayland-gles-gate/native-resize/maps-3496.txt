@@ -1,0 +1,290 @@
+aaaae5e40000-aaaae5eb3000 r-xp 00000000 103:00 40680                     /usr/bin/sway
+aaaae5ecc000-aaaae5ed0000 r--p 0007c000 103:00 40680                     /usr/bin/sway
+aaaae5ed0000-aaaae5ed1000 rw-p 00080000 103:00 40680                     /usr/bin/sway
+aaaae5ed1000-aaaae5ed2000 ---p 00000000 00:00 0                          [heap]
+aaaae5ed2000-aaaae5ef5000 rw-p 00000000 00:00 0                          [heap]
+ffff8115d000-ffff81167000 rw-p 00000000 00:00 0 
+ffff81167000-ffff81168000 rw-s 10116c000 00:06 661                       /dev/dri/renderD128
+ffff81168000-ffff8117b000 rw-p 00000000 00:00 0 
+ffff8117b000-ffff8127c000 rw-s 1007ec000 00:06 661                       /dev/dri/renderD128
+ffff8127c000-ffff8128d000 rw-p 00000000 00:00 0 
+ffff8128d000-ffff8128e000 rw-s 100981000 00:06 661                       /dev/dri/renderD128
+ffff8128e000-ffff8128f000 rw-s 100980000 00:06 661                       /dev/dri/renderD128
+ffff8128f000-ffff81297000 rw-p 00000000 00:00 0 
+ffff81297000-ffff8129b000 rw-p 00000000 00:00 0 
+ffff8129b000-ffff8129c000 rw-s 1008ed000 00:06 661                       /dev/dri/renderD128
+ffff8129c000-ffff81344000 rw-p 00000000 00:00 0 
+ffff81344000-ffff81399000 rw-p 00000000 00:00 0 
+ffff81399000-ffff8139e000 rw-p 00000000 00:00 0 
+ffff8139e000-ffff813c2000 rw-p 00000000 00:00 0 
+ffff813c2000-ffff813c9000 rw-p 00000000 00:00 0 
+ffff813c9000-ffff813d2000 rw-p 00000000 00:00 0 
+ffff813d2000-ffff8149b000 rw-p 00000000 00:00 0 
+ffff8149b000-ffff814ef000 r--p 00000000 103:00 146851                    /usr/share/fonts/dejavu/DejaVuSansMono.ttf
+ffff814ef000-ffff81543000 r--p 00000000 103:00 146851                    /usr/share/fonts/dejavu/DejaVuSansMono.ttf
+ffff81543000-ffff8156e000 rw-p 00000000 00:00 0 
+ffff8156e000-ffff8157d000 r--s 00000000 103:00 150217                    /var/cache/fontconfig/8d4af663993b81a124ee82e610bb31f9-le64.cache-9
+ffff8157d000-ffff815ab000 r--s 00000000 103:00 151407                    /var/cache/fontconfig/d9159725bd597c10d8c3333601c4f5b6-le64.cache-9
+ffff815ab000-ffff815af000 rw-p 00000000 00:00 0 
+ffff815af000-ffff815bc000 r--s 00000000 103:00 151408                    /var/cache/fontconfig/12b26b760a24f8b4feb03ad48a333a72-le64.cache-9
+ffff815bc000-ffff815e0000 rw-p 00000000 00:00 0 
+ffff815e0000-ffff815e2000 ---p 00000000 00:00 0 
+ffff815e2000-ffff817fa000 rw-p 00000000 00:00 0 
+ffff817fa000-ffff81831000 rw-p 00000000 00:00 0 
+ffff81831000-ffff81842000 rw-p 00000000 00:00 0 
+ffff81842000-ffff81844000 ---p 00000000 00:00 0 
+ffff81844000-ffff81a4a000 rw-p 00000000 00:00 0 
+ffff81a4a000-ffff81b8b000 rw-s 00000000 103:00 9055                      /home/kstb/.cache/mesa_shader_cache/index
+ffff81b8b000-ffff8245a000 rw-p 00000000 00:00 0 
+ffff8245a000-ffff8245c000 rw-s 100000000 00:06 661                       /dev/dri/renderD128
+ffff8245c000-ffff82469000 rw-p 00000000 00:00 0 
+ffff82469000-ffff8246b000 ---p 00000000 00:00 0 
+ffff8246b000-ffff8266f000 rw-p 00000000 00:00 0 
+ffff8266f000-ffff827b0000 rw-s 00000000 103:00 9055                      /home/kstb/.cache/mesa_shader_cache/index
+ffff827b0000-ffff827c3000 rw-p 00000000 00:00 0 
+ffff827c3000-ffff827f2000 r-xp 00000000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff827f2000-ffff827f3000 r--p 0001f000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff827f3000-ffff827f4000 rw-p 00020000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff827f4000-ffff82aa2000 r-xp 00000000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff82aa2000-ffff82ab4000 r--p 0029e000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff82ab4000-ffff82ab5000 rw-p 002b0000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff82ab5000-ffff82ab9000 rw-p 00000000 00:00 0 
+ffff82ab9000-ffff82b68000 r-xp 00000000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff82b68000-ffff82b69000 r--p 0009f000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff82b69000-ffff82b6a000 rw-p 000a0000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff82b6a000-ffff830b3000 r--p 00000000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff830b3000-ffff83755000 r-xp 00539000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff83755000-ffff83764000 r--p 00beb000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff83764000-ffff837be000 r--p 00bda000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff837be000-ffff837cd000 r--p 00c54000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff837cd000-ffff837d0000 rw-p 00c33000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/kstb-drm_dri.so
+ffff837d0000-ffff83801000 rw-p 00000000 00:00 0 
+ffff83801000-ffff83820000 r-xp 00000000 103:00 580                       /usr/lib/libeconf.so.0.8.3
+ffff83820000-ffff83821000 r--p 0000f000 103:00 580                       /usr/lib/libeconf.so.0.8.3
+ffff83821000-ffff83822000 rw-p 00010000 103:00 580                       /usr/lib/libeconf.so.0.8.3
+ffff83822000-ffff83841000 r-xp 00000000 103:00 35388                     /usr/lib/libmd.so.0.2.0
+ffff83841000-ffff83842000 r--p 0000f000 103:00 35388                     /usr/lib/libmd.so.0.2.0
+ffff83842000-ffff83843000 rw-p 00010000 103:00 35388                     /usr/lib/libmd.so.0.2.0
+ffff83843000-ffff83862000 r-xp 00000000 103:00 24083                     /usr/lib/libcap.so.2.78
+ffff83862000-ffff83863000 r--p 0000f000 103:00 24083                     /usr/lib/libcap.so.2.78
+ffff83863000-ffff83864000 rw-p 00010000 103:00 24083                     /usr/lib/libcap.so.2.78
+ffff83864000-ffff8389e000 r-xp 00000000 103:00 582                       /usr/lib/libblkid.so.1.1.0
+ffff8389e000-ffff838a4000 r--p 0003a000 103:00 582                       /usr/lib/libblkid.so.1.1.0
+ffff838a4000-ffff838a5000 rw-p 00040000 103:00 582                       /usr/lib/libblkid.so.1.1.0
+ffff838a5000-ffff838d4000 r-xp 00000000 103:00 22597                     /usr/lib/libbrotlicommon.so.1.2.0
+ffff838d4000-ffff838d5000 r--p 0002f000 103:00 22597                     /usr/lib/libbrotlicommon.so.1.2.0
+ffff838d5000-ffff838d6000 rw-p 00030000 103:00 22597                     /usr/lib/libbrotlicommon.so.1.2.0
+ffff838d6000-ffff838f5000 r-xp 00000000 103:00 35390                     /usr/lib/libbsd.so.0.12.2
+ffff838f5000-ffff838f6000 r--p 0000f000 103:00 35390                     /usr/lib/libbsd.so.0.12.2
+ffff838f6000-ffff838f7000 rw-p 00010000 103:00 35390                     /usr/lib/libbsd.so.0.12.2
+ffff838f7000-ffff838f8000 rw-p 00000000 00:00 0 
+ffff838f8000-ffff83994000 r-xp 00000000 103:00 35787                     /usr/lib/libelogind.so.0.38.0
+ffff83994000-ffff83998000 r--p 0008c000 103:00 35787                     /usr/lib/libelogind.so.0.38.0
+ffff83998000-ffff83999000 rw-p 00090000 103:00 35787                     /usr/lib/libelogind.so.0.38.0
+ffff83999000-ffff8399a000 rw-p 00000000 00:00 0 
+ffff8399a000-ffff839e7000 r--p 00000000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff839e7000-ffff83a00000 r-xp 0003d000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff83a00000-ffff83a0f000 r--p 00066000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff83a0f000-ffff83a17000 r--p 00055000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff83a17000-ffff83a26000 r--p 0007d000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff83a26000-ffff83a27000 rw-p 0005c000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff83a27000-ffff83a55000 r-xp 00000000 103:00 40340                     /usr/lib/libgraphite2.so.3.2.1
+ffff83a55000-ffff83a57000 r--p 0001e000 103:00 40340                     /usr/lib/libgraphite2.so.3.2.1
+ffff83a57000-ffff83a58000 rw-p 00020000 103:00 40340                     /usr/lib/libgraphite2.so.3.2.1
+ffff83a58000-ffff83ab6000 r-xp 00000000 103:00 2422                      /usr/lib/libmount.so.1.1.0
+ffff83ab6000-ffff83ab8000 r--p 0004e000 103:00 2422                      /usr/lib/libmount.so.1.1.0
+ffff83ab8000-ffff83ab9000 rw-p 00050000 103:00 2422                      /usr/lib/libmount.so.1.1.0
+ffff83ab9000-ffff83ad8000 r-xp 00000000 103:00 2453                      /usr/lib/libgmodule-2.0.so.0.8800.1
+ffff83ad8000-ffff83ad9000 r--p 0000f000 103:00 2453                      /usr/lib/libgmodule-2.0.so.0.8800.1
+ffff83ad9000-ffff83ada000 rw-p 00010000 103:00 2453                      /usr/lib/libgmodule-2.0.so.0.8800.1
+ffff83ada000-ffff83af9000 r-xp 00000000 103:00 22599                     /usr/lib/libbrotlidec.so.1.2.0
+ffff83af9000-ffff83afa000 r--p 0000f000 103:00 22599                     /usr/lib/libbrotlidec.so.1.2.0
+ffff83afa000-ffff83afb000 rw-p 00010000 103:00 22599                     /usr/lib/libbrotlidec.so.1.2.0
+ffff83afb000-ffff83b1a000 r-xp 00000000 103:00 630                       /usr/lib/libbz2.so.1.0.8
+ffff83b1a000-ffff83b1b000 r--p 0000f000 103:00 630                       /usr/lib/libbz2.so.1.0.8
+ffff83b1b000-ffff83b1c000 rw-p 00010000 103:00 630                       /usr/lib/libbz2.so.1.0.8
+ffff83b1c000-ffff83b4a000 r-xp 00000000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff83b4a000-ffff83b4c000 r--p 0002e000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff83b4c000-ffff83b4d000 rw-p 00030000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff83b4d000-ffff83b7c000 r-xp 00000000 103:00 40672                     /usr/lib/libpangoft2-1.0.so.0.5701.0
+ffff83b7c000-ffff83b7d000 r--p 0001f000 103:00 40672                     /usr/lib/libpangoft2-1.0.so.0.5701.0
+ffff83b7d000-ffff83b7e000 rw-p 00020000 103:00 40672                     /usr/lib/libpangoft2-1.0.so.0.5701.0
+ffff83b7e000-ffff83b9d000 r-xp 00000000 103:00 35392                     /usr/lib/libXdmcp.so.6.0.0
+ffff83b9d000-ffff83b9e000 r--p 0000f000 103:00 35392                     /usr/lib/libXdmcp.so.6.0.0
+ffff83b9e000-ffff83b9f000 rw-p 00010000 103:00 35392                     /usr/lib/libXdmcp.so.6.0.0
+ffff83b9f000-ffff83bbe000 r-xp 00000000 103:00 35386                     /usr/lib/libXau.so.6.0.0
+ffff83bbe000-ffff83bbf000 r--p 0000f000 103:00 35386                     /usr/lib/libXau.so.6.0.0
+ffff83bbf000-ffff83bc0000 rw-p 00010000 103:00 35386                     /usr/lib/libXau.so.6.0.0
+ffff83bc0000-ffff83bdf000 r-xp 00000000 103:00 35416                     /usr/lib/libxcb-res.so.0.0.0
+ffff83bdf000-ffff83be0000 r--p 0000f000 103:00 35416                     /usr/lib/libxcb-res.so.0.0.0
+ffff83be0000-ffff83be1000 rw-p 00010000 103:00 35416                     /usr/lib/libxcb-res.so.0.0.0
+ffff83be1000-ffff83c00000 r-xp 00000000 103:00 35792                     /usr/lib/libxcb-ewmh.so.2.0.0
+ffff83c00000-ffff83c01000 r--p 0000f000 103:00 35792                     /usr/lib/libxcb-ewmh.so.2.0.0
+ffff83c01000-ffff83c02000 rw-p 00010000 103:00 35792                     /usr/lib/libxcb-ewmh.so.2.0.0
+ffff83c02000-ffff83c21000 r-xp 00000000 103:00 35394                     /usr/lib/libxcb-composite.so.0.0.0
+ffff83c21000-ffff83c22000 r--p 0000f000 103:00 35394                     /usr/lib/libxcb-composite.so.0.0.0
+ffff83c22000-ffff83c23000 rw-p 00010000 103:00 35394                     /usr/lib/libxcb-composite.so.0.0.0
+ffff83c23000-ffff83c41000 r-xp 00000000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff83c41000-ffff83c43000 r--p 0000e000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff83c43000-ffff83c44000 rw-p 00010000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff83c44000-ffff83c72000 r-xp 00000000 103:00 35432                     /usr/lib/libxcb-xinput.so.0.1.0
+ffff83c72000-ffff83c74000 r--p 0002e000 103:00 35432                     /usr/lib/libxcb-xinput.so.0.1.0
+ffff83c74000-ffff83c75000 rw-p 00030000 103:00 35432                     /usr/lib/libxcb-xinput.so.0.1.0
+ffff83c75000-ffff83c94000 r-xp 00000000 103:00 35428                     /usr/lib/libxcb-xfixes.so.0.0.0
+ffff83c94000-ffff83c95000 r--p 0000f000 103:00 35428                     /usr/lib/libxcb-xfixes.so.0.0.0
+ffff83c95000-ffff83c96000 rw-p 00010000 103:00 35428                     /usr/lib/libxcb-xfixes.so.0.0.0
+ffff83c96000-ffff83cb5000 r-xp 00000000 103:00 35796                     /usr/lib/libxcb-render-util.so.0.0.0
+ffff83cb5000-ffff83cb6000 r--p 0000f000 103:00 35796                     /usr/lib/libxcb-render-util.so.0.0.0
+ffff83cb6000-ffff83cb7000 rw-p 00010000 103:00 35796                     /usr/lib/libxcb-render-util.so.0.0.0
+ffff83cb7000-ffff83cd6000 r-xp 00000000 103:00 35408                     /usr/lib/libxcb-present.so.0.0.0
+ffff83cd6000-ffff83cd7000 r--p 0000f000 103:00 35408                     /usr/lib/libxcb-present.so.0.0.0
+ffff83cd7000-ffff83cd8000 rw-p 00010000 103:00 35408                     /usr/lib/libxcb-present.so.0.0.0
+ffff83cd8000-ffff83cf7000 r-xp 00000000 103:00 35404                     /usr/lib/libxcb-dri3.so.0.1.0
+ffff83cf7000-ffff83cf8000 r--p 0000f000 103:00 35404                     /usr/lib/libxcb-dri3.so.0.1.0
+ffff83cf8000-ffff83cf9000 rw-p 00010000 103:00 35404                     /usr/lib/libxcb-dri3.so.0.1.0
+ffff83cf9000-ffff83d18000 r-xp 00000000 103:00 35785                     /usr/lib/libliftoff.so.0.5.0
+ffff83d18000-ffff83d19000 r--p 0000f000 103:00 35785                     /usr/lib/libliftoff.so.0.5.0
+ffff83d19000-ffff83d1a000 rw-p 00010000 103:00 35785                     /usr/lib/libliftoff.so.0.5.0
+ffff83d1a000-ffff83d59000 r-xp 00000000 103:00 35721                     /usr/lib/libdisplay-info.so.0.3.0
+ffff83d59000-ffff83d5a000 r--p 0002f000 103:00 35721                     /usr/lib/libdisplay-info.so.0.3.0
+ffff83d5a000-ffff83d5b000 rw-p 00030000 103:00 35721                     /usr/lib/libdisplay-info.so.0.3.0
+ffff83d5b000-ffff83d7a000 r-xp 00000000 103:00 35788                     /usr/lib/libseat.so.1
+ffff83d7a000-ffff83d7b000 r--p 0000f000 103:00 35788                     /usr/lib/libseat.so.1
+ffff83d7b000-ffff83d7c000 rw-p 00010000 103:00 35788                     /usr/lib/libseat.so.1
+ffff83d7c000-ffff83dd9000 r-xp 00000000 103:00 35783                     /usr/lib/liblcms2.so.2.0.19
+ffff83dd9000-ffff83ddc000 r--p 0005d000 103:00 35783                     /usr/lib/liblcms2.so.2.0.19
+ffff83ddc000-ffff83ddf000 rw-p 00060000 103:00 35783                     /usr/lib/liblcms2.so.2.0.19
+ffff83ddf000-ffff83de0000 rw-p 00000000 00:00 0 
+ffff83de0000-ffff83e8d000 r-xp 00000000 103:00 35790                     /usr/lib/libvulkan.so.1.4.347
+ffff83e8d000-ffff83e90000 r--p 0009d000 103:00 35790                     /usr/lib/libvulkan.so.1.4.347
+ffff83e90000-ffff83e91000 rw-p 000a0000 103:00 35790                     /usr/lib/libvulkan.so.1.4.347
+ffff83e91000-ffff83ea9000 r--p 00000000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83ea9000-ffff83eb0000 r-xp 00008000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83eb0000-ffff83ebf000 r--p 0001f000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83ebf000-ffff83ec0000 r--p 0000e000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83ec0000-ffff83ecf000 r--p 0002f000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83ecf000-ffff83ed0000 rw-p 0000e000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff83ed0000-ffff83ee5000 r--p 00000000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83ee5000-ffff83eee000 r-xp 00005000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83eee000-ffff83efd000 r--p 0001e000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83efd000-ffff83efe000 r--p 0000d000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83efe000-ffff83f0d000 r--p 0002e000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83f0d000-ffff83f0e000 rw-p 0000d000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff83f0e000-ffff83f30000 r--p 00000000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f30000-ffff83f54000 r-xp 00012000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f54000-ffff83f63000 r--p 00046000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f63000-ffff83f65000 r--p 00035000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f65000-ffff83f74000 r--p 00057000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f74000-ffff83f76000 rw-p 00036000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff83f76000-ffff83fb5000 r-xp 00000000 103:00 2420                      /usr/lib/libintl.so.8.4.6
+ffff83fb5000-ffff83fb6000 r--p 0002f000 103:00 2420                      /usr/lib/libintl.so.8.4.6
+ffff83fb6000-ffff83fb7000 rw-p 00030000 103:00 2420                      /usr/lib/libintl.so.8.4.6
+ffff83fb7000-ffff83fb8000 rw-p 00000000 00:00 0 
+ffff83fb8000-ffff83fd7000 r-xp 00000000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff83fd7000-ffff83fd8000 r--p 0000f000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff83fd8000-ffff83fd9000 rw-p 00010000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff83fd9000-ffff84107000 r-xp 00000000 103:00 40347                     /usr/lib/libharfbuzz.so.0.61321.0
+ffff84107000-ffff84109000 r--p 0011e000 103:00 40347                     /usr/lib/libharfbuzz.so.0.61321.0
+ffff84109000-ffff8410a000 rw-p 00120000 103:00 40347                     /usr/lib/libharfbuzz.so.0.61321.0
+ffff8410a000-ffff84139000 r-xp 00000000 103:00 40629                     /usr/lib/libfribidi.so.0.4.0
+ffff84139000-ffff8413a000 r--p 0001f000 103:00 40629                     /usr/lib/libfribidi.so.0.4.0
+ffff8413a000-ffff8413b000 rw-p 00020000 103:00 40629                     /usr/lib/libfribidi.so.0.4.0
+ffff8413b000-ffff84333000 r-xp 00000000 103:00 2447                      /usr/lib/libgio-2.0.so.0.8800.1
+ffff84333000-ffff8433b000 r--p 001f8000 103:00 2447                      /usr/lib/libgio-2.0.so.0.8800.1
+ffff8433b000-ffff8433c000 rw-p 00200000 103:00 2447                      /usr/lib/libgio-2.0.so.0.8800.1
+ffff8433c000-ffff8433e000 rw-p 00000000 00:00 0 
+ffff8433e000-ffff8435d000 r-xp 00000000 103:00 35726                     /usr/lib/libmtdev.so.1.0.0
+ffff8435d000-ffff8435e000 r--p 0000f000 103:00 35726                     /usr/lib/libmtdev.so.1.0.0
+ffff8435e000-ffff8435f000 rw-p 00010000 103:00 35726                     /usr/lib/libmtdev.so.1.0.0
+ffff8435f000-ffff8437e000 r-xp 00000000 103:00 35422                     /usr/lib/libxcb-shm.so.0.0.0
+ffff8437e000-ffff8437f000 r--p 0000f000 103:00 35422                     /usr/lib/libxcb-shm.so.0.0.0
+ffff8437f000-ffff84380000 rw-p 00010000 103:00 35422                     /usr/lib/libxcb-shm.so.0.0.0
+ffff84380000-ffff8439f000 r-xp 00000000 103:00 35414                     /usr/lib/libxcb-render.so.0.0.0
+ffff8439f000-ffff843a0000 r--p 0000f000 103:00 35414                     /usr/lib/libxcb-render.so.0.0.0
+ffff843a0000-ffff843a1000 rw-p 00010000 103:00 35414                     /usr/lib/libxcb-render.so.0.0.0
+ffff843a1000-ffff843c0000 r-xp 00000000 103:00 40538                     /usr/lib/libXrender.so.1.3.0
+ffff843c0000-ffff843c1000 r--p 0000f000 103:00 40538                     /usr/lib/libXrender.so.1.3.0
+ffff843c1000-ffff843c2000 rw-p 00010000 103:00 40538                     /usr/lib/libXrender.so.1.3.0
+ffff843c2000-ffff843e1000 r-xp 00000000 103:00 40475                     /usr/lib/libXext.so.6.4.0
+ffff843e1000-ffff843e2000 r--p 0001f000 103:00 40475                     /usr/lib/libXext.so.6.4.0
+ffff843e2000-ffff843e3000 rw-p 00020000 103:00 40475                     /usr/lib/libXext.so.6.4.0
+ffff843e3000-ffff84510000 r-xp 00000000 103:00 35446                     /usr/lib/libX11.so.6.4.0
+ffff84510000-ffff84513000 r--p 0011d000 103:00 35446                     /usr/lib/libX11.so.6.4.0
+ffff84513000-ffff84516000 rw-p 00120000 103:00 35446                     /usr/lib/libX11.so.6.4.0
+ffff84516000-ffff84517000 rw-p 00000000 00:00 0 
+ffff84517000-ffff845c0000 r-xp 00000000 103:00 40033                     /usr/lib/libfreetype.so.6.20.6
+ffff845c0000-ffff845c7000 r--p 000a9000 103:00 40033                     /usr/lib/libfreetype.so.6.20.6
+ffff845c7000-ffff845c8000 rw-p 000b0000 103:00 40033                     /usr/lib/libfreetype.so.6.20.6
+ffff845c8000-ffff84616000 r-xp 00000000 103:00 40079                     /usr/lib/libfontconfig.so.1.16.1
+ffff84616000-ffff84618000 r--p 0003e000 103:00 40079                     /usr/lib/libfontconfig.so.1.16.1
+ffff84618000-ffff84619000 rw-p 00040000 103:00 40079                     /usr/lib/libfontconfig.so.1.16.1
+ffff84619000-ffff84658000 r-xp 00000000 103:00 40028                     /usr/lib/libpng16.so.16.59.0
+ffff84658000-ffff84659000 r--p 0002f000 103:00 40028                     /usr/lib/libpng16.so.16.59.0
+ffff84659000-ffff8465a000 rw-p 00030000 103:00 40028                     /usr/lib/libpng16.so.16.59.0
+ffff8465a000-ffff84689000 r-xp 00000000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff84689000-ffff8468a000 r--p 0001f000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff8468a000-ffff8468b000 rw-p 00020000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff8468b000-ffff846aa000 r-xp 00000000 103:00 40670                     /usr/lib/libpangocairo-1.0.so.0.5701.0
+ffff846aa000-ffff846ab000 r--p 0000f000 103:00 40670                     /usr/lib/libpangocairo-1.0.so.0.5701.0
+ffff846ab000-ffff846ac000 rw-p 00010000 103:00 40670                     /usr/lib/libpangocairo-1.0.so.0.5701.0
+ffff846ac000-ffff846cb000 r-xp 00000000 103:00 35794                     /usr/lib/libxcb-icccm.so.4.0.0
+ffff846cb000-ffff846cc000 r--p 0000f000 103:00 35794                     /usr/lib/libxcb-icccm.so.4.0.0
+ffff846cc000-ffff846cd000 rw-p 00010000 103:00 35794                     /usr/lib/libxcb-icccm.so.4.0.0
+ffff846cd000-ffff8470c000 r-xp 00000000 103:00 35442                     /usr/lib/libxcb.so.1.1.0
+ffff8470c000-ffff8470d000 r--p 0002f000 103:00 35442                     /usr/lib/libxcb.so.1.1.0
+ffff8470d000-ffff8470e000 rw-p 00030000 103:00 35442                     /usr/lib/libxcb.so.1.1.0
+ffff8470e000-ffff8476c000 r-xp 00000000 103:00 36114                     /usr/lib/libxkbcommon.so.0.13.1
+ffff8476c000-ffff8476e000 r--p 0004e000 103:00 36114                     /usr/lib/libxkbcommon.so.0.13.1
+ffff8476e000-ffff8476f000 rw-p 00050000 103:00 36114                     /usr/lib/libxkbcommon.so.0.13.1
+ffff8476f000-ffff84884000 r-xp 00000000 103:00 36117                     /usr/lib/libwlroots-0.20.so
+ffff84884000-ffff8488f000 r--p 00115000 103:00 36117                     /usr/lib/libwlroots-0.20.so
+ffff8488f000-ffff84890000 rw-p 00120000 103:00 36117                     /usr/lib/libwlroots-0.20.so
+ffff84890000-ffff84891000 rw-p 00000000 00:00 0 
+ffff84891000-ffff848af000 r-xp 00000000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff848af000-ffff848b1000 r--p 0001e000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff848b1000-ffff848b2000 rw-p 00020000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff848b2000-ffff8493b000 r-xp 00000000 103:00 31501                     /usr/lib/libpixman-1.so.0.46.4
+ffff8493b000-ffff84942000 r--p 00089000 103:00 31501                     /usr/lib/libpixman-1.so.0.46.4
+ffff84942000-ffff84943000 rw-p 00090000 103:00 31501                     /usr/lib/libpixman-1.so.0.46.4
+ffff84943000-ffff84a12000 r-xp 00000000 103:00 2424                      /usr/lib/libpcre2-8.so.0.16.1
+ffff84a12000-ffff84a13000 r--p 000bf000 103:00 2424                      /usr/lib/libpcre2-8.so.0.16.1
+ffff84a13000-ffff84a14000 rw-p 000c0000 103:00 2424                      /usr/lib/libpcre2-8.so.0.16.1
+ffff84a14000-ffff84b83000 r-xp 00000000 103:00 2451                      /usr/lib/libglib-2.0.so.0.8800.1
+ffff84b83000-ffff84b84000 r--p 0015f000 103:00 2451                      /usr/lib/libglib-2.0.so.0.8800.1
+ffff84b84000-ffff84b85000 rw-p 00160000 103:00 2451                      /usr/lib/libglib-2.0.so.0.8800.1
+ffff84b85000-ffff84b86000 rw-p 00000000 00:00 0 
+ffff84b86000-ffff84bf3000 r-xp 00000000 103:00 2455                      /usr/lib/libgobject-2.0.so.0.8800.1
+ffff84bf3000-ffff84bf6000 r--p 0005d000 103:00 2455                      /usr/lib/libgobject-2.0.so.0.8800.1
+ffff84bf6000-ffff84bf7000 rw-p 00060000 103:00 2455                      /usr/lib/libgobject-2.0.so.0.8800.1
+ffff84bf7000-ffff84bf8000 rw-p 00000000 00:00 0 
+ffff84bf8000-ffff84c64000 r-xp 00000000 103:00 40668                     /usr/lib/libpango-1.0.so.0.5701.0
+ffff84c64000-ffff84c68000 r--p 0005c000 103:00 40668                     /usr/lib/libpango-1.0.so.0.5701.0
+ffff84c68000-ffff84c69000 rw-p 00060000 103:00 40668                     /usr/lib/libpango-1.0.so.0.5701.0
+ffff84c69000-ffff84c88000 r-xp 00000000 103:00 2462                      /usr/lib/libudev.so.1.6.3
+ffff84c88000-ffff84c89000 r--p 0000f000 103:00 2462                      /usr/lib/libudev.so.1.6.3
+ffff84c89000-ffff84c8a000 rw-p 00010000 103:00 2462                      /usr/lib/libudev.so.1.6.3
+ffff84c8a000-ffff84c8b000 rw-p 00000000 00:00 0 
+ffff84c8b000-ffff84cea000 r-xp 00000000 103:00 35728                     /usr/lib/libinput.so.10.13.0
+ffff84cea000-ffff84ceb000 r--p 0004f000 103:00 35728                     /usr/lib/libinput.so.10.13.0
+ffff84ceb000-ffff84cec000 rw-p 00050000 103:00 35728                     /usr/lib/libinput.so.10.13.0
+ffff84cec000-ffff84d06000 r-xp 00000000 103:00 35724                     /usr/lib/libevdev.so.2.3.0
+ffff84d06000-ffff84d0c000 r--p 0001a000 103:00 35724                     /usr/lib/libevdev.so.2.3.0
+ffff84d0c000-ffff84d0d000 rw-p 00020000 103:00 35724                     /usr/lib/libevdev.so.2.3.0
+ffff84d0d000-ffff84d2c000 r-xp 00000000 103:00 2460                      /usr/lib/libjson-c.so.5.4.0
+ffff84d2c000-ffff84d2d000 r--p 0000f000 103:00 2460                      /usr/lib/libjson-c.so.5.4.0
+ffff84d2d000-ffff84d2e000 rw-p 00010000 103:00 2460                      /usr/lib/libjson-c.so.5.4.0
+ffff84d2e000-ffff84d5d000 r-xp 00000000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff84d5d000-ffff84d5e000 r--p 0001f000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff84d5e000-ffff84d5f000 rw-p 00020000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff84d5f000-ffff84e5b000 r-xp 00000000 103:00 40544                     /usr/lib/libcairo.so.2.11804.4
+ffff84e5b000-ffff84e5f000 r--p 000ec000 103:00 40544                     /usr/lib/libcairo.so.2.11804.4
+ffff84e5f000-ffff84e61000 rw-p 000f0000 103:00 40544                     /usr/lib/libcairo.so.2.11804.4
+ffff84e61000-ffff84e62000 rw-p 00000000 00:00 0 
+ffff84e62000-ffff84f05000 r-xp 00000000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff84f05000-ffff84f1b000 rw-p 00000000 00:00 0 
+ffff84f1b000-ffff84f1f000 r--p 00000000 00:00 0                          [vvar]
+ffff84f1f000-ffff84f21000 r-xp 00000000 00:00 0                          [vdso]
+ffff84f21000-ffff84f22000 r--p 000af000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff84f22000-ffff84f23000 rw-p 000b0000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff84f23000-ffff84f25000 rw-p 00000000 00:00 0 
+ffffd8310000-ffffd8331000 rw-p 00000000 00:00 0                          [stack]

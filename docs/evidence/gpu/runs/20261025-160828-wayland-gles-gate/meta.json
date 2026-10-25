@@ -1,0 +1,11 @@
+{
+  "uname": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "selected": "23.3.6-fe7dda5e",
+  "sha256": {
+    "/usr/bin/tv": "2c65345d6100f78f25ace72a98c0df828c2446eb6b063b3a05c4ae930921605a",
+    "/etc/kstb-tv/sway.conf": "a8bfcee9f00480fbbe3e7255286e023587c35d4996856aa24279ffa5720081b5",
+    "/opt/gpu-test/kstb-wayland-gles-test": "628e222e3806b5f652cdbb83037448d7161258ab144ad71cf537e9dd391bc3b8",
+    "/opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so": "18969788882886e842a68acba6818561eb9da09345e3586381c35d3f841f04e1",
+    "/opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0": "dbd93a681240bfa782c30e0e83c7c97ebaadfbd2cdaf4d69a7dac02b245e2882"
+  }
+}

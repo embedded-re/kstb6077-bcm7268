@@ -3,7 +3,7 @@
 # Catppuccin) in sway; `tv btop` runs btop in it. Leave with `exit` (or
 # Ctrl+Alt+Backspace). As root (the console shells) it runs as kstb.
 if [ "$(id -u)" = 0 ]; then
-	exec su -l kstb -c 'exec tv "$@"' -- tv "$@"
+	exec su -l kstb -c 'KSTB_TV_MESA=$1; export KSTB_TV_MESA; shift; exec tv "$@"' -- tv "${KSTB_TV_MESA:-}" "$@"
 fi
 mode=default
 case ${1:-} in
@@ -19,10 +19,13 @@ mkdir -p -m 700 "$XDG_RUNTIME_DIR"
 # Select Mesa only for this session. Keep the system and normal tv defaults.
 case $mode in
 	gpu)
-		mesa_id=${KSTB_TV_MESA:-23.3.6-85a951cd}
+		mesa_id=${KSTB_TV_MESA:-23.3.6-40ea9bc5}
 		mesa_env=$(/usr/sbin/kstb-mesa env "$mesa_id") || exit 1
 		eval "$mesa_env"
 		export WLR_RENDERER=gles2
+		# The direct-scanout path stalls on fullscreen transitions here.
+		# Keep GPU composition until that display path is fixed.
+		export WLR_SCENE_DISABLE_DIRECT_SCANOUT=1
 		# Allocate scanout buffers on the display device; kmsro imports them
 		# into V3D.
 		export WLR_DRM_DEVICES=/dev/dri/card1

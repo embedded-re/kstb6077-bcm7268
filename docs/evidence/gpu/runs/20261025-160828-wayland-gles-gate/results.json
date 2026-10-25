@@ -1,0 +1,60 @@
+[
+  {
+    "label": "native-resize",
+    "seconds": 13.077444966998883,
+    "gpu_render_jobs_delta": 2974,
+    "cpu_percent_one_core": {
+      "sway": 4.8525614471235645,
+      "kstb-wayland-gles-test": 3.477669037105222
+    },
+    "exit": 0,
+    "frames": 718,
+    "fps": 59.779,
+    "minimum_reported_fps": 57.933
+  },
+  {
+    "label": "native-protocol",
+    "seconds": 7.214486107000994,
+    "gpu_render_jobs_delta": 1486,
+    "cpu_percent_one_core": {
+      "sway": 6.149836112527853,
+      "kstb-wayland-gles-test": 4.766122987209085
+    },
+    "exit": 0,
+    "frames": 358,
+    "fps": 59.556,
+    "minimum_reported_fps": 57.591,
+    "buffer_protocol": "linux-dmabuf"
+  },
+  {
+    "label": "native-restart",
+    "seconds": 13.173869394999201,
+    "gpu_render_jobs_delta": 2970,
+    "cpu_percent_one_core": {
+      "sway": 5.135064091740352,
+      "kstb-wayland-gles-test": 3.2094150573377207
+    },
+    "exit": 0,
+    "frames": 717,
+    "fps": 59.702,
+    "minimum_reported_fps": 57.074
+  },
+  {
+    "label": "cpu-fallback",
+    "seconds": 3.8595944839980802,
+    "gpu_render_jobs_delta": 0,
+    "cpu_percent_one_core": {
+      "sway": 10.183819801956393
+    },
+    "exit": 0
+  },
+  {
+    "label": "older-package",
+    "seconds": 4.022354144999554,
+    "gpu_render_jobs_delta": 11,
+    "cpu_percent_one_core": {
+      "sway": 8.183747317234696
+    },
+    "exit": 0
+  }
+]

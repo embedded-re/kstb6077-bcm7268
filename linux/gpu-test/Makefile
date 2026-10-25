@@ -35,6 +35,18 @@ $(OUT)/kstb-gemm-test: kstb-gemm-test.c $(MESA)/include/EGL/egl.h
 	$(CC) $(CFLAGS) -O3 -mcpu=cortex-a53 -fno-vectorize -fno-slp-vectorize \
 		-ffp-contract=fast -pthread -o $@ $< $(LDFLAGS) -lEGL -lGLESv2 -lgbm
 
+XDG_SHELL = /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml
+$(OUT)/xdg-shell-client-protocol.h: $(XDG_SHELL)
+	@mkdir -p $(OUT)
+	wayland-scanner client-header $< $@
+
+$(OUT)/xdg-shell-protocol.c: $(XDG_SHELL)
+	@mkdir -p $(OUT)
+	wayland-scanner private-code $< $@
+
+$(OUT)/kstb-wayland-gles-test: kstb-wayland-gles-test.c $(OUT)/xdg-shell-client-protocol.h $(OUT)/xdg-shell-protocol.c $(MESA)/include/EGL/egl.h
+	$(CC) $(CFLAGS) -I$(OUT) -o $@ $< $(OUT)/xdg-shell-protocol.c $(LDFLAGS) -lEGL -lGLESv2 -lwayland-client -lwayland-egl -lm
+
 $(OUT)/%: %.c $(MESA)/include/EGL/egl.h
 	@mkdir -p $(OUT)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lEGL -lGLESv2 -lgbm

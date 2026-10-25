@@ -1,0 +1,17 @@
+{
+  "3752:10": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3752:11": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3752:12": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  }
+}

@@ -1,0 +1,5 @@
+00:00:00.081 [ERROR] [wlr] [xwayland/server.c:473] Cannot find Xwayland binary "/usr/bin/Xwayland"
+00:00:00.081 [ERROR] [sway/server.c:766] Failed to start Xwayland00:00:00.081 
+[ERROR] [sway/config/output.c:1219] failed to execute 'swaybg' (background configuration probably not applied): No such file or directory
+warn: wayland.c:1854: compositor does not implement the xdg-toplevel-icon protocol
+00:00:00.190 [ERROR] [common/ipc-client.c:86] Unable to receive IPC response

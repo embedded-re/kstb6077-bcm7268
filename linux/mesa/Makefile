@@ -3,7 +3,7 @@
 # ROOT's Alpine as the sysroot).
 #   make          -> ../build/out/mesa-<id>.tar: the install tree for
 #                    /opt/mesa/<id> (kstb-mesa on the box installs it);
-#                    <id> = Mesa version + hash of the series
+#                    <id> = Mesa version + hash of the series and Meson options
 #   make tftp     -> also copies it to the TFTP root as linux-mesa.tar
 #   make sysroot  -> ../build/sysroot: /usr/include, /usr/lib, /lib from ROOT
 #                    (ssh $(BOARD)); needed once, and after new -dev packages
@@ -24,10 +24,10 @@ SYSROOT = $(B)/sysroot
 OUT     = $(B)/out
 TFTP    = $(CURDIR)/../../doom/build
 PATCHES = $(sort $(wildcard patches/*.patch))
-ID      = $(V)-$(shell cat $(PATCHES) | sha256sum | cut -c1-8)
+ID      = $(V)-$(shell { cat $(PATCHES); printf '%s\n' '$(MESON_OPTS)'; } | sha256sum | cut -c1-8)
 
 MESON_OPTS = -Dbuildtype=release -Dprefix=/opt/mesa/current \
-	-Dgallium-drivers=v3d,kmsro -Dvulkan-drivers= -Dplatforms= \
+	-Dgallium-drivers=v3d,kmsro -Dvulkan-drivers= -Dplatforms=wayland \
 	-Dglx=disabled -Degl=enabled -Dgbm=enabled -Dgles1=enabled -Dgles2=enabled \
 	-Dllvm=disabled -Dvalgrind=disabled -Dlibunwind=disabled \
 	-Dshared-glapi=enabled -Dvideo-codecs= -Dgallium-va=disabled \
@@ -81,6 +81,7 @@ $(BUILD)/build.ninja: $(BUILD)/cross.ini
 	meson setup $(BUILD) $(REPO) $(MESON_OPTS) --cross-file=$(BUILD)/cross.ini
 
 $(OUT)/mesa-$(ID).tar: check $(BUILD)/build.ninja FORCE
+	meson configure $(BUILD) $(MESON_OPTS)
 	ninja -C $(BUILD)
 	rm -rf $(BUILD)/inst
 	DESTDIR=$(BUILD)/inst meson install -C $(BUILD) --quiet

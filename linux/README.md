@@ -278,11 +278,17 @@ foot, Ctrl+Alt+Backspace leaves. Started as root (the consoles), it runs as
   shows `format=RG16` 1920x1080 in `/sys/kernel/debug/dri/1/state`.
 - Normal `tv` still uses pixman (CPU composition). `tv --gpu` or
   `tv --gpu btop` selects tested V3D GLES composition with per-session Mesa
-  `23.3.6-85a951cd`; `tv --cpu btop` is the explicit fallback. This does
+  `23.3.6-40ea9bc5` (Wayland client support); `tv --cpu btop` is the explicit fallback. This does
   not change the system Mesa or `/opt/mesa/current`. Both paths retain
   RGB565 output. Five start/exit/rollback sessions pass, including 360 GPU
   render jobs and changing HDMI CRCs, with zero GPU faults.
   [Rendering and rollback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
+- Native GLES Wayland demo: `tv --gpu /opt/gpu-test/kstb-wayland-gles-test 40`.
+  A rotating triangle runs near 60 FPS through resize/fullscreen checks.
+  GPU mode keeps composition enabled: the direct-scanout policy caused
+  temporary fullscreen stalls in a controlled comparison. This is a
+  per-session workaround; the underlying scanout issue remains open.
+  [Native-client and pacing evidence](../docs/evidence/gpu/runs/20261025-160828-wayland-gles-gate/README.md).
 - `su -l kstb -c` doesn't read the profile, so `tv` loads
   `kstb-locale.sh` itself (btop otherwise: "No UTF-8 locale detected").
 

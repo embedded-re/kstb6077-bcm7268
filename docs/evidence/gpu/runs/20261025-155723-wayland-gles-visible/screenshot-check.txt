@@ -1,0 +1,1 @@
+PASS: fullscreen screenshot 1920x1080; blue top-left, red bottom-left, green bottom-right markers exact after client rendering, compositor import and composition.

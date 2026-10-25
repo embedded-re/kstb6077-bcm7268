@@ -1,0 +1,3 @@
+PASS: current ID 23.3.6-40ea9bc5 differs when build options change (23.3.6-e2216a0f).
+PASS: installed package configuration enables Wayland.
+PASS: V3D DRI hash matches previous 85a951cd package; no GPU compiler/driver changes.

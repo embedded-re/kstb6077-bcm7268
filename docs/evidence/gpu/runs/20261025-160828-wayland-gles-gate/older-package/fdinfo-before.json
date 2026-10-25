@@ -1,0 +1,62 @@
+{
+  "3777:10": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:11": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:12": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:13": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:14": {
+    "node": "/dev/dri/renderD128",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t661\ndrm-driver:\tv3d\ndrm-client-id:\t241\ndrm-engine-bin: \t0 ns\nv3d-jobs-bin: \t0 jobs\ndrm-engine-render: \t0 ns\nv3d-jobs-render: \t0 jobs\ndrm-engine-tfu: \t0 ns\nv3d-jobs-tfu: \t0 jobs\ndrm-engine-csd: \t0 ns\nv3d-jobs-csd: \t0 jobs\ndrm-engine-cache_clean: \t0 ns\nv3d-jobs-cache_clean: \t0 jobs\ndrm-engine-cpu: \t0 ns\nv3d-jobs-cpu: \t0 jobs\ndrm-total-memory:\t8 KiB\ndrm-shared-memory:\t0\ndrm-resident-memory:\t8 KiB\n"
+  },
+  "3777:15": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:16": {
+    "node": "/dev/dri/renderD128",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t661\ndrm-driver:\tv3d\ndrm-client-id:\t242\ndrm-engine-bin: \t0 ns\nv3d-jobs-bin: \t0 jobs\ndrm-engine-render: \t0 ns\nv3d-jobs-render: \t0 jobs\ndrm-engine-tfu: \t0 ns\nv3d-jobs-tfu: \t0 jobs\ndrm-engine-csd: \t0 ns\nv3d-jobs-csd: \t0 jobs\ndrm-engine-cache_clean: \t0 ns\nv3d-jobs-cache_clean: \t0 jobs\ndrm-engine-cpu: \t0 ns\nv3d-jobs-cpu: \t0 jobs\ndrm-total-memory:\t0\ndrm-shared-memory:\t0\n"
+  },
+  "3777:17": {
+    "node": "/dev/dri/renderD128",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02404002\nmnt_id:\t17\nino:\t661\ndrm-driver:\tv3d\ndrm-client-id:\t243\ndrm-engine-bin: \t0 ns\nv3d-jobs-bin: \t0 jobs\ndrm-engine-render: \t0 ns\nv3d-jobs-render: \t0 jobs\ndrm-engine-tfu: \t0 ns\nv3d-jobs-tfu: \t0 jobs\ndrm-engine-csd: \t0 ns\nv3d-jobs-csd: \t0 jobs\ndrm-engine-cache_clean: \t0 ns\nv3d-jobs-cache_clean: \t0 jobs\ndrm-engine-cpu: \t0 ns\nv3d-jobs-cpu: \t0 jobs\ndrm-total-memory:\t0\ndrm-shared-memory:\t0\n"
+  },
+  "3777:18": {
+    "node": "/dev/dri/renderD128",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t661\ndrm-driver:\tv3d\ndrm-client-id:\t244\ndrm-engine-bin: \t0 ns\nv3d-jobs-bin: \t0 jobs\ndrm-engine-render: \t0 ns\nv3d-jobs-render: \t0 jobs\ndrm-engine-tfu: \t0 ns\nv3d-jobs-tfu: \t0 jobs\ndrm-engine-csd: \t0 ns\nv3d-jobs-csd: \t0 jobs\ndrm-engine-cache_clean: \t0 ns\nv3d-jobs-cache_clean: \t0 jobs\ndrm-engine-cpu: \t0 ns\nv3d-jobs-cpu: \t0 jobs\ndrm-total-memory:\t0\ndrm-shared-memory:\t0\n"
+  },
+  "3777:20": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:21": {
+    "node": "/dev/dri/card1",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3777:22": {
+    "node": "/dev/dri/renderD128",
+    "name": "sway",
+    "text": "pos:\t0\nflags:\t02400002\nmnt_id:\t17\nino:\t661\ndrm-driver:\tv3d\ndrm-client-id:\t246\ndrm-engine-bin: \t0 ns\nv3d-jobs-bin: \t0 jobs\ndrm-engine-render: \t0 ns\nv3d-jobs-render: \t0 jobs\ndrm-engine-tfu: \t0 ns\nv3d-jobs-tfu: \t0 jobs\ndrm-engine-csd: \t0 ns\nv3d-jobs-csd: \t0 jobs\ndrm-engine-cache_clean: \t0 ns\nv3d-jobs-cache_clean: \t0 jobs\ndrm-engine-cpu: \t0 ns\nv3d-jobs-cpu: \t0 jobs\ndrm-total-memory:\t0\ndrm-shared-memory:\t0\n"
+  }
+}

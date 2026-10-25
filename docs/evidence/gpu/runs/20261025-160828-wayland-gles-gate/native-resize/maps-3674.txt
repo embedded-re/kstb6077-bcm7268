@@ -1,0 +1,81 @@
+aaaac8be0000-aaaac8be4000 r--p 00000000 103:00 9283                      /opt/gpu-test/kstb-wayland-gles-test
+aaaac8bf3000-aaaac8bf5000 r-xp 00003000 103:00 9283                      /opt/gpu-test/kstb-wayland-gles-test
+aaaac8c04000-aaaac8c06000 r--p 00004000 103:00 9283                      /opt/gpu-test/kstb-wayland-gles-test
+aaaac8c15000-aaaac8c16000 rw-p 00005000 103:00 9283                      /opt/gpu-test/kstb-wayland-gles-test
+aaaac8c16000-aaaac8c17000 ---p 00000000 00:00 0                          [heap]
+aaaac8c17000-aaaac8c19000 rw-p 00000000 00:00 0                          [heap]
+ffff92bbe000-ffff92bc2000 rw-p 00000000 00:00 0 
+ffff92bc2000-ffff92bc4000 ---p 00000000 00:00 0 
+ffff92bc4000-ffff92be5000 rw-p 00000000 00:00 0 
+ffff92be5000-ffff92d26000 rw-s 00000000 103:00 9055                      /home/kstb/.cache/mesa_shader_cache/index
+ffff92d26000-ffff92d39000 rw-p 00000000 00:00 0 
+ffff92d39000-ffff92d68000 r-xp 00000000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff92d68000-ffff92d69000 r--p 0001f000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff92d69000-ffff92d6a000 rw-p 00020000 103:00 658                       /usr/lib/libgcc_s.so.1
+ffff92d6a000-ffff93018000 r-xp 00000000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff93018000-ffff9302a000 r--p 0029e000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff9302a000-ffff9302b000 rw-p 002b0000 103:00 660                       /usr/lib/libstdc++.so.6.0.34
+ffff9302b000-ffff9302f000 rw-p 00000000 00:00 0 
+ffff9302f000-ffff930de000 r-xp 00000000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff930de000-ffff930df000 r--p 0009f000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff930df000-ffff930e0000 rw-p 000a0000 103:00 2050                      /usr/lib/libzstd.so.1.5.7
+ffff930e0000-ffff9310f000 r-xp 00000000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff9310f000-ffff93110000 r--p 0001f000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff93110000-ffff93111000 rw-p 00020000 103:00 22384                     /usr/lib/libz.so.1.3.2
+ffff93111000-ffff9365a000 r--p 00000000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff9365a000-ffff93cfc000 r-xp 00539000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff93cfc000-ffff93d0b000 r--p 00beb000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff93d0b000-ffff93d65000 r--p 00bda000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff93d65000-ffff93d74000 r--p 00c54000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff93d74000-ffff93d77000 rw-p 00c33000 103:00 9161                      /opt/mesa/23.3.6-40ea9bc5/lib/dri/v3d_dri.so
+ffff93d77000-ffff93da8000 rw-p 00000000 00:00 0 
+ffff93da8000-ffff93dc7000 r-xp 00000000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff93dc7000-ffff93dc8000 r--p 0000f000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff93dc8000-ffff93dc9000 rw-p 00010000 103:00 651                       /usr/lib/libffi.so.8.2.0
+ffff93dc9000-ffff93de7000 r-xp 00000000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff93de7000-ffff93de9000 r--p 0001e000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff93de9000-ffff93dea000 rw-p 00020000 103:00 34066                     /usr/lib/libwayland-server.so.0.25.0
+ffff93dea000-ffff93e19000 r-xp 00000000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff93e19000-ffff93e1a000 r--p 0001f000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff93e1a000-ffff93e1b000 rw-p 00020000 103:00 2059                      /usr/lib/libdrm.so.2.134.0
+ffff93e1b000-ffff93e49000 r-xp 00000000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff93e49000-ffff93e4b000 r--p 0002e000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff93e4b000-ffff93e4c000 rw-p 00030000 103:00 22414                     /usr/lib/libexpat.so.1.13.0
+ffff93e4c000-ffff93e99000 r--p 00000000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93e99000-ffff93eb2000 r-xp 0003d000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93eb2000-ffff93ec1000 r--p 00066000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93ec1000-ffff93ec9000 r--p 00055000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93ec9000-ffff93ed8000 r--p 0007d000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93ed8000-ffff93ed9000 rw-p 0005c000 103:00 9165                      /opt/mesa/23.3.6-40ea9bc5/lib/libglapi.so.0.0.0
+ffff93ed9000-ffff93eee000 r--p 00000000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93eee000-ffff93ef7000 r-xp 00005000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93ef7000-ffff93f06000 r--p 0001e000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93f06000-ffff93f07000 r--p 0000d000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93f07000-ffff93f16000 r--p 0002e000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93f16000-ffff93f17000 rw-p 0000d000 103:00 9156                      /opt/mesa/23.3.6-40ea9bc5/lib/libgbm.so.1.0.0
+ffff93f17000-ffff93f36000 r-xp 00000000 103:00 43376                     /usr/lib/libwayland-egl.so.1.25.0
+ffff93f36000-ffff93f37000 r--p 0000f000 103:00 43376                     /usr/lib/libwayland-egl.so.1.25.0
+ffff93f37000-ffff93f38000 rw-p 00010000 103:00 43376                     /usr/lib/libwayland-egl.so.1.25.0
+ffff93f38000-ffff93f56000 r-xp 00000000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff93f56000-ffff93f58000 r--p 0000e000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff93f58000-ffff93f59000 rw-p 00010000 103:00 35718                     /usr/lib/libwayland-client.so.0.25.0
+ffff93f59000-ffff93f71000 r--p 00000000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f71000-ffff93f78000 r-xp 00008000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f78000-ffff93f87000 r--p 0001f000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f87000-ffff93f88000 r--p 0000e000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f88000-ffff93f97000 r--p 0002f000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f97000-ffff93f98000 rw-p 0000e000 103:00 9155                      /opt/mesa/23.3.6-40ea9bc5/lib/libGLESv2.so.2.0.0
+ffff93f98000-ffff93fba000 r--p 00000000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff93fba000-ffff93fde000 r-xp 00012000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff93fde000-ffff93fed000 r--p 00046000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff93fed000-ffff93fef000 r--p 00035000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff93fef000-ffff93ffe000 r--p 00057000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff93ffe000-ffff94000000 rw-p 00036000 103:00 9157                      /opt/mesa/23.3.6-40ea9bc5/lib/libEGL.so.1.0.0
+ffff94000000-ffff940a3000 r-xp 00000000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff940a3000-ffff940b9000 rw-p 00000000 00:00 0 
+ffff940b9000-ffff940bd000 r--p 00000000 00:00 0                          [vvar]
+ffff940bd000-ffff940bf000 r-xp 00000000 00:00 0                          [vdso]
+ffff940bf000-ffff940c0000 r--p 000af000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff940c0000-ffff940c1000 rw-p 000b0000 103:00 94                        /lib/ld-musl-aarch64.so.1
+ffff940c1000-ffff940c3000 rw-p 00000000 00:00 0 
+ffffd4379000-ffffd439a000 rw-p 00000000 00:00 0                          [stack]

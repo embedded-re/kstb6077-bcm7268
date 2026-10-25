@@ -11,13 +11,15 @@ Current installed state (2026-10-25): kernel **#30**, release
 `6.18.57-kstb-hrtimer-ab`, now boots from saved KRN/DTB with high-resolution
 timers enabled. Original #29 backups and modules are retained. The selected
 Mesa remains `fe7dda5e`; the latest separately installed package is
-**23.3.6-85a951cd** (33 patches). Compute optimization is parked after the
+**23.3.6-40ea9bc5** (33 patches, Wayland client platform). Compute optimization is parked after the
 GEMM/coprocessor value gate. GPU composition now works with **`tv --gpu`**:
 Sway uses V3D GLES and display-allocated RGB565 buffers shared with V3D.
-Three GPU sessions (360 render jobs), CPU fallback/default checks and
-console restoration pass with zero GPU faults. The ordinary `tv` CPU default
-and system libraries remain unchanged.
-[GPU terminal and buffer-sharing evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
+A native GLES Wayland client now passes resize/fullscreen/restart tests at
+59.6–59.8 FPS, with checked pixels and linux-dmabuf protocol evidence.
+`tv --gpu` keeps composition enabled to avoid a measured direct-scanout
+fullscreen stall. Normal `tv` and system libraries remain unchanged.
+[Native app and pacing evidence](../docs/evidence/gpu/runs/20261025-160828-wayland-gles-gate/README.md).
+[Earlier GPU terminal and fallback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
 [Compute value decision](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).
 [Kernel installation and rollback](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
 
@@ -52,8 +54,10 @@ make -C linux/mesa export      # the branch's commits -> linux/mesa/patches/
 make -C linux/mesa             # -> linux/build/out/mesa-<id>.tar (about a minute)
 ```
 
-`<id>` is the Mesa version and a hash of the series, so every change gives a
-new build id. `make` refuses to build when the branch and `patches/` differ.
+`<id>` is the Mesa version and a hash of the series plus Meson options,
+so patch or platform-option changes give a new build id. Wayland client
+support is enabled; the host needs wayland-scanner and wayland-protocols,
+and the Alpine sysroot needs Wayland development headers/libraries. `make` refuses to build when the branch and `patches/` differ.
 `make sysroot` copies `/usr/include`, `/usr/lib` and `/lib` from ROOT once
 (again after installing new `-dev` packages there).
 
