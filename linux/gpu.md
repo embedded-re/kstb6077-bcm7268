@@ -170,7 +170,19 @@ shadow gathers. Full GLES 3.1 validation is pending. See
 Build `23.3.6-b1e71af4` adds patch 0030: compute atomics remain after
 padding-mask initialization. All 298 atomic-counter and 195 compute cases
 pass, as do the gather subset and 48 mixed-read checks, without a version
-override or GPU faults. Its full GLES 3.1 validation is in progress.
+override or GPU faults. Its full GLES 3.1 run stopped on an RGBA32I
+renderbuffer-copy mismatch, without GPU faults. Compute/native-fence stress
+also passes across three deliberate resets with queued compute, followed by
+another 195/195 official compute pass.
+
+Build `23.3.6-3112d69b` adds patch 0031: submit pending resource writers before
+replacing storage during a whole-resource map. The isolated copy failure
+passes on the numbered build, and the scratch fix passes all 2,011
+noncompressed renderbuffer-copy cases. Its focused compute, atomic-counter,
+gather and compute fence/reset gates pass. The two-layer neural network
+also runs on V3D compute with exact CPU agreement for three batch sizes;
+its measured GPU path is slower than the CPU reference. Full conformance
+and graphics regressions remain pending; see [`gpu-compute.md`](gpu-compute.md).
 
 The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
 case by case: GLES2 and EGL identical, in GLES3 only

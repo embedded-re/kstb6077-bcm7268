@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 18:37:08 +0200
-Subject: [PATCH 14/30] v3d: clamp the max LOD of 32-bit-return textures on 3.3
+Subject: [PATCH 14/31] v3d: clamp the max LOD of 32-bit-return textures on 3.3
 
 A 32-bit return forces the mip filter to nearest, but a sampler without
 mipmapping got a max LOD of 15, so a minified lookup selected levels the

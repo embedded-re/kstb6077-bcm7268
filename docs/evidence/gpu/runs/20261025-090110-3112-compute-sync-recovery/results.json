@@ -1,0 +1,42 @@
+[
+  {
+    "test": "sync-200",
+    "exit": 0,
+    "start": 216028.066357356,
+    "end": 216059.057617169,
+    "reset_expected": false,
+    "cumulative_expected_resets": 0,
+    "reset_count": 0,
+    "faults": []
+  },
+  {
+    "test": "reset-sync-50-a",
+    "exit": 0,
+    "start": 216059.058403242,
+    "end": 216068.784611721,
+    "reset_expected": true,
+    "cumulative_expected_resets": 1,
+    "reset_count": 1,
+    "faults": []
+  },
+  {
+    "test": "reset-sync-50-b",
+    "exit": 0,
+    "start": 216068.785690423,
+    "end": 216078.560592247,
+    "reset_expected": true,
+    "cumulative_expected_resets": 2,
+    "reset_count": 2,
+    "faults": []
+  },
+  {
+    "test": "reset-sync-50-c",
+    "exit": 0,
+    "start": 216078.561658987,
+    "end": 216088.284685507,
+    "reset_expected": true,
+    "cumulative_expected_resets": 3,
+    "reset_count": 3,
+    "faults": []
+  }
+]

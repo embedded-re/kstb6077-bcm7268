@@ -1,0 +1,5 @@
+dense 32 -> 16 ReLU -> 8, batch 257; CPU 0.410 ms; class checksum 0xdae64da0
+OpenGL ES 3.1 Mesa 23.3.6 (git-ec750a36af); V3D 3.3
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+GPU dispatch + synchronization 113.884 ms; GPU class checksum 0xdae64da0; 257 classification checks; PASS

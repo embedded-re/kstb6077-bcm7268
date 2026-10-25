@@ -586,8 +586,9 @@ process while a genuinely absent case is still Missing.
 
 The corrected full GLES 3.1 run stopped on an RGBA32I renderbuffer-to-
 renderbuffer image-copy mismatch: 5,292 cases reported, with 5,133 Pass,
-158 NotSupported and one Fail, without GPU faults. The failure remains
-unresolved. The dependent neural/graphics queue stopped without running.
+158 NotSupported and one Fail, without GPU faults. Patch 0031 fixes the
+isolated failure and its renderbuffer-copy subset, as described below.
+The dependent neural/graphics queue stopped without running.
 Full GLES 3.1 and post-0030 graphics regressions remain pending.
 [Incomplete full-run evidence](../docs/evidence/gpu/runs/20261024-224854-gles31-b1e71-full/README.md).
 
@@ -596,7 +597,7 @@ a deterministic dense 32 -> 16 ReLU -> 8 network, with CPU comparisons for
 every hidden value, output and predicted class, plus guarded output buffers.
 `--cpu-only [batch]` runs the reference without opening the GPU. The source
 cross-builds and its CPU reference runs on the board for batches 1, 65 and
-257; GPU execution is still pending behind the full GLES 3.1 suite.
+257. GPU execution subsequently passes on patch 0031, as described below.
 [Reference preparation](../docs/evidence/gpu/runs/20261024-232200-neural-cpu/README.md).
 
 ## Compute synchronization and reset recovery (2026-10-25)
@@ -633,3 +634,50 @@ On kernel #29 / `23.3.6-b1e71af4`, without a version override:
 These results cover queued compute and retained contexts. Reset points
 inside an executing compute shader, dma-buf exchange and hours-long mixed
 load remain separate stress coverage.
+
+## Pending clears during image-copy storage replacement (2026-10-25)
+
+Patch 0031, Mesa `23.3.6-3112d69b`, submits pending resource writers before
+`PIPE_MAP_DISCARD_WHOLE_RESOURCE` replaces the resource BO. Its DRI SHA256 is
+`8171c7bd743141f875616c7d8b9aeea9febd5c5d62a60fe28de479a317051dab`.
+
+The full-suite failure reproduces in isolation on `b1e71af4`: clear new
+RGBA32I renderbuffers, immediately copy the full image, then copy subregions.
+Same-format copies use the existing CPU map/copy path. A full destination
+map may orphan its storage while its clear job is pending. The render CL's
+attachment addresses are emitted at submission, so that old clear can
+target the new BO and overwrite the CPU copy. Submitting pending writers
+before the storage change preserves the correct destination.
+
+The isolated case changes from Fail to Pass. The scratch driver also passes
+**all 2,011 noncompressed copy cases involving a renderbuffer**, covering
+the formats and copy directions in `cases/gles31-copy-renderbuffer.txt`,
+with zero MMU errors, resets or oopses.
+[Before/fix evidence](../docs/evidence/gpu/runs/20261025-085226-copy-rgba32i-qpa/README.md),
+[renderbuffer subset](../docs/evidence/gpu/runs/20261025-085423-gles31-copy-renderbuffer-scratch/summary.txt).
+
+The numbered package is installed alongside the selected build and passes
+the isolated case, 298 atomic-counter cases, 195 compute cases and the
+1,059-case gather subset (654 Pass, 405 optional-extension NotSupported),
+with zero GPU faults. It also passes the 350-chain compute fence/reset gate
+with exactly three deliberate resets and no MMU errors or oopses.
+[Numbered compute](../docs/evidence/gpu/runs/20261025-085919-gles31-3112-compute/summary.txt),
+[gather](../docs/evidence/gpu/runs/20261025-085953-gles31-3112-gather/summary.txt),
+[fence/reset gate](../docs/evidence/gpu/runs/20261025-090110-3112-compute-sync-recovery/README.md).
+Full GLES 3.1 and post-0031 graphics regressions remain pending.
+
+## Neural-network compute workload (2026-10-25)
+
+On kernel #29 / `23.3.6-3112d69b`, `kstb-neural-test` runs both layers on
+V3D 3.3 with `V3D_COMPUTE33=1` and no version override. Batches 1, 65 and
+257 pass: every hidden value, output value and argmax classification agrees
+with the CPU reference, with maximum absolute error zero and intact guards.
+There are no MMU errors, resets or oopses.
+[Neural workload evidence](../docs/evidence/gpu/runs/20261025-090212-3112-neural/README.md).
+
+For batch 257 the CPU reference takes 0.410 ms and GPU dispatch plus
+synchronization takes 113.884 ms. This small deterministic model validates
+correct execution; the measured GPU path is substantially slower than the
+CPU. Those timings include dispatch overhead and do not isolate shader
+execution. The weights are generated test data, with no trained-model
+accuracy claim.

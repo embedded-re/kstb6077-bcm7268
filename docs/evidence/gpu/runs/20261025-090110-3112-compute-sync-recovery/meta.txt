@@ -1,0 +1,6 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+8171c7bd743141f875616c7d8b9aeea9febd5c5d62a60fe28de479a317051dab  /opt/mesa/23.3.6-3112d69b/lib/dri/v3d_dri.so
+abb7bb38464a96913eeb5b8f5d9acca4efb539a8445d65b0ed372fc61dc99d9e  /opt/gpu-test/kstb-compute-sync-test
+c9e42d64b5dfd179b51bebd05674a81314721745e44ea3d1a3b6bc4cab3c803c  /opt/gpu-test/kstb-reset-probe
+numbered Mesa V3D_COMPUTE33=1 without version override; intentional reset in second phase

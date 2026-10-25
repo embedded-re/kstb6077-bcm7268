@@ -1,0 +1,98 @@
+#sessionInfo releaseName opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80
+#sessionInfo releaseId 0x067e8832
+#sessionInfo targetName "nullws"
+#sessionInfo logFormatVersion "0.3.4"
+#sessionInfo vendor "Broadcom"
+#sessionInfo renderer "V3D 3.3"
+#sessionInfo commandLineParameters "--deqp-case=dEQP-GLES31.functional.copy_image.non_compressed.viewclass_128_bits.rgba32i_rgba32i.renderbuffer_to_renderbuffer --deqp-surface-type=window --deqp-gl-config-name=rgba8888d24s8ms0 --deqp-surface-width=256 --deqp-surface-height=256 --deqp-log-filename=/root/gpu-runs/20261025-085226-copy-rgba32i-qpa/result.qpa"
+
+#beginSession
+
+#beginTestCaseResult dEQP-GLES31.functional.copy_image.non_compressed.viewclass_128_bits.rgba32i_rgba32i.renderbuffer_to_renderbuffer
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseResult CasePath="dEQP-GLES31.functional.copy_image.non_compressed.viewclass_128_bits.rgba32i_rgba32i.renderbuffer_to_renderbuffer" Version="0.3.4" CaseType="SelfValidate">
+ <Section Name="TestCaseInfo" Description="Test case info">
+  <Text>Testing copying from renderbuffer to renderbuffer.</Text>
+  <Section Name="Source image info." Description="Source image info.">
+   <Text>Target: renderbuffer</Text>
+   <Text>Size: (65, 63, 1)</Text>
+   <Text>Levels: 1</Text>
+   <Text>Format: rgba32i</Text>
+</Section>
+  <Section Name="Destination image info." Description="Destination image info.">
+   <Text>Target: renderbuffer</Text>
+   <Text>Size: (65, 63, 1)</Text>
+   <Text>Levels: 1</Text>
+   <Text>Format: rgba32i</Text>
+</Section>
+</Section>
+ <Text>Creating source image.</Text>
+ <Text>Creating destination image.</Text>
+ <Section Name="Source image verify." Description="Source image verify.">
+  <Text>Verifying source image.</Text>
+</Section>
+ <Section Name="Destination image verify." Description="Destination image verify.">
+  <Text>Verifying destination image.</Text>
+</Section>
+ <Text>Copying area with size (65, 63, 1) from source image position (0, 0, 0) and mipmap level 0 to destination image position (0, 0, 0) and mipmap level 0. Size in destination format is (65, 63, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (34, 34, 0) and mipmap level 0 to destination image position (0, 0, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (0, 0, 0) and mipmap level 0 to destination image position (34, 34, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (33, 31, 0) and mipmap level 0 to destination image position (33, 31, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Section Name="Source image verify." Description="Source image verify.">
+  <Text>Verifying source image.</Text>
+  <Text>Image comarison passed.</Text>
+</Section>
+ <Section Name="Destination image verify." Description="Destination image verify.">
+  <Text>Verifying destination image.</Text>
+  <Text>Image comarison passed.</Text>
+</Section>
+ <Text>Deleting source image. </Text>
+ <Text>Deleting destination image. </Text>
+ <Text>Creating source image.</Text>
+ <Text>Creating destination image.</Text>
+ <Text>Copying area with size (65, 63, 1) from source image position (0, 0, 0) and mipmap level 0 to destination image position (0, 0, 0) and mipmap level 0. Size in destination format is (65, 63, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (34, 34, 0) and mipmap level 0 to destination image position (0, 0, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (0, 0, 0) and mipmap level 0 to destination image position (34, 34, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Text>Copying area with size (31, 29, 1) from source image position (33, 31, 0) and mipmap level 0 to destination image position (33, 31, 0) and mipmap level 0. Size in destination format is (31, 29, 1)</Text>
+ <Section Name="Source image verify." Description="Source image verify.">
+  <Text>Verifying source image.</Text>
+  <Text>Image comarison passed.</Text>
+</Section>
+ <Section Name="Destination image verify." Description="Destination image verify.">
+  <Text>Verifying destination image.</Text>
+  <Text>Result and reference images are normalized with formula p * (4.47411e-10, 1.43339e-09, 6.89273e-10, 5.52718e-10) + (0.601187, -0.853783, 0.701624, 1)</Text>
+  <Text>Image comparison failed: max difference = (2059885328, 697647099, 1450803355, 901320816), threshold = (1, 1, 1, 1)</Text>
+  <ImageSet Name="Image comparison" Description="Image comparison">
+   <Image Name="Result" Width="65" Height="63" Format="RGBA8888" CompressionMode="PNG" Description="Image comparison (p&apos; = p * (4.47411e-10, 1.43339e-09, 6.89273e-10, 5.52718e-10) + (0.601187, -0.853783, 0.701624, 1)) [Slice 0]">
+    iVBORw0KGgoAAAANSUhEUgAAAEEAAAA/CAYAAAC/36X0AAAAqElEQVR4nO3bwQ1C
+    MRBDwQmi7y8qX650sJF4biDWyLklZ8ZjKefMZ+vs37y2C9yQEISAEBACQkAICAEh
+    IASEgBAQAkJACAgBISAEhIAQEAJCQAgIASEgBISAEMBhtjuspyXgvV0AZs7q84CW
+    oOuAEMyc5+8RaAkIASEgBISAEBACQkAICAEhIASEgBAQAkJACAgBISAEhIAQEAJC
+    wCUI23+mr0DYTgj4Al5ODX10UUQIAAAAAElFTkSuQmCC
+</Image>
+   <Image Name="Reference" Width="65" Height="63" Format="RGBA8888" CompressionMode="PNG" Description="Image comparison (p&apos; = p * (4.47411e-10, 1.43339e-09, 6.89273e-10, 5.52718e-10) + (0.601187, -0.853783, 0.701624, 1)) [Slice 0]">
+    iVBORw0KGgoAAAANSUhEUgAAAEEAAAA/CAYAAAC/36X0AAAAhUlEQVR4nO3QgQ0A
+    EADAsPK40zmDxHbB0rG35fPm7YEXCkEICAEhIASEgBAQAkJACAgBISAEhIAQEAJC
+    QAgIASEgBISAEBACQkAICAEhIASEgBAQAkJACAgBISAEhIAQEAJCQAgIASEgBISA
+    EBACQkAICAEhIASEgBAQAkJACAgBISAEcADm1wL7oVZWvAAAAABJRU5ErkJggg==
+</Image>
+   <Image Name="ErrorMask" Width="65" Height="63" Format="RGB888" CompressionMode="PNG" Description="Image comparison">
+    iVBORw0KGgoAAAANSUhEUgAAAEEAAAA/CAIAAAAwvTKjAAAAhUlEQVRoge3asQ3A
+    MAzEQCnI/isrXeo0bzACbwAbxHeGu6ZypoOHv64Tl4TZwGADgw0MNjDYwGADgw0M
+    NjDYwGADgw0MNjDYwLChoZNPxods2OE+cEd06+kVO9gA0PP/hlqwQ9lAYQODDQw2
+    MNjAYAODDQw2MNjAYAODDQw2fJP+9e0ODA86uQd9+lNmAgAAAABJRU5ErkJggg==
+</Image>
+</ImageSet>
+  <Text>Image comparison failed.</Text>
+</Section>
+ <Text>Deleting source image. </Text>
+ <Text>Deleting destination image. </Text>
+ <Number Name="TestDuration" Description="Test case duration in microseconds" Tag="Time" Unit="us">35474</Number>
+ <Result StatusCode="Fail">Image comparison failed.</Result>
+</TestCaseResult>
+
+#endTestCaseResult
+
+Run took 0.10 seconds
+
+#endSession

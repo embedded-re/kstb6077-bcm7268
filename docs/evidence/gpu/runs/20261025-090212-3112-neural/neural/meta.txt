@@ -1,0 +1,4 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+{"LD_LIBRARY_PATH": "/opt/mesa/23.3.6-3112d69b/lib", "LIBGL_DRIVERS_PATH": "/opt/mesa/23.3.6-3112d69b/lib/dri", "V3D_COMPUTE33": "1", "MESA_SHADER_CACHE_DISABLE": "true"}
+a00f8f60a6816f0655c5d0ecf19afef40087b21e76d64aff2baaa4f4add76cc0  /opt/gpu-test/kstb-neural-test
+8171c7bd743141f875616c7d8b9aeea9febd5c5d62a60fe28de479a317051dab  /opt/mesa/23.3.6-3112d69b/lib/dri/v3d_dri.so

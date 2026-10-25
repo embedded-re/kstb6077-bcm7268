@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Sat, 24 Oct 2026 10:17:21 +0200
-Subject: [PATCH 24/30] v3d: implement fragment image load store and atomics on
+Subject: [PATCH 24/31] v3d: implement fragment image load store and atomics on
  3.3
 
 Lower image accesses to bounds-checked general TMU memory operations with uniforms for resource layout. Handle linear, UBLINEAR and UIF tiling, layers and mip levels, and all ES 3.1 plus NV_image_formats formats.

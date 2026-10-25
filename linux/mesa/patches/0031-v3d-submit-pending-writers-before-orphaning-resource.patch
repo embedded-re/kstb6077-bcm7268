@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sun, 25 Oct 2026 08:54:45 +0100
+Subject: [PATCH 31/31] v3d: submit pending writers before orphaning resource
+ storage
+
+---
+ src/gallium/drivers/v3d/v3d_resource.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/gallium/drivers/v3d/v3d_resource.c b/src/gallium/drivers/v3d/v3d_resource.c
+index fab9f75..9fc058d 100644
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -191,6 +191,12 @@ v3d_map_usage_prep(struct pipe_context *pctx,
+         struct v3d_resource *rsc = v3d_resource(prsc);
+ 
+         if (usage & PIPE_MAP_DISCARD_WHOLE_RESOURCE) {
++                /* RCL attachment addresses are emitted when the job is
++                 * submitted.  Submit pending writers before replacing the
++                 * BO, so an old clear cannot target the new storage.
++                 */
++                v3d_flush_jobs_writing_resource(v3d, prsc,
++                                                V3D_FLUSH_ALWAYS, false);
+                 if (v3d_resource_bo_alloc(rsc)) {
+                         /* If it might be bound as one of our vertex buffers
+                          * or UBOs, make sure we re-emit vertex buffer state

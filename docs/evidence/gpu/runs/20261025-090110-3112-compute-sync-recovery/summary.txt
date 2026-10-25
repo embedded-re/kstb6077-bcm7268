@@ -1,0 +1,5 @@
+350 compute/native-fence chains exact; 4097 words per buffer; guards checked
+kernel: 3 intentional resets, 0 MMU errors, 0 oops
+reset-sync-50-a: compute fence pending 216062.931748, next reset 216064.338263; exact after recovery
+reset-sync-50-b: compute fence pending 216072.707908, next reset 216074.098275; exact after recovery
+reset-sync-50-c: compute fence pending 216082.467564, next reset 216083.858289; exact after recovery

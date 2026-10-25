@@ -1,0 +1,26 @@
+Writing test log into /root/gpu-runs/20261025-085226-copy-rgba32i-qpa/result.qpa
+dEQP Core opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80 (0x067e8832) starting..
+  target implementation = 'nullws'
+rsc alloc 0xffffaabceda0 (format r8_unorm), 4096x1 buffer @0x00001000-0x00002fff
+rsc alloc 0xffffaab93b10 (format b8g8r8a8_unorm), 256x256: level 0 (UIF^) 256x256x1 -> 256x256x1, stride 1024@0x00003000
+rsc alloc 0xffffaab93db0 (format s8_uint_z24_unorm), 256x256: level 0 (UIF^) 256x256x1 -> 256x256x1, stride 1024@0x00043000
+ERROR: Waiver file '' could not be opened. No tests will be waived.
+
+Test case 'dEQP-GLES31.functional.copy_image.non_compressed.viewclass_128_bits.rgba32i_rgba32i.renderbuffer_to_renderbuffer'..
+rsc alloc 0xffffaab32b70 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x00083000
+rsc alloc 0xffffaab32280 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x0011c000
+rsc alloc 0xffffaab32280 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x001b7000
+rsc alloc 0xffffaab326f0 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x0011c000
+rsc alloc 0xffffaab32290 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x00083000
+rsc alloc 0xffffaab32290 (format r32g32b32a32_sint), 65x63: level 0 (UIF) 65x63x1 -> 80x64x1, stride 1280@0x001b7000
+rsc alloc 0xffffaab32b70 (format r8_unorm), 524288x1 buffer @0x001cb000-0x0024bfff
+  Fail (Image comparison failed.)
+
+DONE!
+
+Test run totals:
+  Passed:        0/1 (0.0%)
+  Failed:        1/1 (100.0%)
+  Not supported: 0/1 (0.0%)
+  Warnings:      0/1 (0.0%)
+  Waived:        0/1 (0.0%)

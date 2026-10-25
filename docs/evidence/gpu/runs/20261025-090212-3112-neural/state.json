@@ -1,0 +1,25 @@
+{
+  "state": "complete",
+  "predecessor": "/root/gpu-runs/20261024-224600-b1e71-gles31-chain",
+  "build": "23.3.6-3112d69b",
+  "results": [
+    {
+      "test": "neural",
+      "batch": 1,
+      "exit": 0,
+      "run": "/root/gpu-runs/20261025-090212-3112-neural/neural"
+    },
+    {
+      "test": "neural",
+      "batch": 65,
+      "exit": 0,
+      "run": "/root/gpu-runs/20261025-090212-3112-neural/neural"
+    },
+    {
+      "test": "neural",
+      "batch": 257,
+      "exit": 0,
+      "run": "/root/gpu-runs/20261025-090212-3112-neural/neural"
+    }
+  ]
+}

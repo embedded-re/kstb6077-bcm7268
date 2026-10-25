@@ -1,0 +1,53 @@
+start 215951.95 2026-10-25T07:59:54+00:00
+kernel 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026
+boot 64c6e2cd-0b4b-4b74-ab4a-79034a3d4d6e
+mesa /opt/mesa/23.3.6-3112d69b
+id 23.3.6-3112d69b
+patch v3d: V3D 3.3 compiler and driver fixes 1-19
+patch v3d: EGL_ANDROID_native_fence_sync on V3D 3.3
+patch v3d: MSAA UIF XOR addressing before V3D 4.1
+patch v3d: no buffer-texture acceleration on V3D 3.x
+patch v3d: fewer threads when a TMU request exceeds the per-thread FIFO
+patch v3d: keep loaded data in the RCL dummy store, separate stencil on 3.3
+patch v3d: transform feedback on V3D 3.3
+patch v3d: advance VPM reads past the first 32 inputs on 3.3
+patch v3d: clamp dynamic uniform offsets to the uploaded block before 4.0
+patch v3d: centroid varyings on V3D 3.3
+patch v3d: keep 256 bytes free at the end of every CL BO before 4.1
+patch v3d: always write four TLB colour components before 4.1
+patch kmsro: kstb-drm display driver
+patch v3d: clamp the max LOD of 32-bit-return textures on 3.3
+patch v3d: one D24S8 buffer on 3.3, MSAA Z/S through the Z/S config
+patch v3d: DEPTH_COMP32F for comparing samplers of Z32F on 3.3
+patch v3d: no-mipmap 32-bit-return lookups stay on the base level on 3.3
+patch v3d: sample coverage on 3.3
+patch v3d: no MSAA for 32-bit float colour on 3.3
+patch v3d: 3.3 register allocation keeps spill candidates for 1 thread
+patch v3d: 3.3 vector TMU loads need the vector's alignment
+patch v3d: single-level views sample without a mip filter on 3.3
+patch v3d: threaded TMU stores and scratch spills on V3D 3.3
+patch v3d: implement fragment image load store and atomics on 3.3
+patch v3d: add opt-in render-only compute dispatch on 3.3
+patch v3d: allocate per-workgroup shared memory for compute33
+patch v3d: support threaded compute33 with TSY workgroup barriers
+patch v3d: preserve low-half unpack in float-to-integer conversion opcodes
+patch v3d: add opt-in texture gather and compute texture descriptors on 3.3
+patch v3d: order 3.3 TMU requests after sample-mask updates
+patch v3d: submit pending writers before orphaning resource storage
+8171c7bd743141f875616c7d8b9aeea9febd5c5d62a60fe28de479a317051dab  lib/dri/v3d_dri.so
+cda7ac7e2155b763b7730a59a4a3b2f4b4bdd9f2bf9f7bcbd2f4a0cc482675fa  egl/deqp-egl
+20f00cd6e2ab7b047a2d8aaea3f56ef365f65ca33c99710ad1ea0356af38d7c9  gles2/deqp-gles2
+4eb40e2ff37bfa472f0b6874516f344ec7924374a0b1ae0058711f51208c27ad  gles3/deqp-gles3
+5c6437e5bb38ad4a4f33f15d2943819a1a427063c3426c9f3cf6fd36ca50c94e  gles31/deqp-gles31
+f9ba64c51a34cbccf5c0d71d94c64d1e0b8f50f30d646631136d673207fe2a19  /opt/gpu-test/kstb-deqp
+args gles31 --chunk 100 --cases /opt/gpu-test/cases/gles31-gather.txt
+LD_LIBRARY_PATH=/opt/mesa/23.3.6-3112d69b/lib
+LIBGL_DRIVERS_PATH=/opt/mesa/23.3.6-3112d69b/lib/dri
+DEQP_EGL_PLATFORM=drm
+DEQP_SURFACE_TYPE=window
+MESA_GLES_VERSION_OVERRIDE=(unset)
+MESA_GLSL_VERSION_OVERRIDE=(unset)
+MESA_SHADER_CACHE_DISABLE=true
+V3D_DEBUG=(unset)
+V3D_COMPUTE33=1
+end 216025.96
