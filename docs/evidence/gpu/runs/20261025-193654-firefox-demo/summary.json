@@ -1,0 +1,13 @@
+{
+  "result": "failed_gpu_hang",
+  "gpu_resets": 24,
+  "first_reset_monotonic": 30033.241293,
+  "last_reset_monotonic": 30058.23729,
+  "reset_span_seconds": 24.996,
+  "err_stat_values": [
+    "0x00001000"
+  ],
+  "sway_pid_retained": 5251,
+  "browser_installed": "firefox-151.0.3-r0",
+  "root_cause": "not isolated"
+}

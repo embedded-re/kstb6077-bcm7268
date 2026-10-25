@@ -1,0 +1,52 @@
+[30022.694740] drm_sched_entity_init: called with uninitialized scheduler
+[30024.464078] drm_sched_entity_init: called with uninitialized scheduler
+[30024.507145] drm_sched_entity_init: called with uninitialized scheduler
+[30024.566526] drm_sched_entity_init: called with uninitialized scheduler
+[30033.241293] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30033.248520] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30034.297328] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30034.304586] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30035.353389] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30035.360713] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30036.409270] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30036.416476] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30037.465284] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30037.472510] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30038.525251] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30038.532456] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30040.249275] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30040.256485] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30041.305272] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30041.312483] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30042.361257] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30042.368465] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30043.417267] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30043.424472] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30044.477277] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30044.484484] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30045.529266] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30045.536472] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30046.589287] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30046.596501] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30047.641368] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30047.648766] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30048.701390] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30048.708722] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30049.753309] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30049.760522] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30050.809285] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30050.816500] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30051.865289] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30051.872501] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30052.925287] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30052.932494] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30053.981295] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30053.988502] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30055.065289] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30055.072493] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30056.121283] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30056.128491] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30057.181282] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30057.188490] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30058.237290] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30058.244498] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000

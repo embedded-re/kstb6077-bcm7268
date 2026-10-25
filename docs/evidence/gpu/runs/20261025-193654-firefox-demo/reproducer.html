@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Firefox desktop demo</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#11131e;color:#eef0ff}*{box-sizing:border-box}body{max-width:1140px;margin:0 auto;padding:44px 32px}header{display:flex;align-items:center;gap:12px;color:#bdc5ff;font-size:16px}.mark{width:14px;height:14px;border-radius:50%;background:#ffae68;box-shadow:0 0 28px #ffae6866}h1{font-size:clamp(30px,4vw,54px);letter-spacing:-1.8px;margin:26px 0 12px;line-height:1.1}p{color:#aeb6ce;font-size:18px;line-height:1.6}.hero{display:flex;justify-content:space-between;align-items:center;gap:28px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}button,a.button{font:inherit;font-weight:600;font-size:16px;border:1px solid #41465f;background:#24283c;color:#eef0ff;padding:12px 20px;border-radius:10px;cursor:pointer;text-decoration:none}button:hover,a.button:hover{background:#353c58}a.primary{background:#bac4ff;color:#171b2b;border-color:transparent}section{border:1px solid #34394f;border-radius:18px;overflow:hidden;background:#191d2c}.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid #34394f;font-size:16px}.badge{font-variant-numeric:tabular-nums;color:#a6e3b0;background:#263e35;padding:5px 12px;border-radius:20px}canvas{display:block;width:100%;height:350px;background:#0f172a}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}.card{padding:18px 20px;border:1px solid #34394f;border-radius:12px;background:#191d2c}.label{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:#99a4c2}.value{font-size:19px;margin-top:9px;overflow-wrap:anywhere}footer{color:#8691ad;font-size:14px;margin-top:24px}@media(max-width:700px){.hero{display:block}.cards{grid-template-columns:1fr}body{padding:24px}canvas{height:280px}}
+</style>
+<header><span class="mark"></span> YOUR DESKTOP / FIREFOX</header>
+<div class="hero"><div><h1>Firefox on your desktop.</h1><p>Open tabs, browse the web, and try the live graphics demo.</p></div></div>
+<div class="actions"><a class="button primary" href="https://www.wikipedia.org/" target="_blank" rel="noopener">Open Wikipedia ↗</a><button id="pause">Pause animation</button><button id="colour">Change colours</button></div>
+<section><div class="bar"><span>Interactive graphics</span><span class="badge" id="fps">Starting…</span></div><canvas id="scene" width="1000" height="350"></canvas></section>
+<div class="cards"><div class="card"><div class="label">Graphics</div><div class="value" id="renderer">Checking WebGL…</div></div><div class="card"><div class="label">Pixel verification</div><div class="value" id="checks">Waiting for first frame</div></div><div class="card"><div class="label">Browser</div><div class="value">Native desktop application</div></div></div>
+<footer>This local demo uses WebGL. The browser's default acceleration settings are unchanged.</footer>
+<script>
+const state=window.demoState={frames:0,checks:0,failures:0,fps:0,status:'starting',renderer:null,paused:false};
+const canvas=document.getElementById('scene'),gl=canvas.getContext('webgl',{alpha:false,antialias:false});
+let tint=0;
+document.getElementById('pause').onclick=()=>{state.paused=!state.paused;document.getElementById('pause').textContent=state.paused?'Resume animation':'Pause animation'};
+document.getElementById('colour').onclick=()=>tint=(tint+1)%3;
+if(!gl){state.status='unavailable';document.getElementById('renderer').textContent='WebGL unavailable';document.getElementById('fps').textContent='No WebGL context'}else{
+ const ext=gl.getExtension('WEBGL_debug_renderer_info');state.renderer=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);document.getElementById('renderer').textContent=state.renderer;
+ function shader(kind,src){const s=gl.createShader(kind);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+ try{
+ const p=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,'attribute vec2 pos;attribute vec3 colour;uniform float angle;uniform float aspect;uniform float tint;varying vec3 c;void main(){float a=cos(angle),b=sin(angle);vec2 q=vec2(a*pos.x-b*pos.y,b*pos.x+a*pos.y);gl_Position=vec4(q.x*aspect,q.y,0,1);c=tint<0.5?colour:(tint<1.5?colour.gbr:colour.brg);}'));gl.attachShader(p,shader(gl.FRAGMENT_SHADER,'precision mediump float;varying vec3 c;void main(){gl_FragColor=vec4(c,1.0);}'));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));gl.useProgram(p);
+ const data=new Float32Array([0,.82,1,.65,.35,-.72,-.55,.55,.7,1,.72,-.55,.6,1,.8]);const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+ for(const [name,size,offset] of [['pos',2,0],['colour',3,8]]){const a=gl.getAttribLocation(p,name);gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,size,gl.FLOAT,false,20,offset)}
+ const angle=gl.getUniformLocation(p,'angle'),aspect=gl.getUniformLocation(p,'aspect'),colour=gl.getUniformLocation(p,'tint');gl.disable(gl.DITHER);
+ let stamp=performance.now(),last=0,phase=0;state.status='running';
+ function draw(t){if(!state.paused){phase+=.012;gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(15/255,23/255,42/255,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.uniform1f(angle,phase);gl.uniform1f(aspect,canvas.height/canvas.width);gl.uniform1f(colour,tint);gl.drawArrays(gl.TRIANGLES,0,3);gl.enable(gl.SCISSOR_TEST);gl.scissor(0,0,8,8);gl.clearColor(1,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);
+ if(state.frames%60===0){const px=new Uint8Array(4);gl.readPixels(4,4,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);if(px[0]===255&&px[1]===0&&px[2]===0&&px[3]===255)state.checks++;else state.failures++;document.getElementById('checks').textContent=state.failures?'Pixel mismatch':state.checks+' checks passed'}
+ if(gl.getError()!==gl.NO_ERROR){state.failures++;state.status='GL error'}state.frames++}
+ if(t-stamp>=1000){state.fps=(state.frames-last)*1000/(t-stamp);document.getElementById('fps').textContent=state.paused?'Paused':state.fps.toFixed(1)+' FPS';last=state.frames;stamp=t}requestAnimationFrame(draw)}requestAnimationFrame(draw);
+ }catch(e){state.status='error';state.error=String(e);document.getElementById('checks').textContent=String(e)}
+}
+</script>
+</html>

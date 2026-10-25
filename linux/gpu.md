@@ -14,6 +14,13 @@ series (inner Mesa commit `3263da5`). Old `/usr/local` graphics files are
 parked in the rollback backup. `/opt/mesa` is retained for explicit debug
 comparisons and is not the normal desktop's driver source.
 
+**Browser limitation:** the first Firefox 151 demonstration with a local
+WebGL page failed with 24 GPU resets. The browser was stopped; startup,
+WebRender, WebGL and compositor interaction are not yet isolated. Browser
+hardware acceleration is not reliable/validated. A new independent test
+abort guard passes synthetic process tests; no browser retry has occurred.
+[Failed browser attempt and monitor correction](../docs/evidence/gpu/runs/20261025-193654-firefox-demo/README.md).
+
 Start the normal desktop manually from the box's root console:
 
 ```
@@ -39,8 +46,9 @@ restart and CPU fallback pass. Package migration additionally passes GLES
 1/2/3 setup, MSAA/depth/stencil and 100 native-fence chains, with an actual
 restore of the previous installation followed by native reinstallation.
 Zero GPU faults occur in these runs. Full conformance was not repeated for
-the native-prefix/X11 frontend build. Xwayland and larger GUI apps remain
-untested; compute optimization stays parked after its value gate.
+the native-prefix/X11 frontend build. Xwayland and other larger GUI apps remain
+untested; Firefox failed as described above. Compute optimization stays
+parked after its value gate.
 [System installation, desktop and rollback evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
 [Earlier colour-depth evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).
 [Compute value decision](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).

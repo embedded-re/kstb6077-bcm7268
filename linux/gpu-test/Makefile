@@ -17,7 +17,7 @@ CFLAGS  = -O2 -Wall -I$(MESA)/include
 LDFLAGS = -L$(MESA)/lib -Wl,-rpath,/opt/mesa/current/lib
 
 TESTS   = $(patsubst %.c,%,$(wildcard kstb-*.c))
-SCRIPTS = kstb-compute-value kstb-compute-id-test kstb-compute-store-test kstb-compute-render-test kstb-reset-probe kstb-gpu-run kstb-deqp kstb-v3d-gl v3dpack.py
+SCRIPTS = kstb_fault_guard.py kstb-compute-value kstb-compute-id-test kstb-compute-store-test kstb-compute-render-test kstb-reset-probe kstb-gpu-run kstb-deqp kstb-v3d-gl v3dpack.py
 CASES   = $(wildcard cases/*.txt)
 
 all: $(addprefix $(OUT)/,$(TESTS))

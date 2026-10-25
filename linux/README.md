@@ -267,6 +267,9 @@ terminal or app leaves the desktop running. GLES rendering and ARGB8888
 output, application resizing/fullscreen/exit, launcher, restart, CPU fallback
 and a restore of the previous Mesa installation are tested.
 [Native driver and desktop evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
+The first Firefox/WebGL demonstration exposed repeated GPU hangs; browser
+hardware acceleration is not ready yet.
+[Failed browser test](../docs/evidence/gpu/runs/20261025-193654-firefox-demo/README.md).
 See [gpu.md](gpu.md) for the maintained build and rollback workflow.
 
 ### The HDMI console and `tv`

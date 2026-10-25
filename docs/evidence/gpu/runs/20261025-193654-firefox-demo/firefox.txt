@@ -1,0 +1,26 @@
+WARNING: Glycin running without sandbox.
+1792953417899	Marionette	INFO	Listening on port 2828
+[Parent 22313, Main Thread] WARNING: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+: 'glib warning', file ./../../../toolkit/xre/nsSigHandlers.cpp:200
+
+** (firefox:22313): WARNING **: 19:36:57.939: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+
+WARNING: Glycin running without sandbox.
+Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 4814 (t=10.9453) [GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 4814
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+JavaScript warning: file:///usr/share/kstb/browser-demo/index.html, line 22: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=9.62479) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+console.warn: RSLoader: Recipe new-tab-157020260831183837-to-release-155-addondeployment not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe new-tab-158120260920214645-to-release-156 not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe new-tab-159020260925223456-to-release-157 not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe new-tab-159120261002163917-to-release-157 not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe new-tab-160020261011195215-to-release-158 not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe new-tab-160220261016183914-to-release-158 not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.
+console.warn: RSLoader: Recipe train-hop-registering-changes-to-existing-telemetry-pilot-to-beta not returned from collection nimbus-secure-experiments because it does not contain at least one required feature ID.

@@ -1,0 +1,8 @@
+5251
+30413.20 120486.59
+[30057.181282] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30057.188490] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[30058.237290] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[30058.244498] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+firefox-151.0.3-r0 aarch64 {firefox} (GPL-3.0-only AND LGPL-2.1-only AND LGPL-3.0-only AND MPL-2.0) [installed]
+/usr/lib/dri/v3d_dri.so is owned by mesa-23.3.6-r33
