@@ -1,0 +1,42 @@
+[219372.354838] kstb neural milestone start
+[219372.363263] kstb neural milestone neural-b1-l16
+[219372.372140] drm_sched_entity_init: called with uninitialized scheduler
+[219372.988906] kstb neural milestone neural-b1-l32
+[219372.998010] drm_sched_entity_init: called with uninitialized scheduler
+[219373.613155] kstb neural milestone neural-b1-l64
+[219373.622482] drm_sched_entity_init: called with uninitialized scheduler
+[219374.237221] kstb neural milestone neural-b1-l128
+[219374.246781] drm_sched_entity_init: called with uninitialized scheduler
+[219374.861238] kstb neural milestone neural-b65-l16
+[219374.870984] drm_sched_entity_init: called with uninitialized scheduler
+[219375.797261] kstb neural milestone neural-b65-l32
+[219375.807147] drm_sched_entity_init: called with uninitialized scheduler
+[219376.733416] kstb neural milestone neural-b65-l64
+[219376.743577] drm_sched_entity_init: called with uninitialized scheduler
+[219377.565505] kstb neural milestone neural-b65-l128
+[219377.575899] drm_sched_entity_init: called with uninitialized scheduler
+[219378.293269] kstb neural milestone neural-b257-l16
+[219378.304093] drm_sched_entity_init: called with uninitialized scheduler
+[219380.061427] kstb neural milestone neural-b257-l32
+[219380.072512] drm_sched_entity_init: called with uninitialized scheduler
+[219381.517433] kstb neural milestone neural-b257-l64
+[219381.528643] drm_sched_entity_init: called with uninitialized scheduler
+[219382.665454] kstb neural milestone neural-b257-l128
+[219382.676925] drm_sched_entity_init: called with uninitialized scheduler
+[219383.501512] kstb neural milestone neural-b4096-l128
+[219383.521414] drm_sched_entity_init: called with uninitialized scheduler
+[219386.521433] kstb neural milestone neural-b257-l128-stress
+[219386.533622] drm_sched_entity_init: called with uninitialized scheduler
+[219403.063055] kstb neural milestone sync-200
+[219403.073445] drm_sched_entity_init: called with uninitialized scheduler
+[219433.433299] kstb neural milestone reset-sync-50
+[219433.444149] drm_sched_entity_init: called with uninitialized scheduler
+[219437.337880] drm_sched_entity_init: called with uninitialized scheduler
+[219438.390497] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[219438.401124] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[219442.485559] kstb neural milestone post-reset-b1
+[219442.496892] drm_sched_entity_init: called with uninitialized scheduler
+[219443.113560] kstb neural milestone post-reset-b65
+[219443.125278] drm_sched_entity_init: called with uninitialized scheduler
+[219443.845563] kstb neural milestone post-reset-b257
+[219443.857853] drm_sched_entity_init: called with uninitialized scheduler

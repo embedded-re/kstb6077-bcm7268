@@ -1,0 +1,37 @@
+dense 32 -> 16 ReLU -> 8, batch 4096; CPU 6.760 ms; class checksum 0x726355ab
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+local size 128; 11 rounds; input upload/readback excluded from GPU timing
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 0 (cold): CPU 6.760 ms; dispatch1 host 103.909 ms; dispatch2 host 51.882 ms; finish 39.842 ms; GPU dispatch + synchronization 195.633 ms; GPU class checksum 0x726355ab; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 1 (warm): CPU 6.483 ms; dispatch1 host 71.862 ms; dispatch2 host 52.073 ms; finish 67.734 ms; GPU dispatch + synchronization 191.669 ms; GPU class checksum 0xd45933fd; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 2 (warm): CPU 6.501 ms; dispatch1 host 45.318 ms; dispatch2 host 51.966 ms; finish 91.851 ms; GPU dispatch + synchronization 189.136 ms; GPU class checksum 0x3a516644; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 3 (warm): CPU 6.485 ms; dispatch1 host 25.328 ms; dispatch2 host 51.966 ms; finish 111.823 ms; GPU dispatch + synchronization 189.117 ms; GPU class checksum 0x38c2b521; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 4 (warm): CPU 6.486 ms; dispatch1 host 13.115 ms; dispatch2 host 48.150 ms; finish 127.695 ms; GPU dispatch + synchronization 188.960 ms; GPU class checksum 0x5adaa18a; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 5 (warm): CPU 6.486 ms; dispatch1 host 5.053 ms; dispatch2 host 48.203 ms; finish 135.860 ms; GPU dispatch + synchronization 189.115 ms; GPU class checksum 0xc5da0720; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 6 (warm): CPU 6.499 ms; dispatch1 host 5.053 ms; dispatch2 host 36.178 ms; finish 147.826 ms; GPU dispatch + synchronization 189.057 ms; GPU class checksum 0x66d56764; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 7 (warm): CPU 6.485 ms; dispatch1 host 5.056 ms; dispatch2 host 28.238 ms; finish 155.699 ms; GPU dispatch + synchronization 188.992 ms; GPU class checksum 0x2a594f71; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 8 (warm): CPU 6.484 ms; dispatch1 host 5.030 ms; dispatch2 host 24.258 ms; finish 159.816 ms; GPU dispatch + synchronization 189.104 ms; GPU class checksum 0xd13ea040; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 9 (warm): CPU 6.501 ms; dispatch1 host 5.441 ms; dispatch2 host 19.803 ms; finish 163.846 ms; GPU dispatch + synchronization 189.090 ms; GPU class checksum 0xa16487f4; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 10 (warm): CPU 6.484 ms; dispatch1 host 5.060 ms; dispatch2 host 16.219 ms; finish 167.843 ms; GPU dispatch + synchronization 189.122 ms; GPU class checksum 0x7473e8a8; 4096 classification checks; PASS
+warm GPU ms: min 188.960 median 189.110 max 191.669; 10 checked rounds

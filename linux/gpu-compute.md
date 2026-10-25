@@ -736,3 +736,32 @@ framebuffer case `fbo.no_attachments.npot_size.127x127`, with two GPU resets
 and zero MMU errors or kernel oopses.
 That failure is the next unresolved conformance blocker.
 [Incomplete patch-0032 run](../docs/evidence/gpu/runs/20261025-093723-gles31-5a3fd-full/README.md).
+
+## Neural workgroup sizing and repeated-run gate (2026-10-25)
+
+The existing patch-0032 driver supports local sizes up to 128. The neural
+workload now accepts `batch local-size rounds`, reuses programs/buffers,
+changes input every round, and checks every layer, classification and
+buffer guard. Original defaults remain 65/16/1; a tested faster invocation
+is `V3D_COMPUTE33=1 /opt/gpu-test/kstb-neural-test 257 128 11`, using the
+`23.3.6-5a3fd8dd` package environment.
+
+At batch 257, warm median dispatch-plus-synchronization time falls from
+114.369 ms at local size 16 to 26.469 ms at size 128, a 4.32× improvement.
+The CPU reference is still much faster: 0.397 ms in the size-128 run.
+These are host elapsed timings, excluding input upload and output checking;
+they do not isolate GPU execution. Ten warm rounds follow a separate cold
+round. Batch 65 improves from 39.874 to 15.903 ms; batch 1 stays 4.384 ms.
+No Mesa or kernel source changed for this milestone.
+
+All **677 neural inferences** pass with maximum absolute error zero,
+correct classifications and intact guards. Coverage includes batches
+1/65/257 at local sizes 16/32/64/128, batch 4096 at size 128, 501 repeated
+batch-257 runs, and neural checks after reset recovery. Alongside them,
+250 cross-context compute/native-fence chains pass, including compute
+pending across one deliberate GPU reset. There are zero unexpected resets,
+MMU errors or oopses. This is a bounded reliability check, not hours-long
+stress or full-stack reliability certification. The framebuffer reset
+blocker above remains unresolved. Work is stopped at the milestone;
+selected Mesa and system defaults are unchanged.
+[Measurements and complete gate evidence](../docs/evidence/gpu/runs/20261025-095653-neural-milestone/README.md).

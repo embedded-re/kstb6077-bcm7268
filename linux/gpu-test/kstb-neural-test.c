@@ -1,6 +1,7 @@
-// A 32 -> 16 (ReLU) -> 8 dense neural network, executed as two compute dispatches.
-// kstb-neural-test [batch] or --cpu-only [batch]; default batch 65 spans several
-// render jobs and leaves a partial workgroup in the second layer.
+// A 32 -> 16 (ReLU) -> 8 dense neural network, executed as two compute
+// dispatches. kstb-neural-test [--cpu-only] [batch [local-size [rounds]]].
+// Defaults: 65, 16, 1. Round zero is cold; subsequent rounds reuse
+// programs/buffers with new inputs.
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES3/gl31.h>
@@ -68,7 +69,7 @@ static uint32_t classes(const float *values, unsigned batch) {
 }
 static const char *compute_source =
     "#version 310 es\nprecision highp float;precision highp int;\n"
-    "layout(local_size_x=16) in;uniform highp uint batch;\n"
+    "layout(local_size_x=%u) in;uniform highp uint batch;\n"
     "layout(std430,binding=0) readonly buffer Inputs { float inputs[]; };\n"
     "layout(std430,binding=1) readonly buffer Weights { float weights[]; };\n"
     "layout(std430,binding=2) readonly buffer Bias { float bias[]; };\n"
@@ -77,9 +78,9 @@ static const char *compute_source =
     "uint b=index/%uu;uint o=index%%%uu;float value=bias[o];"
     "for(uint i=0u;i<%uu;i++)value+=inputs[b*%uu+i]*weights[o*%uu+i];"
     "outputs[index]=%s;}\n";
-static GLuint program(unsigned in, unsigned out, int relu) {
+static GLuint program(unsigned in, unsigned out, int relu, unsigned local_size) {
     char source[4096];
-    snprintf(source, sizeof(source), compute_source, out, out, out, in, in, in,
+    snprintf(source, sizeof(source), compute_source, local_size, out, out, out, in, in, in,
              relu ? "max(value,0.0)" : "value");
     GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(shader, 1, (const GLchar *[]){source}, NULL);
@@ -149,12 +150,24 @@ static unsigned verify(const char *label, GLuint buffer, const float *expected, 
            worst, errors);
     return errors;
 }
+static unsigned number(const char *text, unsigned maximum) {
+    char *end;
+    unsigned long n = strtoul(text, &end, 10);
+    CHECK(*text && !*end && n > 0 && n <= maximum);
+    return n;
+}
+static int compare_double(const void *a, const void *b) {
+    double x = *(const double *)a, y = *(const double *)b;
+    return (x > y) - (x < y);
+}
 int main(int argc, char **argv) {
     int cpu_only = argc > 1 && !strcmp(argv[1], "--cpu-only");
     int at = cpu_only ? 2 : 1;
-    CHECK(argc == at || argc == at + 1);
-    unsigned batch = argc > at ? (unsigned)atoi(argv[at]) : 65;
-    CHECK(batch > 0 && batch <= 4096);
+    CHECK(argc >= at && argc <= at + 3);
+    unsigned batch = argc > at ? number(argv[at], 4096) : 65;
+    unsigned local_size = argc > at + 1 ? number(argv[at + 1], 128) : 16;
+    unsigned rounds = argc > at + 2 ? number(argv[at + 2], 10000) : 1;
+    CHECK(local_size == 16 || local_size == 32 || local_size == 64 || local_size == 128);
     size_t nx = (size_t)batch * INPUTS, nh = (size_t)batch * HIDDEN, ny = (size_t)batch * OUTPUTS;
     float *x = array(nx), *w1 = array(INPUTS * HIDDEN), *b1 = array(HIDDEN), *h = array(nh);
     float *w2 = array(HIDDEN * OUTPUTS), *b2 = array(OUTPUTS), *y = array(ny), *gpu_h = array(nh),
@@ -192,43 +205,81 @@ int main(int argc, char **argv) {
         const char *renderer = (const char *)glGetString(GL_RENDERER);
         CHECK(renderer && strstr(renderer, "V3D"));
         printf("%s; %s\n", glGetString(GL_VERSION), renderer);
-        GLuint programs[] = {program(INPUTS, HIDDEN, 1), program(HIDDEN, OUTPUTS, 0)};
+        GLuint programs[] = {program(INPUTS, HIDDEN, 1, local_size),
+                             program(HIDDEN, OUTPUTS, 0, local_size)};
         GLuint buffers[] = {upload(x, nx), upload(w1, INPUTS * HIDDEN),  upload(b1, HIDDEN),
                             guarded(nh),   upload(w2, HIDDEN * OUTPUTS), upload(b2, OUTPUTS),
                             guarded(ny)};
-        glFinish();
-        start = now();
-        glUseProgram(programs[0]);
-        GLint location = glGetUniformLocation(programs[0], "batch");
-        CHECK(location >= 0);
-        glUniform1ui(location, batch);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffers[0]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[1]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[2]);
-        glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 3, buffers[3], GUARD, nh * 4);
-        glDispatchCompute((nh + 15) / 16, 1, 1);
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        glUseProgram(programs[1]);
-        location = glGetUniformLocation(programs[1], "batch");
-        CHECK(location >= 0);
-        glUniform1ui(location, batch);
-        glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, buffers[3], GUARD, nh * 4);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[4]);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[5]);
-        glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 3, buffers[6], GUARD, ny * 4);
-        glDispatchCompute((ny + 15) / 16, 1, 1);
-        glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
-        glFinish();
-        double gpu_ms = (now() - start) * 1000;
-        CHECK(glGetError() == GL_NO_ERROR);
-        errors += verify("hidden", buffers[3], h, gpu_h, nh);
-        errors += verify("logits", buffers[6], y, gpu_y, ny);
-        for (unsigned b = 0; b < batch; b++)
-            if (argmax(y + b * OUTPUTS) != argmax(gpu_y + b * OUTPUTS))
-                errors++;
-        printf("GPU dispatch + synchronization %.3f ms; GPU class checksum %#x; %u classification "
-               "checks; %s\n",
-               gpu_ms, classes(gpu_y, batch), batch, errors ? "FAIL" : "PASS");
+        double *times = malloc(rounds * sizeof(*times));
+        CHECK(times);
+        printf("local size %u; %u rounds; input upload/readback excluded from GPU "
+               "timing\n",
+               local_size, rounds);
+        for (unsigned round = 0; round < rounds; round++) {
+            if (round) {
+                for (size_t i = 0; i < nx; i++)
+                    x[i] = 2 * random_value(&seed);
+                start = now();
+                dense(x, w1, b1, h, batch, INPUTS, HIDDEN, 1);
+                dense(h, w2, b2, y, batch, HIDDEN, OUTPUTS, 0);
+                cpu_ms = (now() - start) * 1000;
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[0]);
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, nx * 4, x);
+            }
+            glFinish();
+            start = now();
+            glUseProgram(programs[0]);
+            GLint location = glGetUniformLocation(programs[0], "batch");
+            CHECK(location >= 0);
+            glUniform1ui(location, batch);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffers[0]);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[1]);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[2]);
+            glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 3, buffers[3], GUARD, nh * 4);
+            glDispatchCompute((nh + local_size - 1) / local_size, 1, 1);
+            double dispatched_first = now();
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            glUseProgram(programs[1]);
+            location = glGetUniformLocation(programs[1], "batch");
+            CHECK(location >= 0);
+            glUniform1ui(location, batch);
+            glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, buffers[3], GUARD, nh * 4);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[4]);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[5]);
+            glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 3, buffers[6], GUARD, ny * 4);
+            glDispatchCompute((ny + local_size - 1) / local_size, 1, 1);
+            double dispatched_second = now();
+            glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
+            glFinish();
+            double gpu_ms = (now() - start) * 1000;
+            times[round] = gpu_ms;
+            CHECK(glGetError() == GL_NO_ERROR);
+            errors += verify("hidden", buffers[3], h, gpu_h, nh);
+            errors += verify("logits", buffers[6], y, gpu_y, ny);
+            for (unsigned b = 0; b < batch; b++)
+                if (argmax(y + b * OUTPUTS) != argmax(gpu_y + b * OUTPUTS))
+                    errors++;
+            printf("round %u (%s): CPU %.3f ms; dispatch1 host %.3f ms; dispatch2 "
+                   "host %.3f ms; "
+                   "finish %.3f ms; GPU dispatch + synchronization %.3f ms; GPU "
+                   "class checksum %#x; %u classification "
+                   "checks; %s\n",
+                   round, round ? "warm" : "cold", cpu_ms, (dispatched_first - start) * 1000,
+                   (dispatched_second - dispatched_first) * 1000,
+                   gpu_ms - (dispatched_second - start) * 1000, gpu_ms, classes(gpu_y, batch),
+                   batch, errors ? "FAIL" : "PASS");
+            fflush(stdout);
+            if (errors)
+                break;
+        }
+        if (!errors && rounds > 1) {
+            qsort(times + 1, rounds - 1, sizeof(*times), compare_double);
+            unsigned count = rounds - 1;
+            double median = (times[1 + (count - 1) / 2] + times[1 + count / 2]) / 2;
+            printf("warm GPU ms: min %.3f median %.3f max %.3f; %u checked rounds\n", times[1],
+                   median, times[rounds - 1], count);
+        }
+        free(times);
         for (unsigned i = 0; i < 2; i++)
             glDeleteProgram(programs[i]);
         glDeleteBuffers(7, buffers);
