@@ -1,0 +1,39 @@
+{
+  "av1": {
+    "codec": "av01.0.04M.08",
+    "first": {
+      "dropped": 32,
+      "total": 1853,
+      "media_seconds": 294.31,
+      "buffer_seconds": 85.65
+    },
+    "second": {
+      "dropped": 42,
+      "total": 2402,
+      "media_seconds": 316.27,
+      "buffer_seconds": 110.77
+    }
+  },
+  "vp9": {
+    "codec": "vp09.00.51.08.01.01.01.00",
+    "first": {
+      "dropped": 467,
+      "total": 2371,
+      "media_seconds": 486.85,
+      "buffer_seconds": 107.76
+    },
+    "second": {
+      "dropped": 472,
+      "total": 2929,
+      "media_seconds": 509.15,
+      "buffer_seconds": 120.65
+    }
+  },
+  "common": {
+    "resolution": "854x480",
+    "fps": 25,
+    "viewport": "1920x1080",
+    "display_hz": 59.94
+  },
+  "notes": "Values transcribed from Stats for nerds screenshots. Different sequential intervals/scenes; not a randomized controlled benchmark. Full images retained privately, not committed."
+}

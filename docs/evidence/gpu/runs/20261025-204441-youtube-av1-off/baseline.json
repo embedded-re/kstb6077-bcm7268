@@ -1,0 +1,24 @@
+{
+  "codec": "av01.0.04M.08",
+  "resolution": "854x480",
+  "fps": 25,
+  "display_hz": 59.94,
+  "first": {
+    "dropped": 32,
+    "total": 1853,
+    "media_time": 294.31
+  },
+  "second": {
+    "dropped": 42,
+    "total": 2402,
+    "media_time": 316.27
+  },
+  "new_drops": 10,
+  "new_frames": 549,
+  "buffer_seconds": [
+    85.65,
+    110.77
+  ],
+  "gpu_faults": 0,
+  "applied": false
+}

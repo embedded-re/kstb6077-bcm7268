@@ -23,6 +23,13 @@ The candidate also passes 235 focused graphics cases and fence/MSAA/GLES1 checks
 workaround for unsafe threaded vertex spills, not a complete repair of all
 scratch I/O paths. [Diagnosis and test evidence](../docs/evidence/gpu/firefox-vertex-spills-20261025.md).
 
+**Video playback remains limited:** YouTube 480p AV1 playback stutters despite
+working GPU drawing. A normal-profile AV1-off test selects VP9, lowers decoder
+CPU use and improves one steady interval from 1.82% to 0.90% dropped frames,
+with no GPU faults. This does not establish smooth playback or hardware video
+decoding, which remains unavailable.
+[Codec comparison and limitations](../docs/evidence/gpu/runs/20261025-204441-youtube-av1-off/README.md).
+
 Start the normal desktop manually from the box's root console:
 
 ```

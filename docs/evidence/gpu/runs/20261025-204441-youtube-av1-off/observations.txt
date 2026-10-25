@@ -1,0 +1,3 @@
+AV1 decoder process active samples 60.4-78.6% of one CPU; post-switch VP9 steady samples 27.6,34.5,38.5%. Decoder CPU lower, not proof all residual drops originate in decoder.
+Hardware video decode unavailable in previous Firefox graphics.json; no VA-API backend or V4L2 decoder nodes installed.
+AV1 remains disabled in normal user profile; GPU rendering unchanged. User consented to Firefox restart/test. Existing Sway5251 untouched.

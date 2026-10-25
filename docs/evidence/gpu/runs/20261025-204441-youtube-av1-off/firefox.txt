@@ -1,0 +1,47 @@
+WARNING: Glycin running without sandbox.
+WARNING: Glycin running without sandbox.
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.6556) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=23.7436) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.6556) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=35.0156) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.6556) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=35.0156) |[C2][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=177.679) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.6556) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=35.0156) |[C2][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=177.679) |[C3][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=184.619) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"

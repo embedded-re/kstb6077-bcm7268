@@ -1,0 +1,15 @@
+[34089.893858] drm_sched_entity_init: called with uninitialized scheduler
+[34090.860918] drm_sched_entity_init: called with uninitialized scheduler
+[34090.908246] drm_sched_entity_init: called with uninitialized scheduler
+[34090.947202] drm_sched_entity_init: called with uninitialized scheduler
+[34174.949157] usb 5-1: USB disconnect, device number 4
+[34179.961054] usb 5-1: new low-speed USB device number 5 using ohci-platform
+[34180.200395] input: PixArt Dell MS116 USB Optical Mouse as /devices/platform/soc@0/f0b00600.usb/usb5/5-1/5-1:1.0/0003:413C:301A.0006/input/input10
+[34180.214112] hid-generic 0003:413C:301A.0006: input: USB HID v1.11 Mouse [PixArt Dell MS116 USB Optical Mouse] on usb-f0b00600.usb-1/input0
+[34188.571282] usb 5-1: USB disconnect, device number 5
+[34191.945156] usb 5-1: new low-speed USB device number 6 using ohci-platform
+[34192.165407] input: NOVATEK USB Keyboard as /devices/platform/soc@0/f0b00600.usb/usb5/5-1/5-1:1.0/0003:0461:0010.0007/input/input11
+[34192.298477] hid-generic 0003:0461:0010.0007: input: USB HID v1.10 Keyboard [NOVATEK USB Keyboard] on usb-f0b00600.usb-1/input0
+[34192.320141] input: NOVATEK USB Keyboard System Control as /devices/platform/soc@0/f0b00600.usb/usb5/5-1/5-1:1.1/0003:0461:0010.0008/input/input12
+[34192.389488] input: NOVATEK USB Keyboard Consumer Control as /devices/platform/soc@0/f0b00600.usb/usb5/5-1/5-1:1.1/0003:0461:0010.0008/input/input13
+[34192.402931] hid-generic 0003:0461:0010.0008: input: USB HID v1.10 Device [NOVATEK USB Keyboard] on usb-f0b00600.usb-1/input1

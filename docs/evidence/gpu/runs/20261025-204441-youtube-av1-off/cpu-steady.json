@@ -1,0 +1,170 @@
+[
+  {
+    "start": 34239.619647028,
+    "seconds": 5.038143980003952,
+    "rows": [
+      {
+        "pid": "4532",
+        "name": "firefox",
+        "cpu_percent": 74.2
+      },
+      {
+        "pid": "4641",
+        "name": "Isolated Web Co",
+        "cpu_percent": 40.7
+      },
+      {
+        "pid": "4649",
+        "name": "RDD Process",
+        "cpu_percent": 38.5
+      },
+      {
+        "pid": "5251",
+        "name": "sway",
+        "cpu_percent": 8.5
+      },
+      {
+        "pid": "4835",
+        "name": "Utility Process",
+        "cpu_percent": 5.6
+      },
+      {
+        "pid": "4525",
+        "name": "python3",
+        "cpu_percent": 2.4
+      },
+      {
+        "pid": "749",
+        "name": "kworker/u16:4-v3d_bin",
+        "cpu_percent": 0.6
+      },
+      {
+        "pid": "1909",
+        "name": "kworker/u16:0+events_unbound",
+        "cpu_percent": 0.6
+      },
+      {
+        "pid": "3086",
+        "name": "kworker/u16:5-v3d_bin",
+        "cpu_percent": 0.6
+      },
+      {
+        "pid": "4389",
+        "name": "kworker/u16:2-v3d_render",
+        "cpu_percent": 0.6
+      }
+    ]
+  },
+  {
+    "start": 34244.696772567,
+    "seconds": 5.036418241004867,
+    "rows": [
+      {
+        "pid": "4532",
+        "name": "firefox",
+        "cpu_percent": 95.3
+      },
+      {
+        "pid": "4641",
+        "name": "Isolated Web Co",
+        "cpu_percent": 38.1
+      },
+      {
+        "pid": "4649",
+        "name": "RDD Process",
+        "cpu_percent": 27.6
+      },
+      {
+        "pid": "5251",
+        "name": "sway",
+        "cpu_percent": 8.3
+      },
+      {
+        "pid": "4835",
+        "name": "Utility Process",
+        "cpu_percent": 5.6
+      },
+      {
+        "pid": "4525",
+        "name": "python3",
+        "cpu_percent": 2.6
+      },
+      {
+        "pid": "749",
+        "name": "kworker/u16:4-v3d_render",
+        "cpu_percent": 0.8
+      },
+      {
+        "pid": "5620",
+        "name": "python3",
+        "cpu_percent": 0.8
+      },
+      {
+        "pid": "1909",
+        "name": "kworker/u16:0-v3d_render",
+        "cpu_percent": 0.6
+      },
+      {
+        "pid": "4389",
+        "name": "kworker/u16:2-v3d_bin",
+        "cpu_percent": 0.6
+      }
+    ]
+  },
+  {
+    "start": 34249.768882777,
+    "seconds": 5.0361825009968015,
+    "rows": [
+      {
+        "pid": "4532",
+        "name": "firefox",
+        "cpu_percent": 73.9
+      },
+      {
+        "pid": "4649",
+        "name": "RDD Process",
+        "cpu_percent": 34.5
+      },
+      {
+        "pid": "4641",
+        "name": "Isolated Web Co",
+        "cpu_percent": 30.6
+      },
+      {
+        "pid": "5251",
+        "name": "sway",
+        "cpu_percent": 8.9
+      },
+      {
+        "pid": "4835",
+        "name": "Utility Process",
+        "cpu_percent": 5.4
+      },
+      {
+        "pid": "4525",
+        "name": "python3",
+        "cpu_percent": 2.4
+      },
+      {
+        "pid": "5620",
+        "name": "python3",
+        "cpu_percent": 1.0
+      },
+      {
+        "pid": "1909",
+        "name": "kworker/u16:0-v3d_bin",
+        "cpu_percent": 0.8
+      },
+      {
+        "pid": "4389",
+        "name": "kworker/u16:2+events_unbound",
+        "cpu_percent": 0.8
+      },
+      {
+        "pid": "3086",
+        "name": "kworker/u16:5-v3d_render",
+        "cpu_percent": 0.6
+      }
+    ]
+  }
+]
