@@ -1,0 +1,21 @@
+make: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'
+make[1]: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/production-config-check'
+  GEN     Makefile
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/confdata.o
+  HOSTCC  scripts/kconfig/expr.o
+  LEX     scripts/kconfig/lexer.lex.c
+  YACC    scripts/kconfig/parser.tab.[ch]
+  HOSTCC  scripts/kconfig/lexer.lex.o
+  HOSTCC  scripts/kconfig/menu.o
+  HOSTCC  scripts/kconfig/parser.tab.o
+  HOSTCC  scripts/kconfig/preprocess.o
+  HOSTCC  scripts/kconfig/symbol.o
+  HOSTCC  scripts/kconfig/util.o
+  HOSTLD  scripts/kconfig/conf
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/production-config-check'
+make: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'

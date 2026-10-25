@@ -1,0 +1,11 @@
+gles3: 398 cases, 0 done before, 398 to run
+  50 run, 348 left, 4 s
+  100 run, 298 left, 6 s
+  150 run, 248 left, 8 s
+  200 run, 198 left, 11 s
+  250 run, 148 left, 17 s
+  300 run, 98 left, 29 s
+  350 run, 48 left, 107 s
+  398 run, 0 left, 216 s
+398 cases: Pass 369, NotSupported 29
+PASS: 398 gles3 cases; baseline identical

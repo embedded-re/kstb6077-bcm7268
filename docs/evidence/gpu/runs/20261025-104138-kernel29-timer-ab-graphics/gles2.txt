@@ -1,0 +1,8 @@
+gles2: 205 cases, 0 done before, 205 to run
+  50 run, 155 left, 156 s
+  100 run, 105 left, 159 s
+  150 run, 55 left, 163 s
+  200 run, 5 left, 170 s
+  205 run, 0 left, 171 s
+205 cases: Pass 205
+PASS: 205 gles2 cases; baseline recorded

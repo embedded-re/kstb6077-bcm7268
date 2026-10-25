@@ -1,0 +1,5 @@
+ HIGH_RES_TIMERS n -> y
+ LOCALVERSION "-kstb" -> "-kstb-hrtimer-ab"
++SCHED_HRTICK y
++SND_HRTIMER n
++TICK_ONESHOT y

@@ -1,0 +1,181 @@
+dense 32 -> 16 ReLU -> 8, batch 257; CPU 0.411 ms; class checksum 0xdae64da0
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+local size 128; 11 rounds; input upload/readback excluded from GPU timing
+stats round -1 drm-engine-bin: 	0 ns
+stats round -1 v3d-jobs-bin: 	0 jobs
+stats round -1 drm-engine-render: 	0 ns
+stats round -1 v3d-jobs-render: 	0 jobs
+stats round -1 drm-engine-tfu: 	0 ns
+stats round -1 v3d-jobs-tfu: 	0 jobs
+stats round -1 drm-engine-csd: 	0 ns
+stats round -1 v3d-jobs-csd: 	0 jobs
+stats round -1 drm-engine-cache_clean: 	0 ns
+stats round -1 v3d-jobs-cache_clean: 	0 jobs
+stats round -1 drm-engine-cpu: 	0 ns
+stats round -1 v3d-jobs-cpu: 	0 jobs
+stats round 0 drm-engine-bin: 	0 ns
+stats round 0 v3d-jobs-bin: 	0 jobs
+stats round 0 drm-engine-render: 	424925 ns
+stats round 0 v3d-jobs-render: 	5 jobs
+stats round 0 drm-engine-tfu: 	0 ns
+stats round 0 v3d-jobs-tfu: 	0 jobs
+stats round 0 drm-engine-csd: 	0 ns
+stats round 0 v3d-jobs-csd: 	0 jobs
+stats round 0 drm-engine-cache_clean: 	25532520 ns
+stats round 0 v3d-jobs-cache_clean: 	5 jobs
+stats round 0 drm-engine-cpu: 	0 ns
+stats round 0 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 0 (cold): CPU 0.411 ms; dispatch1 host 12.426 ms; dispatch2 host 11.975 ms; finish 7.907 ms; GPU dispatch + synchronization 32.307 ms; GPU class checksum 0xdae64da0; 257 classification checks; PASS
+stats round 1 drm-engine-bin: 	0 ns
+stats round 1 v3d-jobs-bin: 	0 jobs
+stats round 1 drm-engine-render: 	862555 ns
+stats round 1 v3d-jobs-render: 	10 jobs
+stats round 1 drm-engine-tfu: 	0 ns
+stats round 1 v3d-jobs-tfu: 	0 jobs
+stats round 1 drm-engine-csd: 	0 ns
+stats round 1 v3d-jobs-csd: 	0 jobs
+stats round 1 drm-engine-cache_clean: 	46768556 ns
+stats round 1 v3d-jobs-cache_clean: 	10 jobs
+stats round 1 drm-engine-cpu: 	0 ns
+stats round 1 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 1 (warm): CPU 0.425 ms; dispatch1 host 2.181 ms; dispatch2 host 7.944 ms; finish 11.882 ms; GPU dispatch + synchronization 22.006 ms; GPU class checksum 0x6cf575be; 257 classification checks; PASS
+stats round 2 drm-engine-bin: 	0 ns
+stats round 2 v3d-jobs-bin: 	0 jobs
+stats round 2 drm-engine-render: 	1292591 ns
+stats round 2 v3d-jobs-render: 	15 jobs
+stats round 2 drm-engine-tfu: 	0 ns
+stats round 2 v3d-jobs-tfu: 	0 jobs
+stats round 2 drm-engine-csd: 	0 ns
+stats round 2 v3d-jobs-csd: 	0 jobs
+stats round 2 drm-engine-cache_clean: 	72441074 ns
+stats round 2 v3d-jobs-cache_clean: 	15 jobs
+stats round 2 drm-engine-cpu: 	0 ns
+stats round 2 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 2 (warm): CPU 0.398 ms; dispatch1 host 2.471 ms; dispatch2 host 4.009 ms; finish 19.864 ms; GPU dispatch + synchronization 26.344 ms; GPU class checksum 0xa3281d5; 257 classification checks; PASS
+stats round 3 drm-engine-bin: 	0 ns
+stats round 3 v3d-jobs-bin: 	0 jobs
+stats round 3 drm-engine-render: 	1730591 ns
+stats round 3 v3d-jobs-render: 	20 jobs
+stats round 3 drm-engine-tfu: 	0 ns
+stats round 3 v3d-jobs-tfu: 	0 jobs
+stats round 3 drm-engine-csd: 	0 ns
+stats round 3 v3d-jobs-csd: 	0 jobs
+stats round 3 drm-engine-cache_clean: 	98145297 ns
+stats round 3 v3d-jobs-cache_clean: 	20 jobs
+stats round 3 drm-engine-cpu: 	0 ns
+stats round 3 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 3 (warm): CPU 0.398 ms; dispatch1 host 0.398 ms; dispatch2 host 6.159 ms; finish 19.853 ms; GPU dispatch + synchronization 26.410 ms; GPU class checksum 0x500a495e; 257 classification checks; PASS
+stats round 4 drm-engine-bin: 	0 ns
+stats round 4 v3d-jobs-bin: 	0 jobs
+stats round 4 drm-engine-render: 	2165442 ns
+stats round 4 v3d-jobs-render: 	25 jobs
+stats round 4 drm-engine-tfu: 	0 ns
+stats round 4 v3d-jobs-tfu: 	0 jobs
+stats round 4 drm-engine-csd: 	0 ns
+stats round 4 v3d-jobs-csd: 	0 jobs
+stats round 4 drm-engine-cache_clean: 	123655852 ns
+stats round 4 v3d-jobs-cache_clean: 	25 jobs
+stats round 4 drm-engine-cpu: 	0 ns
+stats round 4 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 4 (warm): CPU 0.400 ms; dispatch1 host 0.455 ms; dispatch2 host 2.086 ms; finish 23.701 ms; GPU dispatch + synchronization 26.242 ms; GPU class checksum 0x26f4bd08; 257 classification checks; PASS
+stats round 5 drm-engine-bin: 	0 ns
+stats round 5 v3d-jobs-bin: 	0 jobs
+stats round 5 drm-engine-render: 	2592367 ns
+stats round 5 v3d-jobs-render: 	30 jobs
+stats round 5 drm-engine-tfu: 	0 ns
+stats round 5 v3d-jobs-tfu: 	0 jobs
+stats round 5 drm-engine-csd: 	0 ns
+stats round 5 v3d-jobs-csd: 	0 jobs
+stats round 5 drm-engine-cache_clean: 	149348927 ns
+stats round 5 v3d-jobs-cache_clean: 	30 jobs
+stats round 5 drm-engine-cpu: 	0 ns
+stats round 5 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 5 (warm): CPU 0.398 ms; dispatch1 host 0.402 ms; dispatch2 host 2.114 ms; finish 23.850 ms; GPU dispatch + synchronization 26.366 ms; GPU class checksum 0xb6760386; 257 classification checks; PASS
+stats round 6 drm-engine-bin: 	0 ns
+stats round 6 v3d-jobs-bin: 	0 jobs
+stats round 6 drm-engine-render: 	3018293 ns
+stats round 6 v3d-jobs-render: 	35 jobs
+stats round 6 drm-engine-tfu: 	0 ns
+stats round 6 v3d-jobs-tfu: 	0 jobs
+stats round 6 drm-engine-csd: 	0 ns
+stats round 6 v3d-jobs-csd: 	0 jobs
+stats round 6 drm-engine-cache_clean: 	175096815 ns
+stats round 6 v3d-jobs-cache_clean: 	35 jobs
+stats round 6 drm-engine-cpu: 	0 ns
+stats round 6 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 6 (warm): CPU 0.397 ms; dispatch1 host 0.400 ms; dispatch2 host 2.153 ms; finish 23.871 ms; GPU dispatch + synchronization 26.425 ms; GPU class checksum 0x5ca44d6f; 257 classification checks; PASS
+stats round 7 drm-engine-bin: 	0 ns
+stats round 7 v3d-jobs-bin: 	0 jobs
+stats round 7 drm-engine-render: 	3452256 ns
+stats round 7 v3d-jobs-render: 	40 jobs
+stats round 7 drm-engine-tfu: 	0 ns
+stats round 7 v3d-jobs-tfu: 	0 jobs
+stats round 7 drm-engine-csd: 	0 ns
+stats round 7 v3d-jobs-csd: 	0 jobs
+stats round 7 drm-engine-cache_clean: 	200750407 ns
+stats round 7 v3d-jobs-cache_clean: 	40 jobs
+stats round 7 drm-engine-cpu: 	0 ns
+stats round 7 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 7 (warm): CPU 0.399 ms; dispatch1 host 0.487 ms; dispatch2 host 1.997 ms; finish 23.873 ms; GPU dispatch + synchronization 26.357 ms; GPU class checksum 0x58ed2e36; 257 classification checks; PASS
+stats round 8 drm-engine-bin: 	0 ns
+stats round 8 v3d-jobs-bin: 	0 jobs
+stats round 8 drm-engine-render: 	3878146 ns
+stats round 8 v3d-jobs-render: 	45 jobs
+stats round 8 drm-engine-tfu: 	0 ns
+stats round 8 v3d-jobs-tfu: 	0 jobs
+stats round 8 drm-engine-csd: 	0 ns
+stats round 8 v3d-jobs-csd: 	0 jobs
+stats round 8 drm-engine-cache_clean: 	226462851 ns
+stats round 8 v3d-jobs-cache_clean: 	45 jobs
+stats round 8 drm-engine-cpu: 	0 ns
+stats round 8 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 8 (warm): CPU 0.398 ms; dispatch1 host 0.401 ms; dispatch2 host 2.117 ms; finish 23.887 ms; GPU dispatch + synchronization 26.406 ms; GPU class checksum 0xfba9728; 257 classification checks; PASS
+stats round 9 drm-engine-bin: 	0 ns
+stats round 9 v3d-jobs-bin: 	0 jobs
+stats round 9 drm-engine-render: 	4300738 ns
+stats round 9 v3d-jobs-render: 	50 jobs
+stats round 9 drm-engine-tfu: 	0 ns
+stats round 9 v3d-jobs-tfu: 	0 jobs
+stats round 9 drm-engine-csd: 	0 ns
+stats round 9 v3d-jobs-csd: 	0 jobs
+stats round 9 drm-engine-cache_clean: 	252224518 ns
+stats round 9 v3d-jobs-cache_clean: 	50 jobs
+stats round 9 drm-engine-cpu: 	0 ns
+stats round 9 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 9 (warm): CPU 0.398 ms; dispatch1 host 0.400 ms; dispatch2 host 0.243 ms; finish 25.848 ms; GPU dispatch + synchronization 26.491 ms; GPU class checksum 0x5a059b3d; 257 classification checks; PASS
+stats round 10 drm-engine-bin: 	0 ns
+stats round 10 v3d-jobs-bin: 	0 jobs
+stats round 10 drm-engine-render: 	4728183 ns
+stats round 10 v3d-jobs-render: 	55 jobs
+stats round 10 drm-engine-tfu: 	0 ns
+stats round 10 v3d-jobs-tfu: 	0 jobs
+stats round 10 drm-engine-csd: 	0 ns
+stats round 10 v3d-jobs-csd: 	0 jobs
+stats round 10 drm-engine-cache_clean: 	277728630 ns
+stats round 10 v3d-jobs-cache_clean: 	55 jobs
+stats round 10 drm-engine-cpu: 	0 ns
+stats round 10 v3d-jobs-cpu: 	0 jobs
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 10 (warm): CPU 0.401 ms; dispatch1 host 0.442 ms; dispatch2 host 0.251 ms; finish 25.532 ms; GPU dispatch + synchronization 26.225 ms; GPU class checksum 0x7f9e51c3; 257 classification checks; PASS
+warm GPU ms: min 22.006 median 26.362 max 26.491; 10 checked rounds

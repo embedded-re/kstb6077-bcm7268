@@ -1,0 +1,65 @@
+[
+  {
+    "test": "empty-1001",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "1001",
+      "1",
+      "empty"
+    ],
+    "exit": 0,
+    "seconds": 4.571470591999997,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-64-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1024",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 9.249278488000002,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b257-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "257",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.8227263670000013,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b4096-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "4096",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 3.0097325729999937,
+    "expected_resets": 0
+  },
+  {
+    "test": "sync-50",
+    "args": [
+      "/opt/gpu-test/kstb-compute-sync-test",
+      "50",
+      "4097"
+    ],
+    "exit": 0,
+    "seconds": 7.894855673999999,
+    "expected_resets": 0
+  }
+]

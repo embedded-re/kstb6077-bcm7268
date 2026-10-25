@@ -1,0 +1,7 @@
+gles31: 157 cases, 0 done before, 157 to run
+  50 run, 107 left, 4 s
+  100 run, 57 left, 8 s
+  150 run, 7 left, 10 s
+  157 run, 0 left, 11 s
+157 cases: Pass 157
+PASS: 157 gles31 cases; baseline recorded

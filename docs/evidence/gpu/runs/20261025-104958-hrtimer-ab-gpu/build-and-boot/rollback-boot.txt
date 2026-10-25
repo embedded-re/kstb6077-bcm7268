@@ -1,0 +1,319 @@
+linux
+KRN: seq 1792699141, 13249024 bytes, CRC 335f53c0, "linux-6.18.57-kstb 2026-10-22"
+  read to 02000000 and checked in 451 ms
+DTB: seq 1792699142, 10829 bytes, CRC c672cba9, "kstb6077-root.dtb 2026-10-22"
+  read to 05e00000 and checked in 1 ms
+starting Linux: Image at 02000000, DTB at 05e00000
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x420f1000]
+[    0.000000] Linux version 6.18.57-kstb (arch@cachyos-x8664) (clang version 23.1.3, LLD 23.1.3) #29 SMP Thu Oct 22 21:58:58 CEST 2026
+[    0.000000] Machine model: KaonMedia KSTB6077
+[    0.000000] earlycon: uart8250 at MMIO32 0x00000000f040c000 (options '')
+[    0.000000] printk: legacy bootconsole [uart8250] enabled
+[    0.000000] efi: UEFI not found.
+[    0.000000] OF: reserved mem: 0x0000000000000000..0x0000000000000fff (4 KiB) nomap non-reusable nodma@0
+[    0.000000] OF: reserved mem: 0x0000000006400000..0x000000000640ffff (64 KiB) nomap non-reusable el3-monitor@6400000
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000000000-0x000000007d5fffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000000000-0x0000000000000fff]
+[    0.000000]   node   0: [mem 0x0000000000001000-0x00000000063fffff]
+[    0.000000]   node   0: [mem 0x0000000006400000-0x000000000640ffff]
+[    0.000000]   node   0: [mem 0x0000000006410000-0x000000007d5fffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000007d5fffff]
+[    0.000000] On node 0, zone DMA: 10752 pages in unavailable ranges
+[    0.000000] cma: Reserved 64 MiB at 0x0000000077000000
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv0.2 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] percpu: Embedded 17 pages/cpu s29080 r8192 d32360 u69632
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: detected: ARM erratum 843419
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: earlycon=uart8250,mmio32,0xf040c000 console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p8 rootfstype=ext4 rootwait ro
+[    0.000000] printk: log buffer data + meta data: 131072 + 458752 = 589824 bytes
+[    0.000000] Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size adjusted to 1MB
+[    0.000000] software IO TLB: area num 4.
+[    0.000000] software IO TLB: mapped [mem 0x0000000076c00000-0x0000000076e00000] (2MB)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 513536
+[    0.000000] mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GIC: Using split EOI/Deactivate mode
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.000000] arch_timer: cp15 timer running at 27.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x63a1e71a3, max_idle_ns: 440795203123 ns
+[    0.000000] sched_clock: 56 bits at 27MHz, resolution 37ns, wraps every 4398046511093ns
+[    0.008682] Console: colour dummy device 80x25
+[    0.013436] printk: legacy console [tty0] enabled
+[    0.018716] Calibrating delay loop (skipped), value calculated using timer frequency.. 54.00 BogoMIPS (lpj=108000)
+[    0.029778] pid_max: default: 32768 minimum: 301
+[    0.034852] Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.042774] Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.052477] rcu: Hierarchical SRCU implementation.
+[    0.057606] rcu: 	Max phase no-delay instances is 1000.
+[    0.063879] EFI services will not be available.
+[    0.068892] smp: Bringing up secondary CPUs ...
+[    0.074091] Detected VIPT I-cache on CPU1
+[    0.074187] CPU1: Booted secondary processor 0x0000000001 [0x420f1000]
+[    0.074571] Detected VIPT I-cache on CPU2
+[    0.074623] CPU2: Booted secondary processor 0x0000000002 [0x420f1000]
+[    0.074964] Detected VIPT I-cache on CPU3
+[    0.075015] CPU3: Booted secondary processor 0x0000000003 [0x420f1000]
+[    0.075050] smp: Brought up 1 node, 4 CPUs
+[    0.113172] SMP: Total of 4 processors activated.
+[    0.118208] CPU: All CPU(s) started at EL2
+[    0.122582] CPU features: detected: 32-bit EL0 Support
+[    0.128070] CPU features: detected: CRC32 instructions
+[    0.133587] alternatives: applying system-wide alternatives
+[    0.140131] Memory: 1929456K/2054144K available (8448K kernel code, 1034K rwdata, 2524K rodata, 768K init, 301K bss, 55724K reserved, 65536K cma-reserved)
+[    0.155592] devtmpfs: initialized
+[    0.160853] posixtimers hash table entries: 2048 (order: 3, 32768 bytes, linear)
+[    0.168887] futex hash table entries: 1024 (65536 bytes on 1 NUMA nodes, total 64 KiB, linear).
+[    0.179703] 29440 pages in range for non-PLT usage
+[    0.179719] 520960 pages in range for PLT usage
+[    0.184968] pinctrl core: initialized pinctrl subsystem
+[    0.195655] DMI not present or invalid.
+[    0.200238] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.207618] DMA: preallocated 256 KiB GFP_KERNEL pool for atomic allocations
+[    0.215467] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.224342] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.233075] thermal_sys: Registered thermal governor 'step_wise'
+[    0.233148] ASID allocator initialised with 65536 entries
+[    0.246298] /pcie@f0460000: Fixed dependency cycle(s) with /pcie@f0460000
+[    0.258248] iommu: Default domain type: Translated
+[    0.263377] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.270321] SCSI subsystem initialized
+[    0.274463] usbcore: registered new interface driver usbfs
+[    0.280353] usbcore: registered new interface driver hub
+[    0.286045] usbcore: registered new device driver usb
+[    0.291503] pps_core: LinuxPPS API ver. 1 registered
+[    0.296801] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.306550] PTP clock support registered
+[    0.310861] Advanced Linux Sound Architecture Driver Initialized.
+[    0.318073] vgaarb: loaded
+[    0.321127] clocksource: Switched to clocksource arch_sys_counter
+[    0.331869] NET: Registered PF_INET protocol family
+[    0.337280] IP idents hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.346169] tcp_listen_portaddr_hash hash table entries: 1024 (order: 2, 16384 bytes, linear)
+[    0.355315] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.363596] TCP established hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.372149] TCP bind hash table entries: 16384 (order: 7, 524288 bytes, linear)
+[    0.380741] TCP: Hash tables configured (established 16384 bind 16384)
+[    0.387840] UDP hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.395088] UDP-Lite hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.402890] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.408970] PCI: CLS 0 bytes, default 64
+[    0.414129] Initialise system trusted keyrings
+[    0.418997] workingset: timestamp_bits=62 max_order=19 bucket_order=0
+[    0.426176] Key type asymmetric registered
+[    0.430572] Asymmetric key parser 'x509' registered
+[    0.435829] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 248)
+[    0.443738] io scheduler mq-deadline registered
+[    0.448592] io scheduler kyber registered
+[    0.452886] io scheduler bfq registered
+[    0.457453] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f0403000, parent irq: 13)
+[    0.467419] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f0410640, parent irq: 14)
+[    0.477382] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f04d1200, parent irq: 15)
+[    0.487327] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f040a600, parent irq: 16)
+[    0.497252] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f0419c00, parent irq: 17)
+[    0.507175] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f040a640, parent irq: 18)
+[    0.517130] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f0419c40, parent irq: 19)
+[    0.527068] irq_brcmstb_l2: registered L2 intc (/soc@0/interrupt-controller@f0606000, parent irq: 20)
+[    0.537090] brcm-gisb-arb f0400000.gisb-arb: error -ENXIO: IRQ index 2 not found
+[    0.545050] brcm-gisb-arb f0400000.gisb-arb: registered irqs: 21, 22
+[    0.552166] brcmstb-usb-phy f0b00200.usb-phy: Clock not found in Device Tree
+[    0.559783] brcmstb-usb-phy f0b00200.usb-phy: USB3.0 clock not found in Device Tree
+[    0.567982] brcmstb-usb-phy f0b00200.usb-phy: Suspend Clock not found in Device Tree
+[    0.576267] brcmstb-usb-phy f0b00200.usb-phy: Wake interrupt missing, system wake not supported
+[    0.587006] brcm-pcie f0460000.pcie: host bridge /pcie@f0460000 ranges:
+[    0.594102] brcm-pcie f0460000.pcie:      MEM 0x00c0000000..0x00dfffffff -> 0x00c0000000
+[    0.602767] brcm-pcie f0460000.pcie:   IB MEM 0x0000000000..0x007fffffff -> 0x0000000000
+[    0.617298] brcm-pcie f0460000.pcie: PCI host bridge to bus 0000:00
+[    0.624005] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.629884] pci_bus 0000:00: root bus resource [mem 0xc0000000-0xdfffffff]
+[    0.637280] pci 0000:00:00.0: [14e4:7268] type 01 class 0x060400 PCIe Root Port
+[    0.645097] pci 0000:00:00.0: PCI bridge to [bus 01]
+[    0.650399] pci 0000:00:00.0:   bridge window [mem 0xc0000000-0xc04fffff]
+[    0.657691] pci 0000:00:00.0: PME# supported from D0 D3hot
+[    0.765125] brcm-pcie f0460000.pcie: clkreq-mode set to default
+[    0.771452] brcm-pcie f0460000.pcie: link up, 2.5 GT/s PCIe x1 (!SSC)
+[    0.778377] pci 0000:01:00.0: [14e4:aa31] type 00 class 0x028000 PCIe Endpoint
+[    0.786160] pci 0000:01:00.0: BAR 0 [mem 0x00000000-0x00007fff 64bit]
+[    0.793052] pci 0000:01:00.0: BAR 2 [mem 0x00000000-0x003fffff 64bit]
+[    0.800057] pci 0000:01:00.0: supports D1 D2
+[    0.809141] pci 0000:01:00.0: ASPM: default states L0s L1
+[    0.814972] pci 0000:00:00.0: bridge window [mem 0xc0000000-0xc04fffff]: assigned
+[    0.822992] pci 0000:01:00.0: BAR 2 [mem 0xc0000000-0xc03fffff 64bit]: assigned
+[    0.830812] pci 0000:01:00.0: BAR 0 [mem 0xc0400000-0xc0407fff 64bit]: assigned
+[    0.838641] pci 0000:00:00.0: PCI bridge to [bus 01]
+[    0.843949] pci 0000:00:00.0:   bridge window [mem 0xc0000000-0xc04fffff]
+[    0.851197] pci_bus 0000:00: resource 4 [mem 0xc0000000-0xdfffffff]
+[    0.857887] pci_bus 0000:01: resource 1 [mem 0xc0000000-0xc04fffff]
+[    0.864889] simple-framebuffer 7db0b700.framebuffer: framebuffer at 0x7db0b700, 0x3f4800 bytes
+[    0.874091] simple-framebuffer 7db0b700.framebuffer: format=r5g6b5, mode=1920x1080x16, linelength=3840
+[    0.893291] Console: switching to colour frame buffer device 240x67
+[    0.908948] simple-framebuffer 7db0b700.framebuffer: fb0: simplefb registered!
+[    0.941402] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.949960] printk: legacy console [ttyS0] disabled
+[    0.955465] f040c000.serial: ttyS0 at MMIO 0xf040c000 (irq = 26, base_baud = 5062500) is a 16550A
+[    0.965047] printk: legacy console [ttyS0] enabled
+[    0.965047] printk: legacy console [ttyS0] enabled
+[    0.975001] printk: legacy bootconsole [uart8250] disabled
+[    0.975001] printk: legacy bootconsole [uart8250] disabled
+[    0.987169] f040d000.serial: ttyS1 at MMIO 0xf040d000 (irq = 27, base_baud = 5062500) is a 16550A
+[    0.996723] f040e000.serial: ttyS2 at MMIO 0xf040e000 (irq = 28, base_baud = 5062500) is a 16550A
+[    1.007367] bcmgenet f0480000.ethernet: GENET 5.0 EPHY: 0x0000
+[    1.217149] unimac-mdio unimac-mdio.-19: Broadcom UniMAC MDIO bus
+[    1.249129] ehci-brcm f0b00300.usb: EHCI Host Controller
+[    1.254604] ehci-brcm f0b00300.usb: new USB bus registered, assigned bus number 1
+[    1.272282] ehci-brcm f0b00300.usb: irq 31, io mem 0xf0b00300
+[    1.289125] ehci-brcm f0b00300.usb: USB 2.0 started, EHCI 1.00
+[    1.295462] hub 1-0:1.0: USB hub found
+[    1.299271] hub 1-0:1.0: 1 port detected
+[    1.303568] ehci-brcm f0b00500.usb: EHCI Host Controller
+[    1.309012] ehci-brcm f0b00500.usb: new USB bus registered, assigned bus number 2
+[    1.326687] ehci-brcm f0b00500.usb: irq 32, io mem 0xf0b00500
+[    1.341124] ehci-brcm f0b00500.usb: USB 2.0 started, EHCI 1.00
+[    1.347328] hub 2-0:1.0: USB hub found
+[    1.351131] hub 2-0:1.0: 1 port detected
+[    1.355564] ohci-platform f0b00400.usb: Generic Platform OHCI controller
+[    1.355671] ohci-platform f0b00600.usb: Generic Platform OHCI controller
+[    1.362392] ohci-platform f0b00400.usb: new USB bus registered, assigned bus number 3
+[    1.369064] ohci-platform f0b00600.usb: new USB bus registered, assigned bus number 4
+[    1.376890] ohci-platform f0b00400.usb: irq 33, io mem 0xf0b00400
+[    1.384719] ohci-platform f0b00600.usb: irq 35, io mem 0xf0b00600
+[    1.449452] hub 3-0:1.0: USB hub found
+[    1.453259] hub 3-0:1.0: 1 port detected
+[    1.457703] hub 4-0:1.0: USB hub found
+[    1.461508] hub 4-0:1.0: 1 port detected
+[    1.753124] xhci-hcd f0b01000.usb: xHCI Host Controller
+[    1.758509] xhci-hcd f0b01000.usb: new USB bus registered, assigned bus number 5
+[    1.766114] xhci-hcd f0b01000.usb: USB2 root hub has no ports
+[    1.771922] xhci-hcd f0b01000.usb: Host supports USB 3.0 SuperSpeed
+[    1.778248] xhci-hcd f0b01000.usb: hcc params 0x0250f17d hci version 0x100 quirks 0x0000080000000090
+[    1.787481] xhci-hcd f0b01000.usb: irq 34, io mem 0xf0b01000
+[    1.793360] usb usb5: We don't know the algorithms for LPM for this host, disabling LPM.
+[    1.801832] hub 5-0:1.0: USB hub found
+[    1.805637] hub 5-0:1.0: 2 ports detected
+[    1.810021] usbcore: registered new interface driver usb-storage
+[    1.818345] input: keys-polled as /devices/platform/keys-polled/input/input0
+[    1.827955] brcmstb-waketimer f041a080.waketimer: error -ENXIO: IRQ index 1 not found
+[    1.837978] brcmstb-waketimer f041a080.waketimer: registered as rtc0
+[    1.846307] brcmstb-waketimer f041a080.waketimer: setting system clock to 1970-01-01T00:00:13 UTC (13)
+[    1.857130] usb 3-1: new full-speed USB device number 2 using ohci-platform
+[    1.857643] i2c_dev: i2c /dev entries driver
+[    1.865127] usb 4-1: new low-speed USB device number 2 using ohci-platform
+[    1.869092] brcmstb-i2c f040a300.i2c: iica@97500hz registered in interrupt mode
+[    1.891087] brcmstb-i2c f0419a80.i2c: iicb@97500hz registered in interrupt mode
+[    1.900592] brcmstb-i2c f0419b00.i2c: iicc@97500hz registered in interrupt mode
+[    1.910052] brcmstb-i2c f0419b80.i2c: iicd@97500hz registered in interrupt mode
+[    1.919484] brcmstb-i2c f040a400.i2c: iice@97500hz registered in interrupt mode
+[    1.929126] brcmstb_thermal f04d1500.thermal: registered AVS TMON of-sensor driver
+[    1.938876] bcm7038-wdt f040a6a8.watchdog: Registered BCM7038 Watchdog
+[    1.947468] sdhci: Secure Digital Host Controller Interface driver
+[    1.955568] sdhci: Copyright(c) Pierre Ossman
+[    1.961826] sdhci-pltfm: SDHCI platform and OF driver helper
+[    1.969974] usbcore: registered new interface driver usbhid
+[    1.977466] usbhid: USB HID core driver
+[    1.983417] usbcore: registered new interface driver snd-usb-audio
+[    1.991735] NET: Registered PF_INET6 protocol family
+[    1.999229] Segment Routing with IPv6
+[    2.004800] In-situ OAM (IOAM) with IPv6
+[    2.010614] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.013130] mmc0: SDHCI controller on f0200200.mmc [f0200200.mmc] using ADMA
+[    2.016911] NET: Registered PF_PACKET protocol family
+[    2.037794] Loading compiled-in X.509 certificates
+[    2.049065] input: keys as /devices/platform/keys/input/input1
+[    2.057237] clk: Disabling unused clocks
+[    2.063073] ALSA device list:
+[    2.067848]   No soundcards found.
+[    2.073559] check access for rdinit=/init failed: -2, ignoring
+[    2.081283] Waiting for root device /dev/mmcblk0p8...
+[    2.102255] mmc0: new high speed MMC card at address 0001
+[    2.105296] input: NOVATEK USB Keyboard as /devices/platform/soc@0/f0b00600.usb/usb4/4-1/4-1:1.0/0003:0461:0010.0001/input/input2
+[    2.108289] mmcblk0: mmc0:0001 DG4008 7.28 GiB
+[    2.131939]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10
+[    2.139804] mmcblk0boot0: mmc0:0001 DG4008 4.00 MiB
+[    2.148853] mmcblk0boot1: mmc0:0001 DG4008 4.00 MiB
+[    2.156993] mmcblk0rpmb: mmc0:0001 DG4008 4.00 MiB, chardev (246:0)
+[    2.173436] hid-generic 0003:0461:0010.0001: input: USB HID v1.10 Keyboard [NOVATEK USB Keyboard] on usb-f0b00600.usb-1/input0
+[    2.194245] input: NOVATEK USB Keyboard System Control as /devices/platform/soc@0/f0b00600.usb/usb4/4-1/4-1:1.1/0003:0461:0010.0002/input/input3
+[    2.265263] input: NOVATEK USB Keyboard Consumer Control as /devices/platform/soc@0/f0b00600.usb/usb4/4-1/4-1:1.1/0003:0461:0010.0002/input/input4
+[    2.280496] hid-generic 0003:0461:0010.0002: input: USB HID v1.10 Device [NOVATEK USB Keyboard] on usb-f0b00600.usb-1/input1
+[    2.355713] EXT4-fs (mmcblk0p8): mounted filesystem 435cda17-99fa-492f-ba47-d04cc34286ea ro with ordered data mode. Quota mode: disabled.
+[    2.370317] VFS: Mounted root (ext4 filesystem) readonly on device 259:0.
+[    2.384725] devtmpfs: mounted
+[    2.390143] Freeing unused kernel memory: 768K
+[    2.396816] Run /sbin/init as init process
+ROOT: clean, 64271/344064 files, 721247/1354240 blocks
+[    2.682796] EXT4-fs (mmcblk0p8): re-mounted 435cda17-99fa-492f-ba47-d04cc34286ea r/w.
+[    2.762375] kstb_v3d_power: loading out-of-tree module taints kernel.
+[    2.771838] kstb-v3d-power f041d020.clock-controller: island off (424e0908)
+[    2.787567] Console: switching to colour dummy device 80x25
+[    2.794302] v3d f1200000.gpu: [drm] Transparent Hugepage support is recommended for optimal performance on this platform!
+[    2.794580] [drm] Initialized kstb-drm 1.0.0 for f0603484.display on minor 1
+[    2.805906] [drm] Initialized v3d 1.0.0 for f1200000.gpu on minor 0
+[    2.867539] Console: switching to colour frame buffer device 240x67
+[    2.890530] kstb-drm f0603484.display: [drm] fb0: kstb-drmdrmfb frame buffer device
+[    2.905128] kstb-drm f0603484.display: [drm] 1920x1080@59.94 RGB565/BGR565/ARGB8888/ABGR8888, showing 77500000
+[    2.939109] kstb-audio f0ca0000.hdmi-audio: 48 kHz S32_LE stereo, silence at 0x000000000310e000
+[    2.960804] Registered IR keymap rc-kaon-kstb6077
+[    2.965708] rc rc0: KSTB6077 IR receiver as /devices/platform/soc@0/f0419900.ir/rc/rc0
+[    2.973857] rc rc0: lirc_dev: driver kstb-ir registered at minor = 0, scancode receiver, no transmitter
+[    2.983453] input: KSTB6077 IR receiver as /devices/platform/soc@0/f0419900.ir/rc/rc0/input5
+[    3.069219] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    3.089722] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    3.095904] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    3.129647] pci 0000:00:00.0: enabling device (0000 -> 0002)
+[    3.135437] brcmfmac 0000:01:00.0: enabling device (0000 -> 0002)
+[    3.261245] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43570-pcie for chip BCM43570/2
+[    3.276149] brcmfmac 0000:01:00.0: Direct firmware load for brcm/brcmfmac43570-pcie.kaon,kstb6077.bin failed with error -2
+kstb6077: 6.18.57-kstb, 4 cores,[    3.316240] brcmfmac 0000:01:00.0: Direct firmware load for brcm/brcmfmac43570-pcie.txcap_blob failed with error -2
+ 1999188 kB, root /dev/root
+
+   OpenRC 0.63.2 is starting up Linux 6.18.57-kstb (aarch64)
+
+ * /proc is already mounted
+[    3.480699] Bluetooth: Core ver 2.22
+[    3.484479] NET: Registered PF_BLUETOOTH protocol family
+ * Mounting /run[    3.489858] Bluetooth: HCI device and connection manager initialized
+ ...[    3.497684] Bluetooth: HCI socket layer initialized
+ [ ok ][    3.502862] Bluetooth: L2CAP socket layer initialized
+
+[    3.508561] Bluetooth: SCO socket layer initialized
+ * /run/openrc: creating directory
+ * /run/lock: creating directory
+ * /run/lock: correcting owner
+[    3.538578] usbcore: registered new interface driver btusb
+[    3.550526] brcmfmac: brcmf_c_process_txcap_blob: no txcap_blob available (err=-2)
+[    3.558675] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43570/2 wl0: Mar 28 2021 22:39:18 version 7.124.22 (r728374 CY) FWID 01-5d57cf8b
+[    3.653207] Bluetooth: hci0: BCM: chip id 108
+[    3.659214] Bluetooth: hci0: BCM: features 0x2f
+[    3.680239] Bluetooth: hci0: BCM43569A2
+[    3.684226] Bluetooth: hci0: BCM (001.003.004) build 0000
+[    3.691422] Bluetooth: hci0: BCM 'brcm/BCM-0a5c-2045.kaon,kstb6077.hcd' Patch
+[    4.346852] usb 3-1: USB disconnect, device number 2
+[    6.701161] random: crng init done
+ * Caching service dependencies ... [ ok ]
+ * Clock skew detected with 'init.d'
+ * Adjusting mtime of '/run/openrc/deptree' to Sun Oct 18 13:48:35 2026
+
+ * WARNING: clock skew detected!
+ * Remounting devtmpfs on /dev ... [ ok ]
+ * Mounting /dev/shm ... [ ok ]
+ * Starting udev ... [ ok ]
+ * Generating a rule to create a /dev/root symlink ...[    7.026728] udevd[426]: starting version 3.2.14
+ [ ok ]
+ * Populating /dev with existing devices through uevents ...[    7.064224] udevd[426]: starting eudev-3.2.14
+ [ ok ]
+ * Waiting for uevents to be processed ...

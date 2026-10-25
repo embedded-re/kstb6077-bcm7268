@@ -217,3 +217,14 @@ patch was also run on and off on one build (`*-cov-*`, `*-ms32f-*`,
   instead of one without spills and take longer ([`gpu-compute.md`](gpu-compute.md)).
 - `drm_sched_entity_init` warns on context creation for an absent queue.
 - The system default (`/usr/local`) is still the older build.
+
+Kernel timer performance fix (2026-10-25): `CONFIG_HIGH_RES_TIMERS=y` is now
+in the build configuration. A RAM-booted #30 candidate removes coarse
+cache-clean polling delays without dropping any flush: matched neural
+batch-257 time falls from 26.355 to 1.273 ms, and batch 4096 from 190.500
+to 9.897 ms. Both remain slower than the CPU reference. The candidate passes
+1,253 CTS cases with zero failures, 600 exact neural runs and 350 fence
+chains including three deliberate resets, with zero unexpected GPU faults.
+Rollback to unchanged saved #29 is tested and restores the old timings.
+The board currently runs #29; no KRN/DTB flash or Mesa-default promotion
+occurred. [Timer A/B/A evidence](../docs/evidence/gpu/runs/20261025-104958-hrtimer-ab-gpu/README.md).

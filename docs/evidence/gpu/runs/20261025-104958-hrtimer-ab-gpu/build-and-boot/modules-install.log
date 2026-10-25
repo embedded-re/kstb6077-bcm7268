@@ -1,0 +1,74 @@
+make: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'
+make[1]: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/kernel'
+  SYMLINK /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/build
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/modules.order
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/modules.builtin
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/modules.builtin.modinfo
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/cmac.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/cmac.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/hmac.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/hmac.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha256.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha256.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha512.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha512.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha3_generic.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/sha3_generic.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecb.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecb.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/aes_generic.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/aes_generic.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/drbg.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/drbg.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/jitterentropy_rng.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/jitterentropy_rng.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecc.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecc.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecdh_generic.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/crypto/ecdh_generic.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/lib/crypto/libaes.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/lib/crypto/libaes.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/lib/crypto/libsha512.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/lib/crypto/libsha512.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmutil/brcmutil.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmutil/brcmutil.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/brcmfmac-wcc.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/brcmfmac-wcc.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/brcmfmac-cyw.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/brcmfmac-cyw.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/brcmfmac-bca.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/brcmfmac-bca.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btusb.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btusb.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btintel.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btintel.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btbcm.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btbcm.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btrtl.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/drivers/bluetooth/btrtl.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/wireless/cfg80211.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/wireless/cfg80211.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/bluetooth.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/bluetooth.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/rfcomm/rfcomm.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/rfcomm/rfcomm.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/hidp/hidp.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/kernel/net/bluetooth/hidp/hidp.ko
+  DEPMOD  /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab
+make[1]: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/kernel'
+make: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'
+make: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'
+make[1]: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/drivers'
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-ir.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-ir.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-audio.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-audio.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-v3d-power.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-v3d-power.ko
+  INSTALL /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-drm.ko
+  STRIP   /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab/extra/kstb-drm.ko
+  DEPMOD  /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/modroot/lib/modules/6.18.57-kstb-hrtimer-ab
+make[1]: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/drivers'
+make: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'

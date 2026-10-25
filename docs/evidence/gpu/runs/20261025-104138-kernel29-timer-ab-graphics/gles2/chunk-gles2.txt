@@ -1,0 +1,5 @@
+dEQP-GLES2.functional.texture.vertex.cube.wrap.mirror_mirror
+dEQP-GLES2.functional.texture.vertex.cube.wrap.mirror_repeat
+dEQP-GLES2.functional.texture.vertex.cube.wrap.repeat_clamp
+dEQP-GLES2.functional.texture.vertex.cube.wrap.repeat_mirror
+dEQP-GLES2.functional.texture.vertex.cube.wrap.repeat_repeat

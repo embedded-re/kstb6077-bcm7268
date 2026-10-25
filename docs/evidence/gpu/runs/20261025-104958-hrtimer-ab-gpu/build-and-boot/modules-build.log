@@ -1,0 +1,19 @@
+make: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'
+make[1]: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/drivers'
+  GEN     Makefile
+  CC [M]  kstb-ir.o
+  CC [M]  kstb-audio.o
+  CC [M]  kstb-v3d-power.o
+  CC [M]  kstb-drm.o
+  MODPOST Module.symvers
+  CC [M]  kstb-ir.mod.o
+  CC [M]  .module-common.o
+  CC [M]  kstb-audio.mod.o
+  CC [M]  kstb-v3d-power.mod.o
+  CC [M]  kstb-drm.mod.o
+  LD [M]  kstb-ir.ko
+  LD [M]  kstb-v3d-power.ko
+  LD [M]  kstb-drm.ko
+  LD [M]  kstb-audio.ko
+make[1]: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/gpu-timer-ab/drivers'
+make: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/linux-6.18.57'

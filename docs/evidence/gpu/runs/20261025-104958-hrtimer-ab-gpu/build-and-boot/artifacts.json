@@ -1,0 +1,38 @@
+{
+  "release": "6.18.57-kstb-hrtimer-ab",
+  "kernel_build": "30",
+  "files": {
+    "krn.img": {
+      "bytes": 13317120,
+      "sha256": "f6d2bf27f7c509727fb8e597be0192984711885f04f84ed5593ef8e4363fb820"
+    },
+    "kstb6077-root.dtb": {
+      "bytes": 10829,
+      "sha256": "0ece483b2c121df10d1f8166783b5e08f58b721236e97a164baff7e1f210b52f"
+    },
+    "Image": {
+      "bytes": 13316608,
+      "sha256": "1337e359e4a5f8cca9be1fa358476ee827b7b9952ef47c4e1a8c1efd7853fb99"
+    },
+    "modules.tar": {
+      "bytes": 3758080,
+      "sha256": "968a1428e31f83c3ca9c4a458a99be111e8bf808132e5cea015d54bb3b2fc958"
+    },
+    "boot.bin": {
+      "bytes": 24,
+      "sha256": "bb1c671e10d09304238cb65c2fb4e6e8bd1f1cfb224d5a614172ebc1f961e568"
+    },
+    "dtb.img": {
+      "bytes": 11776,
+      "sha256": "07e4f0e72e712a0dfa3faa067e2a846c61cc313d66c0246319cfa101f9e28417"
+    }
+  },
+  "modules": 30,
+  "source_sha256": {
+    "v3d_gem.c": "a7e40833512b0d3f3ec03d0c979f3206e4b31a22a24270766370003e767a83bc",
+    "v3d_sched.c": "dd30efd845e948d873d257bb87764674900487d61ed407a51a1ab9dd1fc19e32",
+    "v3d_mmu.c": "cad07c01f0a10414348dcdf65915916427ad4d974b065435b471e605f934cca1",
+    "v3d_irq.c": "ddf0f7d49a47e0f549db8fcbadb4ad5ea580a13835ae62224c8d7cd445a82b53"
+  },
+  "flashed": false
+}

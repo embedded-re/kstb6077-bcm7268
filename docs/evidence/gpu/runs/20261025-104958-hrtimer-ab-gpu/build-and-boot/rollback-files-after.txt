@@ -1,0 +1,1 @@
+PASS: saved KRN/DTB match active partition bytes; all 44 baseline module files unchanged

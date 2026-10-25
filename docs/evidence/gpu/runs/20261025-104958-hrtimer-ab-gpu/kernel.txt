@@ -1,0 +1,122 @@
+[   29.394375] kstb neural milestone start
+[   29.426863] kstb neural milestone empty-smoke
+[   29.468182] drm_sched_entity_init: called with uninitialized scheduler
+[   30.042485] kstb neural milestone store-smoke
+[   30.053365] drm_sched_entity_init: called with uninitialized scheduler
+[   30.556579] kstb neural milestone empty-1001
+[   30.567390] drm_sched_entity_init: called with uninitialized scheduler
+[   33.089501] kstb neural milestone store-1001
+[   33.100522] drm_sched_entity_init: called with uninitialized scheduler
+[   35.617864] kstb neural milestone queued-1-jobs
+[   35.628899] drm_sched_entity_init: called with uninitialized scheduler
+[   36.132395] kstb neural milestone queued-2-jobs
+[   36.143570] drm_sched_entity_init: called with uninitialized scheduler
+[   36.748596] kstb neural milestone separate-2-dispatches
+[   36.760321] drm_sched_entity_init: called with uninitialized scheduler
+[   37.264058] kstb neural milestone queued-4-jobs
+[   37.275190] drm_sched_entity_init: called with uninitialized scheduler
+[   37.879839] kstb neural milestone separate-4-dispatches
+[   37.891760] drm_sched_entity_init: called with uninitialized scheduler
+[   38.399230] kstb neural milestone queued-16-jobs
+[   38.410421] drm_sched_entity_init: called with uninitialized scheduler
+[   39.216987] kstb neural milestone separate-16-dispatches
+[   39.229047] drm_sched_entity_init: called with uninitialized scheduler
+[   39.834300] kstb neural milestone queued-64-jobs
+[   39.845623] drm_sched_entity_init: called with uninitialized scheduler
+[   41.561069] kstb neural milestone separate-64-dispatches
+[   41.573299] drm_sched_entity_init: called with uninitialized scheduler
+[   42.281139] kstb neural milestone work-loops-0
+[   42.292327] drm_sched_entity_init: called with uninitialized scheduler
+[   42.796241] kstb neural milestone work-loops-16
+[   42.807588] drm_sched_entity_init: called with uninitialized scheduler
+[   43.311582] kstb neural milestone work-loops-64
+[   43.322992] drm_sched_entity_init: called with uninitialized scheduler
+[   43.827026] kstb neural milestone work-loops-256
+[   43.838547] drm_sched_entity_init: called with uninitialized scheduler
+[   44.444213] kstb neural milestone work-loops-1024
+[   44.455906] drm_sched_entity_init: called with uninitialized scheduler
+[   45.061162] kstb neural milestone work-loops-4096
+[   45.073057] drm_sched_entity_init: called with uninitialized scheduler
+[   45.778904] kstb neural milestone neural-b1-l128
+[   45.790832] drm_sched_entity_init: called with uninitialized scheduler
+[   46.295382] kstb neural milestone neural-b65-l128
+[   46.307493] drm_sched_entity_init: called with uninitialized scheduler
+[   46.811886] kstb neural milestone neural-b257-l128
+[   46.824738] drm_sched_entity_init: called with uninitialized scheduler
+[   47.430405] kstb neural milestone neural-b1024-l128
+[   47.444910] drm_sched_entity_init: called with uninitialized scheduler
+[   48.049313] kstb neural milestone neural-b4096-l128
+[   48.070446] drm_sched_entity_init: called with uninitialized scheduler
+[   49.074723] kstb neural milestone neural-b257-l16
+[   49.087353] drm_sched_entity_init: called with uninitialized scheduler
+[   49.692766] kstb neural milestone neural-b257-l128-stress
+[   49.706135] drm_sched_entity_init: called with uninitialized scheduler
+[   53.453914] kstb neural milestone sync-200
+[   53.465119] drm_sched_entity_init: called with uninitialized scheduler
+[   56.004696] kstb neural milestone reset-sync-50-0
+[   56.016631] drm_sched_entity_init: called with uninitialized scheduler
+[   56.496591] drm_sched_entity_init: called with uninitialized scheduler
+[   57.533335] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[   57.544651] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[   58.239641] kstb neural milestone reset-sync-50-1
+[   58.251550] drm_sched_entity_init: called with uninitialized scheduler
+[   58.700295] drm_sched_entity_init: called with uninitialized scheduler
+[   59.741347] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[   59.752567] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[   60.474382] kstb neural milestone reset-sync-50-2
+[   60.486111] drm_sched_entity_init: called with uninitialized scheduler
+[   60.946504] drm_sched_entity_init: called with uninitialized scheduler
+[   61.981338] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[   61.992443] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[   62.707994] kstb neural milestone post-reset-neural-b1
+[   62.720216] drm_sched_entity_init: called with uninitialized scheduler
+[   63.225208] kstb neural milestone post-reset-neural-b65
+[   63.237743] drm_sched_entity_init: called with uninitialized scheduler
+[   63.742667] kstb neural milestone post-reset-neural-b257
+[   63.755615] drm_sched_entity_init: called with uninitialized scheduler
+[   64.368398] kstb neural milestone cts-compute
+[   65.012281] drm_sched_entity_init: called with uninitialized scheduler
+[   65.071526] drm_sched_entity_init: called with uninitialized scheduler
+[   67.037725] drm_sched_entity_init: called with uninitialized scheduler
+[   67.086987] drm_sched_entity_init: called with uninitialized scheduler
+[   67.971883] drm_sched_entity_init: called with uninitialized scheduler
+[   68.022043] drm_sched_entity_init: called with uninitialized scheduler
+[   69.209083] drm_sched_entity_init: called with uninitialized scheduler
+[   69.259425] drm_sched_entity_init: called with uninitialized scheduler
+[   70.814511] kstb neural milestone cts-atomic
+[   71.288115] drm_sched_entity_init: called with uninitialized scheduler
+[   71.340080] drm_sched_entity_init: called with uninitialized scheduler
+[   72.523962] drm_sched_entity_init: called with uninitialized scheduler
+[   72.574817] drm_sched_entity_init: called with uninitialized scheduler
+[   74.159953] drm_sched_entity_init: called with uninitialized scheduler
+[   74.209185] drm_sched_entity_init: called with uninitialized scheduler
+[   76.294900] drm_sched_entity_init: called with uninitialized scheduler
+[   76.343413] drm_sched_entity_init: called with uninitialized scheduler
+[   78.031798] drm_sched_entity_init: called with uninitialized scheduler
+[   78.080893] drm_sched_entity_init: called with uninitialized scheduler
+[   79.769288] drm_sched_entity_init: called with uninitialized scheduler
+[   79.818332] drm_sched_entity_init: called with uninitialized scheduler
+[   82.859442] kstb neural milestone cts-indirect
+[   83.332931] drm_sched_entity_init: called with uninitialized scheduler
+[   83.380806] drm_sched_entity_init: called with uninitialized scheduler
+[   87.371752] drm_sched_entity_init: called with uninitialized scheduler
+[   87.420819] drm_sched_entity_init: called with uninitialized scheduler
+[   90.908543] drm_sched_entity_init: called with uninitialized scheduler
+[   90.957251] drm_sched_entity_init: called with uninitialized scheduler
+[   93.444535] drm_sched_entity_init: called with uninitialized scheduler
+[   93.491812] drm_sched_entity_init: called with uninitialized scheduler
+[   94.540413] kstb neural milestone cts-gles2
+[   95.091969] drm_sched_entity_init: called with uninitialized scheduler
+[  251.015736] drm_sched_entity_init: called with uninitialized scheduler
+[  254.552080] drm_sched_entity_init: called with uninitialized scheduler
+[  258.189770] drm_sched_entity_init: called with uninitialized scheduler
+[  265.038076] drm_sched_entity_init: called with uninitialized scheduler
+[  266.502585] kstb neural milestone cts-gles3
+[  267.080867] drm_sched_entity_init: called with uninitialized scheduler
+[  271.217362] drm_sched_entity_init: called with uninitialized scheduler
+[  272.656102] drm_sched_entity_init: called with uninitialized scheduler
+[  274.692226] drm_sched_entity_init: called with uninitialized scheduler
+[  277.843484] drm_sched_entity_init: called with uninitialized scheduler
+[  284.188347] drm_sched_entity_init: called with uninitialized scheduler
+[  295.832679] drm_sched_entity_init: called with uninitialized scheduler
+[  373.639936] drm_sched_entity_init: called with uninitialized scheduler

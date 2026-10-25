@@ -1,0 +1,11 @@
+[   88.945637] kstb neural milestone start
+[   88.956219] kstb neural milestone empty-1001
+[   89.000128] drm_sched_entity_init: called with uninitialized scheduler
+[   93.536984] kstb neural milestone queued-64-jobs
+[   93.548299] drm_sched_entity_init: called with uninitialized scheduler
+[  102.799358] kstb neural milestone neural-b257-l128
+[  102.811603] drm_sched_entity_init: called with uninitialized scheduler
+[  103.632097] kstb neural milestone neural-b4096-l128
+[  103.652734] drm_sched_entity_init: called with uninitialized scheduler
+[  106.651970] kstb neural milestone sync-50
+[  106.662492] drm_sched_entity_init: called with uninitialized scheduler

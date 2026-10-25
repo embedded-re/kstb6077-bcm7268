@@ -1,0 +1,28 @@
+[
+  {
+    "test": "gles2",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles2",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/gles2-graphics.txt",
+      "/root/gpu-runs/20261025-104138-kernel29-timer-ab-graphics/gles2"
+    ],
+    "exit": 0,
+    "seconds": 171.6977753030078,
+    "expected_resets": 0
+  },
+  {
+    "test": "gles3",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/gles3-graphics.txt",
+      "/root/gpu-runs/20261025-104138-kernel29-timer-ab-graphics/gles3"
+    ],
+    "exit": 0,
+    "seconds": 216.72704902800615,
+    "expected_resets": 0
+  }
+]

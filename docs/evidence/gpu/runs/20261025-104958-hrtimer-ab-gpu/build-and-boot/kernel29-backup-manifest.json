@@ -1,0 +1,22 @@
+{
+  "uname": "Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux",
+  "images": {
+    "KRN": {
+      "device": "/dev/mmcblk0p6",
+      "file": "/root/gpu-backups/kernel29-before-hrtimer-ab/krn.img",
+      "payload_size": 13249024,
+      "payload_crc": "335f53c0",
+      "sha256": "34749e90fd1fd25ae467d2309e780ef5ec46c898097a1af0e6fe290a68e8400e",
+      "label": "linux-6.18.57-kstb 2026-10-22"
+    },
+    "DTB": {
+      "device": "/dev/mmcblk0p7",
+      "file": "/root/gpu-backups/kernel29-before-hrtimer-ab/dtb.img",
+      "payload_size": 10829,
+      "payload_crc": "c672cba9",
+      "sha256": "780dffee5e3032bf6155b9451d56015a17558d7e9b91abb49d95810186658fd0",
+      "label": "kstb6077-root.dtb 2026-10-22"
+    }
+  },
+  "modules_sha256": "000eb8c3fd5bafda22d9f1b35d5c7d4898fc60c6328f3a71f31b30f27b21043c"
+}

@@ -802,3 +802,38 @@ The IRQ-count increase matches all 14,759 render jobs in the main gate,
 including synchronization and final neural checks, delivered on CPU0.
 Work stops at this measurement milestone; no workloads remain queued.
 [Raw timing, platform checks and reproducible analysis](../docs/evidence/gpu/runs/20261025-101822-compute-latency-milestone/README.md).
+
+## High-resolution timers: controlled kernel A/B/A fix (2026-10-25)
+
+Enabling `CONFIG_HIGH_RES_TIMERS=y` removes the bulk compute cache-clean
+delay. Kernel #30 (`6.18.57-kstb-hrtimer-ab`) was built separately and booted
+from RAM over TFTP, leaving saved kernel #29 and its DTB untouched. All
+required V3D cache/MMU flushes, IRQ handling and Mesa remain unchanged.
+The updated `linux/kstb.config` reproduces the tested configuration, apart
+from the candidate's temporary module-version suffix.
+
+With the same executable/driver hashes and ten warm neural rounds, batch
+257/local 128 improves from **26.355 to 1.273 ms** (20.7×), and batch 4096
+from **190.500 to 9.897 ms** (19.2×). Corresponding CPU reference medians
+are 0.398 and 6.520 ms: the CPU still wins on this small generated model.
+The batch-257 cache-clean interval falls from 25.661 to 0.175 ms while its
+render interval stays near 0.42 ms. An empty shader improves from 2.101 to
+0.140 ms; 64 queued jobs improve from 253.203 to 9.066 ms. Queue intervals
+include sleep/preemption; individual poll sites were not traced.
+
+All candidate gates pass: **2,473 timing rounds / 7,557 render jobs**,
+**600 exact neural inferences**, **350 native-fence chains** including
+three deliberate resets with compute pending, and **1,253 CTS cases**
+(1,224 Pass/29 NotSupported). All 603 graphics case statuses match an
+immediately preceding #29 run. There are zero unexpected GPU resets,
+MMU errors or oopses. Existing CSD-open warnings and the separate attachment-
+free framebuffer reset blocker remain unresolved.
+
+Rollback was actually exercised: reboot to kmon, then boot the original
+saved KRN/DTB. #29 completes further timing/neural/fence probes without
+faults; batch-257 latency returns to 26.362 ms. Both slot images and all
+44 baseline module files remain byte-identical. Original TFTP files are
+restored. The board ends on #29 with selected/system Mesa unchanged and
+no queued validation work. The tested #30 artifacts and versioned modules
+remain available alongside it; no kernel was flashed.
+[Build, A/B/A measurements, reliability and tested rollback](../docs/evidence/gpu/runs/20261025-104958-hrtimer-ab-gpu/README.md).

@@ -1,0 +1,5 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3; groups 1 loops 0 rounds 3 dispatches 1 mode empty
+round 0 cold host_submit_ms 2.383287 host_finish_ms 0.095370 wall_ms 2.478657 render_ms 0.015963 clean_ms 0.028778 render_jobs 1 clean_jobs 1 bin_jobs 0
+round 1 warm host_submit_ms 0.097926 host_finish_ms 0.057333 wall_ms 0.155259 render_ms 0.007889 clean_ms 0.026074 render_jobs 1 clean_jobs 1 bin_jobs 0
+round 2 warm host_submit_ms 0.091666 host_finish_ms 0.051630 wall_ms 0.143296 render_ms 0.007704 clean_ms 0.025667 render_jobs 1 clean_jobs 1 bin_jobs 0
+PASS: 3 rounds, 128 values/round, exact outputs and guards; 3 render jobs, 3 cache-clean jobs, 0 bin jobs

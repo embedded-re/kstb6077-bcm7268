@@ -1,0 +1,7 @@
+Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux
+Sun Oct 25 09:49:57 UTC 2026
+by-path
+card0
+card1
+renderD128
+CONFIG_HIGH_RES_TIMERS=y
