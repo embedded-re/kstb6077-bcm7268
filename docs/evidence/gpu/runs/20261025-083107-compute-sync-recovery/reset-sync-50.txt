@@ -1,0 +1,6 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-c9b0044dd5); V3D 3.3
+25/50 chains exact, 4097 words/buffer, guards checked
+controlled CL stall submitted; queueing compute before recovery
+stall fence retired; caller must verify an actual reset
+50/50 chains exact, 4097 words/buffer, guards checked
+PASS: compute native-fence chains, exact SSBOs and guards

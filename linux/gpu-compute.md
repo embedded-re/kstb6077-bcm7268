@@ -584,9 +584,12 @@ process while a genuinely absent case is still Missing.
 [Incomplete diagnostic run](../docs/evidence/gpu/runs/20261024-174737-gles31-f37c1-full/README.txt),
 [runner check](../docs/evidence/gpu/runs/20261024-224500-deqp-resource-retry/summary.txt).
 
-The new full GLES 3.1 run uses the corrected runner and stops for a failing
-result or GPU fault. Full GLES 3.1 and post-0030 graphics regressions remain
-pending; the selected build and system default have not changed.
+The corrected full GLES 3.1 run stopped on an RGBA32I renderbuffer-to-
+renderbuffer image-copy mismatch: 5,292 cases reported, with 5,133 Pass,
+158 NotSupported and one Fail, without GPU faults. The failure remains
+unresolved. The dependent neural/graphics queue stopped without running.
+Full GLES 3.1 and post-0030 graphics regressions remain pending.
+[Incomplete full-run evidence](../docs/evidence/gpu/runs/20261024-224854-gles31-b1e71-full/README.md).
 
 `kstb-neural-test [batch]` prepares a real two-dispatch compute workload:
 a deterministic dense 32 -> 16 ReLU -> 8 network, with CPU comparisons for
@@ -595,3 +598,38 @@ every hidden value, output and predicted class, plus guarded output buffers.
 cross-builds and its CPU reference runs on the board for batches 1, 65 and
 257; GPU execution is still pending behind the full GLES 3.1 suite.
 [Reference preparation](../docs/evidence/gpu/runs/20261024-232200-neural-cpu/README.md).
+
+## Compute synchronization and reset recovery (2026-10-25)
+
+Compute on 3.3 uses render-only CL submissions, sharing the graphics render
+scheduler and reset machinery. Synchronization and reset checks now run
+alongside the focused compute gates, before the full graphics regression.
+
+`kstb-compute-sync-test [rounds=200] [count=4097]` alternates two shared
+GLES 3.1 contexts. A compute producer writes an iteration-dependent SSBO,
+exports a native fence, and a compute consumer imports/server-waits on it
+before transforming the buffer. A consumer fence must signal; every word
+of both buffers and both sets of guards must match. Normal rounds do not
+wait for the producer on the CPU.
+
+With `KSTB_RESET_PROBE=1`, the midpoint starts `kstb-reset-probe`, an
+intentional render-CL semaphore stall on a separate DRM file. Compute is
+queued behind it. A zero-time poll and timestamp confirm its exported fence
+is pending before the kernel resets the GPU. The original contexts and
+buffers then continue through the fence chain and exact-result checks.
+Run this mode only inside the watchdog-protected test harness; the reset
+is an expected event recorded separately from unexpected faults.
+
+On kernel #29 / `23.3.6-b1e71af4`, without a version override:
+
+- **350 chains pass**, including three deliberate resets, with zero MMU
+  errors or kernel oopses. All three compute fences were pending before
+  their respective reset; both 4,097-word buffers and 4 KiB guards match.
+  [Reset/fence evidence](../docs/evidence/gpu/runs/20261025-083310-compute-sync-recovery/README.md).
+- **195/195 official compute cases pass again after the resets**, without
+  further faults.
+  [Post-reset compute](../docs/evidence/gpu/runs/20261025-083501-gles31-post-reset-compute/summary.txt).
+
+These results cover queued compute and retained contexts. Reset points
+inside an executing compute shader, dma-buf exchange and hours-long mixed
+load remain separate stress coverage.

@@ -1,0 +1,2 @@
+250 compute/native-fence chains exact; 4097 words per buffer and guards checked
+kernel: 1 intentional resets, 0 MMU errors, 0 oops

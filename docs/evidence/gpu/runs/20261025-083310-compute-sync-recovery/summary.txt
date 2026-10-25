@@ -1,0 +1,5 @@
+350 compute/native-fence chains exact; 4097 words per buffer and guards checked
+kernel: 3 intentional resets, 0 MMU errors, 0 oops
+reset-sync-50-a: unsignaled compute fence at 214382.819143, next kernel reset at 214384.208116, then exact results
+reset-sync-50-b: unsignaled compute fence at 214392.603405, next kernel reset at 214394.000147, then exact results
+reset-sync-50-c: unsignaled compute fence at 214402.323031, next kernel reset at 214403.728134, then exact results

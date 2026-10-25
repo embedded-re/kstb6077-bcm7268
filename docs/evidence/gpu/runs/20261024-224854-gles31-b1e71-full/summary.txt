@@ -1,0 +1,2 @@
+5292 cases: Pass 5133, NotSupported 158, Fail 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

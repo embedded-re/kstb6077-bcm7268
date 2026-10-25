@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Intentional CL stall for watchdog-protected reset-recovery tests only.
+
+Prints 'submitted' once the render-only job waits on an unsignaled semaphore.
+The kernel scheduler must time out and retire this guilty job. This helper
+does not establish recovery: the caller must check kernel logs and subsequent
+compute/fence results. No register writes or kernel changes are performed.
+"""
+import ctypes
+import fcntl
+import mmap
+import os
+import struct
+import sys
+
+def iowr(nr, size):
+    return (3 << 30) | (size << 16) | (ord('d') << 8) | (0x40 + nr)
+
+fd = os.open('/dev/dri/renderD128', os.O_RDWR | os.O_CLOEXEC)
+def ioctl(nr, size, fmt, *args):
+    return struct.unpack(fmt, fcntl.ioctl(fd, iowr(nr, size), struct.pack(fmt, *args)))
+
+_, _, handle, va = ioctl(2, 16, '<IIII', 4096, 0, 0, 0)
+offset = ioctl(3, 16, '<IIQ', handle, 0, 0)[2]
+bo = mmap.mmap(fd, 4096, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=offset)
+# V3D 3.3 packet 8 = Wait on Semaphore, 13 = End of Rendering.
+# Repeat waits so a leftover signal does not bypass the stall.
+commands = bytes([8]) * 256 + bytes([13])
+bo[:len(commands)] = commands
+handles = (ctypes.c_uint32 * 1)(handle)
+ioctl(0, 72, '<10IQ4IQ', 0, 0, va, va + len(commands), 0, 0, 0, 0, 0, 0,
+      ctypes.addressof(handles), 1, 0, 0, 0, 0)
+print('submitted', flush=True)
+ioctl(1, 16, '<IIQ', handle, 0, 10_000_000_000)
+print('stall fence retired; caller must verify an actual reset', file=sys.stderr, flush=True)

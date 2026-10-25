@@ -1,0 +1,20 @@
+[
+  {
+    "test": "sync-200",
+    "exit": 0,
+    "start": 214225.160974918,
+    "end": 214256.097491049,
+    "reset_expected": false,
+    "reset_count": 0,
+    "faults": []
+  },
+  {
+    "test": "reset-sync-50",
+    "exit": 0,
+    "start": 214256.098272567,
+    "end": 214265.924651593,
+    "reset_expected": true,
+    "reset_count": 1,
+    "faults": []
+  }
+]
