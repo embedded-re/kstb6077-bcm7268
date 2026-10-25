@@ -1,0 +1,13 @@
+dense 32 -> 16 ReLU -> 8, batch 257; CPU 0.413 ms; class checksum 0xdae64da0
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+local size 128; 3 rounds; input upload/readback excluded from GPU timing
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 0 (cold): CPU 0.413 ms; dispatch1 host 6.039 ms; dispatch2 host 6.968 ms; finish 0.131 ms; GPU dispatch + synchronization 13.138 ms; GPU class checksum 0xdae64da0; 257 classification checks; PASS
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 1 (warm): CPU 0.407 ms; dispatch1 host 0.890 ms; dispatch2 host 0.390 ms; finish 0.078 ms; GPU dispatch + synchronization 1.357 ms; GPU class checksum 0x6cf575be; 257 classification checks; PASS
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+round 2 (warm): CPU 0.397 ms; dispatch1 host 0.813 ms; dispatch2 host 0.389 ms; finish 0.077 ms; GPU dispatch + synchronization 1.278 ms; GPU class checksum 0xa3281d5; 257 classification checks; PASS
+warm GPU ms: min 1.278 median 1.318 max 1.357; 2 checked rounds

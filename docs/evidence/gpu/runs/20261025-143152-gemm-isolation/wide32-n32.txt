@@ -1,0 +1,5 @@
+reference N 32 0.127 ms; binary-fraction inputs, full exact checks
+Failed to compile MESA_SHADER_COMPUTE prog 0/1 with any strategy.
+compute33: unsupported experimental dispatch
+FAIL line 466: after.jobs - before.jobs == (groups + 15) / 16
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3

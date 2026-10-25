@@ -1,0 +1,3 @@
+[11764.408354] kstb gemm isolation start
+[11764.418000] kstb gemm isolation wide24-n48
+[11764.428623] drm_sched_entity_init: called with uninitialized scheduler

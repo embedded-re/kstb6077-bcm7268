@@ -1,4 +1,4 @@
-// kstb-gemm-test [naive|tiled4|tiled2|scalar|neon4] [N [rounds]]
+// kstb-gemm-test [naive|shared1|tiled4|tiled2|scalar|neon4] [N [rounds]]
 // C=A*B+bias, FP32. Cold round then warm rounds; all outputs/guards checked.
 // CPU blocked 4x4 kernels use scalar FMA or explicit NEON FMA on four workers.
 // Build with auto-vectorization disabled so the scalar baseline stays scalar.
@@ -239,6 +239,20 @@ static const char *tiled2_shader =
     "c0+=sa[(ly*2u)*16u+k]*bv;c1+=sa[(ly*2u+1u)*16u+k]*bv;}barrier();}"
     "c[row*n+col]=c0.x+bias;c[row*n+col+1u]=c0.y+bias;"
     "c[(row+1u)*n+col]=c1.x+bias;c[(row+1u)*n+col+1u]=c1.y+bias;}\n";
+// Small shared-memory/barrier control: one result per invocation, 8x8 tiles.
+static const char *shared1_shader =
+    "#version 310 es\nprecision highp float;precision highp int;\n"
+    "layout(local_size_x=8,local_size_y=8) in;uniform highp uint n;uniform highp float bias;"
+    "layout(std430,binding=0) readonly buffer A{float a[];};"
+    "layout(std430,binding=1) readonly buffer B{float b[];};"
+    "layout(std430,binding=2) writeonly buffer C{float c[];};"
+    "shared float sa[64];shared float sb[64];"
+    "void main(){uint x=gl_LocalInvocationID.x,y=gl_LocalInvocationID.y;"
+    "uint row=gl_WorkGroupID.y*8u+y,col=gl_WorkGroupID.x*8u+x;float sum=0.0;"
+    "for(uint base=0u;base<n;base+=8u){"
+    "sa[y*8u+x]=a[row*n+base+x];sb[y*8u+x]=b[(base+y)*n+col];barrier();"
+    "for(uint k=0u;k<8u;k++)sum+=sa[y*8u+k]*sb[k*8u+x];barrier();}"
+    "c[row*n+col]=sum+bias;}";
 static GLuint program(const char *source) {
     GLuint sh = glCreateShader(GL_COMPUTE_SHADER);
     glShaderSource(sh, 1, &source, NULL);
@@ -308,9 +322,10 @@ int main(int argc, char **argv) {
     CHECK(argc >= 2 && argc <= 4);
     const char *mode = argv[1];
     int tiled4 = !strcmp(mode, "tiled4") || !strcmp(mode, "tiled"),
-        tiled2 = !strcmp(mode, "tiled2"), tiled = tiled4 || tiled2,
+        tiled2 = !strcmp(mode, "tiled2"), shared1 = !strcmp(mode, "shared1"),
+        tiled = tiled4 || tiled2 || shared1,
         gpu = !strcmp(mode, "naive") || tiled, neon = !strcmp(mode, "neon4");
-    unsigned tile = tiled4 ? 32 : 16;
+    unsigned tile = shared1 ? 8 : tiled4 ? 32 : 16;
     CHECK(gpu || neon || !strcmp(mode, "scalar"));
     unsigned n = argc > 2 ? number(argv[2], 1024) : 1024,
              rounds = argc > 3 ? number(argv[3], 101) : 4;
@@ -352,7 +367,8 @@ int main(int argc, char **argv) {
         const char *renderer = (const char *)glGetString(GL_RENDERER);
         CHECK(renderer && strstr(renderer, "V3D"));
         printf("%s; %s\n", glGetString(GL_VERSION), renderer);
-        prog = program(tiled4 ? tiled4_shader : tiled2 ? tiled2_shader : naive_shader);
+        prog = program(tiled4 ? tiled4_shader : tiled2 ? tiled2_shader :
+                       shared1 ? shared1_shader : naive_shader);
         glUseProgram(prog);
         GLint loc = glGetUniformLocation(prog, "n");
         CHECK(loc >= 0);

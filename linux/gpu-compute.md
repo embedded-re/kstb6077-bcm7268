@@ -878,3 +878,26 @@ Installed kernel #30, selected Mesa and system libraries are unchanged.
 Eight QPUs/two TMUs are reported by the chip; clock rate is unmeasured.
 No large GEMM performance claim or Sway GPU-composition claim is established.
 [Sources, compiler logs, reset and stopped-state evidence](../docs/evidence/gpu/runs/20261025-141834-gemm-compile-debug/README.md).
+
+
+## Compute spilling independently corrupts GEMM (2026-10-25)
+
+A smaller `shared1` GEMM control (8×8 workgroups/tiles, one output per
+invocation, two barriers per K=8 block) passes three exact rounds at each
+N=8,32,64. It compiles with two threads, 23 max temporaries and zero spills.
+The naive shader also passes N=32 three rounds with zero spills. Three
+batch-257 neural inferences pass before these probes.
+
+A temporary DRI changes only the compiler's existing forced-spill hook to
+request a minimum of one spill for compute. The same naive N=32 shader,
+which has no shared memory or barriers, compiles with two spills/two fills
+and returns **1,022 incorrect outputs out of 1,024** in its first round.
+The runner stops on that failed check. No new GPU reset/MMU error/oops
+occurs. This demonstrates a spilling correctness failure independent of
+barriers, without proving the cause of the earlier tiled-shader hang.
+
+Natural-pressure kernels with 32/24 accumulators fail compilation and do
+not execute. No final fence/recovery gate or large GEMM comparison runs.
+Scratch instrumentation is restored out of the inner Mesa tree and is not
+exported; installed kernel/Mesa defaults remain unchanged. No tests remain
+running. [Controlled evidence and reproducer](../docs/evidence/gpu/runs/20261025-143447-gemm-isolation/README.md).

@@ -1,0 +1,5 @@
+{
+  "state": "stopped",
+  "tests": 5,
+  "expected_resets": 0
+}

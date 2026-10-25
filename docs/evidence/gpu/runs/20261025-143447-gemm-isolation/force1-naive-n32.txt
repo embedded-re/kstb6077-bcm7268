@@ -1,0 +1,17 @@
+reference N 32 0.128 ms; binary-fraction inputs, full exact checks
+libGL: Can't open configuration file /opt/mesa/current/etc/drirc: No such file or directory.
+libGL: Can't open configuration file /root/.drirc: No such file or directory.
+libGL: Can't open configuration file /opt/mesa/current/etc/drirc: No such file or directory.
+libGL: Can't open configuration file /root/.drirc: No such file or directory.
+libGL: Can't open configuration file /opt/mesa/current/etc/drirc: No such file or directory.
+libGL: Can't open configuration file /root/.drirc: No such file or directory.
+libGL: Can't open configuration file /opt/mesa/current/etc/drirc: No such file or directory.
+libGL: Can't open configuration file /root/.drirc: No such file or directory.
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 165 inst, 2 threads, 1 loops, 32 uniforms, 13 max-temps, 2:2 spills:fills, 0 sfu-stalls, 165 inst-and-stalls, 11 nops
+value 0 0.0009765625 expected -0.331054688
+value 1 0.0009765625 expected 0.305664062
+value 2 0.0009765625 expected 0.739257812
+value 3 0.0009765625 expected -0.276367188
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+round 0 cold mode naive N 32 wall_ms 8.843991 host_submit_ms 8.574510 host_finish_ms 0.269481 process_cpu_ms 8.663778 render_ms 0.173333 clean_ms 0.029482 render_jobs 1 GFLOPS 0.007410 max_error 1.84765625 errors 1022 checksum 0x9c35e7855ba13383 FAIL
+FAIL line 472: !errors

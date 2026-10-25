@@ -1,0 +1,14 @@
+Revision:   3.3.1.0
+MMU:        yes
+TFU:        yes
+TSY:        yes
+MSO:        yes
+L3C:        no (0kb)
+Core 0:
+  Revision:     3.3
+  Slices:       2
+  TMUs:         2
+  QPUs:         8
+  Semaphores:   16
+  BCG int:      0
+  Override TMU: 1

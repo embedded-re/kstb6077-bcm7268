@@ -1,0 +1,24 @@
+reference N 48 0.372 ms; binary-fraction inputs, full exact checks
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable general TMU sched' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable gcm' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable TMU pipelining' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'lower thread count' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable general TMU sched (2t)' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable gcm (2t)' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'Move buffer loads (2t)' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'disable TMU pipelining (2t)' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Falling back to strategy 'fallback scheduler' for MESA_SHADER_COMPUTE prog 0/1
+Failed to register allocate MESA_SHADER_COMPUTE prog 0/1 at 2 threads.
+Failed to compile MESA_SHADER_COMPUTE prog 0/1 with any strategy.
+compute33: unsupported experimental dispatch
+FAIL line 460: after.jobs - before.jobs == (groups + 15) / 16
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3

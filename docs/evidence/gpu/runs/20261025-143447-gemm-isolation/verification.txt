@@ -1,0 +1,5 @@
+PASS: all three archived kernel logs have zero reset/MMU/oops patterns.
+PASS: baseline naive and shared controls have exact outputs, no spills, three rounds each.
+PASS: forced-spill log reports 2:2 spills:fills and 1022 output errors.
+PASS: both prepared scratch driver hashes match archived board metadata.
+NOT RUN: force-four probe, final synchronization/recovery gate, large GEMM.

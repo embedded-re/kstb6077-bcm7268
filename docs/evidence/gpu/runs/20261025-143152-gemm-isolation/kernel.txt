@@ -1,0 +1,13 @@
+[11720.922485] kstb gemm isolation start
+[11720.932153] kstb gemm isolation neural-pre
+[11720.943005] drm_sched_entity_init: called with uninitialized scheduler
+[11721.444423] kstb gemm isolation naive-n32
+[11721.454748] drm_sched_entity_init: called with uninitialized scheduler
+[11721.957072] kstb gemm isolation shared1-n8
+[11721.967634] drm_sched_entity_init: called with uninitialized scheduler
+[11722.470284] kstb gemm isolation shared1-n32
+[11722.480948] drm_sched_entity_init: called with uninitialized scheduler
+[11722.983292] kstb gemm isolation shared1-n64
+[11722.994887] drm_sched_entity_init: called with uninitialized scheduler
+[11723.496456] kstb gemm isolation wide32-n32
+[11723.506978] drm_sched_entity_init: called with uninitialized scheduler
