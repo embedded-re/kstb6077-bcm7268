@@ -1,0 +1,17 @@
+show=drun
+prompt=Search applications…
+width=940
+height=340
+location=center
+columns=2
+allow_images=true
+image_size=56
+term=foot
+insensitive=true
+matching=fuzzy
+no_actions=true
+no_custom_entry=true
+hide_scroll=true
+sort_order=alphabetical
+single_click=true
+close_on_focus_loss=true

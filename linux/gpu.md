@@ -22,10 +22,11 @@ su -l kstb
 dbus-run-session sway
 ```
 
-Sway uses the standard desktop configuration, panel, wallpaper and `wmenu-run`
-launcher. Win+Enter opens a terminal, Win+D opens the launcher, and
+Sway uses the standard desktop configuration, panel, wallpaper and a Wofi
+application grid with icons and search. Win+Enter opens a terminal, Win+D opens the launcher, and
 Win+Shift+E logs out after confirmation. Closing applications or all terminals
-leaves the desktop running. Boot remains at the console. Interactive login
+leaves the desktop running. [Launcher preview and configuration](../docs/evidence/gpu/runs/20261025-172641-launcher-final/README.md).
+Boot remains at the console. Interactive login
 sets the runtime directory and display-device/direct-scanout workaround;
 apps need no Mesa library or driver path overrides. The normal renderer
 selects V3D GLES automatically and scans out opaque ARGB8888 at 1080p.

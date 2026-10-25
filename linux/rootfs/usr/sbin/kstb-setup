@@ -14,7 +14,8 @@ apk add openrc busybox-openrc ifupdown-ng openssh chrony tzdata musl-locales \
 	doas doas-sudo-shim bash bash-completion tmux htop vim less man-pages \
 	mandoc mandoc-apropos docs coreutils curl git avahi avahi-tools dbus \
 	eudev udev-init-scripts udev-init-scripts-openrc font-terminus kbd btop \
-	sway foot foot-themes seatd font-jetbrains-mono-nerd grim
+	sway foot foot-themes seatd font-jetbrains-mono-nerd grim \
+	swaybg wofi hicolor-icon-theme adwaita-icon-theme librsvg font-dejavu
 
 echo kstb6077 > /etc/hostname
 cat > /etc/hosts <<EOF

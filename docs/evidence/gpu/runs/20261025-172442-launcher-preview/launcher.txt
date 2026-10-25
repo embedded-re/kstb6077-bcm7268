@@ -1,0 +1,6 @@
+WARNING: Glycin running without sandbox.
+
+(wofi:6138): Gtk-WARNING **: 17:24:42.933: Could not find the icon 'micro-logo'. The 'hicolor' theme
+was not found either, perhaps you need to install it.
+You can get a copy from:
+	http://icon-theme.freedesktop.org/releases

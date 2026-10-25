@@ -1,0 +1,35 @@
+* {
+    font-family: "DejaVu Sans";
+    font-size: 21px;
+}
+#window {
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    border: 2px solid #b4befe;
+    border-radius: 20px;
+}
+#outer-box { padding: 24px; }
+#input {
+    padding: 16px;
+    margin-bottom: 18px;
+    background-color: #313244;
+    color: #cdd6f4;
+    border: 1px solid #45475a;
+    border-radius: 12px;
+    box-shadow: none;
+}
+#input:focus { border-color: #b4befe; }
+#entry {
+    min-height: 82px;
+    margin: 6px;
+    padding: 16px;
+    background-color: #242436;
+    border: 1px solid #313244;
+    border-radius: 12px;
+}
+#entry:selected, #entry:hover {
+    background-color: #45475a;
+    border-color: #b4befe;
+}
+#text { margin: 0 14px; color: #cdd6f4; }
+#img { margin-left: 6px; }

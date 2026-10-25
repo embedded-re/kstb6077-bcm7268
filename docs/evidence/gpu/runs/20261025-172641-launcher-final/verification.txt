@@ -1,0 +1,1 @@
+PASS: both monitored previews completed without GPU fault; live reload succeeded; original Sway PID 5251 retained; six desktop entries parsed; final screenshot visually checked. No input injection or automated app launch was performed.

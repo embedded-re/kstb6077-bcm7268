@@ -1,0 +1,12 @@
+5251
+adwaita-icon-theme-50.0-r1 aarch64 {adwaita-icon-theme} (LGPL-3.0-or-later OR CC-BY-SA-3.0) [installed]
+hicolor-icon-theme-0.18-r0 aarch64 {hicolor-icon-theme} (GPL-2.0-or-later) [installed]
+wofi-1.5.3-r0 aarch64 {wofi} (GPL-3.0-only) [installed]
+# The display supports opaque ARGB8888; Sway falls back from XRGB8888.
+output * render_bit_depth 8
+# Open one terminal when the desktop starts. Closing it leaves Sway running.
+exec foot
+# Launch desktop applications by name, with icons and a readable search menu.
+set $menu wofi --show drun
+unbindsym $mod+d
+bindsym $mod+d exec $menu

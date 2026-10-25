@@ -260,7 +260,8 @@ need no `/opt` driver paths or per-app environment overrides. From the box's
 root console, run `su -l kstb`, then `dbus-run-session sway` in the user shell.
 Boot still stops at the console.
 
-The standard Sway desktop has a panel, wallpaper and app launcher. Win+Enter
+The standard Sway desktop has a panel, wallpaper and a searchable Wofi
+application grid with icons and readable app names. Win+Enter
 opens a terminal, Win+D opens the launcher, Win+Shift+E logs out. Closing a
 terminal or app leaves the desktop running. GLES rendering and ARGB8888
 output, application resizing/fullscreen/exit, launcher, restart, CPU fallback
