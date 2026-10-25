@@ -1,0 +1,4 @@
+gles3: 25 cases, 0 done before, 25 to run
+  25 run, 0 left, 1 s
+25 cases: Pass 25
+PASS: 25 gles3 cases; baseline recorded

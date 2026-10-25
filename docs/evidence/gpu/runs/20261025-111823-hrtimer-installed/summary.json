@@ -1,0 +1,68 @@
+{
+  "kernel": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "neural_inferences": 55,
+  "fence_chains": 100,
+  "timing_rounds": 101,
+  "conformance": {
+    "cts-compute": {
+      "Pass": 195
+    },
+    "cts-fbo": {
+      "Pass": 41,
+      "NotSupported": 29
+    },
+    "cts-ubo": {
+      "Pass": 25
+    }
+  },
+  "gpu_resets": 0,
+  "mmu_errors": 0,
+  "oopses": 0,
+  "neural": [
+    {
+      "batch": 1,
+      "local_size": 128,
+      "rounds": 11,
+      "warm_cpu_median_ms": 0.002,
+      "warm_gpu_median_ms": 0.306,
+      "warm_gpu_min_ms": 0.304,
+      "warm_gpu_max_ms": 0.396
+    },
+    {
+      "batch": 65,
+      "local_size": 128,
+      "rounds": 11,
+      "warm_cpu_median_ms": 0.101,
+      "warm_gpu_median_ms": 0.4835,
+      "warm_gpu_min_ms": 0.481,
+      "warm_gpu_max_ms": 0.58
+    },
+    {
+      "batch": 257,
+      "local_size": 128,
+      "rounds": 11,
+      "warm_cpu_median_ms": 0.398,
+      "warm_gpu_median_ms": 1.2875,
+      "warm_gpu_min_ms": 1.271,
+      "warm_gpu_max_ms": 1.406
+    },
+    {
+      "batch": 1024,
+      "local_size": 128,
+      "rounds": 11,
+      "warm_cpu_median_ms": 1.5939999999999999,
+      "warm_gpu_median_ms": 3.7329999999999997,
+      "warm_gpu_min_ms": 2.435,
+      "warm_gpu_max_ms": 4.007
+    },
+    {
+      "batch": 4096,
+      "local_size": 128,
+      "rounds": 11,
+      "warm_cpu_median_ms": 6.52,
+      "warm_gpu_median_ms": 9.8775,
+      "warm_gpu_min_ms": 9.741,
+      "warm_gpu_max_ms": 15.113
+    }
+  ]
+}

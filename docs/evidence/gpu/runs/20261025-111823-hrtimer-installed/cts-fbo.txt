@@ -1,0 +1,5 @@
+gles3: 70 cases, 0 done before, 70 to run
+  50 run, 20 left, 3 s
+  70 run, 0 left, 3 s
+70 cases: Pass 41, NotSupported 29
+PASS: 70 gles3 cases; baseline recorded

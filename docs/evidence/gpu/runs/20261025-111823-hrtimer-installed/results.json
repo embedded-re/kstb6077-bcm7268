@@ -1,0 +1,126 @@
+[
+  {
+    "test": "empty-101",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "101",
+      "1",
+      "empty"
+    ],
+    "exit": 0,
+    "seconds": 0.8063074730000039,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b1-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "1",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.5041056959999963,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b65-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "65",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.5041179179999915,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b257-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "257",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.6052693059999967,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b1024-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "1024",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.6052683439999953,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b4096-l128",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "4096",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 1.009922821999993,
+    "expected_resets": 0
+  },
+  {
+    "test": "sync-100",
+    "args": [
+      "/opt/gpu-test/kstb-compute-sync-test",
+      "100",
+      "4097"
+    ],
+    "exit": 0,
+    "seconds": 1.5135563679999962,
+    "expected_resets": 0
+  },
+  {
+    "test": "cts-compute",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles31",
+      "/opt/gpu-test/cases/gles31-compute.txt",
+      "/root/gpu-runs/20261025-111823-hrtimer-installed/cts-compute"
+    ],
+    "exit": 0,
+    "seconds": 6.364270900999998,
+    "expected_resets": 0
+  },
+  {
+    "test": "cts-ubo",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles3",
+      "/opt/gpu-test/cases/gles3-ubo-vec-align.txt",
+      "/root/gpu-runs/20261025-111823-hrtimer-installed/cts-ubo"
+    ],
+    "exit": 0,
+    "seconds": 2.1205307350000027,
+    "expected_resets": 0
+  },
+  {
+    "test": "cts-fbo",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles3",
+      "/opt/gpu-test/cases/gles3-fbo-msaa.txt",
+      "/root/gpu-runs/20261025-111823-hrtimer-installed/cts-fbo"
+    ],
+    "exit": 0,
+    "seconds": 4.039806616999996,
+    "expected_resets": 0
+  }
+]

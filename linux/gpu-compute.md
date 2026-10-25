@@ -837,3 +837,21 @@ restored. The board ends on #29 with selected/system Mesa unchanged and
 no queued validation work. The tested #30 artifacts and versioned modules
 remain available alongside it; no kernel was flashed.
 [Build, A/B/A measurements, reliability and tested rollback](../docs/evidence/gpu/runs/20261025-104958-hrtimer-ab-gpu/README.md).
+
+
+## Permanent timer-kernel installation (2026-10-25)
+
+With explicit user approval, the already validated #30 timer kernel is
+installed into saved KRN/DTB and booted through kmon. Active partition bytes
+match the candidate; original #29 image/module backups remain intact.
+Post-install checks pass 55 exact neural inferences, 100 native-fence chains
+and 290 CTS cases (261 Pass/29 NotSupported), with zero resets/MMU errors/
+oopses. Batch-257 warm GPU/CPU medians are 1.288/0.398 ms; batch 4096 is
+9.878/6.520 ms. The kernel improvement persists after saved-slot boot;
+this small model remains faster on the CPU.
+
+Compute continues to use per-application `5a3fd8dd` plus the experimental
+opt-in flag. Selected Mesa and `/usr/local` are unchanged. Sway GPU
+composition and the known framebuffer/large-dispatch blockers remain open.
+No tests are left running.
+[Installed-kernel evidence and rollback](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).

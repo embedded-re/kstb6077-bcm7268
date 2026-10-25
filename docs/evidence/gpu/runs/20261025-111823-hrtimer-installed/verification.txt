@@ -1,0 +1,5 @@
+PASS: KRN /dev/mmcblk0p6 matches installed candidate f6d2bf27f7c509727fb8e597be0192984711885f04f84ed5593ef8e4363fb820
+PASS: DTB /dev/mmcblk0p7 matches installed candidate 07e4f0e72e712a0dfa3faa067e2a846c61cc313d66c0246319cfa101f9e28417
+PASS: rollback image/module backups intact; 44 original module files unchanged
+Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux
+PASS: no GPU validation processes or userspace watchdog running; Mesa selection unchanged

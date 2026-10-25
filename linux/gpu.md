@@ -7,6 +7,17 @@ carry these fixes, so this repo is their home. This page is the entry point:
 what is where, how to change it, how to test it, and where it stands. The
 history of how each piece was found is in [`README.md`](README.md) "GPU".
 
+Current installed state (2026-10-25): kernel **#30**, release
+`6.18.57-kstb-hrtimer-ab`, now boots from saved KRN/DTB with high-resolution
+timers enabled. Original #29 backups and modules are retained. The selected
+Mesa remains `fe7dda5e`; experimental compute uses the separately installed
+`5a3fd8dd` package with `V3D_COMPUTE33=1`. Post-install checks pass: 55 exact
+neural runs, 100 native-fence chains and 290 CTS cases (261 Pass/29
+NotSupported), with zero GPU resets/MMU errors/oopses. The latest neural
+warm medians are 1.288 ms at batch 257 and 9.878 ms at batch 4096; CPU
+references remain faster. No system-Mesa or compositor promotion occurred.
+[Permanent installation and verification](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
+
 ## Where things are
 
 | What | In the repo | On the box |

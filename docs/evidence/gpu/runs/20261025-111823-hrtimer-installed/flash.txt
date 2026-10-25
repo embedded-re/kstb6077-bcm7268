@@ -1,0 +1,2 @@
+KRN (/dev/mmcblk0p6): 13317120 bytes written and read back
+DTB (/dev/mmcblk0p7): 11776 bytes written and read back
