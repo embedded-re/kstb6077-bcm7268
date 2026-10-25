@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 11:58:15 +0200
-Subject: [PATCH 04/32] v3d: no buffer-texture acceleration on V3D 3.x
+Subject: [PATCH 04/33] v3d: no buffer-texture acceleration on V3D 3.x
 
 Lets Mesa take the CPU PBO upload path, which is correct: all
 teximage2d_pbo and texsubimage2d_pbo GLES3 cases pass.

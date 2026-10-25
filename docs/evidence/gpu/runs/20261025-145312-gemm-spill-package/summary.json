@@ -1,0 +1,29 @@
+{
+  "20261025-145135-gemm-spill-fixed": {
+    "gemm_rounds": 60,
+    "neural_rounds": 11,
+    "fence_chains": 100,
+    "resets": 0
+  },
+  "20261025-145312-gemm-spill-package": {
+    "gemm_rounds": 55,
+    "neural_rounds": 22,
+    "fence_chains": 100,
+    "resets": 0
+  },
+  "cts": {
+    "compute": {
+      "Pass": 195
+    },
+    "graphics-spill": {
+      "Pass": 200
+    }
+  },
+  "totals": {
+    "gemm_rounds": 115,
+    "neural_rounds": 33,
+    "fence_chains": 200,
+    "cts_pass": 395,
+    "resets": 0
+  }
+}

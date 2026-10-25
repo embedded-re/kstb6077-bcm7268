@@ -901,3 +901,34 @@ not execute. No final fence/recovery gate or large GEMM comparison runs.
 Scratch instrumentation is restored out of the inner Mesa tree and is not
 exported; installed kernel/Mesa defaults remain unchanged. No tests remain
 running. [Controlled evidence and reproducer](../docs/evidence/gpu/runs/20261025-143447-gemm-isolation/README.md).
+
+
+## Discarded-read spill boundary fixed (2026-10-25)
+
+Mesa patch 33 fixes the barrier-free spill corruption and the small tiled2
+hang reproducer. Before V3D 4.1, spill insertion waits for the MOV consuming
+an LDTMU response in r4. A dummy read discards that response, so there is no
+MOV. The old sequence tracker remained active and postponed a spill across
+basic-block boundaries: the naive GEMM initialization spill appears inside
+the accumulation loop in the generated VIR. The fix ends discarded reads
+at LDTMU while preserving the delayed boundary for consumed r4 results.
+
+Temporary forced-spill drivers now pass naive N=32/65 and shared1 N=8/32/64
+at minimum one/four spill slots. The previously hanging tiled2 N=32/64
+passes exact matrix/guard checks; its compiler output falls from 84 spills/
+109 fills to 8 spills/17 fills. These are measured compiler stats, not a
+large-GEMM throughput comparison.
+
+The exported **33-patch** series builds as **23.3.6-85a951cd**, installed
+alongside existing packages. Scratch plus numbered-package gates pass
+**115 exact GEMM rounds, 33 neural rounds, 200 native-fence chains and
+395 CTS cases** (195 compute, 200 focused graphics texture/spill), with
+zero resets/MMU errors/oopses. The inner Mesa tree is clean; forced-spill
+and compile-only instrumentation is absent from the exported production
+patch. Build and series checks pass.
+
+Kernel #30, selected Mesa fe7dda5e and system libraries remain unchanged.
+Use the new package per application with the existing compute opt-in flag.
+Large GEMM/NEON performance, 4×4 tiled shaders, long/reset stress and Sway
+acceleration remain unestablished here. No tests remain running; work stops
+at this milestone. [Cause, controlled dumps, regression and package evidence](../docs/evidence/gpu/runs/20261025-145312-gemm-spill-package/README.md).

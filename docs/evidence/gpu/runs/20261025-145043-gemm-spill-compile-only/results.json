@@ -1,0 +1,14 @@
+[
+  {
+    "test": "compile-naive",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "naive",
+      "32",
+      "2"
+    ],
+    "exit": 1,
+    "seconds": 0.50395796399971,
+    "expected_resets": 0
+  }
+]

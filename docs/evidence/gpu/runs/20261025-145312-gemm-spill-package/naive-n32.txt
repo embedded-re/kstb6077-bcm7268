@@ -1,0 +1,16 @@
+reference N 32 0.129 ms; binary-fraction inputs, full exact checks
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 149 inst, 2 threads, 1 loops, 19 uniforms, 12 max-temps, 0:0 spills:fills, 0 sfu-stalls, 149 inst-and-stalls, 12 nops
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+round 0 cold mode naive N 32 wall_ms 8.033769 host_submit_ms 7.816140 host_finish_ms 0.217629 process_cpu_ms 7.906295 render_ms 0.103889 clean_ms 0.027888 render_jobs 1 GFLOPS 0.008158 max_error 0 errors 0 checksum 0xc90f8ed303fa1383 PASS
+round 1 warm mode naive N 32 wall_ms 0.290147 host_submit_ms 0.143444 host_finish_ms 0.146703 process_cpu_ms 0.168297 render_ms 0.095815 clean_ms 0.025778 render_jobs 1 GFLOPS 0.225872 max_error 0 errors 0 checksum 0xae929555de9ff383 PASS
+round 2 warm mode naive N 32 wall_ms 0.262778 host_submit_ms 0.122889 host_finish_ms 0.139889 process_cpu_ms 0.144185 render_ms 0.095370 clean_ms 0.025926 render_jobs 1 GFLOPS 0.249397 max_error 0 errors 0 checksum 0x1114101c0d32d383 PASS
+round 3 warm mode naive N 32 wall_ms 0.273556 host_submit_ms 0.125371 host_finish_ms 0.148185 process_cpu_ms 0.149185 render_ms 0.096371 clean_ms 0.026962 render_jobs 1 GFLOPS 0.239571 max_error 0 errors 0 checksum 0x4895c250ac76b383 PASS
+round 4 warm mode naive N 32 wall_ms 0.261444 host_submit_ms 0.121814 host_finish_ms 0.139630 process_cpu_ms 0.143407 render_ms 0.095667 clean_ms 0.025852 render_jobs 1 GFLOPS 0.250669 max_error 0 errors 0 checksum 0xe5d5b5b011e49383 PASS
+round 5 warm mode naive N 32 wall_ms 0.262111 host_submit_ms 0.122963 host_finish_ms 0.139148 process_cpu_ms 0.144407 render_ms 0.095333 clean_ms 0.025593 render_jobs 1 GFLOPS 0.250031 max_error 0 errors 0 checksum 0x3642cd87d3a97383 PASS
+round 6 warm mode naive N 32 wall_ms 0.261296 host_submit_ms 0.122630 host_finish_ms 0.138666 process_cpu_ms 0.143852 render_ms 0.094777 clean_ms 0.025629 render_jobs 1 GFLOPS 0.250811 max_error 0 errors 0 checksum 0xbd8542ba41575383 PASS
+round 7 warm mode naive N 32 wall_ms 0.262703 host_submit_ms 0.123481 host_finish_ms 0.139222 process_cpu_ms 0.145408 render_ms 0.095704 clean_ms 0.025630 render_jobs 1 GFLOPS 0.249468 max_error 0 errors 0 checksum 0x45058b5a34fa3383 PASS
+round 8 warm mode naive N 32 wall_ms 0.260555 host_submit_ms 0.121925 host_finish_ms 0.138630 process_cpu_ms 0.143556 render_ms 0.094889 clean_ms 0.025815 render_jobs 1 GFLOPS 0.251525 max_error 0 errors 0 checksum 0x58b9514d7a0bb383 PASS
+round 9 warm mode naive N 32 wall_ms 0.259296 host_submit_ms 0.121333 host_finish_ms 0.137963 process_cpu_ms 0.142481 render_ms 0.094519 clean_ms 0.025667 render_jobs 1 GFLOPS 0.252746 max_error 0 errors 0 checksum 0x3dd8df2b4d2db383 PASS
+round 10 warm mode naive N 32 wall_ms 0.260000 host_submit_ms 0.121629 host_finish_ms 0.138371 process_cpu_ms 0.143075 render_ms 0.094555 clean_ms 0.025556 render_jobs 1 GFLOPS 0.252062 max_error 0 errors 0 checksum 0xd4036e260ae23383 PASS
+summary mode naive N 32 warm_rounds 10 median_ms 0.261777 GFLOPS 0.250350
+PASS: full matrix exact, guards intact

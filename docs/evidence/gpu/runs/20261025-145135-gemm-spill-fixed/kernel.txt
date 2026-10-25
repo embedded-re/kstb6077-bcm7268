@@ -1,0 +1,29 @@
+[12903.948553] kstb gemm isolation start
+[12903.958611] kstb gemm isolation force1-naive-n32
+[12903.969787] drm_sched_entity_init: called with uninitialized scheduler
+[12904.472277] kstb gemm isolation force1-naive-n65
+[12904.484551] drm_sched_entity_init: called with uninitialized scheduler
+[12904.985909] kstb gemm isolation force1-shared1-n8
+[12904.997293] drm_sched_entity_init: called with uninitialized scheduler
+[12905.499416] kstb gemm isolation force1-shared1-n32
+[12905.511177] drm_sched_entity_init: called with uninitialized scheduler
+[12906.013446] kstb gemm isolation force1-shared1-n64
+[12906.026048] drm_sched_entity_init: called with uninitialized scheduler
+[12906.527518] kstb gemm isolation force4-naive-n32
+[12906.539038] drm_sched_entity_init: called with uninitialized scheduler
+[12907.041522] kstb gemm isolation force4-naive-n65
+[12907.054185] drm_sched_entity_init: called with uninitialized scheduler
+[12907.555788] kstb gemm isolation force4-shared1-n8
+[12907.567367] drm_sched_entity_init: called with uninitialized scheduler
+[12908.074276] kstb gemm isolation force4-shared1-n32
+[12908.086120] drm_sched_entity_init: called with uninitialized scheduler
+[12908.588573] kstb gemm isolation force4-shared1-n64
+[12908.601195] drm_sched_entity_init: called with uninitialized scheduler
+[12909.102875] kstb gemm isolation tiled2-n32
+[12909.114268] drm_sched_entity_init: called with uninitialized scheduler
+[12910.020845] kstb gemm isolation tiled2-n64
+[12910.032814] drm_sched_entity_init: called with uninitialized scheduler
+[12910.938726] kstb gemm isolation sync-100
+[12910.949542] drm_sched_entity_init: called with uninitialized scheduler
+[12912.462324] kstb gemm isolation neural-post
+[12912.474009] drm_sched_entity_init: called with uninitialized scheduler

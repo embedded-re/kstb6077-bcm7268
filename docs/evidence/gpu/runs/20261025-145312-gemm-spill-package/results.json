@@ -1,0 +1,123 @@
+[
+  {
+    "test": "naive-n32",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "naive",
+      "32",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.5038691859990649,
+    "expected_resets": 0
+  },
+  {
+    "test": "naive-n65",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "naive",
+      "65",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.5038908160004212,
+    "expected_resets": 0
+  },
+  {
+    "test": "shared1-n64",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "shared1",
+      "64",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.5038218910012802,
+    "expected_resets": 0
+  },
+  {
+    "test": "tiled2-n32",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "tiled2",
+      "32",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.9077622899985727,
+    "expected_resets": 0
+  },
+  {
+    "test": "tiled2-n64",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "tiled2",
+      "64",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.9080327709998528,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b257",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "257",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.6051394900005107,
+    "expected_resets": 0
+  },
+  {
+    "test": "neural-b4096",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "4096",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 1.0098453699993115,
+    "expected_resets": 0
+  },
+  {
+    "test": "sync-100",
+    "args": [
+      "/opt/gpu-test/kstb-compute-sync-test",
+      "100",
+      "4097"
+    ],
+    "exit": 0,
+    "seconds": 1.5132625209989783,
+    "expected_resets": 0
+  },
+  {
+    "test": "cts-compute",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles31",
+      "/opt/gpu-test/cases/gles31-compute.txt",
+      "/root/gpu-runs/20261025-145312-gemm-spill-package/cts-compute"
+    ],
+    "exit": 0,
+    "seconds": 6.162006341000961,
+    "expected_resets": 0
+  },
+  {
+    "test": "cts-graphics-spill",
+    "args": [
+      "python3",
+      "/root/gpu-backups/kernel29-before-hrtimer-ab/cts-stage.py",
+      "gles3",
+      "/opt/gpu-test/cases/gles3-texture-units-spill.txt",
+      "/root/gpu-runs/20261025-145312-gemm-spill-package/cts-graphics-spill"
+    ],
+    "exit": 0,
+    "seconds": 206.2864868529996,
+    "expected_resets": 0
+  }
+]

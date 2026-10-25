@@ -1,0 +1,7 @@
+gles3: 200 cases, 0 done before, 200 to run
+  50 run, 150 left, 5 s
+  100 run, 100 left, 14 s
+  150 run, 50 left, 32 s
+  200 run, 0 left, 205 s
+200 cases: Pass 200
+PASS: 200 gles3 cases; baseline recorded

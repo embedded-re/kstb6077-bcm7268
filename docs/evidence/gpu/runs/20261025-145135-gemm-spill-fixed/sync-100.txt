@@ -1,0 +1,10 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 52 inst, 2 threads, 0 loops, 12 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 52 inst-and-stalls, 6 nops
+SHADER-DB-GLSL4 - MESA_SHADER_COMPUTE shader: 58 inst, 2 threads, 0 loops, 13 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 58 inst-and-stalls, 6 nops
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 52 inst, 2 threads, 0 loops, 12 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 52 inst-and-stalls, 6 nops
+SHADER-DB-GLSL4 - MESA_SHADER_COMPUTE shader: 58 inst, 2 threads, 0 loops, 13 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 58 inst-and-stalls, 6 nops
+25/100 chains exact, 4097 words/buffer, guards checked
+50/100 chains exact, 4097 words/buffer, guards checked
+75/100 chains exact, 4097 words/buffer, guards checked
+100/100 chains exact, 4097 words/buffer, guards checked
+PASS: compute native-fence chains, exact SSBOs and guards

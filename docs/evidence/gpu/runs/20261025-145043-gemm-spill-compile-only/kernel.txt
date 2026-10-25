@@ -1,0 +1,3 @@
+[12851.543915] kstb gemm isolation start
+[12851.553853] kstb gemm isolation compile-naive
+[12851.564716] drm_sched_entity_init: called with uninitialized scheduler

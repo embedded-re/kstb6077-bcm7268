@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Sun, 25 Oct 2026 08:54:45 +0100
-Subject: [PATCH 31/32] v3d: submit pending writers before orphaning resource
+Subject: [PATCH 31/33] v3d: submit pending writers before orphaning resource
  storage
 
 ---

@@ -1,0 +1,31 @@
+[13000.548166] kstb gemm isolation start
+[13000.558592] kstb gemm isolation naive-n32
+[13000.569586] drm_sched_entity_init: called with uninitialized scheduler
+[13001.071332] kstb gemm isolation naive-n65
+[13001.083243] drm_sched_entity_init: called with uninitialized scheduler
+[13001.584286] kstb gemm isolation shared1-n64
+[13001.596320] drm_sched_entity_init: called with uninitialized scheduler
+[13002.097494] kstb gemm isolation tiled2-n32
+[13002.108698] drm_sched_entity_init: called with uninitialized scheduler
+[13003.014928] kstb gemm isolation tiled2-n64
+[13003.027009] drm_sched_entity_init: called with uninitialized scheduler
+[13003.932373] kstb gemm isolation neural-b257
+[13003.944199] drm_sched_entity_init: called with uninitialized scheduler
+[13004.547081] kstb gemm isolation neural-b4096
+[13004.567259] drm_sched_entity_init: called with uninitialized scheduler
+[13005.566611] kstb gemm isolation sync-100
+[13005.577396] drm_sched_entity_init: called with uninitialized scheduler
+[13007.089263] kstb gemm isolation cts-compute
+[13007.556915] drm_sched_entity_init: called with uninitialized scheduler
+[13007.606476] drm_sched_entity_init: called with uninitialized scheduler
+[13009.492183] drm_sched_entity_init: called with uninitialized scheduler
+[13009.540742] drm_sched_entity_init: called with uninitialized scheduler
+[13010.428512] drm_sched_entity_init: called with uninitialized scheduler
+[13010.476531] drm_sched_entity_init: called with uninitialized scheduler
+[13011.567846] drm_sched_entity_init: called with uninitialized scheduler
+[13011.616084] drm_sched_entity_init: called with uninitialized scheduler
+[13013.262283] kstb gemm isolation cts-graphics-spill
+[13013.733492] drm_sched_entity_init: called with uninitialized scheduler
+[13018.578029] drm_sched_entity_init: called with uninitialized scheduler
+[13027.323128] drm_sched_entity_init: called with uninitialized scheduler
+[13045.775410] drm_sched_entity_init: called with uninitialized scheduler

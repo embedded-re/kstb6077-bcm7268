@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 11:58:15 +0200
-Subject: [PATCH 06/32] v3d: keep loaded data in the RCL dummy store, separate
+Subject: [PATCH 06/33] v3d: keep loaded data in the RCL dummy store, separate
  stencil on 3.3
 
 flush_last_load()'s dummy NONE store cleared buffers loaded before it;

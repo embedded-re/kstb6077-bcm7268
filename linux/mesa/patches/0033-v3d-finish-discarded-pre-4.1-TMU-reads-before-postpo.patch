@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sun, 25 Oct 2026 14:52:37 +0100
+Subject: [PATCH 33/33] v3d: finish discarded pre-4.1 TMU reads before
+ postponing spills
+
+---
+ src/broadcom/compiler/vir_register_allocate.c | 27 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/src/broadcom/compiler/vir_register_allocate.c b/src/broadcom/compiler/vir_register_allocate.c
+index ade0fd5..90c6c2f 100644
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -154,13 +154,26 @@ is_end_of_tmu_sequence(const struct v3d_device_info *devinfo,
+                  * copied from r4 by the following MOV. A postponed spill
+                  * must not clobber r4 between that signal and its consumer.
+                  */
+-                if (is_ldtmu)
+-                        return false;
+-                is_ldtmu = inst->qpu.alu.mul.op == V3D_QPU_M_MOV &&
+-                           inst->src[0].file == QFILE_MAGIC &&
+-                           inst->src[0].index == V3D_QPU_WADDR_R4 &&
+-                           inst->link.prev != &block->instructions &&
+-                           ((struct qinst *)inst->link.prev)->qpu.sig.ldtmu;
++                if (is_ldtmu) {
++                        /* A dummy read may discard r4 entirely. Finish that
++                         * sequence here: waiting for a nonexistent MOV can
++                         * postpone a spill across a control-flow boundary.
++                         */
++                        if (inst->link.next != &block->instructions) {
++                                struct qinst *next = (struct qinst *)inst->link.next;
++                                if (next->qpu.type == V3D_QPU_INSTR_TYPE_ALU &&
++                                    next->qpu.alu.mul.op == V3D_QPU_M_MOV &&
++                                    next->src[0].file == QFILE_MAGIC &&
++                                    next->src[0].index == V3D_QPU_WADDR_R4)
++                                        return false;
++                        }
++                } else {
++                        is_ldtmu = inst->qpu.alu.mul.op == V3D_QPU_M_MOV &&
++                                   inst->src[0].file == QFILE_MAGIC &&
++                                   inst->src[0].index == V3D_QPU_WADDR_R4 &&
++                                   inst->link.prev != &block->instructions &&
++                                   ((struct qinst *)inst->link.prev)->qpu.sig.ldtmu;
++                }
+         }
+         if (!is_tmuwt && !is_ldtmu)
+                 return false;

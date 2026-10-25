@@ -1,0 +1,27 @@
+diff --git a/src/broadcom/compiler/vir_register_allocate.c b/src/broadcom/compiler/vir_register_allocate.c
+index ade0fd5..bb16693 100644
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -1488,7 +1488,8 @@ v3d_register_allocate(struct v3d_compile *c)
+         /* Debug option to force a bit of TMU spilling, for running
+          * across conformance tests to make sure that spilling works.
+          */
+-        const int force_register_spills = 0;
++        const int force_register_spills =
++                c->s->info.stage == MESA_SHADER_COMPUTE ? 1 : 0;
+         if (force_register_spills > 0)
+                 c->max_tmu_spills = UINT32_MAX;
+ 
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index c95c9b2..00a5b79 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1423,6 +1423,8 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+         v3d_predraw_check_stage_inputs(pctx, PIPE_SHADER_COMPUTE);
+         v3d_update_compiled_cs(v3d);
+         struct v3d_compiled_shader *cs = v3d->prog.compute;
++        fprintf(stderr, "COMPILE-ONLY: compute submission suppressed\n");
++        return;
+         if (!cs->resource || !wg_size || wg_size > 128 ||
+             cs->prog_data.compute->shared_size > 16384) {
+                 fprintf(stderr, "compute33: unsupported experimental dispatch\n");

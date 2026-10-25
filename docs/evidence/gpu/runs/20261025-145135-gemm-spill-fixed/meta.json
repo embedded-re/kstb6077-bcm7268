@@ -1,0 +1,21 @@
+{
+  "build": "23.3.6-5a3fd8dd",
+  "uname": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "selected": "23.3.6-fe7dda5e",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/mesa/23.3.6-5a3fd8dd/lib",
+    "LIBGL_DRIVERS_PATH": "/opt/mesa/23.3.6-5a3fd8dd/lib/dri",
+    "V3D_COMPUTE33": "1",
+    "MESA_SHADER_CACHE_DISABLE": "true"
+  },
+  "sha256": {
+    "/opt/gpu-test/kstb-neural-test": "80fa757e1e11661de5af3ceaf174f52872c59b7771bf25c45bda179ee0efb50f",
+    "/opt/gpu-test/kstb-gemm-test": "a22a4c4503011ce440a16cb8a20ac93b7d45dd15c844e13e76af3b37329910d3",
+    "/opt/gpu-test/kstb-compute-sync-test": "abb7bb38464a96913eeb5b8f5d9acca4efb539a8445d65b0ed372fc61dc99d9e",
+    "/opt/gpu-test/kstb-reset-probe": "c9e42d64b5dfd179b51bebd05674a81314721745e44ea3d1a3b6bc4cab3c803c",
+    "/opt/mesa/23.3.6-5a3fd8dd/lib/dri/v3d_dri.so": "fa0fa078a2a15ee7e4daebcd03e469370be6a72f2855ed6758c5f1dc8349ed08",
+    "/tmp/kstb-gemm-fixed1/v3d_dri.so": "457577b68aca2715a9bd9c3fecde17dc43069155ab0bdcba0bb3c4edd0020f8b",
+    "/tmp/kstb-gemm-fixed4/v3d_dri.so": "264f1dcb46fef579fd2179a70277d5aa86f777169201f5d868646780611d006f",
+    "/tmp/kstb-gemm-fixed/v3d_dri.so": "a208a0ecd280bd55e7aae9b67bca9b2a508386d9ef0ae34b4a37c586ec37caa9"
+  }
+}

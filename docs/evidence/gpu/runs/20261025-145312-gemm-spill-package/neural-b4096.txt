@@ -1,0 +1,37 @@
+dense 32 -> 16 ReLU -> 8, batch 4096; CPU 6.698 ms; class checksum 0x726355ab
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+local size 128; 11 rounds; input upload/readback excluded from GPU timing
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 0 (cold): CPU 6.698 ms; dispatch1 host 16.599 ms; dispatch2 host 9.922 ms; finish 0.099 ms; GPU dispatch + synchronization 26.620 ms; GPU class checksum 0x726355ab; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 1 (warm): CPU 6.500 ms; dispatch1 host 11.474 ms; dispatch2 host 3.534 ms; finish 0.085 ms; GPU dispatch + synchronization 15.092 ms; GPU class checksum 0xd45933fd; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 2 (warm): CPU 6.507 ms; dispatch1 host 9.113 ms; dispatch2 host 2.481 ms; finish 0.085 ms; GPU dispatch + synchronization 11.678 ms; GPU class checksum 0x3a516644; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 3 (warm): CPU 6.503 ms; dispatch1 host 7.144 ms; dispatch2 host 2.527 ms; finish 0.083 ms; GPU dispatch + synchronization 9.754 ms; GPU class checksum 0x38c2b521; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 4 (warm): CPU 6.525 ms; dispatch1 host 7.240 ms; dispatch2 host 2.501 ms; finish 0.083 ms; GPU dispatch + synchronization 9.824 ms; GPU class checksum 0x5adaa18a; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 5 (warm): CPU 6.511 ms; dispatch1 host 7.270 ms; dispatch2 host 2.503 ms; finish 0.086 ms; GPU dispatch + synchronization 9.859 ms; GPU class checksum 0xc5da0720; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 6 (warm): CPU 6.473 ms; dispatch1 host 7.214 ms; dispatch2 host 2.515 ms; finish 0.089 ms; GPU dispatch + synchronization 9.818 ms; GPU class checksum 0x66d56764; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 7 (warm): CPU 6.506 ms; dispatch1 host 7.211 ms; dispatch2 host 2.544 ms; finish 0.083 ms; GPU dispatch + synchronization 9.838 ms; GPU class checksum 0x2a594f71; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 8 (warm): CPU 6.477 ms; dispatch1 host 7.252 ms; dispatch2 host 2.502 ms; finish 0.085 ms; GPU dispatch + synchronization 9.838 ms; GPU class checksum 0xd13ea040; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 9 (warm): CPU 6.514 ms; dispatch1 host 7.241 ms; dispatch2 host 2.508 ms; finish 0.088 ms; GPU dispatch + synchronization 9.837 ms; GPU class checksum 0xa16487f4; 4096 classification checks; PASS
+hidden: 65536 values, max absolute error 0, 0 errors; guards checked
+logits: 32768 values, max absolute error 0, 0 errors; guards checked
+round 10 (warm): CPU 6.502 ms; dispatch1 host 7.264 ms; dispatch2 host 2.516 ms; finish 0.089 ms; GPU dispatch + synchronization 9.870 ms; GPU class checksum 0x7473e8a8; 4096 classification checks; PASS
+warm GPU ms: min 9.754 median 9.838 max 15.092; 10 checked rounds

@@ -1,0 +1,16 @@
+reference N 64 0.825 ms; binary-fraction inputs, full exact checks
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 125 inst, 2 threads, 1 loops, 40 uniforms, 23 max-temps, 0:0 spills:fills, 0 sfu-stalls, 125 inst-and-stalls, 9 nops
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+round 0 cold mode shared1 N 64 wall_ms 8.942472 host_submit_ms 8.791398 host_finish_ms 0.151074 process_cpu_ms 8.466741 render_ms 0.416074 clean_ms 0.105037 render_jobs 4 GFLOPS 0.058629 max_error 0 errors 0 checksum 0x94c364e20e074383 PASS
+round 1 warm mode shared1 N 64 wall_ms 1.252850 host_submit_ms 1.111776 host_finish_ms 0.141074 process_cpu_ms 0.789889 render_ms 0.417592 clean_ms 0.102186 render_jobs 4 GFLOPS 0.418476 max_error 0 errors 0 checksum 0x792ba76d714a0383 PASS
+round 2 warm mode shared1 N 64 wall_ms 1.237295 host_submit_ms 1.101925 host_finish_ms 0.135370 process_cpu_ms 0.753889 render_ms 0.407852 clean_ms 0.102112 render_jobs 4 GFLOPS 0.423737 max_error 0 errors 0 checksum 0x7a472c2a02590383 PASS
+round 3 warm mode shared1 N 64 wall_ms 1.210443 host_submit_ms 1.074147 host_finish_ms 0.136296 process_cpu_ms 0.724333 render_ms 0.407444 clean_ms 0.102111 render_jobs 4 GFLOPS 0.433137 max_error 0 errors 0 checksum 0xfa3a9834dc648383 PASS
+round 4 warm mode shared1 N 64 wall_ms 1.213703 host_submit_ms 1.079259 host_finish_ms 0.134444 process_cpu_ms 0.729000 render_ms 0.407814 clean_ms 0.102629 render_jobs 4 GFLOPS 0.431974 max_error 0 errors 0 checksum 0x13f52a75e1f74383 PASS
+round 5 warm mode shared1 N 64 wall_ms 1.213295 host_submit_ms 1.076443 host_finish_ms 0.136852 process_cpu_ms 0.727593 render_ms 0.407111 clean_ms 0.102001 render_jobs 4 GFLOPS 0.432119 max_error 0 errors 0 checksum 0x26787c93020e0383 PASS
+round 6 warm mode shared1 N 64 wall_ms 1.209591 host_submit_ms 1.071443 host_finish_ms 0.138148 process_cpu_ms 0.725185 render_ms 0.407073 clean_ms 0.101888 render_jobs 4 GFLOPS 0.433442 max_error 0 errors 0 checksum 0xde6b1baa3cef8383 PASS
+round 7 warm mode shared1 N 64 wall_ms 1.221184 host_submit_ms 1.083147 host_finish_ms 0.138037 process_cpu_ms 0.735556 render_ms 0.407001 clean_ms 0.102073 render_jobs 4 GFLOPS 0.429328 max_error 0 errors 0 checksum 0x86cd40c40c1b8383 PASS
+round 8 warm mode shared1 N 64 wall_ms 1.212480 host_submit_ms 1.074406 host_finish_ms 0.138074 process_cpu_ms 0.724294 render_ms 0.411668 clean_ms 0.102113 render_jobs 4 GFLOPS 0.432410 max_error 0 errors 0 checksum 0xd1dcc8362522a383 PASS
+round 9 warm mode shared1 N 64 wall_ms 1.203035 host_submit_ms 1.067813 host_finish_ms 0.135222 process_cpu_ms 0.721556 render_ms 0.402630 clean_ms 0.102443 render_jobs 4 GFLOPS 0.435804 max_error 0 errors 0 checksum 0x94bb7e25bf4fc383 PASS
+round 10 warm mode shared1 N 64 wall_ms 1.211850 host_submit_ms 1.074184 host_finish_ms 0.137666 process_cpu_ms 0.718705 render_ms 0.413111 clean_ms 0.102149 render_jobs 4 GFLOPS 0.432634 max_error 0 errors 0 checksum 0x94c20244ff232383 PASS
+summary mode shared1 N 64 warm_rounds 10 median_ms 1.212887 GFLOPS 0.432264
+PASS: full matrix exact, guards intact

@@ -1,0 +1,14 @@
+diff --git a/src/broadcom/compiler/vir_register_allocate.c b/src/broadcom/compiler/vir_register_allocate.c
+index ade0fd5..bb16693 100644
+--- a/src/broadcom/compiler/vir_register_allocate.c
++++ b/src/broadcom/compiler/vir_register_allocate.c
+@@ -1488,7 +1488,8 @@ v3d_register_allocate(struct v3d_compile *c)
+         /* Debug option to force a bit of TMU spilling, for running
+          * across conformance tests to make sure that spilling works.
+          */
+-        const int force_register_spills = 0;
++        const int force_register_spills =
++                c->s->info.stage == MESA_SHADER_COMPUTE ? 1 : 0;
+         if (force_register_spills > 0)
+                 c->max_tmu_spills = UINT32_MAX;
+ 
