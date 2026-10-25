@@ -1,0 +1,4 @@
+[31505.902377] drm_sched_entity_init: called with uninitialized scheduler
+[31507.549528] drm_sched_entity_init: called with uninitialized scheduler
+[31507.592780] drm_sched_entity_init: called with uninitialized scheduler
+[31507.616490] drm_sched_entity_init: called with uninitialized scheduler

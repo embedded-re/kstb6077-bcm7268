@@ -255,7 +255,7 @@ before chronyd sets the clock.
 ### Manual graphical desktop
 
 The normal system Mesa driver is now installed as signed APK packages
-`mesa*-23.3.6-r33` under `/usr`. It uses our V3D 3.3 patch series; GUI apps
+`mesa*-23.3.6-r34` under `/usr`. It uses our V3D 3.3 patch series; GUI apps
 need no `/opt` driver paths or per-app environment overrides. From the box's
 root console, run `su -l kstb`, then `dbus-run-session sway` in the user shell.
 Boot still stops at the console.
@@ -267,9 +267,11 @@ terminal or app leaves the desktop running. GLES rendering and ARGB8888
 output, application resizing/fullscreen/exit, launcher, restart, CPU fallback
 and a restore of the previous Mesa installation are tested.
 [Native driver and desktop evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
-The first Firefox/WebGL demonstration exposed repeated GPU hangs; browser
-hardware acceleration is not ready yet.
-[Failed browser test](../docs/evidence/gpu/runs/20261025-193654-firefox-demo/README.md).
+Firefox's chunked-loading GPU hang was isolated to threaded vertex register
+spills. Mesa patch 0034 uses a single-thread fallback for those shaders while
+preserving GPU WebRender and WebGL. The installed native driver passes the original demo, browsing and three
+reload/scroll cycles with no GPU faults; 235 focused graphics cases also pass.
+[Browser fix and evidence](../docs/evidence/gpu/firefox-vertex-spills-20261025.md).
 See [gpu.md](gpu.md) for the maintained build and rollback workflow.
 
 ### The HDMI console and `tv`

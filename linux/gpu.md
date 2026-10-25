@@ -8,18 +8,20 @@ what is where, how to change it, how to test it, and where it stands. The
 history of how each piece was found is in [`README.md`](README.md) "GPU".
 
 Current installed state (2026-10-25): kernel **#30**, release
-`6.18.57-kstb-hrtimer-ab`. The system driver is now **Mesa 23.3.6-r33**, six
-signed APK packages installed under **`/usr`**, using the existing 33-patch
-series (inner Mesa commit `3263da5`). Old `/usr/local` graphics files are
+`6.18.57-kstb-hrtimer-ab`. The system driver is now **Mesa 23.3.6-r34**, six
+signed APK packages installed under **`/usr`**, using the 34-patch
+series (inner Mesa commit `8b05308`). Old `/usr/local` graphics files are
 parked in the rollback backup. `/opt/mesa` is retained for explicit debug
 comparisons and is not the normal desktop's driver source.
 
-**Browser limitation:** the first Firefox 151 demonstration with a local
-WebGL page failed with 24 GPU resets. The browser was stopped; startup,
-WebRender, WebGL and compositor interaction are not yet isolated. Browser
-hardware acceleration is not reliable/validated. A new independent test
-abort guard passes synthetic process tests; no browser retry has occurred.
-[Failed browser attempt and monitor correction](../docs/evidence/gpu/runs/20261025-193654-firefox-demo/README.md).
+**Firefox repair:** the chunked loading was accompanied by GPU hangs in
+multi-threaded vertex shaders that spill registers through the TMU. Patch
+0034 makes those shaders retry with one thread on V3D 3.3; other shaders
+retain their threading policy. The installed native driver passes hardware WebRender, WebGL, the original
+animated demo, browsing and three reload/scroll cycles without GPU faults.
+The candidate also passes 235 focused graphics cases and fence/MSAA/GLES1 checks. This is a
+workaround for unsafe threaded vertex spills, not a complete repair of all
+scratch I/O paths. [Diagnosis and test evidence](../docs/evidence/gpu/firefox-vertex-spills-20261025.md).
 
 Start the normal desktop manually from the box's root console:
 
@@ -47,7 +49,7 @@ restart and CPU fallback pass. Package migration additionally passes GLES
 restore of the previous installation followed by native reinstallation.
 Zero GPU faults occur in these runs. Full conformance was not repeated for
 the native-prefix/X11 frontend build. Xwayland and other larger GUI apps remain
-untested; Firefox failed as described above. Compute optimization stays
+untested. Firefox testing is described above. Compute optimization stays
 parked after its value gate.
 [System installation, desktop and rollback evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
 [Earlier colour-depth evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).
@@ -60,7 +62,7 @@ parked after its value gate.
 | --- | --- | --- |
 | Kernel patches (`v3d`) | [`patches/`](patches) 0001, 0003–0005 (0002 is kstb-drm) | in the kernel on `KRN` |
 | Mesa patch series | [`mesa/patches/`](mesa/patches), one patch per fix | |
-| System Mesa | [`mesa/system/`](mesa/system/) (cross build and native APK packaging) | `/usr/lib`, `/usr/lib/dri`; `mesa*-23.3.6-r33` |
+| System Mesa | [`mesa/system/`](mesa/system/) (cross build and native APK packaging) | `/usr/lib`, `/usr/lib/dri`; `mesa*-23.3.6-r34` |
 | Archived debug builds | [`mesa/Makefile`](mesa/Makefile) | `/opt/mesa/<id>`, `/opt/mesa/current` selects a debug build |
 | Debug Mesa installer | [`rootfs/usr/sbin/kstb-mesa`](rootfs/usr/sbin/kstb-mesa) | `/usr/sbin/kstb-mesa` |
 | Test runner, tests, case lists | [`gpu-test/`](gpu-test) | `/opt/gpu-test` |
@@ -70,7 +72,7 @@ parked after its value gate.
 `linux/build/` (not tracked) holds the work trees: `mesa` (git, branch
 `kstb`), `mesa-build`, `sysroot`, `out/mesa-<id>.tar`, `gpu-test`.
 
-The native Mesa packages are pinned to `23.3.6-r33` in `/etc/apk/world`,
+The native Mesa packages are pinned to `23.3.6-r34` in `/etc/apk/world`,
 so a normal package upgrade preserves the V3D 3.3 driver. They replace the
 distribution's Mesa 26 packages, which do not support this GPU. The unsupported
 Rusticl package was removed. `tv` remains an optional terminal kiosk;
@@ -93,7 +95,7 @@ records SONAME/pkg-config dependencies, preserves DRI hardlinks and excludes
 the bundled Wayland protocol definitions. Use a fresh output directory.
 The signing private key remains outside git; the public key goes in
 `/etc/apk/keys`. Installed signed packages are retained in
-`/var/cache/kstb/packages/mesa-23.3.6-r33`.
+`/var/cache/kstb/packages/mesa-23.3.6-r34`.
 
 The actual system rollback is documented with the evidence above. Its
 package restore and original local-library hashes were tested before the
@@ -207,6 +209,7 @@ Mesa ([`mesa/patches/`](mesa/patches)):
 | 0021 | vector TMU loads on 3.3 only at the vector's alignment (8 bytes vec2, 16 vec3/vec4); the vectorizer's vec2/vec3 loads at 4-byte offsets read wrong data: 6 `ubo.random.scalar_types` cases, `gles3-ubo-vec-align.txt` |
 | 0022 | a sampler view of one level samples without a mip filter: `GL_TEXTURE_MAX_LEVEL` is the max LOD clamp on 3.3, at the base level that clamp is 0 and the TMU then used the magnification filter for minified lookups (a face edge without the neighbouring face): `texture.mipmap.cube.max_level.linear_nearest`, `gles3-mipmap-cube.txt` |
 | 0023 | threaded TMU stores and register spills: a discarded read supplies a response before a store-only thread switch; postponed spills wait until the last TMU result has been copied from `r4`. Focused tests and full GLES2/GLES3/EGL pass on `23.3.6-cd573075`; see [`gpu-compute.md`](gpu-compute.md). |
+| 0034 | V3D 3.3 vertex shaders requiring threaded TMU register spills retry at one thread, avoiding Firefox WebRender hangs. Non-spilling vertex shaders retain multithreading. |
 
 ## Where it stands
 

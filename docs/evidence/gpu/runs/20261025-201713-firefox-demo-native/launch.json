@@ -1,0 +1,12 @@
+[
+  "env",
+  "XDG_RUNTIME_DIR=/tmp/xdg-1000",
+  "WAYLAND_DISPLAY=wayland-1",
+  "firefox",
+  "--no-remote",
+  "--profile",
+  "/home/kstb/.mozilla/firefox/demo-native-201713",
+  "--marionette",
+  "--remote-allow-system-access",
+  "file:///usr/share/kstb/browser-demo/index.html"
+]

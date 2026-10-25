@@ -1,0 +1,6 @@
+/root/gpu-system-prep/r34-packages/mesa-23.3.6-r34.apk: OK
+/root/gpu-system-prep/r34-packages/mesa-dev-23.3.6-r34.apk: OK
+/root/gpu-system-prep/r34-packages/mesa-egl-23.3.6-r34.apk: OK
+/root/gpu-system-prep/r34-packages/mesa-gbm-23.3.6-r34.apk: OK
+/root/gpu-system-prep/r34-packages/mesa-gl-23.3.6-r34.apk: OK
+/root/gpu-system-prep/r34-packages/mesa-gles-23.3.6-r34.apk: OK

@@ -1,0 +1,62 @@
+[
+  {
+    "before": {
+      "frames": 477,
+      "checks": 8,
+      "failures": 0,
+      "fps": 42.297023469929734,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    },
+    "after": {
+      "frames": 604,
+      "checks": 11,
+      "failures": 0,
+      "fps": 41.3215009543299,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    }
+  },
+  {
+    "before": {
+      "frames": 566,
+      "checks": 10,
+      "failures": 0,
+      "fps": 46.47920055775044,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    },
+    "after": {
+      "frames": 699,
+      "checks": 12,
+      "failures": 0,
+      "fps": 44.24952800503457,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    }
+  },
+  {
+    "before": {
+      "frames": 545,
+      "checks": 10,
+      "failures": 0,
+      "fps": 37.99012256813228,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    },
+    "after": {
+      "frames": 659,
+      "checks": 11,
+      "failures": 0,
+      "fps": 35.98128972934073,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    }
+  }
+]

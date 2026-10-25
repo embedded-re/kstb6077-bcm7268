@@ -1,0 +1,7 @@
+(1/6) Downgrading mesa (23.3.6-r34 -> 23.3.6-r33)
+(2/6) Downgrading mesa-gbm (23.3.6-r34 -> 23.3.6-r33)
+(3/6) Downgrading mesa-egl (23.3.6-r34 -> 23.3.6-r33)
+(4/6) Downgrading mesa-gl (23.3.6-r34 -> 23.3.6-r33)
+(5/6) Downgrading mesa-gles (23.3.6-r34 -> 23.3.6-r33)
+(6/6) Downgrading mesa-dev (23.3.6-r34 -> 23.3.6-r33)
+OK: 1986.5 MiB in 751 packages

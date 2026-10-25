@@ -1,0 +1,1 @@
+RuntimeError('{"error": "javascript error", "message": "TypeError: can\'t access property \\"click\\", document.getElementById(...) is null", "stacktrace": "@https://www.wikipedia.org/:2:16\\n@https://www.wikipedia.org/:3:8\\n"}')

@@ -1,0 +1,13 @@
+[
+  "env",
+  "XDG_RUNTIME_DIR=/tmp/xdg-1000",
+  "WAYLAND_DISPLAY=wayland-1",
+  "LIBGL_DRIVERS_PATH=/var/tmp/kstb-firefox-fixed/dri",
+  "firefox",
+  "--no-remote",
+  "--profile",
+  "/home/kstb/.mozilla/firefox/demo-candidate-201535",
+  "--marionette",
+  "--remote-allow-system-access",
+  "file:///usr/share/kstb/browser-demo/index.html"
+]

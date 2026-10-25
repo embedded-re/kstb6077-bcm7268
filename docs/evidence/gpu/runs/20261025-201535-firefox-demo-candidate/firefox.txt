@@ -1,0 +1,52 @@
+WARNING: Glycin running without sandbox.
+[Parent 30251, Main Thread] WARNING: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+: 'glib warning', file ./../../../toolkit/xre/nsSigHandlers.cpp:200
+
+** (firefox:30251): WARNING **: 20:15:38.757: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+
+WARNING: Glycin running without sandbox.
+Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 2854 (t=8.76341) [GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 2854
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=7.6625) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=7.6625) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.1985) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=7.6625) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.1985) |[C2][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=45.1425) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"
+GetShaderInfoLog() ->
+0:2(12): error: extension `GL_EXT_shader_texture_lod' unsupported in fragment shader
+
+GetShaderSource() ->
+
+#extension GL_EXT_shader_texture_lod: require
+void main() {}
+
+Crash Annotation GraphicsCriticalError: |[C0][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=7.6625) |[C1][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=21.1985) |[C2][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=45.1425) |[C3][GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3" (t=49.4905) [GFX1-]: Couldn't sanitize GL_RENDERER "V3D 3.3"

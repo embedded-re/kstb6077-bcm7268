@@ -1,0 +1,7 @@
+(1/6) Upgrading mesa (23.3.6-r33 -> 23.3.6-r34)
+(2/6) Upgrading mesa-gbm (23.3.6-r33 -> 23.3.6-r34)
+(3/6) Upgrading mesa-egl (23.3.6-r33 -> 23.3.6-r34)
+(4/6) Upgrading mesa-gl (23.3.6-r33 -> 23.3.6-r34)
+(5/6) Upgrading mesa-gles (23.3.6-r33 -> 23.3.6-r34)
+(6/6) Upgrading mesa-dev (23.3.6-r33 -> 23.3.6-r34)
+OK: 1986.5 MiB in 751 packages

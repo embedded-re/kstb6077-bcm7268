@@ -1,0 +1,2 @@
+kstb kstb 2755 /home/kstb/.mozilla
+kstb kstb 2755 /home/kstb/.mozilla/firefox

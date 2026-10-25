@@ -1,0 +1,1 @@
+180-second outer harness limit interrupted the suite; no GPU fault. Remaining cases rerun with 600-second limit.

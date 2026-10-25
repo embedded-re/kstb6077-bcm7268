@@ -6,7 +6,7 @@ from pathlib import Path
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('stage', type=Path)
 p.add_argument('output', type=Path)
-p.add_argument('--version', default='23.3.6-r33')
+p.add_argument('--version', default='23.3.6-r34')
 p.add_argument('--sign-key', type=Path)
 a = p.parse_args()
 assert (a.stage/'usr/lib/dri/v3d_dri.so').is_file()

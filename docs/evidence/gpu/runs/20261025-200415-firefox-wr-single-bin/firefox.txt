@@ -1,0 +1,62 @@
+WARNING: Glycin running without sandbox.
+[Parent 27530, Main Thread] WARNING: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+: 'glib warning', file ./../../../toolkit/xre/nsSigHandlers.cpp:200
+
+** (firefox:27530): WARNING **: 20:04:18.880: Failed to create DBus proxy for org.a11y.Bus: Cannot autolaunch D-Bus without X11 $DISPLAY
+
+WARNING: Glycin running without sandbox.
+SHADER-DB-clear color FS - MESA_SHADER_FRAGMENT shader: 6 inst, 1 threads, 0 loops, 4 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 6 inst-and-stalls, 0 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL1 - MESA_SHADER_FRAGMENT shader: 112 inst, 1 threads, 0 loops, 5 uniforms, 37 max-temps, 0:0 spills:fills, 0 sfu-stalls, 112 inst-and-stalls, 0 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX shader: 260 inst, 1 threads, 0 loops, 46 uniforms, 45 max-temps, 0:0 spills:fills, 0 sfu-stalls, 260 inst-and-stalls, 5 nops
+SHADER-DB-GLSL1 - MESA_SHADER_VERTEX_BIN shader: 53 inst, 1 threads, 0 loops, 16 uniforms, 14 max-temps, 0:0 spills:fills, 0 sfu-stalls, 53 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL4 - MESA_SHADER_FRAGMENT shader: 147 inst, 2 threads, 1 loops, 11 uniforms, 32 max-temps, 0:0 spills:fills, 0 sfu-stalls, 147 inst-and-stalls, 11 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX shader: 196 inst, 2 threads, 1 loops, 34 uniforms, 30 max-temps, 0:0 spills:fills, 0 sfu-stalls, 196 inst-and-stalls, 14 nops
+SHADER-DB-GLSL4 - MESA_SHADER_VERTEX_BIN shader: 61 inst, 1 threads, 0 loops, 20 uniforms, 14 max-temps, 0:0 spills:fills, 0 sfu-stalls, 61 inst-and-stalls, 2 nops
+SHADER-DB-clear color FS - MESA_SHADER_FRAGMENT shader: 6 inst, 1 threads, 0 loops, 4 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 6 inst-and-stalls, 0 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL7 - MESA_SHADER_FRAGMENT shader: 202 inst, 1 threads, 0 loops, 6 uniforms, 39 max-temps, 0:0 spills:fills, 0 sfu-stalls, 202 inst-and-stalls, 8 nops
+SHADER-DB-GLSL7 - MESA_SHADER_VERTEX shader: 149 inst, 1 threads, 0 loops, 23 uniforms, 46 max-temps, 0:0 spills:fills, 0 sfu-stalls, 149 inst-and-stalls, 2 nops
+SHADER-DB-GLSL7 - MESA_SHADER_VERTEX_BIN shader: 54 inst, 1 threads, 0 loops, 16 uniforms, 14 max-temps, 0:0 spills:fills, 0 sfu-stalls, 54 inst-and-stalls, 2 nops
+SHADER-DB-GLSL10 - MESA_SHADER_FRAGMENT shader: 56 inst, 1 threads, 0 loops, 1 uniforms, 11 max-temps, 0:0 spills:fills, 0 sfu-stalls, 56 inst-and-stalls, 2 nops
+SHADER-DB-GLSL10 - MESA_SHADER_VERTEX shader: 377 inst, 1 threads, 0 loops, 170 uniforms, 32 max-temps, 0:0 spills:fills, 0 sfu-stalls, 377 inst-and-stalls, 7 nops
+SHADER-DB-GLSL10 - MESA_SHADER_VERTEX_BIN shader: 53 inst, 1 threads, 0 loops, 16 uniforms, 14 max-temps, 0:0 spills:fills, 0 sfu-stalls, 53 inst-and-stalls, 2 nops
+SHADER-DB-GLSL13 - MESA_SHADER_FRAGMENT shader: 75 inst, 2 threads, 0 loops, 5 uniforms, 23 max-temps, 0:0 spills:fills, 0 sfu-stalls, 75 inst-and-stalls, 4 nops
+SHADER-DB-GLSL13 - MESA_SHADER_VERTEX shader: 881 inst, 2 threads, 0 loops, 350 uniforms, 34 max-temps, 46:61 spills:fills, 0 sfu-stalls, 881 inst-and-stalls, 29 nops
+SHADER-DB-GLSL13 - MESA_SHADER_VERTEX_BIN shader: 283 inst, 1 threads, 0 loops, 61 uniforms, 40 max-temps, 0:0 spills:fills, 0 sfu-stalls, 283 inst-and-stalls, 13 nops
+SHADER-DB-GLSL16 - MESA_SHADER_FRAGMENT shader: 55 inst, 1 threads, 0 loops, 1 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 55 inst-and-stalls, 2 nops
+SHADER-DB-GLSL16 - MESA_SHADER_VERTEX shader: 427 inst, 1 threads, 0 loops, 93 uniforms, 53 max-temps, 0:0 spills:fills, 0 sfu-stalls, 427 inst-and-stalls, 25 nops
+SHADER-DB-GLSL16 - MESA_SHADER_VERTEX_BIN shader: 283 inst, 1 threads, 0 loops, 61 uniforms, 40 max-temps, 0:0 spills:fills, 0 sfu-stalls, 283 inst-and-stalls, 13 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL7 - MESA_SHADER_VERTEX shader: 149 inst, 1 threads, 0 loops, 23 uniforms, 46 max-temps, 0:0 spills:fills, 0 sfu-stalls, 149 inst-and-stalls, 2 nops
+SHADER-DB-GLSL7 - MESA_SHADER_VERTEX_BIN shader: 54 inst, 1 threads, 0 loops, 16 uniforms, 14 max-temps, 0:0 spills:fills, 0 sfu-stalls, 54 inst-and-stalls, 2 nops
+SHADER-DB-GLSL19 - MESA_SHADER_FRAGMENT shader: 110 inst, 2 threads, 0 loops, 8 uniforms, 23 max-temps, 0:0 spills:fills, 0 sfu-stalls, 110 inst-and-stalls, 7 nops
+SHADER-DB-GLSL19 - MESA_SHADER_VERTEX shader: 1105 inst, 2 threads, 0 loops, 449 uniforms, 33 max-temps, 54:91 spills:fills, 0 sfu-stalls, 1105 inst-and-stalls, 37 nops
+SHADER-DB-GLSL19 - MESA_SHADER_VERTEX_BIN shader: 214 inst, 1 threads, 0 loops, 57 uniforms, 35 max-temps, 0:0 spills:fills, 0 sfu-stalls, 214 inst-and-stalls, 8 nops
+SHADER-DB-GLSL22 - MESA_SHADER_FRAGMENT shader: 338 inst, 1 threads, 0 loops, 75 uniforms, 46 max-temps, 0:0 spills:fills, 0 sfu-stalls, 338 inst-and-stalls, 15 nops
+SHADER-DB-GLSL22 - MESA_SHADER_VERTEX shader: 573 inst, 1 threads, 0 loops, 132 uniforms, 67 max-temps, 0:0 spills:fills, 0 sfu-stalls, 573 inst-and-stalls, 14 nops
+SHADER-DB-GLSL22 - MESA_SHADER_VERTEX_BIN shader: 283 inst, 1 threads, 0 loops, 61 uniforms, 40 max-temps, 0:0 spills:fills, 0 sfu-stalls, 283 inst-and-stalls, 13 nops
+SHADER-DB-GLSL25 - MESA_SHADER_FRAGMENT shader: 109 inst, 4 threads, 0 loops, 8 uniforms, 20 max-temps, 0:0 spills:fills, 0 sfu-stalls, 109 inst-and-stalls, 5 nops
+SHADER-DB-GLSL25 - MESA_SHADER_VERTEX shader: 462 inst, 1 threads, 0 loops, 144 uniforms, 42 max-temps, 0:0 spills:fills, 0 sfu-stalls, 462 inst-and-stalls, 8 nops
+SHADER-DB-GLSL25 - MESA_SHADER_VERTEX_BIN shader: 225 inst, 1 threads, 0 loops, 65 uniforms, 36 max-temps, 0:0 spills:fills, 0 sfu-stalls, 225 inst-and-stalls, 2 nops
+SHADER-DB-GLSL28 - MESA_SHADER_FRAGMENT shader: 499 inst, 2 threads, 2 loops, 88 uniforms, 37 max-temps, 5:6 spills:fills, 0 sfu-stalls, 499 inst-and-stalls, 48 nops
+SHADER-DB-GLSL28 - MESA_SHADER_VERTEX shader: 818 inst, 1 threads, 0 loops, 308 uniforms, 37 max-temps, 0:0 spills:fills, 0 sfu-stalls, 818 inst-and-stalls, 22 nops
+SHADER-DB-GLSL28 - MESA_SHADER_VERTEX_BIN shader: 283 inst, 1 threads, 0 loops, 61 uniforms, 40 max-temps, 0:0 spills:fills, 0 sfu-stalls, 283 inst-and-stalls, 13 nops
+SHADER-DB-GLSL16 - MESA_SHADER_FRAGMENT shader: 55 inst, 1 threads, 0 loops, 1 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 55 inst-and-stalls, 2 nops
+SHADER-DB-GLSL31 - MESA_SHADER_FRAGMENT shader: 116 inst, 2 threads, 0 loops, 9 uniforms, 25 max-temps, 0:0 spills:fills, 0 sfu-stalls, 116 inst-and-stalls, 4 nops
+SHADER-DB-GLSL31 - MESA_SHADER_VERTEX shader: 523 inst, 1 threads, 0 loops, 164 uniforms, 42 max-temps, 0:0 spills:fills, 0 sfu-stalls, 523 inst-and-stalls, 22 nops
+SHADER-DB-GLSL31 - MESA_SHADER_VERTEX_BIN shader: 214 inst, 1 threads, 0 loops, 57 uniforms, 35 max-temps, 0:0 spills:fills, 0 sfu-stalls, 214 inst-and-stalls, 8 nops
+SHADER-DB-clear color FS - MESA_SHADER_FRAGMENT shader: 6 inst, 1 threads, 0 loops, 4 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 6 inst-and-stalls, 0 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX shader: 27 inst, 1 threads, 0 loops, 6 uniforms, 6 max-temps, 0:0 spills:fills, 0 sfu-stalls, 27 inst-and-stalls, 2 nops
+SHADER-DB-clear VS - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-GLSL34 - MESA_SHADER_FRAGMENT shader: 10 inst, 4 threads, 0 loops, 2 uniforms, 2 max-temps, 0:0 spills:fills, 0 sfu-stalls, 10 inst-and-stalls, 0 nops
+SHADER-DB-GLSL34 - MESA_SHADER_VERTEX shader: 109 inst, 1 threads, 0 loops, 21 uniforms, 21 max-temps, 0:0 spills:fills, 0 sfu-stalls, 109 inst-and-stalls, 6 nops
+SHADER-DB-GLSL34 - MESA_SHADER_VERTEX_BIN shader: 65 inst, 1 threads, 0 loops, 16 uniforms, 16 max-temps, 0:0 spills:fills, 0 sfu-stalls, 65 inst-and-stalls, 2 nops
+Crash Annotation GraphicsCriticalError: |[0][GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 4005 (t=9.80436) [GFX1-]: Calling WaitFlushedEvent::Run: is delayed: 4005

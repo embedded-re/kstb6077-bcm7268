@@ -1,0 +1,23 @@
+diff --git a/src/broadcom/compiler/vir.c b/src/broadcom/compiler/vir.c
+index b809925..4d9d057 100644
+--- a/src/broadcom/compiler/vir.c
++++ b/src/broadcom/compiler/vir.c
+@@ -589,6 +589,18 @@ vir_compile_init(const struct v3d_compiler *compiler,
+         c->debug_output_data = debug_output_data;
+         c->compilation_result = V3D_COMPILATION_SUCCEEDED;
+         c->min_threads_for_reg_alloc = strategy->min_threads;
++        /* Temporary Firefox isolation probe, never enabled by default. */
++        const char *single = getenv("V3D33_SINGLE_THREAD");
++        if (c->devinfo->ver == 33 && single &&
++            ((!strcmp(single, "all") && s->info.stage != MESA_SHADER_COMPUTE) ||
++             (!strcmp(single, "vs") && s->info.stage == MESA_SHADER_VERTEX) ||
++             (!strcmp(single, "fs") && s->info.stage == MESA_SHADER_FRAGMENT) ||
++             (!strcmp(single, "bin") && s->info.stage == MESA_SHADER_VERTEX &&
++              ((struct v3d_vs_key *) key)->is_coord))) {
++                c->threads = 1;
++                c->min_threads_for_reg_alloc = 1;
++        }
++
+         c->max_tmu_spills = strategy->max_tmu_spills;
+         c->fallback_scheduler = fallback_scheduler;
+         c->disable_general_tmu_sched = strategy->disable_general_tmu_sched;

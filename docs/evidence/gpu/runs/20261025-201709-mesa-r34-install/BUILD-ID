@@ -1,0 +1,22 @@
+8b05308cbf2bb95d975f638a04726a63706b027b
+-Dbuildtype=release
+-Dprefix=/usr
+-Dlibdir=lib
+-Dgallium-drivers=v3d,kmsro
+-Dvulkan-drivers=
+-Dplatforms=wayland,x11
+-Dglx=dri
+-Degl=enabled
+-Dgbm=enabled
+-Dgles1=enabled
+-Dgles2=enabled
+-Dllvm=disabled
+-Dvalgrind=disabled
+-Dlibunwind=disabled
+-Dshared-glapi=enabled
+-Dvideo-codecs=
+-Dgallium-va=disabled
+-Dgallium-vdpau=disabled
+-Dgallium-xa=disabled
+-Dlmsensors=disabled
+ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a  /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/v3d_dri.so

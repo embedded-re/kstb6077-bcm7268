@@ -1,0 +1,22 @@
+[
+  {
+    "before": {
+      "frames": 507,
+      "checks": 9,
+      "failures": 0,
+      "fps": 42.96992105526129,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    },
+    "after": {
+      "frames": 632,
+      "checks": 11,
+      "failures": 0,
+      "fps": 41.965588217661455,
+      "status": "running",
+      "renderer": "Generic Renderer",
+      "paused": false
+    }
+  }
+]

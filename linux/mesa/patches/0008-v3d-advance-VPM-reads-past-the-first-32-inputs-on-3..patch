@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: 1q9lugp <lackowork84@gmail.com>
 Date: Wed, 21 Oct 2026 11:58:15 +0200
-Subject: [PATCH 08/33] v3d: advance VPM reads past the first 32 inputs on 3.3
+Subject: [PATCH 08/34] v3d: advance VPM reads past the first 32 inputs on 3.3
 
 ntq_emit_vpm_read() restarted at zero after the first batch; large
 matrix/array captures read the wrong inputs.

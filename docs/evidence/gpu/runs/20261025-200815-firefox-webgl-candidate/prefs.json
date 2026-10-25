@@ -1,0 +1,8 @@
+{
+  "browser.shell.checkDefaultBrowser": false,
+  "browser.startup.homepage_override.mstone": "ignore",
+  "browser.aboutwelcome.enabled": false,
+  "marionette.port": 2828,
+  "remote.prefs.recommended": false,
+  "webgl.disabled": false
+}

@@ -1,0 +1,68 @@
+{
+  "mesa": {
+    "name": "mesa",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "so:libc.musl-aarch64.so.1 so:libdrm.so.2 so:libexpat.so.1 so:libgcc_s.so.1 so:libstdc++.so.6 so:libz.so.1 so:libzstd.so.1",
+    "provides": "so:libgallium_dri.so so:libglapi.so.0"
+  },
+  "mesa-egl": {
+    "name": "mesa-egl",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "mesa=23.3.6-r34 so:libX11-xcb.so.1 so:libc.musl-aarch64.so.1 so:libdrm.so.2 so:libexpat.so.1 so:libgbm.so.1 so:libglapi.so.0 so:libwayland-client.so.0 so:libwayland-server.so.0 so:libxcb-dri2.so.0 so:libxcb-dri3.so.0 so:libxcb-present.so.0 so:libxcb-randr.so.0 so:libxcb-sync.so.1 so:libxcb-xfixes.so.0 so:libxcb.so.1 so:libxshmfence.so.1",
+    "provides": "so:libEGL.so.1"
+  },
+  "mesa-gbm": {
+    "name": "mesa-gbm",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "mesa=23.3.6-r34 so:libc.musl-aarch64.so.1 so:libdrm.so.2 so:libexpat.so.1 so:libwayland-server.so.0",
+    "provides": "so:libgbm.so.1"
+  },
+  "mesa-gles": {
+    "name": "mesa-gles",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "mesa=23.3.6-r34 so:libglapi.so.0",
+    "provides": "so:libGLESv1_CM.so.1 so:libGLESv2.so.2"
+  },
+  "mesa-gl": {
+    "name": "mesa-gl",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "mesa=23.3.6-r34 so:libX11-xcb.so.1 so:libX11.so.6 so:libXext.so.6 so:libXfixes.so.3 so:libXxf86vm.so.1 so:libc.musl-aarch64.so.1 so:libdrm.so.2 so:libexpat.so.1 so:libglapi.so.0 so:libxcb-dri2.so.0 so:libxcb-dri3.so.0 so:libxcb-glx.so.0 so:libxcb-present.so.0 so:libxcb-shm.so.0 so:libxcb-sync.so.1 so:libxcb-xfixes.so.0 so:libxcb.so.1 so:libxshmfence.so.1",
+    "provides": "so:libGL.so.1"
+  },
+  "mesa-dev": {
+    "name": "mesa-dev",
+    "version": "23.3.6-r34",
+    "arch": "aarch64",
+    "description": "Mesa for KAON KSTB6077 V3D 3.3 (local maintained driver)",
+    "license": "MIT",
+    "origin": "mesa-kstb",
+    "url": "https://www.mesa3d.org/",
+    "depends": "libdrm-dev libx11-dev libxcb-dev libxdamage-dev libxext-dev libxfixes-dev libxshmfence-dev libxxf86vm-dev mesa-egl=23.3.6-r34 mesa-gbm=23.3.6-r34 mesa-gl=23.3.6-r34 mesa-gles=23.3.6-r34 mesa=23.3.6-r34 pkgconf",
+    "provides": "pc:dri=23.3.6 pc:egl=23.3.6 pc:gbm=23.3.6 pc:gl=23.3.6 pc:glesv1_cm=23.3.6 pc:glesv2=23.3.6"
+  }
+}

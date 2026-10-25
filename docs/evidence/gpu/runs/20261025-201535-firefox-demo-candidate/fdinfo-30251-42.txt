@@ -1,0 +1,22 @@
+pos:	0
+flags:	02400002
+mnt_id:	17
+ino:	661
+drm-driver:	v3d
+drm-client-id:	462
+drm-engine-bin: 	0 ns
+v3d-jobs-bin: 	0 jobs
+drm-engine-render: 	0 ns
+v3d-jobs-render: 	0 jobs
+drm-engine-tfu: 	0 ns
+v3d-jobs-tfu: 	0 jobs
+drm-engine-csd: 	0 ns
+v3d-jobs-csd: 	0 jobs
+drm-engine-cache_clean: 	0 ns
+v3d-jobs-cache_clean: 	0 jobs
+drm-engine-cpu: 	0 ns
+v3d-jobs-cpu: 	0 jobs
+drm-total-memory:	35200 KiB
+drm-shared-memory:	35200 KiB
+drm-active-memory:	2816 KiB
+drm-resident-memory:	35200 KiB

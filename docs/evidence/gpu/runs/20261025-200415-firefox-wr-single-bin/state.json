@@ -1,0 +1,8 @@
+{
+  "state": "stopped",
+  "mode": "wr-single-bin",
+  "fault": {
+    "monotonic": 31673.794693015,
+    "line": "[31673.726836] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang."
+  }
+}

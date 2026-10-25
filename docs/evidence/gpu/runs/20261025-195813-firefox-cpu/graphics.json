@@ -1,0 +1,549 @@
+{
+  "graphics": {
+    "desktopEnvironment": "",
+    "numTotalWindows": 1,
+    "numAcceleratedWindows": 1,
+    "windowLayerManagerType": "WebRender (Software)",
+    "windowLayerManagerRemote": true,
+    "graphicsDevicePixelRatios": [
+      1
+    ],
+    "adapterDescription": "V3D 3.3",
+    "adapterVendorID": "0x5b00",
+    "adapterDeviceID": "0x8327",
+    "adapterRAM": 0,
+    "adapterDrivers": "",
+    "driverVendor": "mesa/v3d",
+    "driverVersion": "23.3.6.0",
+    "driverDate": "",
+    "adapterVendorID2": "",
+    "adapterDeviceID2": "",
+    "isGPU2Active": false,
+    "targetFrameRate": 60,
+    "windowProtocol": "wayland",
+    "supportFontDetermination": "Linux Unknown - ID=alpine",
+    "webgl1Renderer": "WebGL is currently disabled.",
+    "webgl1Version": "-",
+    "webgl1DriverExtensions": "-",
+    "webgl1Extensions": "-",
+    "webgl1WSIInfo": "-",
+    "webgl2Renderer": "WebGL is currently disabled.",
+    "webgl2Version": "-",
+    "webgl2DriverExtensions": "-",
+    "webgl2Extensions": "-",
+    "webgl2WSIInfo": "-",
+    "info": {
+      "AzureFallbackCanvasBackend": "skia",
+      "AzureCanvasBackend": "skia",
+      "AzureContentBackend": "skia",
+      "ApzWheelInput": 1,
+      "ApzDragInput": 1,
+      "ApzKeyboardInput": 1,
+      "ApzAutoscrollInput": 1,
+      "ApzZoomingInput": 1,
+      "CMSOutputProfile": "Empty profile data",
+      "DisplayCount": 1,
+      "Display0": "1920x1080@60Hz scales:1.000000|1.000000 SDR"
+    },
+    "featureLog": {
+      "features": [
+        {
+          "name": "HW_COMPOSITING",
+          "description": "Compositing",
+          "status": "disabled",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "user",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_COMP_PREF",
+              "message": "Disabled by layers.acceleration.disabled=true"
+            }
+          ]
+        },
+        {
+          "name": "OPENGL_COMPOSITING",
+          "description": "OpenGL Compositing",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_OPENGL_NEED_HWCOMP",
+              "message": "Hardware compositing is disabled"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER",
+          "description": "WebRender",
+          "status": "unavailable-no-hw-compositing",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "user",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_USER_FORCE_ENABLED_SW_WR",
+              "message": "User force-enabled software WR"
+            },
+            {
+              "type": "runtime",
+              "status": "unavailable-no-hw-compositing",
+              "failureId": "FEATURE_FAILURE_WEBRENDER_NEED_HWCOMP",
+              "message": "Hardware compositing is disabled"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_COMPOSITOR",
+          "description": "WebRender native compositor",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_DISABLED",
+              "message": "Disabled by default"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_WEBRENDER_COMPOSITOR_DISABLED",
+              "message": "Blocklisted by gfxInfo"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_PARTIAL",
+          "description": "WebRender partial present",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_SHADER_CACHE",
+          "description": "WebRender shader disk cache",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_DISABLED",
+              "message": "Disabled by default"
+            },
+            {
+              "type": "runtime",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_WR_DISABLED",
+              "message": "WebRender disabled"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_OPTIMIZED_SHADERS",
+          "description": "WebRender optimized shaders",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "runtime",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_WR_DISABLED",
+              "message": "WebRender disabled"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_ANGLE",
+          "description": "WebRender ANGLE",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_OS_NOT_SUPPORTED",
+              "message": "OS not supported"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_DCOMP_PRESENT",
+          "description": "WebRender DirectComposition",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "user",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_DCOMP_PREF_DISABLED",
+              "message": "User disabled via pref"
+            },
+            {
+              "type": "env",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_NO_GPU_PROCESS",
+              "message": "Requires GPU process"
+            },
+            {
+              "type": "runtime",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_DCOMP_NOT_ANGLE",
+              "message": "Requires ANGLE"
+            }
+          ]
+        },
+        {
+          "name": "WEBRENDER_SCISSORED_CACHE_CLEARS",
+          "description": "WebRender scissored cache clears",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "WEBGPU",
+          "description": "WebGPU",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_WEBGPU_MESA_BUG_1979007",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_WEBGPU_MESA_BUG_1979007"
+            }
+          ]
+        },
+        {
+          "name": "X11_EGL",
+          "description": "X11 EGL",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "DMABUF",
+          "description": "DMABUF",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "HARDWARE_VIDEO_DECODING",
+          "description": "Hardware video decoding",
+          "status": "unavailable",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_DECODING_TEST_FAILED",
+              "message": "Blocklisted by gfxInfo"
+            },
+            {
+              "type": "runtime",
+              "status": "unavailable",
+              "failureId": "FEATURE_FAILURE_VIDEO_DECODING_TEST_FAILED",
+              "message": "Force disabled by gfxInfo"
+            }
+          ]
+        },
+        {
+          "name": "HARDWARE_VIDEO_ENCODING",
+          "description": "Hardware video encoding",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "DMABUF_SURFACE_EXPORT",
+          "description": "WebGL DMABuf surface export",
+          "status": "blocked",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocked",
+              "failureId": "FEATURE_FAILURE_BROKEN_DRIVER",
+              "message": "Blocklisted by gfxInfo"
+            }
+          ]
+        },
+        {
+          "name": "BACKDROP_FILTER",
+          "description": "Backdrop filter",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "CANVAS_RENDERER_THREAD",
+          "description": "canvas renderer thread",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "ACCELERATED_CANVAS2D",
+          "description": "Accelerated Canvas2D",
+          "status": "blocked",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocked",
+              "failureId": "FEATURE_FAILURE_DISABLED_BY_SOFTWARE_WEBRENDER",
+              "message": "Disabled by Software WebRender"
+            }
+          ]
+        },
+        {
+          "name": "DMABUF_WEBGL",
+          "description": "DMABuf for WebGL",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "VP8_HW_ENCODE",
+          "description": "VP8 hardware encoding",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_ENCODING_MISSING",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_VIDEO_ENCODING_MISSING"
+            }
+          ]
+        },
+        {
+          "name": "VP9_HW_ENCODE",
+          "description": "VP9 hardware encoding",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_ENCODING_MISSING",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_VIDEO_ENCODING_MISSING"
+            }
+          ]
+        },
+        {
+          "name": "H264_HW_ENCODE",
+          "description": "H.264 hardware encoding",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_ENCODING_MISSING",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_VIDEO_ENCODING_MISSING"
+            }
+          ]
+        },
+        {
+          "name": "AV1_HW_ENCODE",
+          "description": "AV1 hardware encoding",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_ENCODING_MISSING",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_VIDEO_ENCODING_MISSING"
+            }
+          ]
+        },
+        {
+          "name": "HEVC_HW_ENCODE",
+          "description": "HEVC hardware encoding",
+          "status": "blocklisted",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            },
+            {
+              "type": "env",
+              "status": "blocklisted",
+              "failureId": "FEATURE_FAILURE_VIDEO_ENCODING_MISSING",
+              "message": "#BLOCKLIST_FEATURE_FAILURE_VIDEO_ENCODING_MISSING"
+            }
+          ]
+        },
+        {
+          "name": "GL_NORM16_TEXTURES",
+          "description": "OpenGL normalized 16-bit texture formats",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "WEBGPU_EXTERNAL_TEXTURE",
+          "description": "WebGPU external textures",
+          "status": "blocked",
+          "log": [
+            {
+              "type": "default",
+              "status": "disabled",
+              "failureId": "FEATURE_FAILURE_DISABLED",
+              "message": "Disabled by default"
+            },
+            {
+              "type": "runtime",
+              "status": "blocked",
+              "failureId": "WEBGPU_EXTERNAL_TEXTURE_UNSUPPORTED_OS",
+              "message": "WebGPU external textures are not supported on this Operating Sy"
+            }
+          ]
+        },
+        {
+          "name": "MESA_THREADING",
+          "description": "Mesa glthread enabled",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "WEBGL",
+          "description": "WebGL",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        },
+        {
+          "name": "VIDEO_HDR",
+          "description": "HDR video supported",
+          "status": "available",
+          "log": [
+            {
+              "type": "default",
+              "status": "available"
+            }
+          ]
+        }
+      ],
+      "fallbacks": []
+    },
+    "crashGuards": [],
+    "webgpuDefaultAdapter": {
+      "navigator.gpu": null
+    },
+    "webgpuFallbackAdapter": {
+      "navigator.gpu": null
+    }
+  },
+  "application": {
+    "name": "Firefox",
+    "osVersion": "Linux 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026",
+    "version": "151.0.3",
+    "buildID": "20260602093637",
+    "distributionID": "alpinelinux",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0",
+    "safeMode": false,
+    "memorySizeBytes": 2047102976,
+    "diskAvailableBytes": 1164263424,
+    "supportURL": "https://support.mozilla.org/1/firefox/151.0.3/Linux/en-US/",
+    "osTheme": "Adwaita / Adwaita",
+    "pointingDevices": [],
+    "numTotalWindows": 1,
+    "numFissionWindows": 1,
+    "numRemoteWindows": 1,
+    "fissionAutoStart": true,
+    "fissionDecisionStatus": "enabledByDefault",
+    "remoteAutoStart": true,
+    "policiesStatus": 0,
+    "keyLocationServiceGoogleFound": false,
+    "keySafebrowsingGoogleFound": false,
+    "keyMozillaFound": true
+  }
+}

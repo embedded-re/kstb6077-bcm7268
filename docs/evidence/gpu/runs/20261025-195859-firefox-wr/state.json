@@ -1,0 +1,8 @@
+{
+  "state": "stopped",
+  "mode": "wr",
+  "fault": {
+    "monotonic": 31357.699760865,
+    "line": "[31357.786462] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang."
+  }
+}
