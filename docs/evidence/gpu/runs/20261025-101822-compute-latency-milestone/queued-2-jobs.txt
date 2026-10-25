@@ -1,0 +1,33 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3; groups 32 loops 0 rounds 31 dispatches 1 mode store
+round 0 cold host_submit_ms 5.827845 host_finish_ms 3.802476 wall_ms 9.630321 render_ms 0.037777 clean_ms 4.954407 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 1 warm host_submit_ms 1.187368 host_finish_ms 3.820848 wall_ms 5.008216 render_ms 0.029297 clean_ms 4.588186 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 2 warm host_submit_ms 1.290517 host_finish_ms 3.832624 wall_ms 5.123141 render_ms 0.030222 clean_ms 4.665740 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 3 warm host_submit_ms 1.342776 host_finish_ms 3.832921 wall_ms 5.175697 render_ms 0.029592 clean_ms 4.791814 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 4 warm host_submit_ms 0.294111 host_finish_ms 4.922920 wall_ms 5.217031 render_ms 0.033074 clean_ms 4.996815 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 5 warm host_submit_ms 0.293630 host_finish_ms 4.925179 wall_ms 5.218809 render_ms 0.031445 clean_ms 5.000703 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 6 warm host_submit_ms 0.294778 host_finish_ms 4.921549 wall_ms 5.216327 render_ms 0.034186 clean_ms 4.992260 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 7 warm host_submit_ms 0.293185 host_finish_ms 4.922253 wall_ms 5.215438 render_ms 0.033445 clean_ms 4.995741 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 8 warm host_submit_ms 0.293740 host_finish_ms 4.922105 wall_ms 5.215845 render_ms 0.035482 clean_ms 4.989667 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 9 warm host_submit_ms 0.293074 host_finish_ms 4.926919 wall_ms 5.219993 render_ms 0.030445 clean_ms 5.002816 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 10 warm host_submit_ms 0.295036 host_finish_ms 4.921513 wall_ms 5.216549 render_ms 0.032555 clean_ms 4.995481 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 11 warm host_submit_ms 0.292704 host_finish_ms 4.925216 wall_ms 5.217920 render_ms 0.033074 clean_ms 4.999629 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 12 warm host_submit_ms 0.290740 host_finish_ms 4.927994 wall_ms 5.218734 render_ms 0.029779 clean_ms 5.002333 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 13 warm host_submit_ms 0.293296 host_finish_ms 4.923809 wall_ms 5.217105 render_ms 0.032333 clean_ms 4.997518 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 14 warm host_submit_ms 0.289555 host_finish_ms 4.955697 wall_ms 5.245252 render_ms 0.034704 clean_ms 4.995296 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 15 warm host_submit_ms 0.310629 host_finish_ms 4.849883 wall_ms 5.160512 render_ms 0.039112 clean_ms 4.915185 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 16 warm host_submit_ms 0.297666 host_finish_ms 4.906401 wall_ms 5.204067 render_ms 0.031519 clean_ms 4.978222 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 17 warm host_submit_ms 0.298740 host_finish_ms 4.898216 wall_ms 5.196956 render_ms 0.030963 clean_ms 4.973259 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 18 warm host_submit_ms 0.296147 host_finish_ms 4.916068 wall_ms 5.212215 render_ms 0.031630 clean_ms 4.991296 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 19 warm host_submit_ms 0.295074 host_finish_ms 4.922179 wall_ms 5.217253 render_ms 0.032779 clean_ms 4.994815 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 20 warm host_submit_ms 0.293629 host_finish_ms 4.923253 wall_ms 5.216882 render_ms 0.032816 clean_ms 4.995815 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 21 warm host_submit_ms 0.294147 host_finish_ms 4.923142 wall_ms 5.217289 render_ms 0.032889 clean_ms 4.997038 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 22 warm host_submit_ms 0.293222 host_finish_ms 4.924068 wall_ms 5.217290 render_ms 0.030926 clean_ms 4.997815 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 23 warm host_submit_ms 0.293592 host_finish_ms 4.922550 wall_ms 5.216142 render_ms 0.033074 clean_ms 4.994444 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 24 warm host_submit_ms 0.301666 host_finish_ms 4.914513 wall_ms 5.216179 render_ms 0.030740 clean_ms 4.995297 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 25 warm host_submit_ms 0.294296 host_finish_ms 4.924327 wall_ms 5.218623 render_ms 0.031222 clean_ms 4.998556 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 26 warm host_submit_ms 0.295333 host_finish_ms 4.888809 wall_ms 5.184142 render_ms 0.032889 clean_ms 4.961445 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 27 warm host_submit_ms 0.293704 host_finish_ms 4.927142 wall_ms 5.220846 render_ms 0.031333 clean_ms 4.998777 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 28 warm host_submit_ms 0.303666 host_finish_ms 4.890809 wall_ms 5.194475 render_ms 0.035889 clean_ms 4.965518 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 29 warm host_submit_ms 0.296963 host_finish_ms 4.908475 wall_ms 5.205438 render_ms 0.032186 clean_ms 4.987147 render_jobs 2 clean_jobs 2 bin_jobs 0
+round 30 warm host_submit_ms 0.297111 host_finish_ms 4.923661 wall_ms 5.220772 render_ms 0.032369 clean_ms 4.998332 render_jobs 2 clean_jobs 2 bin_jobs 0
+PASS: 31 rounds, 4096 values/round, exact outputs and guards; 62 render jobs, 62 cache-clean jobs, 0 bin jobs

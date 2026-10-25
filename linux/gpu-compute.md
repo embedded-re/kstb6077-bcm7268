@@ -765,3 +765,40 @@ stress or full-stack reliability certification. The framebuffer reset
 blocker above remains unresolved. Work is stopped at the milestone;
 selected Mesa and system defaults are unchanged.
 [Measurements and complete gate evidence](../docs/evidence/gpu/runs/20261025-095653-neural-milestone/README.md).
+
+## Compute latency: render versus cache-clean accounting (2026-10-25)
+
+On unchanged kernel #29 and Mesa patch 0032, per-file kernel queue counters
+place most measured neural latency inside `v3d_clean_caches`. Batch
+257/local 128 has warm medians of 26.355 ms host wall, 0.427 ms render queue
+and 25.661 ms cache-clean routine; batch 4096 has 190.500/6.294/182.934 ms.
+These queue intervals include sleeps and scheduling within the measured
+kernel regions, not just hardware execution. The neural test enables
+untimed counter logging with `KSTB_NEURAL_STATS=1`.
+
+Completed counters correct the earlier batch-257 job estimate: local 128
+uses **five**, not four, render jobs (33 first-layer workgroups → three
+jobs; 17 second-layer workgroups → two). Local 16 uses 26 jobs.
+
+`kstb-compute-latency-test` adds a guarded empty/store shader probe, queued
+jobs and a fixed-job loop sweep. Across 1,000 warm empty-shader rounds,
+median host/render/cache-clean times are 2.101/0.007/1.987 ms. Queuing 64
+jobs before one wait gives 253.203/1.037/251.031 ms. The 2,048-invocation,
+one-job integer loop sweep increases render time from 0.014 to 4.601 ms
+as loop count increases from zero to 4096; outputs are exact throughout.
+
+Running-kernel config confirms high-resolution timers and ftrace disabled,
+HZ=250. Cache cleaning polls through a helper that sleeps for 10–20 µs
+initially; separately measured userspace sleeps requested at 10/100/1000 µs
+all have median 3.998 ms. No timer-config A/B or individual poll-site timing
+was performed. Runtime PM reports unsupported; reversible auto/on/auto
+comparison does not remove the delay and restores the original setting.
+Actual GPU clock frequency remains unmeasured because the exported clock
+is only a power-island gate. No kernel, clock or IRQ-affinity changes made.
+
+All 2,776 timing rounds (7,860 render jobs), 200 synchronization chains and
+121 neural inferences pass, with zero GPU resets, MMU errors or oopses.
+The IRQ-count increase matches all 14,759 render jobs in the main gate,
+including synchronization and final neural checks, delivered on CPU0.
+Work stops at this measurement milestone; no workloads remain queued.
+[Raw timing, platform checks and reproducible analysis](../docs/evidence/gpu/runs/20261025-101822-compute-latency-milestone/README.md).

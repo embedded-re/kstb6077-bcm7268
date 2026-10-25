@@ -1,0 +1,53 @@
+[220661.464422] kstb neural milestone start
+[220661.496550] kstb neural milestone empty-smoke
+[220661.507787] drm_sched_entity_init: called with uninitialized scheduler
+[220662.018282] kstb neural milestone store-smoke
+[220662.029500] drm_sched_entity_init: called with uninitialized scheduler
+[220662.542662] kstb neural milestone empty-1001
+[220662.553915] drm_sched_entity_init: called with uninitialized scheduler
+[220667.020290] kstb neural milestone store-1001
+[220667.031471] drm_sched_entity_init: called with uninitialized scheduler
+[220671.496414] kstb neural milestone queued-1-jobs
+[220671.507866] drm_sched_entity_init: called with uninitialized scheduler
+[220672.122839] kstb neural milestone queued-2-jobs
+[220672.134283] drm_sched_entity_init: called with uninitialized scheduler
+[220672.854925] kstb neural milestone separate-2-dispatches
+[220672.866999] drm_sched_entity_init: called with uninitialized scheduler
+[220673.586979] kstb neural milestone queued-4-jobs
+[220673.598361] drm_sched_entity_init: called with uninitialized scheduler
+[220674.526969] kstb neural milestone separate-4-dispatches
+[220674.539112] drm_sched_entity_init: called with uninitialized scheduler
+[220675.466973] kstb neural milestone queued-16-jobs
+[220675.478522] drm_sched_entity_init: called with uninitialized scheduler
+[220678.174968] kstb neural milestone separate-16-dispatches
+[220678.187151] drm_sched_entity_init: called with uninitialized scheduler
+[220680.679058] kstb neural milestone queued-64-jobs
+[220680.690607] drm_sched_entity_init: called with uninitialized scheduler
+[220689.939164] kstb neural milestone separate-64-dispatches
+[220689.951367] drm_sched_entity_init: called with uninitialized scheduler
+[220698.367192] kstb neural milestone work-loops-0
+[220698.378727] drm_sched_entity_init: called with uninitialized scheduler
+[220698.995057] kstb neural milestone work-loops-16
+[220699.006482] drm_sched_entity_init: called with uninitialized scheduler
+[220699.623112] kstb neural milestone work-loops-64
+[220699.634541] drm_sched_entity_init: called with uninitialized scheduler
+[220700.251297] kstb neural milestone work-loops-256
+[220700.262796] drm_sched_entity_init: called with uninitialized scheduler
+[220700.879265] kstb neural milestone work-loops-1024
+[220700.890932] drm_sched_entity_init: called with uninitialized scheduler
+[220701.511244] kstb neural milestone work-loops-4096
+[220701.523012] drm_sched_entity_init: called with uninitialized scheduler
+[220702.243436] kstb neural milestone power-on-empty
+[220702.254985] drm_sched_entity_init: called with uninitialized scheduler
+[220703.079556] kstb neural milestone power-on-store
+[220703.091168] drm_sched_entity_init: called with uninitialized scheduler
+[220704.019423] kstb neural milestone power-restored-store
+[220704.031539] drm_sched_entity_init: called with uninitialized scheduler
+[220704.959537] kstb neural milestone sync-200
+[220704.970665] drm_sched_entity_init: called with uninitialized scheduler
+[220735.331494] kstb neural milestone post-probe-neural-b1
+[220735.343899] drm_sched_entity_init: called with uninitialized scheduler
+[220735.959518] kstb neural milestone post-probe-neural-b65
+[220735.972167] drm_sched_entity_init: called with uninitialized scheduler
+[220736.691529] kstb neural milestone post-probe-neural-b257
+[220736.704722] drm_sched_entity_init: called with uninitialized scheduler

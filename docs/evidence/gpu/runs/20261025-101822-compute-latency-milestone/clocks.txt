@@ -1,0 +1,5 @@
+                                 enable  prepare  protect                                duty  hardware                            connection
+   clock                          count    count    count        rate   accuracy phase  cycle    enable   consumer                         id
+---------------------------------------------------------------------------------------------------------------------------------------------
+ v3d-power                           1       1        0        0           0          0     50000      Y   f1200000.gpu                    no_connection_id         
+                                                                                                           deviceless                      no_connection_id         

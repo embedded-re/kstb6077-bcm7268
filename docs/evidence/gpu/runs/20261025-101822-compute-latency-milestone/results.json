@@ -1,0 +1,357 @@
+[
+  {
+    "test": "empty-smoke",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "3",
+      "1",
+      "empty"
+    ],
+    "exit": 0,
+    "seconds": 0.5121221430017613,
+    "expected_resets": 0
+  },
+  {
+    "test": "store-smoke",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "1",
+      "3",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.5145128440053668,
+    "expected_resets": 0
+  },
+  {
+    "test": "empty-1001",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "1001",
+      "1",
+      "empty"
+    ],
+    "exit": 0,
+    "seconds": 4.467529835994355,
+    "expected_resets": 0
+  },
+  {
+    "test": "store-1001",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "1001",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 4.465929170983145,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-1-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.6162292740191333,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-2-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "32",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.7218476609850768,
+    "expected_resets": 0
+  },
+  {
+    "test": "separate-2-dispatches",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "31",
+      "2",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.7210705879842862,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-4-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "64",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.9297414780012332,
+    "expected_resets": 0
+  },
+  {
+    "test": "separate-4-dispatches",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "31",
+      "4",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.9289763679844327,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-16-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "256",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 2.6975983990123495,
+    "expected_resets": 0
+  },
+  {
+    "test": "separate-16-dispatches",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "31",
+      "16",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 2.4888912129972596,
+    "expected_resets": 0
+  },
+  {
+    "test": "queued-64-jobs",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1024",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 9.249530875007622,
+    "expected_resets": 0
+  },
+  {
+    "test": "separate-64-dispatches",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "31",
+      "64",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 8.416808276000666,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-0",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "0",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.6175816800096072,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-16",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "16",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.6176403829886112,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-64",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "64",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.6176596049917862,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-256",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "256",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.6173800500109792,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-1024",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "1024",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.617211012984626,
+    "expected_resets": 0
+  },
+  {
+    "test": "work-loops-4096",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "4096",
+      "31",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.7211634390114341,
+    "expected_resets": 0
+  },
+  {
+    "test": "power-on-empty",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "1",
+      "0",
+      "101",
+      "1",
+      "empty"
+    ],
+    "exit": 0,
+    "seconds": 0.8253334219916724,
+    "expected_resets": 0
+  },
+  {
+    "test": "power-on-store",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "0",
+      "101",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.9288955530209932,
+    "expected_resets": 0
+  },
+  {
+    "test": "power-restored-store",
+    "args": [
+      "/opt/gpu-test/kstb-compute-latency-test",
+      "16",
+      "0",
+      "101",
+      "1",
+      "store"
+    ],
+    "exit": 0,
+    "seconds": 0.9287761090090498,
+    "expected_resets": 0
+  },
+  {
+    "test": "sync-200",
+    "args": [
+      "/opt/gpu-test/kstb-compute-sync-test",
+      "200",
+      "4097"
+    ],
+    "exit": 0,
+    "seconds": 30.36153627699241,
+    "expected_resets": 0
+  },
+  {
+    "test": "post-probe-neural-b1",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "1",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.6165743839810602,
+    "expected_resets": 0
+  },
+  {
+    "test": "post-probe-neural-b65",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "65",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.7204029959975742,
+    "expected_resets": 0
+  },
+  {
+    "test": "post-probe-neural-b257",
+    "args": [
+      "/opt/gpu-test/kstb-neural-test",
+      "257",
+      "128",
+      "11"
+    ],
+    "exit": 0,
+    "seconds": 0.8243723860068712,
+    "expected_resets": 0
+  }
+]

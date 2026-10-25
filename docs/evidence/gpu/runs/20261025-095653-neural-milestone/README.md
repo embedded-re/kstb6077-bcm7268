@@ -24,9 +24,11 @@ Batch 257 is **4.32 times faster** with local size 128. Both sizes use the
 same model and input sequence; classification checksums agree between all
 four tested local sizes (16, 32, 64 and 128). The existing driver's
 16-workgroups-per-render-job layout requires 26 render jobs per inference
-at local size 16 and four at local size 128 for batch 257; those counts are
-derived from the dispatch dimensions and retained driver loop, not traced
-submission counts. This changes legal application workgroup dimensions;
+at local size 16 and five at local size 128 for batch 257. The earlier
+estimate of four was an arithmetic error: layer one needs 33 workgroups
+(three jobs), and layer two needs 17 (two jobs). Subsequent per-file kernel
+counters confirm 26 versus five jobs; see the
+[queue-accounting milestone](../20261025-101822-compute-latency-milestone/README.md). This changes legal application workgroup dimensions;
 it does not use the rejected driver tile-column packing experiment.
 
 Repeated timings do not remove the large CPU/GPU gap. In the batch-257,

@@ -1,0 +1,35 @@
+           CPU0       CPU1       CPU2       CPU3       
+ 10:   55183990   55183640   55183656   55183684    GICv2  30 Level     arch_timer
+ 21:          0          0          0          0 interrupt-controller@f0403000   0 Edge      f0400000.gisb-arb
+ 22:          0          0          0          0 interrupt-controller@f0403000   2 Edge      f0400000.gisb-arb
+ 26:      17356          0          0          0    GICv2 102 Level     ttyS0
+ 29:     431254          0          0          0    GICv2 129 Level     eth0
+ 30:     849356          0          0          0    GICv2 130 Level     eth0
+ 31:          4          0          0          0    GICv2 122 Level     ehci_hcd:usb1
+ 32:          2          0          0          0    GICv2 126 Level     ehci_hcd:usb2
+ 33:        845          0          0          0    GICv2 123 Level     ohci_hcd:usb3
+ 34:          3          0          0          0    GICv2 124 Level     xhci-hcd:usb5
+ 35:         33          0          0          0    GICv2 127 Level     ohci_hcd:usb4
+ 36:          0          0          0          0 interrupt-controller@f0410640   4 Edge      brcmstb-waketimer
+ 37:          0          0          0          0 interrupt-controller@f040a640   0 Level     iica
+ 38:          0          0          0          0 interrupt-controller@f0419c40   0 Level     iicb
+ 39:          0          0          0          0 interrupt-controller@f0419c40   1 Level     iicc
+ 40:          0          0          0          0 interrupt-controller@f0419c40   2 Level     iicd
+ 41:          0          0          0          0 interrupt-controller@f040a640   1 Level     iice
+ 42:          0          0          0          0 interrupt-controller@f04d1200   6 Edge      brcmstb_thermal
+ 43:    3868287          0          0          0    GICv2  70 Level     mmc0
+ 44:          0          0          0          0 f0419c80.gpio  14 Edge      SW1 standby
+ 45:   13230859          0          0          0 interrupt-controller@f0606000   0 Edge      kstb-drm
+ 46:    4311350          0          0          0    GICv2 109 Level     v3d_core0
+ 47:          7          0          0          0    GICv2 110 Level     v3d_hub
+ 48:          0          0          0          0 interrupt-controller@f0419c00   0 Level     kstb-ir
+ 50:         72          0          0          0 BRCM-PCI-MSI-0000:01:00.0   0 Edge      brcmf_pcie_intr
+IPI0:      5860       7190       6971       7376       Rescheduling interrupts
+IPI1:   2118037    3978941    3868310    4068941       Function call interrupts
+IPI2:         0          0          0          0       CPU stop interrupts
+IPI3:         0          0          0          0       CPU stop NMIs
+IPI4:         0          0          0          0       Timer broadcast interrupts
+IPI5:         0          0          0          0       IRQ work interrupts
+IPI6:         0          0          0          0       CPU backtrace interrupts
+IPI7:         0          0          0          0       KGDB roundup interrupts
+Err:          0

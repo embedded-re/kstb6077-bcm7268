@@ -1,0 +1,17 @@
+[220787.976580] kstb neural milestone start
+[220787.987728] kstb neural milestone neural-b1-l16
+[220787.999358] drm_sched_entity_init: called with uninitialized scheduler
+[220788.614785] kstb neural milestone neural-b1-l128
+[220788.626549] drm_sched_entity_init: called with uninitialized scheduler
+[220789.242985] kstb neural milestone neural-b65-l16
+[220789.254934] drm_sched_entity_init: called with uninitialized scheduler
+[220790.182994] kstb neural milestone neural-b65-l128
+[220790.195128] drm_sched_entity_init: called with uninitialized scheduler
+[220790.915077] kstb neural milestone neural-b257-l16
+[220790.927515] drm_sched_entity_init: called with uninitialized scheduler
+[220792.687106] kstb neural milestone neural-b257-l128
+[220792.699661] drm_sched_entity_init: called with uninitialized scheduler
+[220793.523174] kstb neural milestone neural-b1024-l128
+[220793.537517] drm_sched_entity_init: called with uninitialized scheduler
+[220794.671175] kstb neural milestone neural-b4096-l128
+[220794.692066] drm_sched_entity_init: called with uninitialized scheduler

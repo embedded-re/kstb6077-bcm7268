@@ -1,0 +1,468 @@
+{
+  "latency_rounds": 2776,
+  "latency_render_jobs": 7860,
+  "synchronization_chains": 200,
+  "neural_rounds_without_stats": 33,
+  "neural_rounds_with_stats": 88,
+  "unexpected_gpu_resets": 0,
+  "mmu_errors": 0,
+  "oopses": 0,
+  "irq_deltas": {
+    "v3d_core0": [
+      14759,
+      0,
+      0,
+      0
+    ],
+    "v3d_hub": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "irq_expected": 14759,
+  "work_sweep_render_fit": {
+    "intercept_ms": 0.013971526996625627,
+    "ms_per_loop": 0.0011198891748570832,
+    "invocations_per_loop": 2048
+  },
+  "latency": [
+    {
+      "test": "empty-smoke",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 3,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.0946485,
+        "finish_ms": 1.892053,
+        "wall_ms": 1.9867015,
+        "render_ms": 0.0076665,
+        "clean_ms": 1.8612035
+      }
+    },
+    {
+      "test": "store-smoke",
+      "groups": 1,
+      "loops": 1,
+      "rounds": 3,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.100833,
+        "finish_ms": 1.8399610000000002,
+        "wall_ms": 1.940794,
+        "render_ms": 0.009166500000000001,
+        "clean_ms": 1.807111
+      }
+    },
+    {
+      "test": "empty-1001",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 1001,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.089259,
+        "finish_ms": 2.012405,
+        "wall_ms": 2.101479,
+        "render_ms": 0.007222,
+        "clean_ms": 1.987408
+      }
+    },
+    {
+      "test": "store-1001",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 1001,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.091482,
+        "finish_ms": 2.009256,
+        "wall_ms": 2.10059,
+        "render_ms": 0.008111,
+        "clean_ms": 1.983407
+      }
+    },
+    {
+      "test": "queued-1-jobs",
+      "groups": 16,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.1500185,
+        "finish_ms": 1.5103125,
+        "wall_ms": 1.6603495000000001,
+        "render_ms": 0.014499999999999999,
+        "clean_ms": 1.478574
+      }
+    },
+    {
+      "test": "queued-2-jobs",
+      "groups": 32,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 2,
+      "warm_median": {
+        "submit_ms": 0.294537,
+        "finish_ms": 4.922216000000001,
+        "wall_ms": 5.216438,
+        "render_ms": 0.032351000000000005,
+        "clean_ms": 4.9952965
+      }
+    },
+    {
+      "test": "separate-2-dispatches",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 2,
+      "render_jobs_per_round": 2,
+      "warm_median": {
+        "submit_ms": 0.1857035,
+        "finish_ms": 5.890067,
+        "wall_ms": 6.0745664999999995,
+        "render_ms": 0.0166295,
+        "clean_ms": 5.9358895
+      }
+    },
+    {
+      "test": "queued-4-jobs",
+      "groups": 64,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 4,
+      "warm_median": {
+        "submit_ms": 0.581388,
+        "finish_ms": 11.739874499999999,
+        "wall_ms": 12.325318,
+        "render_ms": 0.076908,
+        "clean_ms": 12.0182045
+      }
+    },
+    {
+      "test": "separate-4-dispatches",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 4,
+      "render_jobs_per_round": 4,
+      "warm_median": {
+        "submit_ms": 0.3570365,
+        "finish_ms": 13.717131,
+        "wall_ms": 14.074389499999999,
+        "render_ms": 0.034166,
+        "clean_ms": 13.884925500000001
+      }
+    },
+    {
+      "test": "queued-16-jobs",
+      "groups": 256,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 16,
+      "warm_median": {
+        "submit_ms": 2.2486455,
+        "finish_ms": 60.657591,
+        "wall_ms": 62.919070000000005,
+        "render_ms": 0.2429065,
+        "clean_ms": 62.2768495
+      }
+    },
+    {
+      "test": "separate-16-dispatches",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 16,
+      "render_jobs_per_round": 16,
+      "warm_median": {
+        "submit_ms": 1.408035,
+        "finish_ms": 60.5910545,
+        "wall_ms": 62.0160895,
+        "render_ms": 0.14083449999999997,
+        "clean_ms": 61.547777499999995
+      }
+    },
+    {
+      "test": "queued-64-jobs",
+      "groups": 1024,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 64,
+      "warm_median": {
+        "submit_ms": 11.452837500000001,
+        "finish_ms": 241.736145,
+        "wall_ms": 253.2031675,
+        "render_ms": 1.036852,
+        "clean_ms": 251.031149
+      }
+    },
+    {
+      "test": "separate-64-dispatches",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 64,
+      "render_jobs_per_round": 64,
+      "warm_median": {
+        "submit_ms": 9.7450435,
+        "finish_ms": 243.851605,
+        "wall_ms": 253.61866700000002,
+        "render_ms": 0.5974235,
+        "clean_ms": 251.960541
+      }
+    },
+    {
+      "test": "work-loops-0",
+      "groups": 16,
+      "loops": 0,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.149611,
+        "finish_ms": 1.51035,
+        "wall_ms": 1.660183,
+        "render_ms": 0.014315000000000001,
+        "clean_ms": 1.4789444999999999
+      }
+    },
+    {
+      "test": "work-loops-16",
+      "groups": 16,
+      "loops": 16,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.14979599999999998,
+        "finish_ms": 1.508665,
+        "wall_ms": 1.6581645,
+        "render_ms": 0.031963,
+        "clean_ms": 1.4587590000000001
+      }
+    },
+    {
+      "test": "work-loops-64",
+      "groups": 16,
+      "loops": 64,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.14972200000000002,
+        "finish_ms": 1.511146,
+        "wall_ms": 1.660831,
+        "render_ms": 0.085241,
+        "clean_ms": 1.4073335
+      }
+    },
+    {
+      "test": "work-loops-256",
+      "groups": 16,
+      "loops": 256,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.1504075,
+        "finish_ms": 1.506776,
+        "wall_ms": 1.656276,
+        "render_ms": 0.300759,
+        "clean_ms": 1.1870555
+      }
+    },
+    {
+      "test": "work-loops-1024",
+      "groups": 16,
+      "loops": 1024,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.150463,
+        "finish_ms": 1.509924,
+        "wall_ms": 1.6599235,
+        "render_ms": 1.1605925,
+        "clean_ms": 0.3308705
+      }
+    },
+    {
+      "test": "work-loops-4096",
+      "groups": 16,
+      "loops": 4096,
+      "rounds": 31,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.152648,
+        "finish_ms": 5.5060115,
+        "wall_ms": 5.658234,
+        "render_ms": 4.601074,
+        "clean_ms": 0.886667
+      }
+    },
+    {
+      "test": "power-on-empty",
+      "groups": 1,
+      "loops": 0,
+      "rounds": 101,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.089704,
+        "finish_ms": 1.9921645,
+        "wall_ms": 2.0819235000000003,
+        "render_ms": 0.007148,
+        "clean_ms": 1.967037
+      }
+    },
+    {
+      "test": "power-on-store",
+      "groups": 16,
+      "loops": 0,
+      "rounds": 101,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.149685,
+        "finish_ms": 1.5114795,
+        "wall_ms": 1.6608315,
+        "render_ms": 0.014481500000000001,
+        "clean_ms": 1.479167
+      }
+    },
+    {
+      "test": "power-restored-store",
+      "groups": 16,
+      "loops": 0,
+      "rounds": 101,
+      "dispatches": 1,
+      "render_jobs_per_round": 1,
+      "warm_median": {
+        "submit_ms": 0.15085199999999999,
+        "finish_ms": 1.5095535,
+        "wall_ms": 1.660443,
+        "render_ms": 0.014555,
+        "clean_ms": 1.477796
+      }
+    }
+  ],
+  "neural": [
+    {
+      "test": "neural-b1-l16",
+      "batch": 1,
+      "local_size": 16,
+      "rounds": 11,
+      "render_jobs_per_round": 2,
+      "warm_median": {
+        "wall_ms": 4.322,
+        "cpu_ms": 0.002,
+        "render_ms": 0.0322585,
+        "clean_ms": 4.1485175000000005
+      }
+    },
+    {
+      "test": "neural-b1-l128",
+      "batch": 1,
+      "local_size": 128,
+      "rounds": 11,
+      "render_jobs_per_round": 2,
+      "warm_median": {
+        "wall_ms": 4.314500000000001,
+        "cpu_ms": 0.002,
+        "render_ms": 0.032518500000000006,
+        "clean_ms": 4.138759
+      }
+    },
+    {
+      "test": "neural-b65-l16",
+      "batch": 65,
+      "local_size": 16,
+      "rounds": 11,
+      "render_jobs_per_round": 8,
+      "warm_median": {
+        "wall_ms": 39.7825,
+        "cpu_ms": 0.101,
+        "render_ms": 0.18309199999999998,
+        "clean_ms": 39.301463
+      }
+    },
+    {
+      "test": "neural-b65-l128",
+      "batch": 65,
+      "local_size": 128,
+      "rounds": 11,
+      "render_jobs_per_round": 2,
+      "warm_median": {
+        "wall_ms": 15.816500000000001,
+        "cpu_ms": 0.101,
+        "render_ms": 0.11988850000000001,
+        "clean_ms": 15.505388499999999
+      }
+    },
+    {
+      "test": "neural-b257-l16",
+      "batch": 257,
+      "local_size": 16,
+      "rounds": 11,
+      "render_jobs_per_round": 26,
+      "warm_median": {
+        "wall_ms": 114.13550000000001,
+        "cpu_ms": 0.4025,
+        "render_ms": 0.640206,
+        "clean_ms": 112.87346199999999
+      }
+    },
+    {
+      "test": "neural-b257-l128",
+      "batch": 257,
+      "local_size": 128,
+      "rounds": 11,
+      "render_jobs_per_round": 5,
+      "warm_median": {
+        "wall_ms": 26.355,
+        "cpu_ms": 0.398,
+        "render_ms": 0.4268145,
+        "clean_ms": 25.660907
+      }
+    },
+    {
+      "test": "neural-b1024-l128",
+      "batch": 1024,
+      "local_size": 128,
+      "rounds": 11,
+      "render_jobs_per_round": 12,
+      "warm_median": {
+        "wall_ms": 48.2295,
+        "cpu_ms": 1.603,
+        "render_ms": 1.5679824999999998,
+        "clean_ms": 46.141240999999994
+      }
+    },
+    {
+      "test": "neural-b4096-l128",
+      "batch": 4096,
+      "local_size": 128,
+      "rounds": 11,
+      "render_jobs_per_round": 48,
+      "warm_median": {
+        "wall_ms": 190.4995,
+        "cpu_ms": 6.5265,
+        "render_ms": 6.294387,
+        "clean_ms": 182.93401649999998
+      }
+    }
+  ]
+}

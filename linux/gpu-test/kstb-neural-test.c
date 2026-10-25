@@ -160,6 +160,19 @@ static int compare_double(const void *a, const void *b) {
     double x = *(const double *)a, y = *(const double *)b;
     return (x > y) - (x < y);
 }
+// Optional per-file queue accounting, always outside measured intervals.
+static void dump_stats(int fd, int round) {
+    if (!getenv("KSTB_NEURAL_STATS"))
+        return;
+    char path[64], line[256];
+    snprintf(path, sizeof(path), "/proc/self/fdinfo/%d", fd);
+    FILE *f = fopen(path, "r");
+    CHECK(f);
+    while (fgets(line, sizeof(line), f))
+        if (!strncmp(line, "drm-engine-", 11) || !strncmp(line, "v3d-jobs-", 9))
+            printf("stats round %d %s", round, line);
+    CHECK(!ferror(f) && !fclose(f));
+}
 int main(int argc, char **argv) {
     int cpu_only = argc > 1 && !strcmp(argv[1], "--cpu-only");
     int at = cpu_only ? 2 : 1;
@@ -227,6 +240,8 @@ int main(int argc, char **argv) {
                 glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, nx * 4, x);
             }
             glFinish();
+            if (!round)
+                dump_stats(fd, -1);
             start = now();
             glUseProgram(programs[0]);
             GLint location = glGetUniformLocation(programs[0], "batch");
@@ -254,6 +269,7 @@ int main(int argc, char **argv) {
             double gpu_ms = (now() - start) * 1000;
             times[round] = gpu_ms;
             CHECK(glGetError() == GL_NO_ERROR);
+            dump_stats(fd, round);
             errors += verify("hidden", buffers[3], h, gpu_h, nh);
             errors += verify("logits", buffers[6], y, gpu_y, ny);
             for (unsigned b = 0; b < batch; b++)
