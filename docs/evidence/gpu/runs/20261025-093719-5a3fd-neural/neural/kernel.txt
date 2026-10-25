@@ -1,0 +1,4 @@
+[218198.693358] kstb neural validation start
+[218198.705389] drm_sched_entity_init: called with uninitialized scheduler
+[218198.910671] drm_sched_entity_init: called with uninitialized scheduler
+[218199.115116] drm_sched_entity_init: called with uninitialized scheduler

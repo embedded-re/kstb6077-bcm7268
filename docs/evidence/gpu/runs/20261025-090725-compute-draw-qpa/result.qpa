@@ -1,0 +1,181 @@
+#sessionInfo releaseName opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80
+#sessionInfo releaseId 0x067e8832
+#sessionInfo targetName "nullws"
+#sessionInfo logFormatVersion "0.3.4"
+#sessionInfo vendor "Broadcom"
+#sessionInfo renderer "V3D 3.3"
+#sessionInfo commandLineParameters "--deqp-case=dEQP-GLES31.functional.draw_indirect.compute_interop.combined.drawarrays_compute_cmd_and_data --deqp-surface-type=window --deqp-gl-config-name=rgba8888d24s8ms0 --deqp-surface-width=256 --deqp-surface-height=256 --deqp-log-filename=/root/gpu-runs/20261025-090725-compute-draw-qpa/result.qpa"
+
+#beginSession
+
+#beginTestCaseResult dEQP-GLES31.functional.draw_indirect.compute_interop.combined.drawarrays_compute_cmd_and_data
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseResult CasePath="dEQP-GLES31.functional.draw_indirect.compute_interop.combined.drawarrays_compute_cmd_and_data" Version="0.3.4" CaseType="SelfValidate">
+ <ShaderProgram LinkStatus="OK">
+  <InfoLog></InfoLog>
+  <ComputeShader CompileStatus="OK">
+   <ShaderSource>#version 310 es
+
+precision highp int;
+precision highp float;
+
+struct DrawArraysIndirectCommand {
+    uint count;
+    uint primCount;
+    uint first;
+    uint reservedMustBeZero;
+};
+
+layout(local_size_x = 1, local_size_y = 1) in;
+layout(std430) buffer;
+
+layout(binding = 0) writeonly buffer CommandBuffer {
+    DrawArraysIndirectCommand commands[];
+};
+layout(binding = 1) writeonly buffer DataBuffer {
+    vec4 attribs[];
+};
+
+void main() {
+    const uint gridSize      = 8u;
+    const uint triangleCount = gridSize * gridSize * 2u;
+
+    // command
+    if (gl_GlobalInvocationID.x &lt; 1u &amp;&amp; gl_GlobalInvocationID.y == 0u &amp;&amp; gl_GlobalInvocationID.z == 0u) {
+        const uint numDrawCallTris = triangleCount / 1u;
+        uint firstTri              = gl_GlobalInvocationID.x * numDrawCallTris;
+
+        commands[gl_GlobalInvocationID.x].count                 = numDrawCallTris*3u;
+        commands[gl_GlobalInvocationID.x].primCount             = 1u;
+        commands[gl_GlobalInvocationID.x].first                 = firstTri*3u;
+        commands[gl_GlobalInvocationID.x].reservedMustBeZero    = 0u;
+    }
+
+    // vertex attribs
+    const vec4 yellow = vec4(1.0, 1.0, 0.0, 1.0);
+    const vec4 green = vec4(0.0, 1.0, 0.0, 1.0);
+    if (gl_GlobalInvocationID.x &lt; gridSize &amp;&amp; gl_GlobalInvocationID.y &lt; gridSize &amp;&amp; gl_GlobalInvocationID.z == 0u) {
+        uint        y           = gl_GlobalInvocationID.x;
+        uint        x           = gl_GlobalInvocationID.y;
+        float       posX        = (float(x)    / float(gridSize)) * 2.0 - 1.0;
+        float       posXp1      = (float(x+1u) / float(gridSize)) * 2.0 - 1.0;
+        float       posY        = (float(y)    / float(gridSize)) * 2.0 - 1.0;
+        float       posYp1      = (float(y+1u) / float(gridSize)) * 2.0 - 1.0;
+        vec4        color       = ((x + y)%2u != 0u) ? (yellow) : (green);
+
+        attribs[((y * gridSize + x) * 6u + 0u) * 2u + 0u] = vec4(posX,   posY,   0.0, 1.0);
+        attribs[((y * gridSize + x) * 6u + 1u) * 2u + 0u] = vec4(posXp1, posY,   0.0, 1.0);
+        attribs[((y * gridSize + x) * 6u + 2u) * 2u + 0u] = vec4(posXp1, posYp1, 0.0, 1.0);
+        attribs[((y * gridSize + x) * 6u + 3u) * 2u + 0u] = vec4(posX,   posY,   0.0, 1.0);
+        attribs[((y * gridSize + x) * 6u + 4u) * 2u + 0u] = vec4(posXp1, posYp1, 0.0, 1.0);
+        attribs[((y * gridSize + x) * 6u + 5u) * 2u + 0u] = vec4(posX,   posYp1, 0.0, 1.0);
+
+        attribs[((y * gridSize + x) * 6u + 0u) * 2u + 1u] = color;
+        attribs[((y * gridSize + x) * 6u + 1u) * 2u + 1u] = color;
+        attribs[((y * gridSize + x) * 6u + 2u) * 2u + 1u] = color;
+        attribs[((y * gridSize + x) * 6u + 3u) * 2u + 1u] = color;
+        attribs[((y * gridSize + x) * 6u + 4u) * 2u + 1u] = color;
+        attribs[((y * gridSize + x) * 6u + 5u) * 2u + 1u] = color;
+    }
+
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</ComputeShader>
+</ShaderProgram>
+ <Number Name="ComputeCompileTime" Description="Compute shader compile time" Tag="Time" Unit="ms">33.512001</Number>
+ <Number Name="LinkTime" Description="Link time" Tag="Time" Unit="ms">9.744000</Number>
+ <ShaderProgram LinkStatus="OK">
+  <InfoLog></InfoLog>
+  <VertexShader CompileStatus="OK">
+   <ShaderSource>#version 310 es
+in highp vec4 a_position;
+in highp vec4 a_color;
+out highp vec4 v_color;
+void main (void)
+{
+    gl_Position = a_position;
+    v_color = a_color;
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</VertexShader>
+  <FragmentShader CompileStatus="OK">
+   <ShaderSource>#version 310 es
+layout(location = 0) out highp vec4 fragColor;
+in highp vec4 v_color;
+void main (void)
+{
+    fragColor = v_color;
+}
+</ShaderSource>
+   <InfoLog></InfoLog>
+</FragmentShader>
+</ShaderProgram>
+ <Number Name="VertexCompileTime" Description="Vertex shader compile time" Tag="Time" Unit="ms">1.117000</Number>
+ <Number Name="FragmentCompileTime" Description="Fragment shader compile time" Tag="Time" Unit="ms">0.705000</Number>
+ <Number Name="LinkTime" Description="Link time" Tag="Time" Unit="ms">2.011000</Number>
+ <Text>Preparing to draw 8 x 8 grid.</Text>
+ <Text>Filling following buffers using compute shader:
+	command buffer
+	data buffer
+</Text>
+ <Text>Binding command buffer to binding point 0</Text>
+ <Text>Allocating memory for command buffer, size 16 byte(s).</Text>
+ <Text>Binding data buffer to binding point 1</Text>
+ <Text>Allocating memory for data buffer, size 12 KB.</Text>
+ <Text>Dispatching compute, size = (8, 8, 1)</Text>
+ <Text>Memory barrier. Barriers = GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT|GL_COMMAND_BARRIER_BIT</Text>
+ <Text>Drawing from buffers with 1 draw call(s).</Text>
+ <Text>Image verification failed.</Text>
+ <ImageSet Name="Verfication result" Description="Result of rendering">
+  <Image Name="Result" Width="256" Height="256" Format="RGBA8888" CompressionMode="PNG" Description="Result">
+   iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADHUlEQVR4nO3UMQEA
+   IAzAsIF/zyBjRxMFvXpm5g2QdLcDgD0GAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEGAGEG
+   AGEGAGEGAGEGAGEGAGEGAGEfdCIC/5NkVo8AAAAASUVORK5CYII=
+</Image>
+  <Image Name="ErrorMask" Width="256" Height="256" Format="RGBA8888" CompressionMode="PNG" Description="Error mask">
+   iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADHUlEQVR4nO3UMQEA
+   IAzAsIF/z0MGRxMFvXp2ZgdIur8DgH8MAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIMAMIM
+   AMIMAMIMAMIMAMIMAMIMAMIerfYD/tj/d68AAAAASUVORK5CYII=
+</Image>
+</ImageSet>
+ <Number Name="TestDuration" Description="Test case duration in microseconds" Tag="Time" Unit="us">121057</Number>
+ <Result StatusCode="Fail">Result image invalid</Result>
+</TestCaseResult>
+
+#endTestCaseResult
+
+Run took 0.17 seconds
+
+#endSession

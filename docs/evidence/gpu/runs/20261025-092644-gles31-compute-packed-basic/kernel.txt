@@ -1,0 +1,27 @@
+[217563.448472] kstb-gpu-run sync 217563.076298
+[217563.759165] drm_sched_entity_init: called with uninitialized scheduler
+[217563.806048] drm_sched_entity_init: called with uninitialized scheduler
+[217564.285912] drm_sched_entity_init: called with uninitialized scheduler
+[217564.332443] drm_sched_entity_init: called with uninitialized scheduler
+[217564.622851] drm_sched_entity_init: called with uninitialized scheduler
+[217564.670417] drm_sched_entity_init: called with uninitialized scheduler
+[217565.844153] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[217565.853357] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[217566.900134] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[217566.909303] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[217566.976390] drm_sched_entity_init: called with uninitialized scheduler
+[217567.024415] drm_sched_entity_init: called with uninitialized scheduler
+[217568.180154] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[217568.189618] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[217569.236138] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[217569.245600] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[217569.288909] drm_sched_entity_init: called with uninitialized scheduler
+[217569.336631] drm_sched_entity_init: called with uninitialized scheduler
+[217569.493347] drm_sched_entity_init: called with uninitialized scheduler
+[217569.541123] drm_sched_entity_init: called with uninitialized scheduler
+[217572.788168] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[217572.797741] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[217573.019534] drm_sched_entity_init: called with uninitialized scheduler
+[217573.067307] drm_sched_entity_init: called with uninitialized scheduler
+[217575.887232] drm_sched_entity_init: called with uninitialized scheduler
+[217575.935719] drm_sched_entity_init: called with uninitialized scheduler

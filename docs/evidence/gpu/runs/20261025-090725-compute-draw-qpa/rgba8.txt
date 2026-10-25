@@ -1,0 +1,23 @@
+Writing test log into /root/gpu-runs/20261025-090725-compute-draw-qpa/result.qpa
+dEQP Core opengl-cts-4.6.8.1-0-g067e8832315e79817ede1c4863804e440f5d1c80 (0x067e8832) starting..
+  target implementation = 'nullws'
+ERROR: Waiver file '' could not be opened. No tests will be waived.
+
+Test case 'dEQP-GLES31.functional.draw_indirect.compute_interop.combined.drawarrays_compute_cmd_and_data'..
+SHADER-DB-GLSL1 - MESA_SHADER_COMPUTE shader: 167 inst, 2 threads, 0 loops, 42 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 167 inst-and-stalls, 10 nops
+SHADER-DB-GLSL3 - MESA_SHADER_FRAGMENT shader: 8 inst, 1 threads, 0 loops, 0 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 8 inst-and-stalls, 0 nops
+SHADER-DB-GLSL3 - MESA_SHADER_VERTEX shader: 37 inst, 1 threads, 0 loops, 6 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 2 nops
+SHADER-DB-GLSL3 - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+SHADER-DB-TTN - MESA_SHADER_FRAGMENT shader: 14 inst, 4 threads, 0 loops, 3 uniforms, 4 max-temps, 0:0 spills:fills, 0 sfu-stalls, 14 inst-and-stalls, 0 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX shader: 37 inst, 1 threads, 0 loops, 6 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 2 nops
+SHADER-DB-TTN - MESA_SHADER_VERTEX_BIN shader: 26 inst, 1 threads, 0 loops, 4 uniforms, 7 max-temps, 0:0 spills:fills, 0 sfu-stalls, 26 inst-and-stalls, 2 nops
+  Fail (Result image invalid)
+
+DONE!
+
+Test run totals:
+  Passed:        0/1 (0.0%)
+  Failed:        1/1 (100.0%)
+  Not supported: 0/1 (0.0%)
+  Warnings:      0/1 (0.0%)
+  Waived:        0/1 (0.0%)

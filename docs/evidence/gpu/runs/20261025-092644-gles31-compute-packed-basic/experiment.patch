@@ -1,0 +1,75 @@
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index c95c9b2..3a31ade 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1409,7 +1409,7 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+ 
+ #if V3D_VERSION == 33
+ /* Experimental render-only compute, deliberately separate from the CSD path.
+- * A 64x32 RGBA16UI tile supplies IDs for 16 workgroups. Each group
++ * A 64x32 RGBA16UI tile supplies IDs for up to 128 workgroups. Each group
+  * uses a two-row line rounded to 16 invocations. The NV
+  * shader record accepts raster coordinates directly, without a binner or VS.
+  */
+@@ -1446,8 +1446,16 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 count *= v3d->compute_num_workgroups[d];
+         }
+         const unsigned line_width = align(wg_size, 16) / 2;
+-        for (uint64_t first = 0; first < count; first += 16) {
+-                const unsigned groups = MIN2(count - first, 16);
++        /* Shared slots and TSY barriers retain the original 16-group layout.
++         * Independent groups can fill the otherwise unused tile columns.
++         */
++        const unsigned columns = cs->prog_data.compute->shared_size ||
++                                 cs->prog_data.base->has_control_barrier ?
++                                 1 : 64 / line_width;
++        const unsigned groups_per_job = 16 * columns;
++        for (uint64_t first = 0; first < count; first += groups_per_job) {
++                const unsigned groups = MIN2(count - first, groups_per_job);
++                const unsigned rows = DIV_ROUND_UP(groups, columns);
+                 struct v3d_job *job = v3d_job_create(v3d);
+                 struct v3d_bo *cl = v3d_bo_alloc(screen, 16384, "compute33_cl");
+                 struct v3d_bo *ids = v3d_bo_alloc(screen, 20480, "compute33_ids");
+@@ -1471,14 +1479,17 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 memset(id_map, 0, ids->size);
+                 for (unsigned y = 0; y < groups * 2; y++) {
+                         for (unsigned x = 0; x < 64; x++) {
+-                                unsigned local = (y & 1) * line_width + x;
+-                                uint64_t group = first + y / 2;
++                                unsigned slot = (y / 2) * columns + x / line_width;
++                                unsigned local = (y & 1) * line_width + x % line_width;
++                                bool padding = local >= wg_size || slot >= groups ||
++                                               x >= columns * line_width;
++                                uint64_t group = padding ? first : first + slot;
+                                 /* MSF masks writes, not reads. Give padding
+                                  * lanes invocation 0's valid addresses.
+                                  */
+                                 uint16_t id[4] = {
+-                                        (local < wg_size ? local : 0) | ((y / 2) << 7) |
+-                                                (local >= wg_size ? 0x8000 : 0),
++                                        (padding ? 0 : local) | ((slot & 15) << 7) |
++                                                (padding ? 0x8000 : 0),
+                                         group % v3d->compute_num_workgroups[0],
+                                         (group / v3d->compute_num_workgroups[0]) %
+                                                 v3d->compute_num_workgroups[1],
+@@ -1537,7 +1548,7 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 const uint8_t primitives[] = {0x31,0x23,0,0,0,0,0x1b,0,0,0};
+                 memcpy(r, primitives, sizeof(primitives));
+                 cl_advance(&r, sizeof(primitives));
+-                for (unsigned i = 1; i < groups; i++) {
++                for (unsigned i = 1; i < rows; i++) {
+                         cl_u8(&r, 0x27); cl_u8(&r, 2);
+                 }
+                 cl_u8(&r, 0xe3);
+@@ -1562,9 +1573,9 @@ v3d33_launch_grid(struct pipe_context *pctx, const struct pipe_grid_info *info)
+                 };
+                 memcpy(map + 0x400, record, sizeof(record));
+                 uint16_t *xy = (void *)(map + 0x800);
+-                for (unsigned i = 0; i < groups; i++) {
++                for (unsigned i = 0; i < rows; i++) {
+                         xy[i*4] = 128; xy[i*4+1] = 256 + 512*i;
+-                        xy[i*4+2] = line_width*256+128; xy[i*4+3] = 256 + 512*i;
++                        xy[i*4+2] = columns*line_width*256+128; xy[i*4+3] = 256 + 512*i;
+                 }
+                 uint32_t zw[] = {0, 0x3f800000};
+                 memcpy(map + 0x900, zw, sizeof(zw));

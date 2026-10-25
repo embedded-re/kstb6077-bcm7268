@@ -1,0 +1,25 @@
+4,3449,218135492459,-;drm_sched_entity_init: called with uninitialized scheduler
+4,3450,218166482065,-;drm_sched_entity_init: called with uninitialized scheduler
+4,3451,218170385061,-;drm_sched_entity_init: called with uninitialized scheduler
+3,3452,218171412906,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+3,3453,218171421653,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+4,3454,218176257432,-;drm_sched_entity_init: called with uninitialized scheduler
+4,3455,218180160864,-;drm_sched_entity_init: called with uninitialized scheduler
+3,3456,218181204924,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+3,3457,218181213714,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+4,3458,218186033481,-;drm_sched_entity_init: called with uninitialized scheduler
+4,3459,218189920819,-;drm_sched_entity_init: called with uninitialized scheduler
+3,3460,218190964929,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu
+3,3461,218190973778,-;v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+ SUBSYSTEM=platform
+ DEVICE=+platform:f1200000.gpu

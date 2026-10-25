@@ -1,0 +1,37 @@
+{
+  "binary": "stock/release/hal/egl/libGLES_nexus.so",
+  "sha256": "c4ff98a62b0878bbdf5ac4fd79cfc7d97727da7da93e76816fc42577ff9b07b5",
+  "method": "host Unicorn execution; printer callbacks modeled; no MMIO",
+  "opcodes": [
+    {
+      "opcode": 33,
+      "name": "indirect_indexed_prim_list",
+      "bytes": 15
+    },
+    {
+      "opcode": 37,
+      "name": "indirect_vertex_array_prims",
+      "bytes": 11
+    },
+    {
+      "opcode": 44,
+      "name": "indirect_primitive_limits",
+      "bytes": 12
+    }
+  ],
+  "packed_payload": "563412efcdab89df9b5713",
+  "fields": [
+    {
+      "name": "max_index",
+      "value": 1193046
+    },
+    {
+      "name": "max_instance",
+      "value": 2309737967
+    },
+    {
+      "name": "index_buffer_size",
+      "value": 324508639
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+2305 cases: Pass 1955, NotSupported 344, Fail 5, QualityWarning 1
+kernel: 0 MMU errors, 0 GPU resets, 0 oops

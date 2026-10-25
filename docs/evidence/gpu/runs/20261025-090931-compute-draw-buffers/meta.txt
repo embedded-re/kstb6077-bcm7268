@@ -1,0 +1,4 @@
+Linux kstb6077 6.18.57-kstb #29 SMP Thu Oct 22 21:58:58 CEST 2026 aarch64 GNU/Linux
+23.3.6-fe7dda5e
+8171c7bd743141f875616c7d8b9aeea9febd5c5d62a60fe28de479a317051dab  /opt/mesa/23.3.6-3112d69b/lib/dri/v3d_dri.so
+scratch Mesa V3D_COMPUTE33=1 GLES 3.1 override

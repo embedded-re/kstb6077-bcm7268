@@ -681,3 +681,53 @@ correct execution; the measured GPU path is substantially slower than the
 CPU. Those timings include dispatch overhead and do not isolate shader
 execution. The weights are generated test data, with no trained-model
 accuracy claim.
+
+## Native indirect draws on V3D 3.3 (2026-10-25)
+
+Patch 0032, build `23.3.6-5a3fd8dd`, adds the missing 3.3
+`Indirect Primitive Limits` packet before native indexed and nonindexed
+indirect draws. Its DRI SHA256 is
+`fa0fa078a2a15ee7e4daebcd03e469370be6a72f2855ed6758c5f1dc8349ed08`.
+
+The patch-0031 full run stopped after 2,305 reported cases on five
+compute-generated indirect-draw failures, without GPU faults. Controls
+showed the same failure with CPU-generated buffers and no compute shader.
+The generated command/vertex data matched CPU readback, and explicitly
+waiting for compute completion did not repair the draw.
+[Incomplete full run](../docs/evidence/gpu/runs/20261025-090216-gles31-3112-full/README.md).
+
+Host execution of the vendor's decoder, size function, packer and printer
+identifies opcode 44 as a 12-byte `indirect_primitive_limits` packet: a
+24-bit maximum index, 32-bit maximum instance and 32-bit index-buffer size.
+Mesa defined opcode 44 only as V3D 4.1+ `Index Buffer Setup`. The new 3.3
+definition matches the vendor bytes; draws emit the limits and retain
+native indirect execution.
+[Vendor binary audit](../docs/evidence/gpu/runs/20261025-093100-vendor-indirect-limits/README.md).
+
+The scratch fix passes **157/157 normal-sized indirect-draw cases**,
+including the combined/separate compute interoperability cases, primitive
+types, offsets, index formats and instancing. The numbered build also
+passes all 157, plus the image-copy reproducer, 298 atomic-counter cases and
+195 compute cases, without GPU faults.
+[157-case sweep](../docs/evidence/gpu/runs/20261025-092549-gles31-indirect-limits-short/summary.txt).
+
+The retained numbered package subsequently passes the gather subset
+(654 Pass / 405 optional-extension NotSupported), 350 compute/native-fence
+chains with three deliberate resets, and all three neural-network batches
+with exact CPU agreement and intact guards. Normal checks have zero GPU
+faults; the reset gate has zero MMU errors or oopses.
+[Numbered indirect draw](../docs/evidence/gpu/runs/20261025-093310-gles31-5a3fd-indirect/summary.txt),
+[fence/reset recovery](../docs/evidence/gpu/runs/20261025-093617-5a3fd-compute-sync-recovery/summary.txt),
+[neural checks](../docs/evidence/gpu/runs/20261025-093719-5a3fd-neural/summary.txt).
+
+The 50 `compute_interop.large` cases remain separate coverage. An incomplete
+broader sweep records two SIGKILL/Timeout results for 500x500 compute-generated
+grids, without GPU faults. The precise termination cause and dispatch cost
+remain open; CTS has a 30-second watchdog interval. An attempted tile-column
+packing optimization caused failures/resets and was reverted. Numbered
+builds retain the previously tested 16-workgroup layout.
+[Large-case diagnostic](../docs/evidence/gpu/runs/20261025-092011-gles31-indirect-limits-all/README.md),
+[rejected experiment](../docs/evidence/gpu/runs/20261025-092644-gles31-compute-packed-basic/README.md).
+
+Full GLES 3.1 and post-0032 graphics regressions remain pending. Large-case
+timeouts are not classified as a hardware limit or silently omitted.

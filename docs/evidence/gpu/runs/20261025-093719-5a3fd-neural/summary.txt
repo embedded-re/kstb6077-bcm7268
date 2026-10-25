@@ -1,0 +1,17 @@
+3/3 neural batches PASS: 1, 65, 257; hidden values, outputs, classes and guards checked
+kernel: 0 MMU errors, 0 GPU resets, 0 oops
+dense 32 -> 16 ReLU -> 8, batch 1; CPU 0.004 ms; class checksum 0x10c56d3
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+hidden: 16 values, max absolute error 0, 0 errors; guards checked
+logits: 8 values, max absolute error 0, 0 errors; guards checked
+GPU dispatch + synchronization 12.243 ms; GPU class checksum 0x10c56d3; 1 classification checks; PASS
+dense 32 -> 16 ReLU -> 8, batch 65; CPU 0.102 ms; class checksum 0x7ad72d7
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+hidden: 1040 values, max absolute error 0, 0 errors; guards checked
+logits: 520 values, max absolute error 0, 0 errors; guards checked
+GPU dispatch + synchronization 42.661 ms; GPU class checksum 0x7ad72d7; 65 classification checks; PASS
+dense 32 -> 16 ReLU -> 8, batch 257; CPU 0.412 ms; class checksum 0xdae64da0
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+hidden: 4112 values, max absolute error 0, 0 errors; guards checked
+logits: 2056 values, max absolute error 0, 0 errors; guards checked
+GPU dispatch + synchronization 118.190 ms; GPU class checksum 0xdae64da0; 257 classification checks; PASS

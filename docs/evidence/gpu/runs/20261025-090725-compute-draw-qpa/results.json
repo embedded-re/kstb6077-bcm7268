@@ -1,0 +1,10 @@
+[
+  {
+    "test": "rgba8",
+    "exit": 1,
+    "start": 216403.57588112,
+    "end": 216403.86847001,
+    "gles_override": null,
+    "v3d_debug": "shaderdb"
+  }
+]

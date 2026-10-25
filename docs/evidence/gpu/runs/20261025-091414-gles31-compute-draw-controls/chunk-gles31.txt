@@ -1,0 +1,3 @@
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_cmd
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_data
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_cmd_and_data

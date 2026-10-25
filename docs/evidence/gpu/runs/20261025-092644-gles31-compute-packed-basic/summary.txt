@@ -1,0 +1,7 @@
+195 cases: Pass 185, Crash 6, Fail 4
+kernel: 0 MMU errors, 5 GPU resets, 0 oops
+  reset                                    dEQP-GLES31.functional.compute.basic.copy_image_to_ssbo_large Crash
+  reset                                    dEQP-GLES31.functional.compute.basic.copy_image_to_ssbo_large Crash
+  reset                                    dEQP-GLES31.functional.compute.basic.copy_ssbo_to_image_small Crash
+  reset                                    dEQP-GLES31.functional.compute.basic.copy_ssbo_to_image_small Crash
+  reset                                    dEQP-GLES31.functional.compute.basic.image_barrier_multiple Crash

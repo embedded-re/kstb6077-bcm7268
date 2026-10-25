@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: 1q9lugp <lackowork84@gmail.com>
+Date: Sun, 25 Oct 2026 09:25:49 +0100
+Subject: [PATCH 32/32] v3d: program V3D 3.3 limits before native indirect
+ draws
+
+---
+ src/broadcom/cle/v3d_packet_v33.xml |  6 ++++++
+ src/gallium/drivers/v3d/v3dx_draw.c | 13 +++++++++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/src/broadcom/cle/v3d_packet_v33.xml b/src/broadcom/cle/v3d_packet_v33.xml
+index 290438f..3f21760 100644
+--- a/src/broadcom/cle/v3d_packet_v33.xml
++++ b/src/broadcom/cle/v3d_packet_v33.xml
+@@ -680,6 +680,12 @@
+     <field name="Base Vertex" size="32" start="0" type="uint"/>
+   </packet>
+ 
++  <packet code="44" name="Indirect Primitive Limits" cl="B" max_ver="33">
++    <field name="Max Index" size="24" start="0" type="uint"/>
++    <field name="Max Instance" size="32" start="24" type="uint"/>
++    <field name="Index Buffer Size" size="32" start="56" type="uint"/>
++  </packet>
++
+   <packet code="44" name="Index Buffer Setup" cl="B" min_ver="41">
+     <field name="Address" size="32" start="0" type="address"/>
+     <field name="Size" size="32" start="32" type="uint"/>
+diff --git a/src/gallium/drivers/v3d/v3dx_draw.c b/src/gallium/drivers/v3d/v3dx_draw.c
+index 1cfe521..c95c9b2 100644
+--- a/src/gallium/drivers/v3d/v3dx_draw.c
++++ b/src/gallium/drivers/v3d/v3dx_draw.c
+@@ -1217,6 +1217,13 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+ #endif
+ 
+                 if (indirect && indirect->buffer) {
++#if V3D_VERSION == 33
++                        cl_emit(&job->bcl, INDIRECT_PRIMITIVE_LIMITS, limits) {
++                                limits.max_index = 0xffffff;
++                                limits.max_instance = 0xffffffff;
++                                limits.index_buffer_size = prsc->width0 - offset;
++                        }
++#endif
+                         cl_emit(&job->bcl, INDIRECT_INDEXED_INSTANCED_PRIM_LIST, prim) {
+                                 prim.index_type = ffs(info->index_size) - 1;
+ #if V3D_VERSION < 40
+@@ -1268,6 +1275,12 @@ v3d_draw_vbo(struct pipe_context *pctx, const struct pipe_draw_info *info,
+                         pipe_resource_reference(&prsc, NULL);
+         } else {
+                 if (indirect && indirect->buffer) {
++#if V3D_VERSION == 33
++                        cl_emit(&job->bcl, INDIRECT_PRIMITIVE_LIMITS, limits) {
++                                limits.max_index = 0xffffff;
++                                limits.max_instance = 0xffffffff;
++                        }
++#endif
+                         cl_emit(&job->bcl, INDIRECT_VERTEX_ARRAY_INSTANCED_PRIMS, prim) {
+                                 prim.mode = hw_prim_type | prim_tf_enable;
+                                 prim.number_of_draw_indirect_array_records = indirect->draw_count;

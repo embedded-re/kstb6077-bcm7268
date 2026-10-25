@@ -1,0 +1,3 @@
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_cmd Fail @uptime=216813.320 (Result image invalid)
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_data Fail @uptime=216813.370 (Result image invalid)
+dEQP-GLES31.functional.draw_indirect.compute_interop.separate.drawarrays_compute_cmd_and_data Fail @uptime=216813.426 (Result image invalid)

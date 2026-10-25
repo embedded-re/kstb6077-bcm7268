@@ -184,6 +184,12 @@ also runs on V3D compute with exact CPU agreement for three batch sizes;
 its measured GPU path is slower than the CPU reference. Full conformance
 and graphics regressions remain pending; see [`gpu-compute.md`](gpu-compute.md).
 
+Build `23.3.6-5a3fd8dd` adds patch 0032: program the vendor's V3D 3.3
+indirect-primitive limits before native indirect draws. All 157 normal-sized
+indirect cases pass on the numbered build, including compute-to-draw
+interoperability. Large compute-generated draw timeouts and full-suite
+validation remain open; see [`gpu-compute.md`](gpu-compute.md).
+
 The previous build `848c0204` (22 patches), against `518c06f4` (21 patches),
 case by case: GLES2 and EGL identical, in GLES3 only
 `texture.mipmap.cube.max_level.linear_nearest` changes (Fail → Pass).

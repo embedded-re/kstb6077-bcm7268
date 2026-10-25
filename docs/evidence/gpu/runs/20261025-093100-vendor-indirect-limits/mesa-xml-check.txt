@@ -1,0 +1,2 @@
+PASS: Mesa XML packet matches vendor opcode and 11-byte payload
+packet 2c563412efcdab89df9b5713
