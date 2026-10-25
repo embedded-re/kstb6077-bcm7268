@@ -1,0 +1,7 @@
+{
+  "executable_sha256": "5ca494f3a9bd18318b89877d8a717b62b06b46561dd753e70882814fc7b40509",
+  "source_sha256": "9f61a2ac3f4abdedd94b72d4015d93814262a63efc8c4934e899fd236c74a1a6",
+  "flags": "-O3 -mcpu=cortex-a53 -fno-vectorize -fno-slp-vectorize -ffp-contract=fast -pthread",
+  "packing": "K-by-four column panels, repacked inside every timed CPU round",
+  "gate": "FIFO release after one cold checked round, excludes setup/reference/cold compilation"
+}

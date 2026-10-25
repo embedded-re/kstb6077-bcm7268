@@ -1,0 +1,14 @@
+[14076.752951] kstb gemm value start
+[14076.762692] kstb gemm value trial0-cpu-only
+[14088.564868] kstb gemm value trial0-hybrid
+[14098.542562] drm_sched_entity_init: called with uninitialized scheduler
+[14105.764453] kstb gemm value trial1-hybrid
+[14115.920664] drm_sched_entity_init: called with uninitialized scheduler
+[14122.999492] kstb gemm value trial1-cpu-only
+[14134.810634] kstb gemm value trial2-cpu-only
+[14146.609711] kstb gemm value trial2-hybrid
+[14156.671913] drm_sched_entity_init: called with uninitialized scheduler
+[14163.724206] kstb gemm value sync-100
+[14163.733866] drm_sched_entity_init: called with uninitialized scheduler
+[14165.245736] kstb gemm value neural-post
+[14165.256669] drm_sched_entity_init: called with uninitialized scheduler

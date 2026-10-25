@@ -1,0 +1,5 @@
+PASS: final tested source, host source, ELF hash and board metadata agree.
+PASS: decision analysis verifies complete gates, exact results, driver identity and fault-free logs.
+PASS: board and host decision JSON byte-identical.
+PASS: declared 1.2x cutoff yields prioritize_rendering.
+PASS: no default driver/kernel changes, no active workload at final process capture.

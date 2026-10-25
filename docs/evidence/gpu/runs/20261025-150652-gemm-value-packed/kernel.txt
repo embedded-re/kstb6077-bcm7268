@@ -1,0 +1,15 @@
+[13820.192977] kstb gemm value start
+[13820.202751] kstb gemm value check-neon1p-n64
+[13820.614374] kstb gemm value check-neon4p-n64
+[13821.026102] kstb gemm value transfer-check-tiled2-n64
+[13821.038901] drm_sched_entity_init: called with uninitialized scheduler
+[13821.944108] kstb gemm value cpu-neon1p-n128
+[13822.356175] kstb gemm value cpu-neon4p-n128
+[13822.768263] kstb gemm value cpu-neon1p-n256
+[13823.281500] kstb gemm value cpu-neon4p-n256
+[13823.693677] kstb gemm value cpu-neon1p-n512
+[13824.915386] kstb gemm value cpu-neon4p-n512
+[13825.838434] kstb gemm value cpu-neon1p-n1024
+[13835.277103] kstb gemm value cpu-neon4p-n1024
+[13842.298780] kstb gemm value sync-30
+[13842.308830] drm_sched_entity_init: called with uninitialized scheduler

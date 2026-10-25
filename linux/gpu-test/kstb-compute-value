@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Decide compute priority from the monitored GEMM and coprocessor gates.
+
+Usage: kstb-compute-value INITIAL_RUN PACKED_RUN COPROCESSOR_RUN [--output FILE]
+The archived run.py files reproduce each hardware gate. This tool checks their
+completion/correctness and compares warm medians against the strongest measured
+CPU baseline. A result applies to these workloads, not every possible kernel.
+"""
+import argparse
+import json
+from pathlib import Path
+import re
+import statistics
+
+
+def read_json(path):
+    return json.loads(path.read_text())
+
+
+def measurements(path):
+    rows = []
+    for line in path.read_text().splitlines():
+        if re.match(r'round [1-9][0-9]* warm ', line):
+            assert 'errors 0 ' in line and line.endswith(' PASS'), path
+            rows.append({key: float(re.search(r'\b' + key + r' ([0-9.]+)', line).group(1))
+                         for key in ('wall_ms', 'process_cpu_ms', 'GFLOPS')})
+    assert rows, path
+    return {key: statistics.median(row[key] for row in rows) for key in rows[0]}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('initial', type=Path)
+    parser.add_argument('packed', type=Path)
+    parser.add_argument('coprocessor', type=Path)
+    parser.add_argument('--minimum-speedup', type=float, default=1.2)
+    parser.add_argument('--output', type=Path)
+    args = parser.parse_args()
+    assert args.minimum_speedup > 1
+    roots = (args.initial, args.packed, args.coprocessor)
+    driver_hashes = set()
+    gemm_rounds = gpu_rounds = neural_rounds = fence_chains = 0
+    for root in roots:
+        assert read_json(root / 'state.json')['state'] == 'complete', root
+        kernel = (root / 'kernel.txt').read_text()
+        assert not re.search(r'Resetting GPU|MMU error|Oops|BUG:|Unable to handle|Internal error|kmsg overrun', kernel), root
+        meta = read_json(root / 'meta.json')
+        driver_hashes.add(meta['sha256']['/opt/mesa/' + meta['build'] + '/lib/dri/v3d_dri.so'])
+        assert meta['environment']['V3D_COMPUTE33'] == '1'
+        assert 'MESA_GLES_VERSION_OVERRIDE' not in meta['environment']
+        for path in root.rglob('*.txt'):
+            text = path.read_text()
+            rounds = re.findall(r'^round \d+ (?:cold|warm) mode .*$', text, re.M)
+            if rounds:
+                assert all('errors 0 ' in line and line.endswith(' PASS') for line in rounds), path
+                assert 'PASS: full matrix exact, guards intact' in text, path
+                gemm_rounds += len(rounds)
+                gpu_rounds += sum(bool(re.search(r'mode (?:naive|shared1|tiled2|tiled4) ', line)) for line in rounds)
+            nn = re.findall(r'^round \d+ \((?:cold|warm)\):.*$', text, re.M)
+            assert all(line.endswith('PASS') for line in nn), path
+            neural_rounds += len(nn)
+            if 'PASS: compute native-fence chains' in text:
+                fence_chains += max(int(n) for n in re.findall(r'(\d+)/\d+ chains exact', text))
+    assert len(driver_hashes) == 1, driver_hashes
+    table = []
+    for n in (128, 256, 512, 1024):
+        cpu_paths = list(args.initial.glob(f'cpu-*-n{n}.txt')) + list(args.packed.glob(f'cpu-*-n{n}.txt'))
+        cpu_path = min(cpu_paths, key=lambda path: measurements(path)['wall_ms'])
+        gpu_paths = list(args.initial.glob(f'resident-*-n{n}.txt'))
+        gpu_path = min(gpu_paths, key=lambda path: measurements(path)['wall_ms'])
+        cpu = measurements(cpu_path)
+        gpu = measurements(gpu_path)
+        transfer_paths = list(args.initial.glob(f'transfer-*-n{n}.txt'))
+        transfer = measurements(transfer_paths[0]) if transfer_paths else None
+        table.append(dict(N=n, cpu_source=cpu_path.name, gpu_source=gpu_path.name,
+                          cpu=cpu, gpu_resident=gpu, gpu_transfer=transfer,
+                          resident_speedup=cpu['wall_ms'] / gpu['wall_ms'],
+                          transfer_speedup=cpu['wall_ms'] / transfer['wall_ms'] if transfer else None))
+    trials = []
+    for trial in range(3):
+        cpu = read_json(args.coprocessor / f'trial{trial}-cpu-only' / 'summary.json')
+        hybrid = read_json(args.coprocessor / f'trial{trial}-hybrid' / 'summary.json')
+        assert cpu['timed_jobs'] == hybrid['timed_jobs'] == 16
+        trials.append(dict(cpu_seconds=cpu['elapsed_seconds'], hybrid_seconds=hybrid['elapsed_seconds'],
+                           speedup=cpu['elapsed_seconds'] / hybrid['elapsed_seconds']))
+    co_speedup = statistics.median(row['speedup'] for row in trials)
+    direct_value = any(row['transfer_speedup'] is not None and
+                       row['transfer_speedup'] >= args.minimum_speedup for row in table)
+    co_value = co_speedup >= args.minimum_speedup
+    result = dict(verdict='retain_compute' if direct_value or co_value else 'prioritize_rendering',
+                  threshold=args.minimum_speedup, direct_compute_qualifies=direct_value,
+                  coprocessor_qualifies=co_value, coprocessor_median_speedup=co_speedup,
+                  coprocessor_trials=trials, matrices=table,
+                  reliability=dict(exact_matrix_rounds=gemm_rounds, gpu_matrix_rounds=gpu_rounds,
+                                   neural_rounds=neural_rounds, fence_chains=fence_chains,
+                                   resets=0, mmu_errors=0),
+                  driver_sha256=next(iter(driver_hashes)),
+                  scope='Measured FP32 GEMM and fixed 12-CPU/4-GPU job mix; energy, other kernels and rendering are not measured.')
+    output = json.dumps(result, indent=2) + '\n'
+    if args.output:
+        args.output.write_text(output)
+    print(output, end='')
+
+
+if __name__ == '__main__':
+    main()

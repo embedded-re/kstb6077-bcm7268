@@ -1,0 +1,17 @@
+reference N 1024 9949.356 ms; binary-fraction inputs, full exact checks
+data_path host CPU_workers 4
+round 0 cold mode neon4p N 1024 wall_ms 550.508757 host_submit_ms 550.507646 host_finish_ms 0.001111 process_cpu_ms 1320.135592 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 3.900907 max_error 0 errors 0 checksum 0xdeb806d449780f83 PASS
+round 1 warm mode neon4p N 1024 wall_ms 409.891718 host_submit_ms 409.891422 host_finish_ms 0.000296 process_cpu_ms 1215.710096 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.239149 max_error 0 errors 0 checksum 0xfc3039b6379cab83 PASS
+round 2 warm mode neon4p N 1024 wall_ms 393.686365 host_submit_ms 393.685254 host_finish_ms 0.001111 process_cpu_ms 1237.990091 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.454808 max_error 0 errors 0 checksum 0xc3dd7c178655f783 PASS
+round 3 warm mode neon4p N 1024 wall_ms 416.698119 host_submit_ms 416.697860 host_finish_ms 0.000259 process_cpu_ms 1179.070405 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.153572 max_error 0 errors 0 checksum 0x1c0088c3deb9e383 PASS
+round 4 warm mode neon4p N 1024 wall_ms 397.606621 host_submit_ms 397.606325 host_finish_ms 0.000296 process_cpu_ms 1200.745507 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.401026 max_error 0 errors 0 checksum 0x75b2703e3c8c5f83 PASS
+round 5 warm mode neon4p N 1024 wall_ms 365.386654 host_submit_ms 365.386358 host_finish_ms 0.000296 process_cpu_ms 1219.622851 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.877291 max_error 0 errors 0 checksum 0xb4fa201096f98b83 PASS
+round 6 warm mode neon4p N 1024 wall_ms 464.079292 host_submit_ms 464.078958 host_finish_ms 0.000334 process_cpu_ms 1181.393991 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 4.627407 max_error 0 errors 0 checksum 0x37537b3593b16783 PASS
+round 7 warm mode neon4p N 1024 wall_ms 393.157144 host_submit_ms 393.156144 host_finish_ms 0.001000 process_cpu_ms 1205.408776 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.462151 max_error 0 errors 0 checksum 0x2bfd815b63215383 PASS
+round 8 warm mode neon4p N 1024 wall_ms 339.369348 host_submit_ms 339.368385 host_finish_ms 0.000963 process_cpu_ms 1147.146996 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 6.327866 max_error 0 errors 0 checksum 0xe05825fc8f864383 PASS
+round 9 warm mode neon4p N 1024 wall_ms 441.316501 host_submit_ms 441.316242 host_finish_ms 0.000259 process_cpu_ms 1223.283879 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 4.866085 max_error 0 errors 0 checksum 0xe572cd138feb4383 PASS
+round 10 warm mode neon4p N 1024 wall_ms 372.247610 host_submit_ms 372.247129 host_finish_ms 0.000481 process_cpu_ms 1220.218736 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.768966 max_error 0 errors 0 checksum 0x811be6ac8f5f8383 PASS
+round 11 warm mode neon4p N 1024 wall_ms 369.496872 host_submit_ms 369.496391 host_finish_ms 0.000481 process_cpu_ms 1149.367801 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.811913 max_error 0 errors 0 checksum 0xfe30ea6ca12d3383 PASS
+round 12 warm mode neon4p N 1024 wall_ms 372.858276 host_submit_ms 372.857795 host_finish_ms 0.000481 process_cpu_ms 1134.440288 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 5.759517 max_error 0 errors 0 checksum 0xc70bf0ae5bf39383 PASS
+summary mode neon4p N 1024 warm_rounds 12 median_ms 393.421755 GFLOPS 5.458477
+PASS: full matrix exact, guards intact

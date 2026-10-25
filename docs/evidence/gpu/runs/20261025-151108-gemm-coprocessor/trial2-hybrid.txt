@@ -1,0 +1,2 @@
+{"kind": "hybrid", "N": 1024, "timed_jobs": 16, "elapsed_seconds": 4.8951611680004135, "aggregate_GFLOPS": 7.019123005103292, "includes": "all timed rounds, GPU transfers, result validation, process cleanup; warmup/reference excluded", "configs": [["cpu", "neon4p", 12], ["gpu", "tiled2", 4]]}
+PASS: sixteen GEMMs exact, guards intact

@@ -1,0 +1,10 @@
+reference N 64 0.897 ms; binary-fraction inputs, full exact checks
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+data_path upload-compute-copyback CPU_workers 1
+round 0 cold mode tiled2 N 64 wall_ms 437.734319 host_submit_ms 436.977727 host_finish_ms 0.756592 process_cpu_ms 437.111405 render_ms 0.249852 clean_ms 0.032592 render_jobs 1 GFLOPS 0.001198 max_error 0 errors 0 checksum 0x94c364e20e074383 PASS
+round 1 warm mode tiled2 N 64 wall_ms 0.915258 host_submit_ms 0.295815 host_finish_ms 0.619443 process_cpu_ms 0.662629 render_ms 0.233518 clean_ms 0.026296 render_jobs 1 GFLOPS 0.572831 max_error 0 errors 0 checksum 0x792ba76d714a0383 PASS
+round 2 warm mode tiled2 N 64 wall_ms 0.833591 host_submit_ms 0.219777 host_finish_ms 0.613814 process_cpu_ms 0.580926 render_ms 0.232037 clean_ms 0.025704 render_jobs 1 GFLOPS 0.628951 max_error 0 errors 0 checksum 0x7a472c2a02590383 PASS
+round 3 warm mode tiled2 N 64 wall_ms 0.884591 host_submit_ms 0.270888 host_finish_ms 0.613703 process_cpu_ms 0.631334 render_ms 0.232630 clean_ms 0.025519 render_jobs 1 GFLOPS 0.592690 max_error 0 errors 0 checksum 0xfa3a9834dc648383 PASS
+round 4 warm mode tiled2 N 64 wall_ms 0.839370 host_submit_ms 0.226407 host_finish_ms 0.612963 process_cpu_ms 0.586482 render_ms 0.232222 clean_ms 0.025741 render_jobs 1 GFLOPS 0.624621 max_error 0 errors 0 checksum 0x13f52a75e1f74383 PASS
+summary mode tiled2 N 64 warm_rounds 4 median_ms 0.861981 GFLOPS 0.608236
+PASS: full matrix exact, guards intact

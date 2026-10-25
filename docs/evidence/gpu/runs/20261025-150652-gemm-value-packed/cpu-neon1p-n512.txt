@@ -1,0 +1,8 @@
+reference N 512 396.409 ms; binary-fraction inputs, full exact checks
+data_path host CPU_workers 1
+round 0 cold mode neon1p N 512 wall_ms 107.655406 host_submit_ms 107.655146 host_finish_ms 0.000260 process_cpu_ms 107.730703 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 2.493469 max_error 0 errors 0 checksum 0xcc1ca4faf978cb83 PASS
+round 1 warm mode neon1p N 512 wall_ms 106.748777 host_submit_ms 106.747889 host_finish_ms 0.000888 process_cpu_ms 106.772925 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 2.514647 max_error 0 errors 0 checksum 0x588a07c4eff2b383 PASS
+round 2 warm mode neon1p N 512 wall_ms 106.922332 host_submit_ms 106.921332 host_finish_ms 0.001000 process_cpu_ms 106.949518 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 2.510565 max_error 0 errors 0 checksum 0xe0a8c38386c73b83 PASS
+round 3 warm mode neon1p N 512 wall_ms 106.940518 host_submit_ms 106.940036 host_finish_ms 0.000482 process_cpu_ms 106.969591 render_ms 0.000000 clean_ms 0.000000 render_jobs 0 GFLOPS 2.510138 max_error 0 errors 0 checksum 0x6e5a689074524383 PASS
+summary mode neon1p N 512 warm_rounds 3 median_ms 106.922332 GFLOPS 2.510565
+PASS: full matrix exact, guards intact

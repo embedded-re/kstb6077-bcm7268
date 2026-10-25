@@ -1,0 +1,10 @@
+reference N 128 6.258 ms; binary-fraction inputs, full exact checks
+SHADER-DB-GLSL2 - MESA_SHADER_COMPUTE shader: 149 inst, 2 threads, 1 loops, 19 uniforms, 12 max-temps, 0:0 spills:fills, 0 sfu-stalls, 149 inst-and-stalls, 12 nops
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+data_path resident CPU_workers 1
+round 0 cold mode naive N 128 wall_ms 14.543133 host_submit_ms 13.838985 host_finish_ms 0.704148 process_cpu_ms 9.132963 render_ms 5.176296 clean_ms 0.210704 render_jobs 8 GFLOPS 0.288404 max_error 0 errors 0 checksum 0x851f0112d1625383 PASS
+round 1 warm mode naive N 128 wall_ms 6.709400 host_submit_ms 6.017216 host_finish_ms 0.692184 process_cpu_ms 1.321518 render_ms 5.156852 clean_ms 0.205632 render_jobs 8 GFLOPS 0.625138 max_error 0 errors 0 checksum 0x756f3075c02e383 PASS
+round 2 warm mode naive N 128 wall_ms 6.720289 host_submit_ms 6.032030 host_finish_ms 0.688259 process_cpu_ms 1.341704 render_ms 5.155036 clean_ms 0.204999 render_jobs 8 GFLOPS 0.624126 max_error 0 errors 0 checksum 0x7ad632e1d19bf383 PASS
+round 3 warm mode naive N 128 wall_ms 6.175252 host_submit_ms 4.905031 host_finish_ms 1.270221 process_cpu_ms 1.266593 render_ms 5.385666 clean_ms 0.206776 render_jobs 8 GFLOPS 0.679212 max_error 0 errors 0 checksum 0xfb99a0e477ff0383 PASS
+summary mode naive N 128 warm_rounds 3 median_ms 6.709400 GFLOPS 0.625138
+PASS: full matrix exact, guards intact

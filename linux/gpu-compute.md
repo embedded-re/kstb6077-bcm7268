@@ -932,3 +932,31 @@ Use the new package per application with the existing compute opt-in flag.
 Large GEMM/NEON performance, 4×4 tiled shaders, long/reset stress and Sway
 acceleration remain unestablished here. No tests remain running; work stops
 at this milestone. [Cause, controlled dumps, regression and package evidence](../docs/evidence/gpu/runs/20261025-145312-gemm-spill-package/README.md).
+
+
+## Compute value gate: prioritize rendering (2026-10-25)
+
+The requested decision benchmark now covers scalar CPU, one/four-worker
+NEON with/without cache packing, naive GPU and 2×2/4×4 tiled GPU, through
+1024×1024 FP32. All modes pass exact reference and guard checks. At 1024,
+CPU packed four-thread NEON takes **318.703 ms / 6.738 GFLOPS**, best resident
+GPU **882.913 ms / 2.432 GFLOPS**, and GPU with uploads/copy-back **960.437 ms**.
+CPU packing is included in each round. Unpacked NEON is a weak baseline at
+this size; the fastest measured CPU variant is selected independently at
+each tested dimension. The GPU loses every measured size to that baseline.
+
+GPU process CPU time is lower, so a concurrent coprocessor experiment
+completes sixteen jobs using either CPU-only, or twelve CPU plus four GPU
+jobs with transfers. Three paired trials measure **1.1125× median throughput**
+for the hybrid, below the declared **1.2×** continuation cutoff. The reusable
+`kstb-compute-value` helper checks evidence and returns `prioritize_rendering`.
+This is a measured workload-specific decision; other kernels and energy
+are not tested.
+
+All gates pass **288 exact matrix rounds (81 GPU), 22 neural rounds and
+230 native-fence chains**, with zero resets/MMU errors/oopses. Mesa/kernel
+and defaults are unchanged; no tests remain running. Per the user's
+conditional instruction, active compute optimization is parked and the
+working opt-in packages/fixes retained. Rendering/compositor acceleration
+becomes the next GPU priority; Sway is not yet GPU accelerated.
+[Timings, paired trials, reproducible decision and raw evidence](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).

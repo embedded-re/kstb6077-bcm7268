@@ -1,0 +1,145 @@
+[
+  {
+    "test": "check-neon1p-n64",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon1p",
+      "64",
+      "5"
+    ],
+    "exit": 0,
+    "seconds": 0.4027829849983391,
+    "expected_resets": 0
+  },
+  {
+    "test": "check-neon4p-n64",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4p",
+      "64",
+      "5"
+    ],
+    "exit": 0,
+    "seconds": 0.4028392439995514,
+    "expected_resets": 0
+  },
+  {
+    "test": "transfer-check-tiled2-n64",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "tiled2",
+      "64",
+      "5"
+    ],
+    "exit": 0,
+    "seconds": 0.9079598640000768,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon1p-n128",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon1p",
+      "128",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 0.40283409699986805,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon4p-n128",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4p",
+      "128",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 0.40285846699953254,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon1p-n256",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon1p",
+      "256",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 0.5039335460005532,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon4p-n256",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4p",
+      "256",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 0.40296050399956584,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon1p-n512",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon1p",
+      "512",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 1.2124322849995224,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon4p-n512",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4p",
+      "512",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 0.909442787999069,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon1p-n1024",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon1p",
+      "1024",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 9.429231825999523,
+    "expected_resets": 0
+  },
+  {
+    "test": "cpu-neon4p-n1024",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4p",
+      "1024",
+      "4"
+    ],
+    "exit": 0,
+    "seconds": 7.012274061000426,
+    "expected_resets": 0
+  },
+  {
+    "test": "sync-30",
+    "args": [
+      "/opt/gpu-test/kstb-compute-sync-test",
+      "30",
+      "4097"
+    ],
+    "exit": 0,
+    "seconds": 0.8066581919993041,
+    "expected_resets": 0
+  }
+]

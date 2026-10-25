@@ -1,0 +1,116 @@
+{
+  "verdict": "prioritize_rendering",
+  "threshold": 1.2,
+  "direct_compute_qualifies": false,
+  "coprocessor_qualifies": false,
+  "coprocessor_median_speedup": 1.1124866473380812,
+  "coprocessor_trials": [
+    {
+      "cpu_seconds": 5.530890093999915,
+      "hybrid_seconds": 4.971646272999351,
+      "speedup": 1.1124866473380812
+    },
+    {
+      "cpu_seconds": 5.481404331998419,
+      "hybrid_seconds": 4.9289358369987895,
+      "speedup": 1.1120867694914094
+    },
+    {
+      "cpu_seconds": 5.484988180000073,
+      "hybrid_seconds": 4.8951611680004135,
+      "speedup": 1.1204918473073673
+    }
+  ],
+  "matrices": [
+    {
+      "N": 128,
+      "cpu_source": "cpu-neon4p-n128.txt",
+      "gpu_source": "resident-tiled4-n128.txt",
+      "cpu": {
+        "wall_ms": 0.402185,
+        "process_cpu_ms": 1.423261,
+        "GFLOPS": 10.428793
+      },
+      "gpu_resident": {
+        "wall_ms": 2.323553,
+        "process_cpu_ms": 0.194148,
+        "GFLOPS": 1.805125
+      },
+      "gpu_transfer": null,
+      "resident_speedup": 0.17309052128356875,
+      "transfer_speedup": null
+    },
+    {
+      "N": 256,
+      "cpu_source": "cpu-neon4-n256.txt",
+      "gpu_source": "resident-tiled2-n256.txt",
+      "cpu": {
+        "wall_ms": 5.53018,
+        "process_cpu_ms": 21.909186,
+        "GFLOPS": 6.067512
+      },
+      "gpu_resident": {
+        "wall_ms": 14.532984,
+        "process_cpu_ms": 2.710927,
+        "GFLOPS": 2.308847
+      },
+      "gpu_transfer": {
+        "wall_ms": 19.2824245,
+        "process_cpu_ms": 7.5882235,
+        "GFLOPS": 1.7401595
+      },
+      "resident_speedup": 0.38052611906818307,
+      "transfer_speedup": 0.28679899667181374
+    },
+    {
+      "N": 512,
+      "cpu_source": "cpu-neon4p-n512.txt",
+      "gpu_source": "resident-tiled2-n512.txt",
+      "cpu": {
+        "wall_ms": 39.1017,
+        "process_cpu_ms": 119.513477,
+        "GFLOPS": 6.865058
+      },
+      "gpu_resident": {
+        "wall_ms": 108.676294,
+        "process_cpu_ms": 11.280002,
+        "GFLOPS": 2.470046
+      },
+      "gpu_transfer": null,
+      "resident_speedup": 0.35979971860284454,
+      "transfer_speedup": null
+    },
+    {
+      "N": 1024,
+      "cpu_source": "cpu-neon4p-n1024.txt",
+      "gpu_source": "resident-tiled2-n1024.txt",
+      "cpu": {
+        "wall_ms": 318.702704,
+        "process_cpu_ms": 1085.181552,
+        "GFLOPS": 6.738203
+      },
+      "gpu_resident": {
+        "wall_ms": 882.913001,
+        "process_cpu_ms": 48.715898,
+        "GFLOPS": 2.432271
+      },
+      "gpu_transfer": {
+        "wall_ms": 960.4372900000001,
+        "process_cpu_ms": 121.049832,
+        "GFLOPS": 2.2359445
+      },
+      "resident_speedup": 0.36096727949303353,
+      "transfer_speedup": 0.33183083093327204
+    }
+  ],
+  "reliability": {
+    "exact_matrix_rounds": 288,
+    "gpu_matrix_rounds": 81,
+    "neural_rounds": 22,
+    "fence_chains": 230,
+    "resets": 0,
+    "mmu_errors": 0
+  },
+  "driver_sha256": "18969788882886e842a68acba6818561eb9da09345e3586381c35d3f841f04e1",
+  "scope": "Measured FP32 GEMM and fixed 12-CPU/4-GPU job mix; energy, other kernels and rendering are not measured."
+}

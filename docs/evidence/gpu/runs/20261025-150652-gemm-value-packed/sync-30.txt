@@ -1,0 +1,4 @@
+OpenGL ES 3.1 Mesa 23.3.6 (git-3263da570e); V3D 3.3
+25/30 chains exact, 4097 words/buffer, guards checked
+30/30 chains exact, 4097 words/buffer, guards checked
+PASS: compute native-fence chains, exact SSBOs and guards

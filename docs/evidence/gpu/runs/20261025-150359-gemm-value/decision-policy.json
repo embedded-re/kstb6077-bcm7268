@@ -1,0 +1,6 @@
+{
+  "speedup_minimum": 1.2,
+  "offload_cpu_ratio_maximum": 0.5,
+  "offload_wall_ratio_maximum": 2.0,
+  "scope": "tested FP32 GEMM sizes; not a proof about every possible computation"
+}

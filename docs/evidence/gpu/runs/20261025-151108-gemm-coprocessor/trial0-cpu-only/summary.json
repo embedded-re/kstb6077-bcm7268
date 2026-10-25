@@ -1,0 +1,15 @@
+{
+  "kind": "cpu-only",
+  "N": 1024,
+  "timed_jobs": 16,
+  "elapsed_seconds": 5.530890093999915,
+  "aggregate_GFLOPS": 6.212334323054898,
+  "includes": "all timed rounds, GPU transfers, result validation, process cleanup; warmup/reference excluded",
+  "configs": [
+    [
+      "cpu",
+      "neon4p",
+      16
+    ]
+  ]
+}

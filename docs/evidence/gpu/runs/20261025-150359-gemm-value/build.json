@@ -1,0 +1,12 @@
+{
+  "executable_sha256": "2df0368b8c696c30ae390e596a84614d13359285aed191ed4263d607cf73f1b2",
+  "source_sha256": "dadefffaa09a0f883a42ce8d5a81da51526cba1275eadf20bad686e5ec96c2f1",
+  "flags": "-O3 -mcpu=cortex-a53 -fno-vectorize -fno-slp-vectorize -ffp-contract=fast -pthread",
+  "scalar_automatic_vectorization": false,
+  "cpu_workers": [
+    1,
+    4
+  ],
+  "gpu_resident_excludes": "startup, initial input upload, reference and verification, mapped-output scan",
+  "gpu_transfer_includes": "each-round A/B uploads, dispatch, finish, output map/copy/unmap; startup/reference/verification excluded"
+}

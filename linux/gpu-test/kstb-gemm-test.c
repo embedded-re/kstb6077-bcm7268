@@ -1,7 +1,9 @@
-// kstb-gemm-test [naive|shared1|tiled4|tiled2|scalar|neon4] [N [rounds]]
+// kstb-gemm-test [naive|shared1|tiled4|tiled2|scalar|neon1|neon4|neon1p|neon4p] [N [rounds]]
 // C=A*B+bias, FP32. Cold round then warm rounds; all outputs/guards checked.
 // CPU blocked 4x4 kernels use scalar FMA or explicit NEON FMA on four workers.
 // Build with auto-vectorization disabled so the scalar baseline stays scalar.
+// KSTB_GEMM_TRANSFER=1 times input uploads and output copy-back on each GPU round.
+// KSTB_GEMM_GATE/READY optionally synchronize processes after their cold round.
 #define _GNU_SOURCE
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -109,12 +111,14 @@ static __attribute__((noinline)) void scalar4(const float *a, const float *b, fl
     c[(size_t)(i + 3) * n + j + 3] = s33;
 }
 static __attribute__((noinline)) void neon4(const float *a, const float *b, float *c, unsigned n,
-                                            unsigned i, unsigned j, unsigned lo, unsigned hi) {
+                                            unsigned i, unsigned j, unsigned lo, unsigned hi, int packed) {
+    const float *bp = packed ? b + (size_t)j * n : b + j;
+    unsigned bstep = packed ? 4 : n;
     float32x4_t c0 = vld1q_f32(c + (size_t)i * n + j), c1 = vld1q_f32(c + (size_t)(i + 1) * n + j);
     float32x4_t c2 = vld1q_f32(c + (size_t)(i + 2) * n + j),
                 c3 = vld1q_f32(c + (size_t)(i + 3) * n + j);
     for (unsigned k = lo; k < hi; k++) {
-        float32x4_t v = vld1q_f32(b + (size_t)k * n + j);
+        float32x4_t v = vld1q_f32(bp + (size_t)k * bstep);
         c0 = vfmaq_n_f32(c0, v, a[(size_t)i * n + k]);
         c1 = vfmaq_n_f32(c1, v, a[(size_t)(i + 1) * n + k]);
         c2 = vfmaq_n_f32(c2, v, a[(size_t)(i + 2) * n + k]);
@@ -126,7 +130,7 @@ static __attribute__((noinline)) void neon4(const float *a, const float *b, floa
     vst1q_f32(c + (size_t)(i + 3) * n + j, c3);
 }
 static void blocked(const float *a, const float *b, float *c, unsigned n, unsigned tid,
-                    unsigned threads, int neon) {
+                    unsigned threads, int neon, int packed) {
     for (unsigned ib = tid * 32; ib < n; ib += threads * 32)
         for (unsigned jb = 0; jb < n; jb += 64)
             for (unsigned kb = 0; kb < n; kb += 128)
@@ -135,7 +139,7 @@ static void blocked(const float *a, const float *b, float *c, unsigned n, unsign
                         unsigned hi = MIN(n, kb + 128);
                         if (i + 4 <= n && j + 4 <= n) {
                             if (neon)
-                                neon4(a, b, c, n, i, j, kb, hi);
+                                neon4(a, b, c, n, i, j, kb, hi, packed);
                             else
                                 scalar4(a, b, c, n, i, j, kb, hi);
                         } else
@@ -151,8 +155,8 @@ static void blocked(const float *a, const float *b, float *c, unsigned n, unsign
 struct team {
     const float *a, *b;
     float *c;
-    unsigned n;
-    int quit;
+    unsigned n, workers;
+    int quit, packed;
     pthread_barrier_t start, end;
 };
 struct worker {
@@ -170,7 +174,7 @@ static void *work(void *data) {
         barrier(&t->start);
         if (t->quit)
             break;
-        blocked(t->a, t->b, t->c, t->n, w->tid, 4, 1);
+        blocked(t->a, t->b, t->c, t->n, w->tid, t->workers, 1, t->packed);
         barrier(&t->end);
     }
     return NULL;
@@ -324,11 +328,16 @@ int main(int argc, char **argv) {
     int tiled4 = !strcmp(mode, "tiled4") || !strcmp(mode, "tiled"),
         tiled2 = !strcmp(mode, "tiled2"), shared1 = !strcmp(mode, "shared1"),
         tiled = tiled4 || tiled2 || shared1,
-        gpu = !strcmp(mode, "naive") || tiled, neon = !strcmp(mode, "neon4");
+        gpu = !strcmp(mode, "naive") || tiled,
+        packed = !strcmp(mode, "neon1p") || !strcmp(mode, "neon4p"),
+        neon = !strcmp(mode, "neon4") || !strcmp(mode, "neon1") || packed;
+    unsigned cpu_workers = (!strcmp(mode, "neon1") || !strcmp(mode, "neon1p")) ? 1 : 4;
+    int transfer = gpu && getenv("KSTB_GEMM_TRANSFER") != NULL;
     unsigned tile = shared1 ? 8 : tiled4 ? 32 : 16;
     CHECK(gpu || neon || !strcmp(mode, "scalar"));
     unsigned n = argc > 2 ? number(argv[2], 1024) : 1024,
              rounds = argc > 3 ? number(argv[3], 101) : 4;
+    CHECK(!packed || n % 4 == 0);
     CHECK(!tiled || n % tile == 0); // Aligned benchmark kernel; no edge-tile branches.
     size_t count = (size_t)n * n, bytes = count * 4, guarded_bytes = GUARD + bytes + GUARD;
     float *a = malloc(bytes), *b = malloc(bytes), *ref = malloc(bytes);
@@ -384,21 +393,36 @@ int main(int argc, char **argv) {
         glFinish();
         CHECK(glGetError() == GL_NO_ERROR);
     }
-    struct team team = {.a = a, .b = b, .c = c, .n = n};
+    float *packed_b = packed ? malloc(bytes) : NULL;
+    CHECK(!packed || packed_b);
+    struct team team = {.a = a, .b = packed ? packed_b : b, .c = c, .n = n,
+                        .workers = cpu_workers, .packed = packed};
     struct worker workers[4];
     pthread_t threads[4];
     if (neon) {
-        CHECK(!pthread_barrier_init(&team.start, NULL, 5) &&
-              !pthread_barrier_init(&team.end, NULL, 5));
-        for (unsigned i = 0; i < 4; i++) {
+        CHECK(!pthread_barrier_init(&team.start, NULL, cpu_workers + 1) &&
+              !pthread_barrier_init(&team.end, NULL, cpu_workers + 1));
+        for (unsigned i = 0; i < cpu_workers; i++) {
             workers[i] = (struct worker){.team = &team, .tid = i};
             CHECK(!pthread_create(&threads[i], NULL, work, &workers[i]));
         }
     }
+    printf("data_path %s CPU_workers %u\n", gpu ? (transfer ? "upload-compute-copyback" : "resident") : "host", neon ? cpu_workers : 1);
     double *timings = malloc(rounds * sizeof(*timings));
     CHECK(timings);
     double flops = 2.0 * n * n * n;
     for (unsigned round = 0; round < rounds; round++) {
+        const char *gate = getenv("KSTB_GEMM_GATE");
+        if (round == 1 && gate) {
+            const char *ready = getenv("KSTB_GEMM_READY");
+            CHECK(ready);
+            int signal_fd = open(ready, O_WRONLY | O_CREAT | O_EXCL, 0600);
+            CHECK(signal_fd >= 0 && !close(signal_fd));
+            signal_fd = open(gate, O_RDONLY);
+            char token;
+            CHECK(signal_fd >= 0 && read(signal_fd, &token, 1) == 1);
+            CHECK(!close(signal_fd));
+        }
         float bias = (round + 1) / 1024.0f;
         struct stats before = {0}, after = {0};
         if (gpu) {
@@ -408,6 +432,12 @@ int main(int argc, char **argv) {
         double cpu_start = clock_seconds(CLOCK_PROCESS_CPUTIME_ID),
                start = clock_seconds(CLOCK_MONOTONIC), submitted;
         if (gpu) {
+            if (transfer) {
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[0]);
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, bytes, a);
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[1]);
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, bytes, b);
+            }
             if (tiled)
                 glDispatchCompute(n / tile, n / tile, 1);
             else
@@ -415,14 +445,28 @@ int main(int argc, char **argv) {
             submitted = clock_seconds(CLOCK_MONOTONIC);
             glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT);
             glFinish();
+            if (transfer) {
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[2]);
+                const void *readback = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0,
+                                                        guarded_bytes, GL_MAP_READ_BIT);
+                CHECK(readback);
+                memcpy(storage, readback, guarded_bytes);
+                CHECK(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
+            }
         } else {
+            // Pack contiguous K-by-four column panels; include this cost every round.
+            if (packed)
+                for (unsigned j = 0; j < n; j += 4)
+                    for (unsigned k = 0; k < n; k++)
+                        memcpy(packed_b + (size_t)j * n + k * 4,
+                               b + (size_t)k * n + j, 4 * sizeof(float));
             for (size_t i = 0; i < count; i++)
                 c[i] = bias;
             if (neon) {
                 barrier(&team.start);
                 barrier(&team.end);
             } else
-                blocked(a, b, c, n, 0, 1, 0);
+                blocked(a, b, c, n, 0, 1, 0, 0);
             submitted = clock_seconds(CLOCK_MONOTONIC);
         }
         double finish = clock_seconds(CLOCK_MONOTONIC),
@@ -435,9 +479,11 @@ int main(int argc, char **argv) {
             after = stats(fd);
             unsigned groups = tiled ? (n / tile) * (n / tile) : (count + 127) / 128;
             CHECK(after.jobs - before.jobs == (groups + 15) / 16);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[2]);
-            mapping = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, guarded_bytes, GL_MAP_READ_BIT);
-            CHECK(mapping);
+            if (!transfer) {
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[2]);
+                mapping = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, guarded_bytes, GL_MAP_READ_BIT);
+                CHECK(mapping);
+            }
         }
         const float *values = (const float *)(mapping + GUARD);
         unsigned errors = 0;
@@ -458,7 +504,7 @@ int main(int argc, char **argv) {
         for (size_t i = 0; i < GUARD; i++)
             if (mapping[i] != 0xa5 || mapping[GUARD + bytes + i] != 0xa5)
                 errors++;
-        if (gpu)
+        if (gpu && !transfer)
             CHECK(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
         printf("round %u %s mode %s N %u wall_ms %.6f host_submit_ms %.6f host_finish_ms %.6f "
                "process_cpu_ms %.6f render_ms %.6f clean_ms %.6f render_jobs %" PRIu64
@@ -480,7 +526,7 @@ int main(int argc, char **argv) {
     if (neon) {
         team.quit = 1;
         barrier(&team.start);
-        for (unsigned i = 0; i < 4; i++)
+        for (unsigned i = 0; i < cpu_workers; i++)
             CHECK(!pthread_join(threads[i], NULL));
         CHECK(!pthread_barrier_destroy(&team.start) && !pthread_barrier_destroy(&team.end));
     }
@@ -492,6 +538,7 @@ int main(int argc, char **argv) {
         gbm_device_destroy(gbm);
         close(fd);
     }
+    free(packed_b);
     free(timings);
     free(a);
     free(b);

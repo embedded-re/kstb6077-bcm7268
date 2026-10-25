@@ -1,0 +1,56 @@
+[13647.554883] kstb gemm value start
+[13647.564875] kstb gemm value check-scalar-n7
+[13647.975836] kstb gemm value check-neon1-n7
+[13648.386872] kstb gemm value check-neon4-n7
+[13648.797914] kstb gemm value check-scalar-n33
+[13649.208996] kstb gemm value check-neon1-n33
+[13649.620065] kstb gemm value check-neon4-n33
+[13650.031091] kstb gemm value check-scalar-n65
+[13650.442080] kstb gemm value check-neon1-n65
+[13650.853074] kstb gemm value check-neon4-n65
+[13651.264087] kstb gemm value cpu-scalar-n128
+[13651.679603] kstb gemm value cpu-neon1-n128
+[13652.090658] kstb gemm value cpu-neon4-n128
+[13652.501567] kstb gemm value cpu-scalar-n256
+[13653.013668] kstb gemm value cpu-neon1-n256
+[13653.525649] kstb gemm value cpu-neon4-n256
+[13653.936680] kstb gemm value cpu-scalar-n512
+[13655.865160] kstb gemm value cpu-neon1-n512
+[13658.097233] kstb gemm value cpu-neon4-n512
+[13659.322565] kstb gemm value cpu-scalar-n1024
+[13679.953280] kstb gemm value cpu-neon1-n1024
+[13703.987030] kstb gemm value cpu-neon4-n1024
+[13717.522571] kstb gemm value check-tiled4-n32
+[13717.532060] drm_sched_entity_init: called with uninitialized scheduler
+[13718.236770] kstb gemm value resident-naive-n128
+[13718.253130] drm_sched_entity_init: called with uninitialized scheduler
+[13718.749059] kstb gemm value resident-tiled2-n128
+[13718.765538] drm_sched_entity_init: called with uninitialized scheduler
+[13719.665559] kstb gemm value resident-tiled4-n128
+[13719.681944] drm_sched_entity_init: called with uninitialized scheduler
+[13720.380022] kstb gemm value resident-naive-n256
+[13720.439152] drm_sched_entity_init: called with uninitialized scheduler
+[13721.195359] kstb gemm value resident-tiled2-n256
+[13721.254725] drm_sched_entity_init: called with uninitialized scheduler
+[13722.318165] kstb gemm value resident-tiled4-n256
+[13722.377672] drm_sched_entity_init: called with uninitialized scheduler
+[13723.235342] kstb gemm value resident-naive-n512
+[13723.652570] drm_sched_entity_init: called with uninitialized scheduler
+[13725.864861] kstb gemm value resident-tiled2-n512
+[13726.284345] drm_sched_entity_init: called with uninitialized scheduler
+[13727.894291] kstb gemm value resident-tiled4-n512
+[13728.318845] drm_sched_entity_init: called with uninitialized scheduler
+[13729.821900] kstb gemm value resident-naive-n1024
+[13735.149362] drm_sched_entity_init: called with uninitialized scheduler
+[13748.182968] kstb gemm value resident-tiled2-n1024
+[13753.508388] drm_sched_entity_init: called with uninitialized scheduler
+[13758.916585] kstb gemm value resident-tiled4-n1024
+[13764.268825] drm_sched_entity_init: called with uninitialized scheduler
+[13770.244519] kstb gemm value transfer-tiled2-n256
+[13770.304822] drm_sched_entity_init: called with uninitialized scheduler
+[13771.366288] kstb gemm value transfer-tiled2-n1024
+[13776.690611] drm_sched_entity_init: called with uninitialized scheduler
+[13782.609329] kstb gemm value sync-100
+[13782.619148] drm_sched_entity_init: called with uninitialized scheduler
+[13784.131976] kstb gemm value neural-post
+[13784.143134] drm_sched_entity_init: called with uninitialized scheduler
