@@ -731,3 +731,8 @@ builds retain the previously tested 16-workgroup layout.
 
 Full GLES 3.1 and post-0032 graphics regressions remain pending. Large-case
 timeouts are not classified as a hardware limit or silently omitted.
+The resumed full run stops after 2,577 reported cases on the attachment-free
+framebuffer case `fbo.no_attachments.npot_size.127x127`, with two GPU resets
+and zero MMU errors or kernel oopses.
+That failure is the next unresolved conformance blocker.
+[Incomplete patch-0032 run](../docs/evidence/gpu/runs/20261025-093723-gles31-5a3fd-full/README.md).

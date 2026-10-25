@@ -1,0 +1,57 @@
+[218202.705281] kstb-gpu-run sync 218202.332307
+[218203.144367] drm_sched_entity_init: called with uninitialized scheduler
+[218203.192202] drm_sched_entity_init: called with uninitialized scheduler
+[218211.837834] drm_sched_entity_init: called with uninitialized scheduler
+[218211.884626] drm_sched_entity_init: called with uninitialized scheduler
+[218227.268266] drm_sched_entity_init: called with uninitialized scheduler
+[218227.315535] drm_sched_entity_init: called with uninitialized scheduler
+[218245.101790] drm_sched_entity_init: called with uninitialized scheduler
+[218245.149027] drm_sched_entity_init: called with uninitialized scheduler
+[218254.010172] drm_sched_entity_init: called with uninitialized scheduler
+[218254.057629] drm_sched_entity_init: called with uninitialized scheduler
+[218279.369926] drm_sched_entity_init: called with uninitialized scheduler
+[218279.417513] drm_sched_entity_init: called with uninitialized scheduler
+[218282.538736] drm_sched_entity_init: called with uninitialized scheduler
+[218282.585563] drm_sched_entity_init: called with uninitialized scheduler
+[218284.252927] drm_sched_entity_init: called with uninitialized scheduler
+[218284.299950] drm_sched_entity_init: called with uninitialized scheduler
+[218285.034838] drm_sched_entity_init: called with uninitialized scheduler
+[218285.081674] drm_sched_entity_init: called with uninitialized scheduler
+[218285.918532] drm_sched_entity_init: called with uninitialized scheduler
+[218285.966397] drm_sched_entity_init: called with uninitialized scheduler
+[218295.638677] drm_sched_entity_init: called with uninitialized scheduler
+[218295.686251] drm_sched_entity_init: called with uninitialized scheduler
+[218296.523406] drm_sched_entity_init: called with uninitialized scheduler
+[218296.570975] drm_sched_entity_init: called with uninitialized scheduler
+[218297.280718] drm_sched_entity_init: called with uninitialized scheduler
+[218297.327309] drm_sched_entity_init: called with uninitialized scheduler
+[218298.055363] drm_sched_entity_init: called with uninitialized scheduler
+[218298.103157] drm_sched_entity_init: called with uninitialized scheduler
+[218298.937794] drm_sched_entity_init: called with uninitialized scheduler
+[218298.985329] drm_sched_entity_init: called with uninitialized scheduler
+[218308.655085] drm_sched_entity_init: called with uninitialized scheduler
+[218308.701801] drm_sched_entity_init: called with uninitialized scheduler
+[218309.436271] drm_sched_entity_init: called with uninitialized scheduler
+[218309.482761] drm_sched_entity_init: called with uninitialized scheduler
+[218310.199351] drm_sched_entity_init: called with uninitialized scheduler
+[218310.246390] drm_sched_entity_init: called with uninitialized scheduler
+[218310.975536] drm_sched_entity_init: called with uninitialized scheduler
+[218311.022624] drm_sched_entity_init: called with uninitialized scheduler
+[218311.856240] drm_sched_entity_init: called with uninitialized scheduler
+[218311.903074] drm_sched_entity_init: called with uninitialized scheduler
+[218321.890159] drm_sched_entity_init: called with uninitialized scheduler
+[218321.936509] drm_sched_entity_init: called with uninitialized scheduler
+[218322.644217] drm_sched_entity_init: called with uninitialized scheduler
+[218322.691457] drm_sched_entity_init: called with uninitialized scheduler
+[218323.420009] drm_sched_entity_init: called with uninitialized scheduler
+[218323.466440] drm_sched_entity_init: called with uninitialized scheduler
+[218326.381844] drm_sched_entity_init: called with uninitialized scheduler
+[218326.428411] drm_sched_entity_init: called with uninitialized scheduler
+[218334.646272] drm_sched_entity_init: called with uninitialized scheduler
+[218334.692568] drm_sched_entity_init: called with uninitialized scheduler
+[218341.658687] drm_sched_entity_init: called with uninitialized scheduler
+[218341.704235] drm_sched_entity_init: called with uninitialized scheduler
+[218345.045126] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[218345.053260] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
+[218346.101125] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[218346.109322] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000
