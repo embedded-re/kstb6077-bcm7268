@@ -1,0 +1,1 @@
+PASS: Sway remained alive after the native application exited.

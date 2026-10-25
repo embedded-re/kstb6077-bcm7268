@@ -1,0 +1,15 @@
+{
+  "system_mesa": "23.3.6-r33",
+  "prefix": "/usr",
+  "persistent_desktop": true,
+  "desktop_sessions": 2,
+  "cpu_fallback": true,
+  "native_frames": 711,
+  "client_checked_pixels": 12324,
+  "fps": 59.241,
+  "screenshot_ramp_pixels": 1024,
+  "native_fence_chains": 100,
+  "rollback_restored_and_reinstalled": true,
+  "gpu_faults": 0,
+  "dmabuf_objects_after_exit": 0
+}

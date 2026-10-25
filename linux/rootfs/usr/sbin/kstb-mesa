@@ -1,8 +1,8 @@
 #!/bin/sh
-# kstb-mesa - install and switch our Mesa builds (linux/mesa: make -C linux/mesa).
-# Each build lives in /opt/mesa/<id>; /opt/mesa/current points at the one in
-# use (Mesa is built with prefix /opt/mesa/current, so it finds its drivers
-# there). Nothing outside /opt/mesa is touched.
+# kstb-mesa - install and select archived debug Mesa builds.
+# Each build lives in /opt/mesa/<id>; current selects the debug build used
+# by explicit env overrides and legacy test rpaths. System Mesa is managed
+# by APK under /usr. Nothing outside /opt/mesa is touched by this tool.
 #   kstb-mesa install [file|server]  install a build: a local mesa-*.tar, or
 #                                    linux-mesa.tar from the PC's TFTP root
 #                                    (default 192.168.1.38); not made current

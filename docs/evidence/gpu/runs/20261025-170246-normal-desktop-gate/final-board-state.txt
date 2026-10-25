@@ -1,0 +1,121 @@
+Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux
+tty1
+
+Dma-buf Objects:
+size    	flags   	mode    	count   	exp_name	ino     	name
+
+Total 0 objects, 0 bytes
+/usr/lib/dri/v3d_dri.so is owned by mesa-23.3.6-r33
+/usr/lib/libEGL.so.1.0.0 is owned by mesa-egl-23.3.6-r33
+OK: 1691.5 MiB in 721 packages
+3d83fd90a44513ca7554afd5c56bb60a4d63fe4188dcc4d00ca213c437b9325d  /usr/lib/dri/v3d_dri.so
+cd29913a94f8fc74af0ff25f094315cb97472507ba2054e87f7bd15857d28d78  /usr/lib/libEGL.so.1.0.0
+0322a624bb0b9dfeec4f699198e493a1d9fe85f88635b43d8d7ea5e8379465ab  /usr/lib/libgbm.so.1.0.0
+23.3.6-fe7dda5e
+mesa-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+mesa-dev-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+mesa-egl-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+mesa-gbm-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+mesa-gl-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+mesa-gles-23.3.6-r33 aarch64 {mesa-kstb} (MIT) [installed]
+alpine-baselayout
+alpine-keys
+alpine-release
+alsa-utils
+apk-tools
+avahi
+avahi-tools
+bash
+bash-completion
+bison
+bluez
+bluez-btmgmt
+bluez-deprecated
+btop
+build-base
+busybox
+busybox-extras
+busybox-openrc
+cargo
+chrony
+clang-dev
+coreutils
+curl
+dbus
+doas
+doas-sudo-shim
+docs
+e2fsprogs
+elfutils-dev
+eudev
+evtest
+expat-dev
+fastfetch
+ffmpeg-dev
+flex
+font-dejavu
+font-jetbrains-mono-nerd
+font-terminus
+foot
+foot-themes
+gdb
+git
+grim
+htop
+i2c-tools
+ifupdown-ng
+iw
+kbd
+less
+libdrm-dev
+libdrm-tests
+libgpiod
+linux-firmware-brcm
+man-pages
+mandoc
+mandoc-apropos
+mesa=23.3.6-r33
+mesa-dev=23.3.6-r33
+mesa-egl=23.3.6-r33
+mesa-gbm=23.3.6-r33
+mesa-gl=23.3.6-r33
+mesa-gles=23.3.6-r33
+!mesa-rusticl
+meson
+micro
+mpv-dev
+musl-dbg
+musl-locales
+musl-utils
+nano
+ninja
+openrc
+openssh
+openssl-dev
+patch
+py3-mako
+py3-packaging
+python3
+seatd
+sway
+swaybg
+tmux
+tzdata
+udev-init-scripts
+udev-init-scripts-openrc
+usbutils
+util-linux
+vim
+wget
+wireless-regdb
+wmenu
+wpa_supplicant
+zlib-dev
+zstd
+zstd-dev
+8286d393c609f0c351e7364f9d703d4b1479f996da0596dbf7218c45707dfe59  /root/gpu-system-prep/signed-final/mesa-23.3.6-r33.apk
+0c3bdae79049b59d708f1a358361ecacbf66fcfa9e0e2339b8295b133cf73652  /root/gpu-system-prep/signed-final/mesa-dev-23.3.6-r33.apk
+1e3da476cf122370b4a671ad23989d8f177e59e1ce99fc3647cdfb28c3585dae  /root/gpu-system-prep/signed-final/mesa-egl-23.3.6-r33.apk
+6f7beff4a936d4ad31123a8efe31abba095a91a6b1ca9b10a3dece6fb998fb5d  /root/gpu-system-prep/signed-final/mesa-gbm-23.3.6-r33.apk
+4c873ee51844ff47063cf577f5260ea991b50c6e24e6df665f63ee587c3fb28a  /root/gpu-system-prep/signed-final/mesa-gl-23.3.6-r33.apk
+34a641b4eebca5197c0385e52318b52056d61de8738017a9086f4a76b4741758  /root/gpu-system-prep/signed-final/mesa-gles-23.3.6-r33.apk

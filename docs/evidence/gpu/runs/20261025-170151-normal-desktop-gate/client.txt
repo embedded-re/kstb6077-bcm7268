@@ -1,0 +1,21 @@
+configure 16 800x600
+GL renderer: V3D 3.3; GL version: OpenGL ES 3.0 Mesa 23.3.6 (git-3263da570e)
+configure 17 956x1030
+FRAME 58 size 956x1030 fps 57.948 cpu_ms 74.800
+configure 20 800x600
+configure 22 800x600
+FRAME 117 size 800x600 fps 58.961 cpu_ms 107.359
+FRAME 177 size 800x600 fps 59.941 cpu_ms 133.811
+configure 23 1920x1080
+configure 24 1920x1080
+FRAME 238 size 1920x1080 fps 60.938 cpu_ms 178.542
+FRAME 298 size 1920x1080 fps 59.941 cpu_ms 204.768
+FRAME 356 size 1920x1080 fps 52.733 cpu_ms 229.820
+configure 26 800x600
+configure 27 800x600
+FRAME 417 size 800x600 fps 60.862 cpu_ms 273.895
+FRAME 477 size 800x600 fps 59.923 cpu_ms 299.510
+FRAME 537 size 800x600 fps 59.941 cpu_ms 326.222
+FRAME 597 size 800x600 fps 59.960 cpu_ms 352.905
+FRAME 657 size 800x600 fps 59.938 cpu_ms 378.469
+PASS: frames 711 elapsed 12.011572 fps 59.193 process_cpu_ms 402.732 configures 8 marker_checks 12324

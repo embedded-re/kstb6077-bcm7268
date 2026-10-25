@@ -1,0 +1,7 @@
+config: samples 4, depth 24, stencil 8, visual 0x30335258
+depth near survives: 255 0 0 255 (expected 255 0 0)
+depth nearer replaces: 0 0 255 255 (expected 0 0 255)
+stencil match: 0 255 0 255 (expected 0 255 0)
+stencil reject: 0 255 0 255 (expected 0 255 0)
+depth and stencil: 255 0 0 255 (expected 255 0 0)
+0 pixel checks failed

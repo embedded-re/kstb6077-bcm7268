@@ -1,0 +1,2 @@
+/usr/lib/libEGL.so.1.0.0 is owned by mesa-egl-23.3.6-r33
+/usr/lib/dri/v3d_dri.so is owned by mesa-23.3.6-r33

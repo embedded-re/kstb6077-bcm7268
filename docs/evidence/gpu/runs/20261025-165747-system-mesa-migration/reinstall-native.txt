@@ -1,0 +1,10 @@
+(1/9) Downgrading mesa (26.1.6-r0 -> 23.3.6-r33)
+(2/9) Downgrading mesa-gbm (26.1.6-r0 -> 23.3.6-r33)
+(3/9) Downgrading mesa-egl (26.1.6-r0 -> 23.3.6-r33)
+(4/9) Downgrading mesa-gl (26.1.6-r0 -> 23.3.6-r33)
+(5/9) Downgrading mesa-gles (26.1.6-r0 -> 23.3.6-r33)
+(6/9) Downgrading mesa-dev (26.1.6-r0 -> 23.3.6-r33)
+(7/9) Purging mesa-rusticl (26.1.6-r0)
+(8/9) Purging libclc (22.1.3-r0)
+(9/9) Purging spirv-llvm-translator-libs (22.1.0-r0)
+OK: 1691.3 MiB in 716 packages

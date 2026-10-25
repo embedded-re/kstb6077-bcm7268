@@ -1,0 +1,5 @@
+[
+  "WLR_SCENE_DISABLE_DIRECT_SCANOUT=1",
+  "XDG_RUNTIME_DIR=/tmp/xdg-1000",
+  "WLR_DRM_DEVICES=/dev/dri/card1"
+]

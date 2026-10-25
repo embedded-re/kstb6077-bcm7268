@@ -252,6 +252,22 @@ console (`LANG` and 24x80 there; the tty1 shell has `LANG`), `/dev/dri`,
 Bluetooth patched once. Seen at boot and harmless: "clock skew detected"
 before chronyd sets the clock.
 
+### Manual graphical desktop
+
+The normal system Mesa driver is now installed as signed APK packages
+`mesa*-23.3.6-r33` under `/usr`. It uses our V3D 3.3 patch series; GUI apps
+need no `/opt` driver paths or per-app environment overrides. From the box's
+root console, run `su -l kstb`, then `dbus-run-session sway` in the user shell.
+Boot still stops at the console.
+
+The standard Sway desktop has a panel, wallpaper and app launcher. Win+Enter
+opens a terminal, Win+D opens the launcher, Win+Shift+E logs out. Closing a
+terminal or app leaves the desktop running. GLES rendering and ARGB8888
+output, application resizing/fullscreen/exit, launcher, restart, CPU fallback
+and a restore of the previous Mesa installation are tested.
+[Native driver and desktop evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
+See [gpu.md](gpu.md) for the maintained build and rollback workflow.
+
 ### The HDMI console and `tv`
 
 The console (tty1): `/etc/local.d/kstb-console-look.start` loads Terminus
@@ -277,9 +293,9 @@ foot, Ctrl+Alt+Backspace leaves. Started as root (the consoles), it runs as
   `output * render_bit_depth 6` asks for RGB565 instead; the plane then
   shows `format=RG16` 1920x1080 in `/sys/kernel/debug/dri/1/state`.
 - Normal `tv` still uses pixman (CPU composition). `tv --gpu` or
-  `tv --gpu btop` selects tested V3D GLES composition with per-session Mesa
-  `23.3.6-40ea9bc5` (Wayland client support); `tv --cpu btop` is the explicit fallback. This does
-  not change the system Mesa or `/opt/mesa/current`. The original RGB565
+  `tv --gpu btop` uses V3D GLES with the package-managed system Mesa;
+  `tv --cpu btop` is the explicit fallback. An explicit `KSTB_TV_MESA`
+  override selects an archived debug build. The original RGB565
   composition milestone passed five start/exit/rollback sessions, including 360 GPU
   render jobs and changing HDMI CRCs, with zero GPU faults.
   [Rendering and rollback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).

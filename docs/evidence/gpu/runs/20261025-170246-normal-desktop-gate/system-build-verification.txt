@@ -1,0 +1,355 @@
+make: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/mesa'
+./system/build.sh
+make[1]: Entering directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/mesa'
+make[1]: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/mesa'
+ninja: Entering directory `/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build'
+[0/1] Regenerating build files
+The Meson build system
+Version: 1.12.1
+Source dir: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa
+Build dir: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build
+Build type: cross build
+Project name: mesa
+Project version: 23.3.6
+C compiler for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+C linker for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+C++ compiler for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+C++ linker for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+C compiler for the build machine: /usr/bin/ccache cc (gcc 16.2.1 "cc (GCC) 16.2.1 20260810")
+C linker for the build machine: cc ld.bfd 2.47
+C++ compiler for the build machine: /usr/bin/ccache c++ (gcc 16.2.1 "c++ (GCC) 16.2.1 20260810")
+C++ linker for the build machine: c++ ld.bfd 2.47
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: aarch64
+Host machine cpu: cortex-a53
+Target machine cpu family: aarch64
+Target machine cpu: cortex-a53
+../../mesa/meson.build:462: WARNING: cannot auto-detect -mtls-dialect when cross-compiling, using compiler default
+Dependency vdpau for host machine skipped: feature gallium-vdpau disabled
+Program glslangValidator found: YES (/usr/bin/glslangValidator)
+Dependency libva for host machine skipped: feature gallium-va disabled
+Program python3 found: YES (/usr/bin/python3)
+Fetching value of define "ETIME" : 62 (cached)
+Checking for function "bswap32" : YES (cached)
+Checking for function "bswap64" : YES (cached)
+Checking for function "clz" : YES (cached)
+Checking for function "clzll" : YES (cached)
+Checking for function "ctz" : YES (cached)
+Checking for function "expect" : YES (cached)
+Checking for function "ffs" : YES (cached)
+Checking for function "ffsll" : YES (cached)
+Checking for function "popcount" : YES (cached)
+Checking for function "popcountll" : YES (cached)
+Checking for function "unreachable" : YES (cached)
+Checking for function "types_compatible_p" : YES (cached)
+Compiler for C supports function attribute const: YES (cached)
+Compiler for C supports function attribute flatten: YES (cached)
+Compiler for C supports function attribute malloc: YES (cached)
+Compiler for C supports function attribute pure: YES (cached)
+Compiler for C supports function attribute unused: YES (cached)
+Compiler for C supports function attribute warn_unused_result: YES (cached)
+Compiler for C supports function attribute weak: YES (cached)
+Compiler for C supports function attribute format: YES (cached)
+Compiler for C supports function attribute packed: YES (cached)
+Compiler for C supports function attribute returns_nonnull: YES (cached)
+Compiler for C supports function attribute alias: YES (cached)
+Compiler for C supports function attribute noreturn: YES (cached)
+Compiler for C supports function attribute visibility:hidden: YES (cached)
+Checking if "__uint128_t" compiles: YES (cached)
+Checking for function "reallocarray" : YES (cached)
+Checking for function "fmemopen" : YES (cached)
+Checking if "gc-sections" links: YES (cached)
+Compiler for C supports arguments -Werror=implicit-function-declaration: YES (cached)
+Compiler for C supports arguments -Werror=missing-prototypes: YES (cached)
+Compiler for C supports arguments -Werror=return-type: YES (cached)
+Compiler for C supports arguments -Werror=empty-body: YES (cached)
+Compiler for C supports arguments -Werror=incompatible-pointer-types: YES (cached)
+Compiler for C supports arguments -Werror=int-conversion: YES (cached)
+Compiler for C supports arguments -Wimplicit-fallthrough: YES (cached)
+Compiler for C supports arguments -Wmisleading-indentation: YES (cached)
+Compiler for C supports arguments -Wno-missing-field-initializers: YES (cached)
+Compiler for C supports arguments -Wno-format-truncation: YES (cached)
+Compiler for C supports arguments -Wno-nonnull-compare: NO (cached)
+Compiler for C supports arguments -fno-math-errno: YES (cached)
+Compiler for C supports arguments -fno-trapping-math: YES (cached)
+Compiler for C supports arguments -Qunused-arguments: YES (cached)
+Compiler for C supports arguments -fno-common: YES (cached)
+Compiler for C supports arguments -Wno-microsoft-enum-value: YES (cached)
+Compiler for C supports arguments -Wno-unused-function: YES (cached)
+Compiler for C supports arguments -Werror=format: YES (cached)
+Compiler for C supports arguments -Wformat-security: YES (cached)
+Compiler for C supports arguments -Werror=thread-safety: YES (cached)
+Compiler for C supports arguments -ffunction-sections: YES (cached)
+Compiler for C supports arguments -fdata-sections: YES (cached)
+Compiler for C supports arguments -Wno-unused-variable: YES (cached)
+Compiler for C supports arguments -Wno-unused-but-set-variable: YES (cached)
+Compiler for C supports arguments /wd4189: NO (cached)
+Compiler for C++ supports arguments -Werror=return-type: YES (cached)
+Compiler for C++ supports arguments -Werror=empty-body: YES (cached)
+Compiler for C++ supports arguments -Wmisleading-indentation: YES (cached)
+Compiler for C++ supports arguments -Wno-non-virtual-dtor: YES (cached)
+Compiler for C++ supports arguments -Wno-missing-field-initializers: YES (cached)
+Compiler for C++ supports arguments -Wno-format-truncation: YES (cached)
+Compiler for C++ supports arguments -fno-math-errno: YES (cached)
+Compiler for C++ supports arguments -fno-trapping-math: YES (cached)
+Compiler for C++ supports arguments -Qunused-arguments: YES (cached)
+Compiler for C++ supports arguments -flifetime-dse=1: NO (cached)
+Compiler for C++ supports arguments -Wno-microsoft-enum-value: YES (cached)
+Compiler for C++ supports arguments -Werror=format: YES (cached)
+Compiler for C++ supports arguments -Wformat-security: YES (cached)
+Compiler for C++ supports arguments -ffunction-sections: YES (cached)
+Compiler for C++ supports arguments -fdata-sections: YES (cached)
+Compiler for C++ supports arguments -Wno-unused-variable: YES (cached)
+Compiler for C++ supports arguments -Wno-unused-but-set-variable: YES (cached)
+Compiler for C++ supports arguments /wd4189: NO (cached)
+Compiler for C supports arguments -Wno-override-init: YES (cached)
+Compiler for C supports arguments -Wno-initializer-overrides: YES (cached)
+Compiler for C supports arguments -Werror=pointer-arith: YES (cached)
+Compiler for C supports arguments -Werror=vla: YES (cached)
+Compiler for C supports arguments -Werror=gnu-empty-initializer: YES (cached)
+Compiler for C++ supports arguments -Werror=pointer-arith: YES (cached)
+Compiler for C++ supports arguments -Werror=vla: YES (cached)
+Compiler for C++ supports arguments -Werror=gnu-empty-initializer: YES (cached)
+Checking for function "__builtin_ia32_clflushopt" : NO (cached)
+Checking if "GCC atomic builtins" compiles: YES (cached)
+Checking if "GCC atomic builtins required -latomic" links: YES (cached)
+Checking if "GCC 64bit atomics" with dependency  links: YES (cached)
+Library ws2_32 found: NO
+Header "sys/sysmacros.h" has symbol "major" : YES (cached)
+Header "sys/sysmacros.h" has symbol "minor" : YES (cached)
+Header "sys/sysmacros.h" has symbol "makedev" : YES (cached)
+Header "sys/mkdev.h" has symbol "major" : NO (cached)
+Check usable header "sched.h" : YES (cached)
+Checking for function "sched_getaffinity" : YES (cached)
+Check usable header "xlocale.h" : NO (cached)
+Check usable header "linux/futex.h" : YES (cached)
+Check usable header "endian.h" : YES (cached)
+Check usable header "dlfcn.h" : YES (cached)
+Check usable header "sys/shm.h" : YES (cached)
+Check usable header "cet.h" : YES (cached)
+Check usable header "pthread_np.h" : NO (cached)
+Check usable header "renderdoc_app.h" : NO (cached)
+Check usable header "sys/inotify.h" : YES (cached)
+Checking for function "strtof" : YES (cached)
+Checking for function "mkostemp" : YES (cached)
+Checking for function "memfd_create" : YES (cached)
+Checking for function "random_r" : NO (cached)
+Checking for function "flock" : YES (cached)
+Checking for function "strtok_r" : YES (cached)
+Checking for function "getrandom" : YES (cached)
+Checking for function "qsort_s" : NO (cached)
+Checking for function "posix_fallocate" : YES (cached)
+Checking for function "secure_getenv" : YES (cached)
+Checking if "GNU qsort_r" links: YES (cached)
+Header "time.h" has symbol "struct timespec" : YES (cached)
+Checking for function "thrd_create" : YES (cached)
+Header "errno.h" has symbol "program_invocation_name" : YES (cached)
+Header "math.h" has symbol "issignaling" : NO (cached)
+Checking for function "posix_memalign" : YES (cached)
+Checking whether type "struct dirent" has member "d_type" : YES (cached)
+Checking if "strtod has locale support" links: NO (cached)
+Checking if "Bsymbolic" links: YES (cached)
+Checking if "version-script" links: YES (cached)
+Checking if "dynamic-list" links: YES (cached)
+Compiler for C supports link arguments -Wl,--build-id=sha1: YES (cached)
+Checking for function "dlopen" : YES (cached)
+Checking for function "dladdr" with dependency : YES (cached)
+Checking for function "dl_iterate_phdr" : YES (cached)
+Checking for function "clock_gettime" : YES (cached)
+Dependency zlib for host machine found: YES 1.3.2 (cached)
+Dependency libzstd for host machine found: YES 1.5.7 (cached)
+Dependency threads for host machine found: YES unknown (cached)
+Checking for function "pthread_setaffinity_np" with dependency threads: YES (cached)
+Dependency expat for host machine found: YES 2.9.0 (cached)
+Library m found: YES
+Dependency libdrm for host machine found: YES 2.4.134 (cached)
+Found pkg-config: YES (/usr/bin/pkg-config) 3.0.7
+Found CMake: NO
+Run-time dependency libudev found: NO  (tried pkg-config and cmake)
+Dependency libelf for host machine found: YES 0.195 (cached)
+Dependency valgrind for host machine skipped: feature valgrind disabled
+Program bison found: YES (/usr/bin/bison)
+Program bison found: YES 3.8.2 3.8.2 (/usr/bin/bison)
+Program flex found: YES (/usr/bin/flex)
+Dependency libunwind for host machine skipped: feature libunwind disabled
+Dependency wayland-scanner for build machine found: YES 1.26.0 (cached)
+Program /usr/bin/wayland-scanner found: YES (/usr/bin/wayland-scanner)
+Run-time dependency wayland-protocols found: NO  (tried pkg-config and cmake)
+Looking for a fallback subproject for the dependency wayland-protocols
+
+Executing subproject wayland-protocols for machine: host 
+
+wayland-protocols| Project name: wayland-protocols
+wayland-protocols| Project version: 1.32
+wayland-protocols| Configuring wayland-protocols.pc using configuration
+wayland-protocols| Configuring wayland-protocols-uninstalled.pc using configuration
+wayland-protocols| Program scan.sh found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/subprojects/wayland-protocols-1.32/tests/scan.sh)
+wayland-protocols| Dependency wayland-scanner for build machine found: YES 1.26.0 (cached)
+wayland-protocols| Program /usr/bin/wayland-scanner found: YES (/usr/bin/wayland-scanner)
+wayland-protocols| Dependency wayland-client for host machine found: YES 1.25.0 (cached)
+wayland-protocols| Dependency wayland-server for host machine found: YES 1.25.0 (cached)
+wayland-protocols| C compiler for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+wayland-protocols| C linker for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+wayland-protocols| C++ compiler for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+wayland-protocols| C++ linker for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+wayland-protocols| Program replace.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/subprojects/wayland-protocols-1.32/tests/replace.py)
+wayland-protocols| Compiler for C supports link arguments -Wl,--unresolved-symbols=ignore-all: YES (cached)
+wayland-protocols| Build targets in project: 257
+wayland-protocols| Subproject wayland-protocols finished.
+
+Dependency wayland-protocols for host machine found: YES 1.32 (overridden)
+Dependency wayland-client for host machine found: YES 1.25.0 (cached)
+Dependency wayland-server for host machine found: YES 1.25.0 (cached)
+Dependency wayland-egl-backend for host machine found: YES 3 (cached)
+Dependency x11 for host machine found: YES 1.8.14 (cached)
+Dependency xext for host machine found: YES 1.3.7 (cached)
+Dependency xfixes for host machine found: YES 6.0.2 (cached)
+Dependency xcb-glx for host machine found: YES 1.17.0 (cached)
+Dependency xcb-shm for host machine found: YES 1.17.0 (cached)
+Dependency xcb for host machine found: YES 1.17.0 (cached)
+Run-time dependency xcb-keysyms found: NO  (tried pkg-config and cmake)
+Dependency x11-xcb for host machine found: YES 1.8.14 (cached)
+Dependency xcb-dri2 for host machine found: YES 1.17.0 (cached)
+Dependency xcb-dri3 for host machine found: YES 1.17.0 (cached)
+Dependency xcb-present for host machine found: YES 1.17.0 (cached)
+Dependency xcb-shm for host machine found: YES 1.17.0 (cached)
+Dependency xcb-sync for host machine found: YES 1.17.0 (cached)
+Dependency xshmfence for host machine found: YES 1.3.3 (cached)
+Dependency glproto for host machine found: YES 1.4.17 (cached)
+Dependency dri2proto for host machine found: YES 2.8 (cached)
+Dependency xxf86vm for host machine found: YES 1.1.7 (cached)
+Dependency xcb-xfixes for host machine found: YES 1.17.0 (cached)
+Dependency xcb-randr for host machine found: YES 1.17.0 (cached)
+Dependency xrandr for host machine found: YES 1.5.5 (cached)
+Library sensors skipped: feature lmsensors disabled
+Program nm found: YES (/usr/bin/nm)
+Program symbols-check.py found: YES (/usr/bin/python /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/bin/symbols-check.py)
+Program install_megadrivers.py found: YES (/usr/bin/python /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/bin/install_megadrivers.py)
+Found pkg-config: YES (/usr/bin/pkg-config) 3.0.7
+Program decode.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/src/compiler/isaspec/decode.py)
+Program encode.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/src/compiler/isaspec/encode.py)
+Run-time dependency v3dv3 found: NO  (tried pkg-config and cmake)
+Run-time dependency v3dv3 found: NO  (tried pkg-config and cmake)
+Program ln found: YES (/usr/bin/ln)
+Checking for function "mincore" : YES (cached)
+Build targets in project: 446
+NOTICE: Future-deprecated features used:
+ * 1.12.0: {'"shared_library" keyword argument "name_prefix" of type list'}
+
+mesa 23.3.6
+
+  Directories
+    prefix                       : /usr
+    libdir                       : lib
+    includedir                   : include
+
+  Common C and C++ arguments
+    c_cpp_args                   :
+
+  OpenGL
+    OpenGL                       : YES
+    ES1                          : YES
+    ES2                          : YES
+    Shared glapi                 : YES
+    GLVND                        : NO
+
+  DRI
+    Platform                     : drm
+    Driver dir                   : /usr/lib/dri
+
+  GLX
+    Enabled                      : YES
+    Provider                     : dri
+
+  EGL
+    Enabled                      : YES
+    Drivers                      : builtin:egl_dri2 builtin:egl_dri3
+    Platforms                    : wayland x11 surfaceless drm xcb
+
+  GBM
+    Enabled                      : YES
+    Backends path                : /usr/lib/gbm
+
+  Vulkan
+    Drivers                      : NO
+
+  Video
+    Codecs                       : NO
+    APIs                         : NO
+
+  LLVM
+    Enabled                      : NO
+
+  Gallium
+    Enabled                      : YES
+    Drivers                      : v3d kmsro
+    Platforms                    : wayland x11 surfaceless drm xcb
+    Frontends                    : mesa
+    Off-screen rendering (OSMesa): NO
+    HUD lm-sensors               : NO
+
+  Perfetto
+    Enabled                      : NO
+
+  Subprojects (for host machine)
+    wayland-protocols            : YES
+
+  User defined options
+    Cross files                  : /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/cross.ini
+    buildtype                    : release
+    egl                          : enabled
+    gallium-drivers              : v3d,kmsro
+    gallium-va                   : disabled
+    gallium-vdpau                : disabled
+    gallium-xa                   : disabled
+    gbm                          : enabled
+    gles1                        : enabled
+    gles2                        : enabled
+    glx                          : dri
+    libdir                       : lib
+    libunwind                    : disabled
+    llvm                         : disabled
+    lmsensors                    : disabled
+    platforms                    : wayland,x11
+    prefix                       : /usr
+    shared-glapi                 : enabled
+    valgrind                     : disabled
+    video-codecs                 : 
+    vulkan-drivers               : 
+
+Found ninja-1.13.2 at /usr/bin/ninja
+Generating targets:   0%|          | 0/446 eta ?Generating targets:  57%|█████▋    | 255/446 eta 00:00                                                      Writing build.ninja:   0%|          | 0/1576 eta ?                                                  Cleaning... 0 files.
+[1/43] Generating src/git_sha1.h with a custom command
+ninja: Entering directory `/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build'
+[1/42] Generating src/git_sha1.h with a custom command
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/armada-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/exynos_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/hdlcd_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/hx8357d_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/ili9225_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/ili9341_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/imx-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/imx-dcss_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/imx-lcdif_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/ingenic-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/kirin_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/kstb-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/komeda_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/mali-dp_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/mcde_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/mediatek_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/meson_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/mi0283qt_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/mxsfb-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/pl111_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/rcar-du_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/repaper_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/rockchip_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/st7586_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/st7735r_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/stm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/sun4i-drm_dri.so
+installing /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build/src/gallium/targets/dri/libgallium_dri.so to /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/stage/usr/lib/dri/v3d_dri.so
+Native payload: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/system-stage.tar
+make: Leaving directory '/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/mesa'

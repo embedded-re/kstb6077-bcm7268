@@ -1,0 +1,663 @@
+00:00:00.000 [INFO] [sway/main.c:308] Sway version 1.12-rc3
+00:00:00.000 [INFO] [sway/main.c:309] wlroots version 0.20.0
+00:00:00.005 [INFO] [sway/main.c:78] Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux
+00:00:00.005 [INFO] [sway/main.c:94] Contents of /etc/os-release:
+00:00:00.005 [INFO] [sway/main.c:78] NAME="Alpine Linux"
+00:00:00.005 [INFO] [sway/main.c:78] ID=alpine
+00:00:00.005 [INFO] [sway/main.c:78] VERSION_ID=3.24.2
+00:00:00.005 [INFO] [sway/main.c:78] PRETTY_NAME="Alpine Linux v3.24"
+00:00:00.006 [INFO] [sway/main.c:78] HOME_URL="https://alpinelinux.org/"
+00:00:00.006 [INFO] [sway/main.c:78] BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
+00:00:00.006 [INFO] [sway/main.c:66] LD_LIBRARY_PATH=
+00:00:00.006 [INFO] [sway/main.c:66] LD_PRELOAD=
+00:00:00.006 [INFO] [sway/main.c:66] PATH=/bin:/usr/bin
+00:00:00.006 [INFO] [sway/main.c:66] SWAYSOCK=
+00:00:00.006 [INFO] [sway/main.c:338] Starting sway version 1.12-rc3
+00:00:00.006 [DEBUG] [sway/server.c:246] Initializing Wayland server
+00:00:00.006 [INFO] [wlr] [util/env.c:9] Loading WLR_SCENE_DISABLE_DIRECT_SCANOUT option: 1
+00:00:00.006 [INFO] [wlr] [libseat] [libseat/libseat.c:62] Seat opened with backend 'seatd'
+00:00:00.006 [INFO] [wlr] [libseat] [libseat/backend/seatd.c:218] Enabling seat
+00:00:00.006 [INFO] [wlr] [backend/session/session.c:117] Successfully loaded libseat session
+00:00:00.007 [INFO] [wlr] [backend/session/session.c:480] Opening fixed list of KMS devices from WLR_DRM_DEVICES: /dev/dri/card1
+00:00:00.007 [INFO] [wlr] [backend/backend.c:248] Found 1 GPUs
+00:00:00.007 [INFO] [wlr] [backend/drm/backend.c:225] Initializing DRM backend for /dev/dri/card1 (kstb-drm)
+00:00:00.007 [DEBUG] [wlr] [backend/drm/drm.c:112] Using atomic DRM interface
+00:00:00.007 [DEBUG] [wlr] [backend/drm/drm.c:133] ADDFB2 modifiers supported
+00:00:00.007 [INFO] [wlr] [backend/drm/drm.c:312] Found 1 DRM CRTCs
+00:00:00.007 [INFO] [wlr] [backend/drm/drm.c:270] Found 1 DRM planes
+00:00:00.007 [INFO] [wlr] [util/env.c:25] Loading WLR_RENDERER option: gles2
+00:00:00.007 [INFO] [wlr] [render/egl.c:205] Supported EGL client extensions: EGL_EXT_client_extensions EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_EXT_platform_base EGL_KHR_client_get_all_proc_addresses EGL_KHR_debug EGL_EXT_platform_device EGL_EXT_explicit_device EGL_EXT_platform_wayland EGL_KHR_platform_wayland EGL_EXT_platform_x11 EGL_KHR_platform_x11 EGL_EXT_platform_xcb EGL_MESA_platform_gbm EGL_KHR_platform_gbm EGL_MESA_platform_surfaceless
+00:00:00.009 [DEBUG] [wlr] [render/egl.c:546] DRM device '/dev/dri/card1' has no render node, falling back to primary node
+00:00:02.858 [INFO] [wlr] [render/egl.c:369] Using EGL 1.4
+00:00:02.858 [INFO] [wlr] [render/egl.c:370] Supported EGL display extensions: EGL_ANDROID_blob_cache EGL_ANDROID_native_fence_sync EGL_EXT_buffer_age EGL_EXT_image_dma_buf_import EGL_EXT_image_dma_buf_import_modifiers EGL_KHR_cl_event2 EGL_KHR_config_attribs EGL_KHR_context_flush_control EGL_KHR_create_context EGL_KHR_create_context_no_error EGL_KHR_fence_sync EGL_KHR_get_all_proc_addresses EGL_KHR_gl_colorspace EGL_KHR_gl_renderbuffer_image EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_3D_image EGL_KHR_gl_texture_cubemap_image EGL_KHR_image EGL_KHR_image_base EGL_KHR_image_pixmap EGL_KHR_no_config_context EGL_KHR_reusable_sync EGL_KHR_surfaceless_context EGL_EXT_pixel_format_float EGL_KHR_wait_sync EGL_MESA_configless_context EGL_MESA_drm_image EGL_MESA_gl_interop EGL_MESA_image_dma_buf_export EGL_MESA_query_driver EGL_WL_bind_wayland_display 
+00:00:02.858 [INFO] [wlr] [render/egl.c:372] Supported EGL device extensions: EGL_EXT_device_drm EGL_EXT_device_drm_render_node
+00:00:02.858 [INFO] [wlr] [render/egl.c:374] EGL vendor: Mesa Project
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:120] Supported DMA-BUF formats:
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:169]   AB4H (0x48344241)
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:169]   AB48 (0x38344241)
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.858 [DEBUG] [wlr] [render/egl.c:169]   AR30 (0x30335241)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   XR30 (0x30335258)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   AB30 (0x30334241)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   XB30 (0x30334258)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   AR24 (0x34325241)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   AB24 (0x34324241)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   XR24 (0x34325258)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   XB24 (0x34324258)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   RG16 (0x36314752)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   R8 (0x20203852)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   R16 (0x20363152)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   GR88 (0x38385247)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:169]   GR32 (0x32335247)
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✓ render
+00:00:02.859 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YUV9 (0x39565559)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YU11 (0x31315559)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YU12 (0x32315559)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YU16 (0x36315559)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YU24 (0x34325559)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YVU9 (0x39555659)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YV11 (0x31315659)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YV12 (0x32315659)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YV16 (0x36315659)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   YV24 (0x34325659)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   NV12 (0x3231564E)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   NV21 (0x3132564E)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   P010 (0x30313050)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:169]   P012 (0x32313050)
+00:00:02.860 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   P016 (0x36313050)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   P030 (0x30333050)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   NV16 (0x3631564E)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     SAND128 (0x0700000000000004): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   AYUV (0x56555941)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   XYUV (0x56555958)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   Y410 (0x30313459)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   Y412 (0x32313459)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   Y416 (0x36313459)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   YUYV (0x56595559)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   YVYU (0x55595659)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   UYVY (0x59565955)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   VYUY (0x59555956)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   Y210 (0x30313259)
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.861 [DEBUG] [wlr] [render/egl.c:169]   Y212 (0x32313259)
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:169]   Y216 (0x36313259)
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     INVALID (0x00FFFFFFFFFFFFFF): ✓ texture  ✓ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     UIF (0x0700000000000006): ✓ texture  ✗ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:103]     LINEAR (0x0000000000000000): ✓ texture  ✗ render
+00:00:02.862 [DEBUG] [wlr] [render/egl.c:189] EGL DMA-BUF format modifiers supported
+00:00:02.865 [DEBUG] [wlr] [render/egl.c:600] Using EGL_PLATFORM_GBM_KHR
+00:00:02.865 [INFO] [wlr] [render/gles2/renderer.c:538] Creating GLES2 renderer
+00:00:02.865 [INFO] [wlr] [render/gles2/renderer.c:539] Using OpenGL ES 3.0 Mesa 23.3.6 (git-3263da570e)
+00:00:02.865 [INFO] [wlr] [render/gles2/renderer.c:540] GL vendor: Broadcom
+00:00:02.865 [INFO] [wlr] [render/gles2/renderer.c:541] GL renderer: V3D 3.3
+00:00:02.865 [INFO] [wlr] [render/gles2/renderer.c:542] Supported GLES2 extensions: GL_EXT_blend_minmax GL_EXT_multi_draw_arrays GL_EXT_texture_filter_anisotropic GL_EXT_texture_compression_s3tc GL_EXT_texture_compression_dxt1 GL_EXT_texture_compression_rgtc GL_EXT_texture_format_BGRA8888 GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth24 GL_OES_element_index_uint GL_OES_fbo_render_mipmap GL_OES_mapbuffer GL_OES_rgb8_rgba8 GL_OES_standard_derivatives GL_OES_stencil8 GL_OES_texture_3D GL_OES_texture_float GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_texture_npot GL_OES_vertex_half_float GL_EXT_draw_instanced GL_EXT_texture_sRGB_decode GL_OES_EGL_image GL_OES_depth_texture GL_OES_packed_depth_stencil GL_EXT_texture_type_2_10_10_10_REV GL_NV_conditional_render GL_OES_get_program_binary GL_APPLE_texture_max_level GL_EXT_discard_framebuffer GL_EXT_read_format_bgra GL_NV_pack_subimage GL_EXT_frag_depth GL_NV_fbo_color_attachments GL_OES_EGL_image_external GL_OES_EGL_sync GL_OES_vertex_array_object GL_ANGLE_pack_reverse_row_order GL_ANGLE_texture_compression_dxt3 GL_ANGLE_texture_compression_dxt5 GL_EXT_occlusion_query_boolean GL_EXT_texture_rg GL_EXT_unpack_subimage GL_NV_draw_buffers GL_NV_read_buffer GL_NV_read_depth GL_NV_read_depth_stencil GL_NV_read_stencil GL_APPLE_sync GL_EXT_draw_buffers GL_EXT_instanced_arrays GL_EXT_map_buffer_range GL_KHR_debug GL_KHR_texture_compression_astc_ldr GL_NV_generate_mipmap_sRGB GL_NV_pixel_buffer_object GL_OES_depth_texture_cube_map GL_OES_required_internalformat GL_OES_surfaceless_context GL_EXT_color_buffer_float GL_EXT_debug_label GL_EXT_sRGB_write_control GL_EXT_separate_shader_objects GL_EXT_shader_integer_mix GL_EXT_base_instance GL_EXT_compressed_ETC1_RGB8_sub_texture GL_EXT_copy_image GL_EXT_draw_elements_base_vertex GL_EXT_texture_border_clamp GL_KHR_context_flush_control GL_NV_shader_noperspective_interpolation GL_OES_copy_image GL_OES_draw_elements_base_vertex GL_OES_texture_border_clamp GL_OES_texture_stencil8 GL_EXT_float_blend GL_KHR_no_error GL_KHR_texture_compression_astc_sliced_3d GL_OES_EGL_image_external_essl3 GL_EXT_texture_compression_s3tc_srgb GL_MESA_shader_integer_functions GL_EXT_texture_mirror_clamp_to_edge GL_KHR_parallel_shader_compile GL_EXT_EGL_image_storage GL_MESA_framebuffer_flip_y GL_MESA_sampler_objects GL_MESA_bgra 
+00:00:02.932 [DEBUG] [wlr] [render/allocator/allocator.c:115] Trying to create gbm allocator
+00:00:02.976 [DEBUG] [wlr] [render/allocator/gbm.c:188] Created GBM allocator with backend drm
+00:00:02.977 [DEBUG] [wlr] [render/allocator/gbm.c:191] Using DRM node /dev/dri/card1
+00:00:02.977 [DEBUG] [wlr] [types/wlr_drm_lease_v1.c:599] Creating wlr_drm_lease_device_v1 for /dev/dri/card1
+00:00:02.977 [INFO] [wlr] [backend/headless/backend.c:60] Creating headless backend
+00:00:02.996 [INFO] [sway/config.c:422] Loading config from /tmp/kstb-native-gui-probe/sway.conf
+00:00:02.996 [DEBUG] [sway/config.c:781] Read line 1: output * render_bit_depth 8
+00:00:02.996 [INFO] [sway/commands.c:381] Config command: output * render_bit_depth 8
+00:00:02.996 [INFO] [sway/commands.c:404] After replacement: output * render_bit_depth 8
+00:00:02.996 [DEBUG] [sway/commands.c:436] Subcommand: render_bit_depth 8
+00:00:02.996 [DEBUG] [sway/config/output.c:279] Config stored for output * (enabled: -1) (-1x-1@-1.000000Hz position 2147483647,2147483647 scale -1.000000 subpixel unknown transform -1) (bg (null) (null)) (power -1) (max render time: -1) (allow tearing: -1) (hdr: -1)
+00:00:02.996 [DEBUG] [sway/config.c:781] Read line 2: default_border normal
+00:00:02.996 [INFO] [sway/commands.c:381] Config command: default_border normal
+00:00:02.996 [INFO] [sway/commands.c:404] After replacement: default_border normal
+00:00:02.996 [DEBUG] [sway/config.c:781] Read line 3: font pango:monospace 16
+00:00:02.996 [INFO] [sway/commands.c:381] Config command: font pango:monospace 16
+00:00:02.996 [INFO] [sway/commands.c:404] After replacement: font pango:monospace 16
+00:00:03.036 [DEBUG] [sway/config.c:781] Read line 4: seat * hide_cursor 100
+00:00:03.037 [INFO] [sway/commands.c:381] Config command: seat * hide_cursor 100
+00:00:03.037 [INFO] [sway/commands.c:404] After replacement: seat * hide_cursor 100
+00:00:03.037 [DEBUG] [sway/commands.c:436] Subcommand: hide_cursor 100
+00:00:03.037 [DEBUG] [sway/config/seat.c:78] Adding seat * config
+00:00:03.037 [DEBUG] [sway/config/seat.c:82] Config stored for seat *
+00:00:03.037 [DEBUG] [sway/config.c:781] Read line 5: for_window [app_id="kstb-wayland-gles-test"] floating enable
+00:00:03.037 [INFO] [sway/commands.c:381] Config command: for_window [app_id="kstb-wayland-gles-test"] floating enable
+00:00:03.037 [INFO] [sway/commands.c:404] After replacement: for_window [app_id="kstb-wayland-gles-test"] floating enable
+00:00:03.037 [DEBUG] [sway/criteria.c:841] Found pair: app_id=kstb-wayland-gles-test
+00:00:03.037 [DEBUG] [sway/commands/for_window.c:34] for_window: '[app_id="kstb-wayland-gles-test"]' -> 'floating enable' added
+00:00:03.037 [DEBUG] [sway/config.c:781] Read line 6: for_window [app_id="kstb-wayland-gles-test"] resize set 960 640
+00:00:03.037 [INFO] [sway/commands.c:381] Config command: for_window [app_id="kstb-wayland-gles-test"] resize set 960 640
+00:00:03.037 [INFO] [sway/commands.c:404] After replacement: for_window [app_id="kstb-wayland-gles-test"] resize set 960 640
+00:00:03.037 [DEBUG] [sway/criteria.c:841] Found pair: app_id=kstb-wayland-gles-test
+00:00:03.037 [DEBUG] [sway/commands/for_window.c:34] for_window: '[app_id="kstb-wayland-gles-test"]' -> 'resize set 960 640' added
+00:00:03.037 [DEBUG] [sway/config.c:781] Read line 7: exec /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1
+00:00:03.037 [INFO] [sway/commands.c:381] Config command: exec /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1
+00:00:03.037 [INFO] [sway/commands.c:404] After replacement: exec /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1
+00:00:03.037 [DEBUG] [sway/config.c:825] Deferring command `exec /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1'
+00:00:03.037 [DEBUG] [sway/input/input-manager.c:190] no fallback seat config - creating default
+00:00:03.037 [DEBUG] [sway/config/seat.c:65] Adding non-wildcard seat config
+00:00:03.037 [DEBUG] [sway/config/seat.c:68] Merging on top of seat * config
+00:00:03.037 [DEBUG] [sway/config/seat.c:82] Config stored for seat seat0
+00:00:03.037 [DEBUG] [sway/input/input-manager.c:637] applying seat config for seat seat0
+00:00:03.037 [DEBUG] [sway/input/input-manager.c:637] applying seat config for seat *
+00:00:03.037 [DEBUG] [sway/input/input-manager.c:637] applying seat config for seat seat0
+00:00:03.037 [DEBUG] [sway/config/output.c:1286] spawn_swaybg cmd[0] = swaybg
+00:00:03.040 [INFO] [sway/realtime.c:35] Failed to set scheduling priority to 1
+00:00:03.040 [DEBUG] [sway/server.c:760] Initializing Xwayland (lazy=1)
+00:00:03.040 [ERROR] [wlr] [xwayland/server.c:473] Cannot find Xwayland binary "/usr/bin/Xwayland"
+00:00:03.040 [ERROR] [sway/server.c:766] Failed to start Xwayland
+00:00:03.040 00:00:03.040 [ERROR] [INFO] [sway/config/output.c:1219] failed to execute 'swaybg' (background configuration probably not applied): [sway/server.c:787] Starting backend on wayland display 'wayland-1'No such file or directory
+
+00:00:03.040 [DEBUG] [wlr] [backend/libinput/backend.c:88] Starting libinput backend
+00:00:03.065 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding keys-polled [1:1]
+00:00:03.065 [DEBUG] [sway/input/input-manager.c:240] adding device: '1:1:keys-polled'
+00:00:03.065 [DEBUG] [sway/input/seat.c:945] adding device 1:1:keys-polled to seat seat0
+00:00:03.091 [DEBUG] [sway/input/keyboard.c:947] Created keyboard group 0xffffb6b79770
+00:00:03.091 [DEBUG] [sway/input/keyboard.c:970] Adding keyboard 1:1:keys-polled to group 0xffffb6b79770
+00:00:03.098 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding keys [1:1]
+00:00:03.098 [DEBUG] [sway/input/input-manager.c:240] adding device: '1:1:keys'
+00:00:03.098 [DEBUG] [sway/input/seat.c:945] adding device 1:1:keys to seat seat0
+00:00:03.127 [DEBUG] [sway/input/keyboard.c:922] Adding keyboard 1:1:keys to group 0xffffb6b79770
+00:00:03.134 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding KSTB6077 IR receiver [0:0]
+00:00:03.134 [DEBUG] [sway/input/input-manager.c:240] adding device: '0:0:KSTB6077_IR_receiver'
+00:00:03.135 [DEBUG] [sway/input/seat.c:945] adding device 0:0:KSTB6077_IR_receiver to seat seat0
+00:00:03.164 [DEBUG] [sway/input/keyboard.c:922] Adding keyboard 0:0:KSTB6077_IR_receiver to group 0xffffb6b79770
+00:00:03.171 [DEBUG] [sway/input/input-manager.c:240] adding device: '0:0:KSTB6077_IR_receiver'
+00:00:03.171 [DEBUG] [sway/input/seat.c:945] adding device 0:0:KSTB6077_IR_receiver to seat seat0
+00:00:03.171 [DEBUG] [sway/input/seat.c:694] Applying input mapping to 0:0:KSTB6077_IR_receiver
+00:00:03.171 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding NOVATEK USB Keyboard [1121:16]
+00:00:03.171 [DEBUG] [sway/input/input-manager.c:240] adding device: '1121:16:NOVATEK_USB_Keyboard'
+00:00:03.171 [DEBUG] [sway/input/seat.c:945] adding device 1121:16:NOVATEK_USB_Keyboard to seat seat0
+00:00:03.200 [DEBUG] [sway/input/keyboard.c:922] Adding keyboard 1121:16:NOVATEK_USB_Keyboard to group 0xffffb6b79770
+00:00:03.207 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding NOVATEK USB Keyboard System Control [1121:16]
+00:00:03.207 [DEBUG] [sway/input/input-manager.c:240] adding device: '1121:16:NOVATEK_USB_Keyboard_System_Control'
+00:00:03.207 [DEBUG] [sway/input/seat.c:945] adding device 1121:16:NOVATEK_USB_Keyboard_System_Control to seat seat0
+00:00:03.236 [DEBUG] [sway/input/keyboard.c:922] Adding keyboard 1121:16:NOVATEK_USB_Keyboard_System_Control to group 0xffffb6b79770
+00:00:03.243 [DEBUG] [wlr] [backend/libinput/events.c:69] Adding NOVATEK USB Keyboard Consumer Control [1121:16]
+00:00:03.243 [DEBUG] [sway/input/input-manager.c:240] adding device: '1121:16:NOVATEK_USB_Keyboard_Consumer_Control'
+00:00:03.243 [DEBUG] [sway/input/seat.c:945] adding device 1121:16:NOVATEK_USB_Keyboard_Consumer_Control to seat seat0
+00:00:03.272 [DEBUG] [sway/input/keyboard.c:922] Adding keyboard 1121:16:NOVATEK_USB_Keyboard_Consumer_Control to group 0xffffb6b79770
+00:00:03.279 [INFO] [wlr] [util/env.c:9] Loading WLR_LIBINPUT_NO_DEVICES option: 1
+00:00:03.279 [DEBUG] [wlr] [backend/libinput/backend.c:125] libinput successfully initialized
+00:00:03.279 [INFO] [wlr] [backend/drm/drm.c:1781] Scanning DRM connectors on /dev/dri/card1
+00:00:03.279 [INFO] [wlr] [backend/drm/drm.c:1836] Found connector 'HDMI-A-1'
+00:00:03.279 [INFO] [wlr] [backend/drm/drm.c:1861] 'HDMI-A-1' connected
+00:00:03.280 [DEBUG] [wlr] [backend/drm/drm.c:1632] Current CRTC: 35
+00:00:03.280 [INFO] [wlr] [backend/drm/drm.c:1646] Detected modes:
+00:00:03.280 [INFO] [wlr] [backend/drm/drm.c:1670]   1920x1080 @ 59.940 Hz (preferred)
+00:00:03.280 [INFO] [wlr] [backend/drm/drm.c:1707] Physical size: 0x0
+00:00:03.280 [DEBUG] [wlr] [backend/drm/drm.c:1744] Connector has no EDID
+00:00:03.280 [INFO] [wlr] [backend/drm/drm.c:1895] connector HDMI-A-1: Requesting modeset
+00:00:03.280 [DEBUG] [sway/desktop/output.c:541] New output 0xffffb6a6c6e0: HDMI-A-1 (non-desktop: 0)
+00:00:03.280 [INFO] [wlr] [backend/headless/backend.c:17] Starting headless backend
+00:00:03.280 [DEBUG] [sway/config/output.c:1008] Committing 1 outputs
+00:00:03.280 [DEBUG] [sway/config/output.c:769] Output state for HDMI-A-1
+00:00:03.280 [DEBUG] [sway/config/output.c:771]     enabled:       yes
+00:00:03.280 [DEBUG] [sway/config/output.c:775]     render_format: XR24
+00:00:03.280 [DEBUG] [sway/config/output.c:783]     mode:          1920x1080@59940mHz (preferred)
+00:00:03.280 [DEBUG] [sway/config/output.c:793]     scale:         1.000000
+00:00:03.280 [DEBUG] [sway/config/output.c:796]     subpixel:      unknown
+00:00:03.280 [DEBUG] [wlr] [types/wlr_output_swapchain_manager.c:164] Preparing test commit for 1 outputs with explicit modifiers
+00:00:03.280 [DEBUG] [wlr] [types/output/render.c:172] Output doesn't support format 0x34325258
+00:00:03.280 [DEBUG] [wlr] [types/wlr_output_swapchain_manager.c:164] Preparing test commit for 1 outputs with implicit modifiers
+00:00:03.280 [DEBUG] [wlr] [types/output/render.c:172] Output doesn't support format 0x34325258
+00:00:03.280 [ERROR] [sway/config/output.c:1028] Requested backend configuration failed, searching for valid fallbacks
+00:00:03.280 [DEBUG] [sway/config/output.c:769] Output state for HDMI-A-1
+00:00:03.280 [DEBUG] [sway/config/output.c:771]     enabled:       yes
+00:00:03.280 [DEBUG] [sway/config/output.c:775]     render_format: AR24
+00:00:03.280 [DEBUG] [sway/config/output.c:783]     mode:          1920x1080@59940mHz (preferred)
+00:00:03.280 [DEBUG] [sway/config/output.c:793]     scale:         1.000000
+00:00:03.280 [DEBUG] [sway/config/output.c:796]     subpixel:      unknown
+00:00:03.280 [DEBUG] [wlr] [types/wlr_output_swapchain_manager.c:164] Preparing test commit for 1 outputs with explicit modifiers
+00:00:03.280 [DEBUG] [wlr] [render/swapchain.c:103] Allocating new swapchain buffer
+00:00:03.296 [DEBUG] [wlr] [render/allocator/gbm.c:118] Allocated 1920x1080 GBM buffer with format AR24 (0x34325241), modifier LINEAR (0x0000000000000000)
+00:00:03.297 [DEBUG] [wlr] [types/wlr_output_swapchain_manager.c:185] Test commit for 1 outputs succeeded
+00:00:03.297 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 1920x1080
+00:00:03.300 [DEBUG] [wlr] [GLES2] MESA_SHADER_FRAGMENT shader: 6 inst, 1 threads, 0 loops, 4 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 6 inst-and-stalls, 0 nops
+00:00:03.302 [DEBUG] [wlr] [GLES2] MESA_SHADER_VERTEX shader: 37 inst, 1 threads, 0 loops, 15 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 37 inst-and-stalls, 2 nops
+00:00:03.304 [DEBUG] [wlr] [GLES2] MESA_SHADER_VERTEX_BIN shader: 35 inst, 1 threads, 0 loops, 13 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 35 inst-and-stalls, 2 nops
+00:00:03.316 [DEBUG] [sway/config/output.c:1072] Commit of 1 outputs succeeded
+00:00:03.316 [DEBUG] [sway/config/output.c:1080] Finalizing config for HDMI-A-1
+00:00:03.317 [DEBUG] [wlr] [xcursor/wlr_xcursor.c:233] Loaded cursor theme 'default' at size 24 (26 available cursors)
+00:00:03.317 [DEBUG] [wlr] [types/output/cursor.c:205] Hardware cursor not supported
+00:00:03.317 [DEBUG] [wlr] [types/output/cursor.c:309] Failed to render cursor buffer
+00:00:03.317 [DEBUG] [wlr] [types/output/cursor.c:428] Falling back to software cursor on output 'HDMI-A-1'
+00:00:03.317 [DEBUG] [sway/tree/workspace.c:437] Workspace: Generating new workspace name for output HDMI-A-1
+00:00:03.317 [DEBUG] [sway/tree/output.c:165] Creating default workspace 1
+00:00:03.317 [DEBUG] [sway/tree/workspace.c:185] Adding workspace 1 for output HDMI-A-1
+00:00:03.317 [DEBUG] [sway/desktop/layer_shell.c:96] Usable area changed, rearranging output
+00:00:03.317 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:03.317 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:03.317 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:03.317 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:03.317 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0c10 committing with 2 instructions
+00:00:03.317 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0c10
+00:00:03.317 [DEBUG] [sway/input/seat.c:694] Applying input mapping to 0:0:KSTB6077_IR_receiver
+00:00:03.318 [DEBUG] [sway/config.c:630] Running deferred commands
+00:00:03.318 [INFO] [sway/commands.c:261] Handling command 'exec /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1'
+00:00:03.318 [DEBUG] [sway/commands/exec_always.c:47] Executing /tmp/kstb-native-gui-probe/kstb-wayland-gles-test 45 > /tmp/kstb-native-gui-probe/runtime/client.txt 2>&1
+00:00:03.320 [DEBUG] [sway/commands/exec_always.c:73] Child process created with pid 4476
+00:00:03.320 [DEBUG] [sway/commands/exec_always.c:75] Recording workspace for process 4476
+00:00:03.320 [INFO] [sway/server.c:799] Running compositor on wayland display 'wayland-1'
+00:00:03.320 [DEBUG] [wlr] [types/output/cursor.c:428] Falling back to software cursor on output 'HDMI-A-1'
+00:00:03.321 [DEBUG] [wlr] [render/swapchain.c:103] Allocating new swapchain buffer
+00:00:03.338 [DEBUG] [wlr] [render/allocator/gbm.c:118] Allocated 1920x1080 GBM buffer with format AR24 (0x34325241), modifier LINEAR (0x0000000000000000)
+00:00:03.338 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 1920x1080
+00:00:03.340 [DEBUG] [wlr] [types/wlr_compositor.c:785] New wlr_surface 0xffffb6a45730 (res 0xffffb6a1a910)
+00:00:03.340 [DEBUG] [wlr] [types/xdg_shell/wlr_xdg_surface.c:441] new xdg_surface 0xffffb6b54ac0 (res 0xffffb6a1a9a0)
+00:00:03.340 [DEBUG] [sway/desktop/xdg_shell.c:559] New xdg_shell toplevel title='(null)' app_id='(null)'
+00:00:03.340 [INFO] [wlr] [util/env.c:9] Loading WLR_SCENE_DISABLE_DIRECT_SCANOUT option: 1
+00:00:03.476 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 800x600
+00:00:03.476 [DEBUG] [sway/desktop/launcher.c:85] Looking up workspace for pid 4476
+00:00:03.476 [DEBUG] [sway/desktop/launcher.c:92] found workspace match for pid 4476: 1
+00:00:03.477 [DEBUG] [sway/tree/view.c:528] View 0xffffb6a54fd0 updated CSD to 1
+00:00:03.478 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:03.478 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:03.478 [DEBUG] [sway/tree/arrange.c:76] Arranging 0xffffde188e38 horizontally
+00:00:03.478 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:03.478 [DEBUG] [sway/tree/view.c:579] for_window '[app_id="kstb-wayland-gles-test"]' matches view 0xffffb6a54fd0, cmd: 'floating enable'
+00:00:03.478 [INFO] [sway/commands.c:261] Handling command 'floating enable'
+00:00:03.478 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:03.478 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:03.478 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:03.478 [DEBUG] [sway/tree/view.c:579] for_window '[app_id="kstb-wayland-gles-test"]' matches view 0xffffb6a54fd0, cmd: 'resize set 960 640'
+00:00:03.478 [INFO] [sway/commands.c:261] Handling command 'resize set 960 640'
+00:00:03.478 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0d90 committing with 3 instructions
+00:00:03.482 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 960x640
+00:00:03.482 [DEBUG] [sway/desktop/transaction.c:907] Transaction 0xffffb6ba0d90 is ready
+00:00:03.482 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0d90
+00:00:03.482 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0dd0 committing with 1 instructions
+00:00:03.482 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0dd0
+00:00:03.484 [DEBUG] [wlr] [GLES2] MESA_SHADER_FRAGMENT shader: 14 inst, 4 threads, 0 loops, 3 uniforms, 2 max-temps, 0:0 spills:fills, 0 sfu-stalls, 14 inst-and-stalls, 0 nops
+00:00:03.487 [DEBUG] [wlr] [GLES2] MESA_SHADER_VERTEX shader: 50 inst, 1 threads, 0 loops, 21 uniforms, 15 max-temps, 0:0 spills:fills, 0 sfu-stalls, 50 inst-and-stalls, 2 nops
+00:00:03.489 [DEBUG] [wlr] [GLES2] MESA_SHADER_VERTEX_BIN shader: 35 inst, 1 threads, 0 loops, 13 uniforms, 10 max-temps, 0:0 spills:fills, 0 sfu-stalls, 35 inst-and-stalls, 2 nops
+00:00:03.496 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 960x640
+00:00:03.501 [DEBUG] [wlr] [GLES2] MESA_SHADER_FRAGMENT shader: 6 inst, 1 threads, 0 loops, 4 uniforms, 3 max-temps, 0:0 spills:fills, 0 sfu-stalls, 6 inst-and-stalls, 0 nops
+00:00:03.505 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 960x640
+00:00:03.521 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 960x640
+00:00:04.033 [DEBUG] [sway/ipc-server.c:196] New client: fd 55
+00:00:04.035 [INFO] [sway/ipc-server.c:570] IPC Client 55 disconnected
+00:00:04.044 [DEBUG] [sway/ipc-server.c:196] New client: fd 55
+00:00:04.047 [INFO] [sway/ipc-server.c:570] IPC Client 55 disconnected
+00:00:04.470 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:04.470 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:04.470 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:04.470 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:05.471 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:05.471 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:05.471 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:05.471 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:06.471 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:06.471 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:06.471 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:06.471 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:07.473 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:07.473 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:07.473 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:07.473 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:08.474 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:08.474 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:08.474 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:08.474 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:09.474 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:09.474 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:09.474 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:09.474 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:10.475 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:10.475 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:10.475 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:10.475 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:10.659 [DEBUG] [wlr] [render/swapchain.c:103] Allocating new swapchain buffer
+00:00:10.675 [DEBUG] [wlr] [render/allocator/gbm.c:118] Allocated 1920x1080 GBM buffer with format AR24 (0x34325241), modifier LINEAR (0x0000000000000000)
+00:00:10.675 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 1920x1080
+00:00:10.675 [DEBUG] [wlr] [types/output/render.c:142] Disabling direct scan-out on output 'HDMI-A-1' (locks: 1)
+00:00:11.252 [DEBUG] [wlr] [types/output/render.c:142] Enabling direct scan-out on output 'HDMI-A-1' (locks: 0)
+00:00:11.294 [DEBUG] [sway/ipc-server.c:196] New client: fd 55
+00:00:11.294 [DEBUG] [sway/criteria.c:841] Found pair: app_id=kstb-wayland-gles-test
+00:00:11.294 [INFO] [sway/commands.c:261] Handling command 'resize set 640 480'
+00:00:11.295 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb70a3d90 committing with 1 instructions
+00:00:11.295 [INFO] [sway/ipc-server.c:570] IPC Client 55 disconnected
+00:00:11.299 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 640x480
+00:00:11.299 [DEBUG] [sway/desktop/transaction.c:907] Transaction 0xffffb70a3d90 is ready
+00:00:11.299 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb70a3d90
+00:00:11.299 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0a50 committing with 1 instructions
+00:00:11.299 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0a50
+00:00:11.312 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 640x480
+00:00:11.476 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:11.476 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:11.476 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:11.476 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:12.477 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:12.477 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:12.477 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:12.477 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:13.477 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:13.478 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:13.478 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:13.478 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:14.479 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:14.479 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:14.479 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:14.479 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:15.479 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:15.480 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:15.480 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:15.480 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:16.480 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:16.481 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:16.481 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:16.481 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:17.482 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:17.482 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:17.482 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:17.482 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:17.868 [DEBUG] [wlr] [types/output/render.c:142] Disabling direct scan-out on output 'HDMI-A-1' (locks: 1)
+00:00:18.440 [DEBUG] [wlr] [types/output/render.c:142] Enabling direct scan-out on output 'HDMI-A-1' (locks: 0)
+00:00:18.480 [DEBUG] [sway/ipc-server.c:196] New client: fd 53
+00:00:18.480 [DEBUG] [sway/criteria.c:841] Found pair: app_id=kstb-wayland-gles-test
+00:00:18.480 [INFO] [sway/commands.c:261] Handling command 'fullscreen enable'
+00:00:18.481 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:18.481 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:18.481 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0a10 committing with 2 instructions
+00:00:18.481 [INFO] [sway/ipc-server.c:570] IPC Client 53 disconnected
+00:00:18.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:18.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:18.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:18.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:18.494 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 1920x1080
+00:00:18.494 [DEBUG] [sway/desktop/transaction.c:907] Transaction 0xffffb6ba0a10 is ready
+00:00:18.494 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0a10
+00:00:18.494 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0b50 committing with 1 instructions
+00:00:18.494 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0b50
+00:00:18.508 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 1920x1080
+00:00:19.484 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:19.484 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:19.484 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:19.484 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:20.484 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:20.485 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:20.485 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:20.485 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:21.485 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:21.486 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:21.486 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:21.486 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:22.486 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:22.487 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:22.487 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:22.487 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:23.487 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:23.488 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:23.488 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:23.488 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:24.488 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:24.489 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:24.489 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:24.489 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:25.054 [DEBUG] [wlr] [types/output/render.c:142] Disabling direct scan-out on output 'HDMI-A-1' (locks: 1)
+00:00:25.491 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:25.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:25.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:25.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:25.643 [DEBUG] [wlr] [types/output/render.c:142] Enabling direct scan-out on output 'HDMI-A-1' (locks: 0)
+00:00:25.713 [DEBUG] [sway/ipc-server.c:196] New client: fd 54
+00:00:25.713 [DEBUG] [sway/criteria.c:841] Found pair: app_id=kstb-wayland-gles-test
+00:00:25.713 [INFO] [sway/commands.c:261] Handling command 'fullscreen disable'
+00:00:25.713 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:25.713 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:25.714 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0a10 committing with 2 instructions
+00:00:25.716 [INFO] [sway/ipc-server.c:570] IPC Client 54 disconnected
+00:00:25.718 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 640x480
+00:00:25.718 [DEBUG] [sway/desktop/transaction.c:907] Transaction 0xffffb6ba0a10 is ready
+00:00:25.718 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0a10
+00:00:25.718 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0e50 committing with 1 instructions
+00:00:25.718 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0e50
+00:00:25.729 [DEBUG] [wlr] [render/gles2/renderer.c:157] Created GL FBO for buffer 640x480
+00:00:26.491 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:26.491 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:26.491 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:26.491 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:27.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:27.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:27.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:27.492 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:28.492 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:28.493 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:28.493 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:28.493 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:29.493 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:29.494 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:29.494 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:29.494 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:30.494 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:30.495 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:30.495 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:30.495 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:31.496 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:31.496 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:31.496 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:31.496 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:32.289 [DEBUG] [wlr] [types/output/render.c:142] Disabling direct scan-out on output 'HDMI-A-1' (locks: 1)
+00:00:32.498 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:32.498 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:32.498 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:32.498 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:32.844 [DEBUG] [wlr] [types/output/render.c:142] Enabling direct scan-out on output 'HDMI-A-1' (locks: 0)
+00:00:33.498 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:33.498 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:33.498 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:33.498 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:34.499 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:34.499 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:34.499 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:34.499 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:35.499 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:35.500 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:35.500 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:35.500 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:36.500 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:36.501 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:36.501 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:36.501 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:37.502 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:37.502 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:37.502 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:37.502 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:38.503 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:38.503 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:38.503 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:38.503 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:39.504 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:39.504 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:39.504 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:39.504 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:40.505 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:40.505 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:40.505 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:40.505 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:41.506 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:41.506 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:41.506 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:41.506 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:42.506 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:42.507 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:42.507 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:42.507 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:43.508 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:43.508 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:43.508 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:43.508 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:44.508 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:44.508 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:44.508 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:44.508 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:45.509 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:45.510 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:45.510 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:45.510 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:46.511 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:46.511 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:46.511 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:46.511 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:47.512 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:47.512 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:47.512 [DEBUG] [sway/tree/view.c:574] Checking criteria [app_id="kstb-wayland-gles-test"]
+00:00:47.512 [DEBUG] [sway/tree/view.c:576] Criteria already executed
+00:00:48.494 [DEBUG] [sway/tree/arrange.c:274] Usable area for ws: 1920x1080@0,0
+00:00:48.494 [DEBUG] [sway/tree/arrange.c:308] Arranging workspace '1' at 0.000000, 0.000000
+00:00:48.494 [DEBUG] [sway/desktop/transaction.c:821] Transaction 0xffffb6ba0ad0 committing with 2 instructions
+00:00:48.495 [DEBUG] [sway/desktop/transaction.c:717] Applying transaction 0xffffb6ba0ad0
+00:00:48.531 [DEBUG] [sway/ipc-server.c:196] New client: fd 33
+00:00:48.531 [INFO] [sway/commands.c:261] Handling command 'exit'
+00:00:48.531 [INFO] [sway/main.c:399] Shutting down sway
+00:00:48.531 [DEBUG] [sway/input/input-manager.c:208] removing device: '1121:16:NOVATEK_USB_Keyboard_Consumer_Control'
+00:00:48.531 [DEBUG] [sway/input/seat.c:965] removing device 1121:16:NOVATEK_USB_Keyboard_Consumer_Control from seat seat0
+00:00:48.532 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 1121:16:NOVATEK_USB_Keyboard_Consumer_Control from group 0xffffb6b79770
+00:00:48.532 [DEBUG] [sway/input/input-manager.c:208] removing device: '1121:16:NOVATEK_USB_Keyboard_System_Control'
+00:00:48.532 [DEBUG] [sway/input/seat.c:965] removing device 1121:16:NOVATEK_USB_Keyboard_System_Control from seat seat0
+00:00:48.532 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 1121:16:NOVATEK_USB_Keyboard_System_Control from group 0xffffb6b79770
+00:00:48.533 [DEBUG] [sway/input/input-manager.c:208] removing device: '1121:16:NOVATEK_USB_Keyboard'
+00:00:48.533 [DEBUG] [sway/input/seat.c:965] removing device 1121:16:NOVATEK_USB_Keyboard from seat seat0
+00:00:48.533 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 1121:16:NOVATEK_USB_Keyboard from group 0xffffb6b79770
+00:00:48.534 [DEBUG] [sway/input/input-manager.c:208] removing device: '0:0:KSTB6077_IR_receiver'
+00:00:48.534 [DEBUG] [sway/input/seat.c:965] removing device 0:0:KSTB6077_IR_receiver from seat seat0
+00:00:48.534 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 0:0:KSTB6077_IR_receiver from group 0xffffb6b79770
+00:00:48.535 [DEBUG] [sway/input/input-manager.c:208] removing device: '0:0:KSTB6077_IR_receiver'
+00:00:48.535 [DEBUG] [sway/input/seat.c:965] removing device 0:0:KSTB6077_IR_receiver from seat seat0
+00:00:48.535 [DEBUG] [sway/input/input-manager.c:208] removing device: '1:1:keys'
+00:00:48.535 [DEBUG] [sway/input/seat.c:965] removing device 1:1:keys from seat seat0
+00:00:48.535 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 1:1:keys from group 0xffffb6b79770
+00:00:48.536 [DEBUG] [sway/input/input-manager.c:208] removing device: '1:1:keys-polled'
+00:00:48.536 [DEBUG] [sway/input/seat.c:965] removing device 1:1:keys-polled from seat seat0
+00:00:48.536 [DEBUG] [sway/input/keyboard.c:838] Removing keyboard 1:1:keys-polled from group 0xffffb6b79770
+00:00:48.536 [DEBUG] [sway/input/keyboard.c:844] Destroying empty keyboard group 0xffffb6b79770
+00:00:48.681 [DEBUG] [sway/tree/output.c:288] Disabling output 'HDMI-A-1'
+00:00:48.681 [DEBUG] [sway/tree/workspace.c:300] Destroying workspace '1'
+00:00:48.681 [DEBUG] [sway/tree/output.c:305] Destroying output 'HDMI-A-1'
+00:00:48.684 [DEBUG] [wlr] [types/wlr_drm_lease_v1.c:98] Destroying wlr_drm_lease_device_v1 for /dev/dri/card1
+00:00:48.684 [DEBUG] [wlr] [types/wlr_drm_lease_v1.c:645] Destroying wlr_drm_lease_v1_manager
+00:00:48.685 [INFO] [sway/ipc-server.c:570] IPC Client 33 disconnected

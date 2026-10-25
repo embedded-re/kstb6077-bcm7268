@@ -21,9 +21,12 @@ config=/etc/kstb-tv/sway.conf
 case $mode in
 	gpu)
 		config=/etc/kstb-tv/sway-gpu.conf
-		mesa_id=${KSTB_TV_MESA:-23.3.6-40ea9bc5}
-		mesa_env=$(/usr/sbin/kstb-mesa env "$mesa_id") || exit 1
-		eval "$mesa_env"
+		# Normal sessions use the package-managed /usr driver. An explicit
+		# override remains available for comparing archived debug builds.
+		if [ -n "${KSTB_TV_MESA:-}" ]; then
+			mesa_env=$(/usr/sbin/kstb-mesa env "$KSTB_TV_MESA") || exit 1
+			eval "$mesa_env"
+		fi
 		export WLR_RENDERER=gles2
 		# The direct-scanout path stalls on fullscreen transitions here.
 		# Keep GPU composition until that display path is fixed.

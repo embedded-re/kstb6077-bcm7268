@@ -8,21 +8,40 @@ what is where, how to change it, how to test it, and where it stands. The
 history of how each piece was found is in [`README.md`](README.md) "GPU".
 
 Current installed state (2026-10-25): kernel **#30**, release
-`6.18.57-kstb-hrtimer-ab`, now boots from saved KRN/DTB with high-resolution
-timers enabled. Original #29 backups and modules are retained. The selected
-Mesa remains `fe7dda5e`; the latest separately installed package is
-**23.3.6-40ea9bc5** (33 patches, Wayland client platform). Compute optimization is parked after the
-GEMM/coprocessor value gate. GPU composition now works with **`tv --gpu`**:
-Sway uses V3D GLES and display-allocated ARGB8888 buffers shared with V3D.
-GPU mode now preserves all 256 levels per RGB channel; exact scanout-buffer
-ramps and opaque alpha are verified. CPU mode retains RGB565.
-A native GLES Wayland client now passes resize/fullscreen/restart tests at
-59.6–59.8 FPS, with checked pixels and linux-dmabuf protocol evidence.
-`tv --gpu` keeps composition enabled to avoid a measured direct-scanout
-fullscreen stall. Normal `tv` and system libraries remain unchanged.
-[Eight-bit colour and reliability evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).
-[Native app and pacing evidence](../docs/evidence/gpu/runs/20261025-160828-wayland-gles-gate/README.md).
-[Earlier GPU terminal and fallback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
+`6.18.57-kstb-hrtimer-ab`. The system driver is now **Mesa 23.3.6-r33**, six
+signed APK packages installed under **`/usr`**, using the existing 33-patch
+series (inner Mesa commit `3263da5`). Old `/usr/local` graphics files are
+parked in the rollback backup. `/opt/mesa` is retained for explicit debug
+comparisons and is not the normal desktop's driver source.
+
+Start the normal desktop manually from the box's root console:
+
+```
+su -l kstb
+# In the resulting user shell:
+dbus-run-session sway
+```
+
+Sway uses the standard desktop configuration, panel, wallpaper and `wmenu-run`
+launcher. Win+Enter opens a terminal, Win+D opens the launcher, and
+Win+Shift+E logs out after confirmation. Closing applications or all terminals
+leaves the desktop running. Boot remains at the console. Interactive login
+sets the runtime directory and display-device/direct-scanout workaround;
+apps need no Mesa library or driver path overrides. The normal renderer
+selects V3D GLES automatically and scans out opaque ARGB8888 at 1080p.
+
+The installed native GLES demo is `kstb-wayland-gles-test 40` when launched
+inside the desktop. The final normal-desktop gate passes 711 frames at
+59.241 FPS and 12,324 checked pixels through resize/fullscreen/windowed
+transitions. Closing all terminals, opening a new terminal and launcher,
+restart and CPU fallback pass. Package migration additionally passes GLES
+1/2/3 setup, MSAA/depth/stencil and 100 native-fence chains, with an actual
+restore of the previous installation followed by native reinstallation.
+Zero GPU faults occur in these runs. Full conformance was not repeated for
+the native-prefix/X11 frontend build. Xwayland and larger GUI apps remain
+untested; compute optimization stays parked after its value gate.
+[System installation, desktop and rollback evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
+[Earlier colour-depth evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).
 [Compute value decision](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).
 [Kernel installation and rollback](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
 
@@ -32,8 +51,9 @@ fullscreen stall. Normal `tv` and system libraries remain unchanged.
 | --- | --- | --- |
 | Kernel patches (`v3d`) | [`patches/`](patches) 0001, 0003–0005 (0002 is kstb-drm) | in the kernel on `KRN` |
 | Mesa patch series | [`mesa/patches/`](mesa/patches), one patch per fix | |
-| Mesa build | [`mesa/Makefile`](mesa/Makefile) (cross build on the PC) | `/opt/mesa/<id>`, `/opt/mesa/current` = the build in use |
-| Mesa installer | [`rootfs/usr/sbin/kstb-mesa`](rootfs/usr/sbin/kstb-mesa) | `/usr/sbin/kstb-mesa` |
+| System Mesa | [`mesa/system/`](mesa/system/) (cross build and native APK packaging) | `/usr/lib`, `/usr/lib/dri`; `mesa*-23.3.6-r33` |
+| Archived debug builds | [`mesa/Makefile`](mesa/Makefile) | `/opt/mesa/<id>`, `/opt/mesa/current` selects a debug build |
+| Debug Mesa installer | [`rootfs/usr/sbin/kstb-mesa`](rootfs/usr/sbin/kstb-mesa) | `/usr/sbin/kstb-mesa` |
 | Test runner, tests, case lists | [`gpu-test/`](gpu-test) | `/opt/gpu-test` |
 | dEQP binaries and mustpass lists | cross-built from VK-GL-CTS (README "dEQP") with [`gpu-test/deqp/`](gpu-test/deqp); hashes in `/opt/deqp/SHA256SUMS` | `/opt/deqp` |
 | Run results | evidence copied to [`../docs/evidence/gpu/`](../docs/evidence/gpu) | `/root/gpu-runs/<date>-<module>-<name>` |
@@ -41,14 +61,37 @@ fullscreen stall. Normal `tv` and system libraries remain unchanged.
 `linux/build/` (not tracked) holds the work trees: `mesa` (git, branch
 `kstb`), `mesa-build`, `sysroot`, `out/mesa-<id>.tar`, `gpu-test`.
 
-The system's default Mesa is still the older build in `/usr/local` (fixes
-1–11 of patch 0001): every program that doesn't set a library path, such
-as sway for ordinary `tv`, uses it. `tv --gpu` selects the tested package
-for that session only; `tv --cpu` retains the explicit CPU fallback.
-Moving the system to `/opt/mesa/current` is a separate step, only with the
-user's OK.
+The native Mesa packages are pinned to `23.3.6-r33` in `/etc/apk/world`,
+so a normal package upgrade preserves the V3D 3.3 driver. They replace the
+distribution's Mesa 26 packages, which do not support this GPU. The unsupported
+Rusticl package was removed. `tv` remains an optional terminal kiosk;
+`tv --gpu` now uses system Mesa unless `KSTB_TV_MESA` explicitly selects a
+debug build. `tv --cpu` retains the CPU fallback.
 
-## Changing Mesa
+## Building system packages
+
+```
+make -C linux/mesa system
+# -> linux/build/mesa-system/{stage,system-stage.tar,BUILD-ID}
+```
+
+The native build enables Wayland and X11/GLX frontends, prefix `/usr`, libdir
+`lib`, and the same v3d/kmsro patch series. It is isolated from the archived
+`mesa-build` directory. Transfer/extract `system-stage.tar` on the board,
+then run `mesa/system/package.py STAGE OUTPUT --sign-key KEY` with apk-tools
+3 and readelf. It splits Mesa, EGL, GBM, GLES, GL and development packages,
+records SONAME/pkg-config dependencies, preserves DRI hardlinks and excludes
+the bundled Wayland protocol definitions. Use a fresh output directory.
+The signing private key remains outside git; the public key goes in
+`/etc/apk/keys`. Installed signed packages are retained in
+`/var/cache/kstb/packages/mesa-23.3.6-r33`.
+
+The actual system rollback is documented with the evidence above. Its
+package restore and original local-library hashes were tested before the
+native packages were reinstalled. `mesa/system/rollback.py` provides a backup
+preflight and explicit restoration command. No kernel or boot change occurs.
+
+## Changing Mesa and building debug variants
 
 ```
 make -C linux/mesa branch      # once: linux/build/mesa = Mesa 23.3.6 + the series, branch kstb
@@ -69,12 +112,12 @@ linux/build/mesa-build`, then copy `src/gallium/targets/dri/libgallium_dri.so`
 to the box as `v3d_dri.so` in a scratch directory and point
 `LIBGL_DRIVERS_PATH` at it. Never overwrite an installed build.
 
-## Installing and switching on the box
+## Installing and switching archived debug builds
 
 ```
 scp linux/build/out/mesa-<id>.tar root@kstb6077:/tmp/     # or make -C linux/mesa tftp
 kstb-mesa install /tmp/mesa-<id>.tar   # -> /opt/mesa/<id> (or: kstb-mesa install, over TFTP)
-kstb-mesa use <id>                     # /opt/mesa/current -> <id>
+kstb-mesa use <id>                     # debug selector only; not the system driver
 kstb-mesa list | env [id] | remove <id>
 ```
 

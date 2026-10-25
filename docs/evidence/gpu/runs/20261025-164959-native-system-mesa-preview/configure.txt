@@ -1,0 +1,317 @@
+The Meson build system
+Version: 1.12.1
+Source dir: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa
+Build dir: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/build
+Build type: cross build
+Project name: mesa
+Project version: 23.3.6
+C compiler for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+C linker for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+C++ compiler for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+C++ linker for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+C compiler for the build machine: /usr/bin/ccache cc (gcc 16.2.1 "cc (GCC) 16.2.1 20260810")
+C linker for the build machine: cc ld.bfd 2.47
+C++ compiler for the build machine: /usr/bin/ccache c++ (gcc 16.2.1 "c++ (GCC) 16.2.1 20260810")
+C++ linker for the build machine: c++ ld.bfd 2.47
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: aarch64
+Host machine cpu: cortex-a53
+Target machine cpu family: aarch64
+Target machine cpu: cortex-a53
+linux/build/mesa/meson.build:462: WARNING: cannot auto-detect -mtls-dialect when cross-compiling, using compiler default
+Dependency vdpau for host machine skipped: feature gallium-vdpau disabled
+Program glslangValidator found: YES (/usr/bin/glslangValidator)
+Dependency libva for host machine skipped: feature gallium-va disabled
+Program python3 found: YES (/usr/bin/python3)
+Fetching value of define "ETIME" : 62 
+Checking for function "bswap32" : YES 
+Checking for function "bswap64" : YES 
+Checking for function "clz" : YES 
+Checking for function "clzll" : YES 
+Checking for function "ctz" : YES 
+Checking for function "expect" : YES 
+Checking for function "ffs" : YES 
+Checking for function "ffsll" : YES 
+Checking for function "popcount" : YES 
+Checking for function "popcountll" : YES 
+Checking for function "unreachable" : YES 
+Checking for function "types_compatible_p" : YES 
+Compiler for C supports function attribute const: YES 
+Compiler for C supports function attribute flatten: YES 
+Compiler for C supports function attribute malloc: YES 
+Compiler for C supports function attribute pure: YES 
+Compiler for C supports function attribute unused: YES 
+Compiler for C supports function attribute warn_unused_result: YES 
+Compiler for C supports function attribute weak: YES 
+Compiler for C supports function attribute format: YES 
+Compiler for C supports function attribute packed: YES 
+Compiler for C supports function attribute returns_nonnull: YES 
+Compiler for C supports function attribute alias: YES 
+Compiler for C supports function attribute noreturn: YES 
+Compiler for C supports function attribute visibility:hidden: YES 
+Checking if "__uint128_t" compiles: YES 
+Checking for function "reallocarray" : YES 
+Checking for function "fmemopen" : YES 
+Checking if "gc-sections" links: YES 
+Compiler for C supports arguments -Werror=implicit-function-declaration: YES 
+Compiler for C supports arguments -Werror=missing-prototypes: YES 
+Compiler for C supports arguments -Werror=return-type: YES 
+Compiler for C supports arguments -Werror=empty-body: YES 
+Compiler for C supports arguments -Werror=incompatible-pointer-types: YES 
+Compiler for C supports arguments -Werror=int-conversion: YES 
+Compiler for C supports arguments -Wimplicit-fallthrough: YES 
+Compiler for C supports arguments -Wmisleading-indentation: YES 
+Compiler for C supports arguments -Wno-missing-field-initializers: YES 
+Compiler for C supports arguments -Wno-format-truncation: YES 
+Compiler for C supports arguments -Wno-nonnull-compare: NO 
+Compiler for C supports arguments -fno-math-errno: YES 
+Compiler for C supports arguments -fno-trapping-math: YES 
+Compiler for C supports arguments -Qunused-arguments: YES 
+Compiler for C supports arguments -fno-common: YES 
+Compiler for C supports arguments -Wno-microsoft-enum-value: YES 
+Compiler for C supports arguments -Wno-unused-function: YES 
+Compiler for C supports arguments -Werror=format: YES 
+Compiler for C supports arguments -Wformat-security: YES 
+Compiler for C supports arguments -Werror=thread-safety: YES 
+Compiler for C supports arguments -ffunction-sections: YES 
+Compiler for C supports arguments -fdata-sections: YES 
+Compiler for C supports arguments -Wno-unused-variable: YES 
+Compiler for C supports arguments -Wno-unused-but-set-variable: YES 
+Compiler for C supports arguments /wd4189: NO 
+Compiler for C++ supports arguments -Werror=return-type: YES 
+Compiler for C++ supports arguments -Werror=empty-body: YES 
+Compiler for C++ supports arguments -Wmisleading-indentation: YES 
+Compiler for C++ supports arguments -Wno-non-virtual-dtor: YES 
+Compiler for C++ supports arguments -Wno-missing-field-initializers: YES 
+Compiler for C++ supports arguments -Wno-format-truncation: YES 
+Compiler for C++ supports arguments -fno-math-errno: YES 
+Compiler for C++ supports arguments -fno-trapping-math: YES 
+Compiler for C++ supports arguments -Qunused-arguments: YES 
+Compiler for C++ supports arguments -flifetime-dse=1: NO 
+Compiler for C++ supports arguments -Wno-microsoft-enum-value: YES 
+Compiler for C++ supports arguments -Werror=format: YES 
+Compiler for C++ supports arguments -Wformat-security: YES 
+Compiler for C++ supports arguments -ffunction-sections: YES 
+Compiler for C++ supports arguments -fdata-sections: YES 
+Compiler for C++ supports arguments -Wno-unused-variable: YES 
+Compiler for C++ supports arguments -Wno-unused-but-set-variable: YES 
+Compiler for C++ supports arguments /wd4189: NO 
+Compiler for C supports arguments -Wno-override-init: YES 
+Compiler for C supports arguments -Wno-initializer-overrides: YES 
+Compiler for C supports arguments -Werror=pointer-arith: YES 
+Compiler for C supports arguments -Werror=vla: YES 
+Compiler for C supports arguments -Werror=gnu-empty-initializer: YES 
+Compiler for C++ supports arguments -Werror=pointer-arith: YES 
+Compiler for C++ supports arguments -Werror=vla: YES 
+Compiler for C++ supports arguments -Werror=gnu-empty-initializer: YES 
+Checking for function "__builtin_ia32_clflushopt" : NO 
+Checking if "GCC atomic builtins" compiles: YES 
+Checking if "GCC atomic builtins required -latomic" links: YES 
+Checking if "GCC 64bit atomics" with dependency  links: YES 
+Library ws2_32 found: NO
+Header "sys/sysmacros.h" has symbol "major" : YES 
+Header "sys/sysmacros.h" has symbol "minor" : YES 
+Header "sys/sysmacros.h" has symbol "makedev" : YES 
+Header "sys/mkdev.h" has symbol "major" : NO 
+Check usable header "sched.h" : YES 
+Checking for function "sched_getaffinity" : YES 
+Check usable header "xlocale.h" : NO 
+Check usable header "linux/futex.h" : YES 
+Check usable header "endian.h" : YES 
+Check usable header "dlfcn.h" : YES 
+Check usable header "sys/shm.h" : YES 
+Check usable header "cet.h" : YES 
+Check usable header "pthread_np.h" : NO 
+Check usable header "renderdoc_app.h" : NO 
+Check usable header "sys/inotify.h" : YES 
+Checking for function "strtof" : YES 
+Checking for function "mkostemp" : YES 
+Checking for function "memfd_create" : YES 
+Checking for function "random_r" : NO 
+Checking for function "flock" : YES 
+Checking for function "strtok_r" : YES 
+Checking for function "getrandom" : YES 
+Checking for function "qsort_s" : NO 
+Checking for function "posix_fallocate" : YES 
+Checking for function "secure_getenv" : YES 
+Checking if "GNU qsort_r" links: YES 
+Header "time.h" has symbol "struct timespec" : YES 
+Checking for function "thrd_create" : YES 
+Header "errno.h" has symbol "program_invocation_name" : YES 
+Header "math.h" has symbol "issignaling" : NO 
+Checking for function "posix_memalign" : YES 
+Checking whether type "struct dirent" has member "d_type" : YES 
+Checking if "strtod has locale support" links: NO 
+Checking if "Bsymbolic" links: YES 
+Checking if "version-script" links: YES 
+Checking if "dynamic-list" links: YES 
+Compiler for C supports link arguments -Wl,--build-id=sha1: YES 
+Checking for function "dlopen" : YES 
+Checking for function "dladdr" with dependency : YES 
+Checking for function "dl_iterate_phdr" : YES 
+Checking for function "clock_gettime" : YES 
+Found pkg-config: YES (/usr/bin/pkg-config) 3.0.7
+Run-time dependency zlib found: YES 1.3.2
+Run-time dependency libzstd found: YES 1.5.7
+Run-time dependency threads found: YES
+Checking for function "pthread_setaffinity_np" with dependency threads: YES 
+Run-time dependency expat found: YES 2.9.0
+Library m found: YES
+Run-time dependency libdrm found: YES 2.4.134
+Found CMake: NO
+Run-time dependency libudev found: NO  (tried pkg-config and cmake)
+Run-time dependency libelf found: YES 0.195
+Dependency valgrind for host machine skipped: feature valgrind disabled
+Program bison found: YES (/usr/bin/bison)
+Program bison found: YES 3.8.2 3.8.2 (/usr/bin/bison)
+Program flex found: YES (/usr/bin/flex)
+Dependency libunwind for host machine skipped: feature libunwind disabled
+Found pkg-config: YES (/usr/bin/pkg-config) 3.0.7
+Build-time dependency wayland-scanner found: YES 1.26.0
+Program /usr/bin/wayland-scanner found: YES (/usr/bin/wayland-scanner)
+Run-time dependency wayland-protocols found: NO  (tried pkg-config and cmake)
+Looking for a fallback subproject for the dependency wayland-protocols
+
+Executing subproject wayland-protocols for machine: host 
+
+wayland-protocols| Project name: wayland-protocols
+wayland-protocols| Project version: 1.32
+wayland-protocols| Configuring wayland-protocols.pc using configuration
+wayland-protocols| Configuring wayland-protocols-uninstalled.pc using configuration
+wayland-protocols| Program scan.sh found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/subprojects/wayland-protocols-1.32/tests/scan.sh)
+wayland-protocols| Dependency wayland-scanner for build machine found: YES 1.26.0 (cached)
+wayland-protocols| Program /usr/bin/wayland-scanner found: YES (/usr/bin/wayland-scanner)
+wayland-protocols| Run-time dependency wayland-client found: YES 1.25.0
+wayland-protocols| Run-time dependency wayland-server found: YES 1.25.0
+wayland-protocols| C compiler for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+wayland-protocols| C linker for the host machine: clang --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+wayland-protocols| C++ compiler for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot (clang 23.1.3 "clang version 23.1.3")
+wayland-protocols| C++ linker for the host machine: clang++ --target=aarch64-alpine-linux-musl --sysroot=/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/sysroot ld.lld 23.1.3
+wayland-protocols| Program replace.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/subprojects/wayland-protocols-1.32/tests/replace.py)
+wayland-protocols| Compiler for C supports link arguments -Wl,--unresolved-symbols=ignore-all: YES
+wayland-protocols| Build targets in project: 257
+wayland-protocols| Subproject wayland-protocols finished.
+
+Dependency wayland-protocols for host machine found: YES 1.32 (overridden)
+Dependency wayland-client for host machine found: YES 1.25.0 (cached)
+Dependency wayland-server for host machine found: YES 1.25.0 (cached)
+Run-time dependency wayland-egl-backend found: YES 3
+Run-time dependency x11 found: YES 1.8.14
+Run-time dependency xext found: YES 1.3.7
+Run-time dependency xfixes found: YES 6.0.2
+Run-time dependency xcb-glx found: YES 1.17.0
+Run-time dependency xcb-shm found: YES 1.17.0
+Run-time dependency xcb found: YES 1.17.0
+Run-time dependency xcb-keysyms found: NO  (tried pkg-config and cmake)
+Run-time dependency x11-xcb found: YES 1.8.14
+Run-time dependency xcb-dri2 found: YES 1.17.0
+Run-time dependency xcb-dri3 found: YES 1.17.0
+Run-time dependency xcb-present found: YES 1.17.0
+Dependency xcb-shm for host machine found: YES 1.17.0 (cached)
+Run-time dependency xcb-sync found: YES 1.17.0
+Run-time dependency xshmfence found: YES 1.3.3
+Run-time dependency glproto found: YES 1.4.17
+Run-time dependency dri2proto found: YES 2.8
+Run-time dependency xxf86vm found: YES 1.1.7
+Run-time dependency xcb-xfixes found: YES 1.17.0
+Run-time dependency xcb-randr found: YES 1.17.0
+Run-time dependency xrandr found: YES 1.5.5
+Library sensors skipped: feature lmsensors disabled
+Program nm found: YES (/usr/bin/nm)
+Program symbols-check.py found: YES (/usr/bin/python /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/bin/symbols-check.py)
+Program install_megadrivers.py found: YES (/usr/bin/python /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/bin/install_megadrivers.py)
+Found pkg-config: YES (/usr/bin/pkg-config) 3.0.7
+Program decode.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/src/compiler/isaspec/decode.py)
+Program encode.py found: YES (/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa/src/compiler/isaspec/encode.py)
+Run-time dependency v3dv3 found: NO  (tried pkg-config and cmake)
+Run-time dependency v3dv3 found: NO  (tried pkg-config and cmake)
+Program ln found: YES (/usr/bin/ln)
+Checking for function "mincore" : YES 
+Build targets in project: 446
+NOTICE: Future-deprecated features used:
+ * 1.12.0: {'"shared_library" keyword argument "name_prefix" of type list'}
+
+mesa 23.3.6
+
+  Directories
+    prefix                       : /usr
+    libdir                       : lib
+    includedir                   : include
+
+  Common C and C++ arguments
+    c_cpp_args                   :
+
+  OpenGL
+    OpenGL                       : YES
+    ES1                          : YES
+    ES2                          : YES
+    Shared glapi                 : YES
+    GLVND                        : NO
+
+  DRI
+    Platform                     : drm
+    Driver dir                   : /usr/lib/dri
+
+  GLX
+    Enabled                      : YES
+    Provider                     : dri
+
+  EGL
+    Enabled                      : YES
+    Drivers                      : builtin:egl_dri2 builtin:egl_dri3
+    Platforms                    : wayland x11 surfaceless drm xcb
+
+  GBM
+    Enabled                      : YES
+    Backends path                : /usr/lib/gbm
+
+  Vulkan
+    Drivers                      : NO
+
+  Video
+    Codecs                       : NO
+    APIs                         : NO
+
+  LLVM
+    Enabled                      : NO
+
+  Gallium
+    Enabled                      : YES
+    Drivers                      : v3d kmsro
+    Platforms                    : wayland x11 surfaceless drm xcb
+    Frontends                    : mesa
+    Off-screen rendering (OSMesa): NO
+    HUD lm-sensors               : NO
+
+  Perfetto
+    Enabled                      : NO
+
+  Subprojects (for host machine)
+    wayland-protocols            : YES
+
+  User defined options
+    Cross files                  : /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/mesa-system-prep/cross.ini
+    buildtype                    : release
+    egl                          : enabled
+    gallium-drivers              : v3d,kmsro
+    gallium-va                   : disabled
+    gallium-vdpau                : disabled
+    gallium-xa                   : disabled
+    gbm                          : enabled
+    gles1                        : enabled
+    gles2                        : enabled
+    glx                          : dri
+    libdir                       : lib
+    libunwind                    : disabled
+    llvm                         : disabled
+    lmsensors                    : disabled
+    platforms                    : wayland,x11
+    prefix                       : /usr
+    shared-glapi                 : enabled
+    valgrind                     : disabled
+    video-codecs                 : 
+    vulkan-drivers               : 
+
+Found ninja-1.13.2 at /usr/bin/ninja
+Generating targets:   0%|          | 0/446 eta ?Generating targets:  57%|█████▋    | 255/446 eta 00:00                                                      Writing build.ninja:   0%|          | 0/1576 eta ?                                                  

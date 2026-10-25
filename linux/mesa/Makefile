@@ -35,6 +35,10 @@ MESON_OPTS = -Dbuildtype=release -Dprefix=/opt/mesa/current \
 
 all: $(OUT)/mesa-$(ID).tar
 
+# Normal package-managed /usr installation; old targets retain debug builds.
+system:
+	./system/build.sh
+
 $(B)/dl/$(TARBALL):
 	mkdir -p $(B)/dl
 	curl -L -o $@.part https://archive.mesa3d.org/$(TARBALL)
@@ -96,4 +100,4 @@ $(OUT)/mesa-$(ID).tar: check $(BUILD)/build.ninja FORCE
 tftp: all
 	cp $(OUT)/mesa-$(ID).tar $(TFTP)/linux-mesa.tar
 
-.PHONY: all sysroot branch export check tftp FORCE
+.PHONY: all system sysroot branch export check tftp FORCE
