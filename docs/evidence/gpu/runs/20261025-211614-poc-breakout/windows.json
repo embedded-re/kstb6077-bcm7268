@@ -1,0 +1,15 @@
+[
+  {
+    "id": 38,
+    "pid": 10041,
+    "name": "LBreakoutHD",
+    "app_id": "lbreakouthd",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 1080
+    },
+    "shell": "xdg_shell"
+  }
+]

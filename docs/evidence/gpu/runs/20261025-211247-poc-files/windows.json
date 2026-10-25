@@ -1,0 +1,15 @@
+[
+  {
+    "id": 35,
+    "pid": 9326,
+    "name": "POC - Thunar",
+    "app_id": "thunar",
+    "rect": {
+      "x": 0,
+      "y": 48,
+      "width": 1920,
+      "height": 1032
+    },
+    "shell": "xdg_shell"
+  }
+]

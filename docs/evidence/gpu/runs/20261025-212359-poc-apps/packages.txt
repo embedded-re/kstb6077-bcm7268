@@ -1,0 +1,27 @@
+lbreakouthd: Ball-and-paddle game (LBreakout2 successor)
+lbreakouthd: https://lgames.sourceforge.io/LBreakoutHD/
+lbreakouthd: 269 KiB
+mousepad: Simple Text Editor for Xfce4
+mousepad: https://gitlab.xfce.org/apps/mousepad
+mousepad: 832 KiB
+mpv: Video player based on MPlayer/mplayer2
+mpv: https://mpv.io/
+mpv: 2677 KiB
+openttd: Open source version of the Transport Tycoon Deluxe simulator
+openttd: https://www.openttd.org
+openttd: 16 MiB
+openttd-opengfx: Free graphics set for OpenTTD
+openttd-opengfx: https://www.openttd.org/
+openttd-opengfx: 5198 KiB
+supertux: Open-source classic 2D jump'n run sidescroller game
+supertux: https://www.supertux.org/
+supertux: 3569 KiB
+supertux-data: Open-source classic 2D jump'n run sidescroller game (data files)
+supertux-data: https://www.supertux.org/
+supertux-data: 233 MiB
+thunar: File manager for Xfce
+thunar: https://docs.xfce.org/xfce/thunar/start
+thunar: 1459 KiB
+xwayland: Compact xserver to run under wayland for compatibility
+xwayland: https://www.x.org/wiki
+xwayland: 1820 KiB

@@ -274,6 +274,24 @@ reload/scroll cycles with no GPU faults; 235 focused graphics cases also pass.
 [Browser fix and evidence](../docs/evidence/gpu/firefox-vertex-spills-20261025.md).
 See [gpu.md](gpu.md) for the maintained build and rollback workflow.
 
+### Optional GUI apps and games
+
+The development box additionally has Thunar (files), Mousepad (text), mpv
+(media), SuperTux 2, LBreakoutHD and OpenTTD. Find them with Win+D. A sample
+text file is at `~/POC/Welcome.txt`. These are ordinary Alpine packages:
+
+```
+apk add thunar mousepad mpv supertux lbreakouthd openttd openttd-opengfx xwayland
+```
+
+The local SuperTux desktop entry selects Wayland and its SDL renderer,
+avoiding the packaged GLEW/SDL compatibility path that forces X11. The SDL
+renderer submits real GPU work through system Mesa. Other launcher entries
+come directly from their packages. Optional games are not part of the minimal
+base-system package list. App windows, synthetic GPU video output, native
+game startup and user-driven SuperTux level play pass bounded fault checks.
+[App installation and checks](../docs/evidence/gpu/runs/20261025-212359-poc-apps/README.md).
+
 ### The HDMI console and `tv`
 
 The console (tty1): `/etc/local.d/kstb-console-look.start` loads Terminus

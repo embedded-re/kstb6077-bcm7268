@@ -1,0 +1,15 @@
+[
+  {
+    "id": 42,
+    "pid": 10728,
+    "name": "SuperTux v0.6.3",
+    "app_id": "supertux2",
+    "rect": {
+      "x": 0,
+      "y": 48,
+      "width": 1920,
+      "height": 1032
+    },
+    "shell": "xdg_shell"
+  }
+]

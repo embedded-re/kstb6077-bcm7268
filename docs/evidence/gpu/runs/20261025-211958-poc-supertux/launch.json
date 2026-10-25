@@ -1,0 +1,17 @@
+[
+  "env",
+  "XDG_RUNTIME_DIR=/tmp/xdg-1000",
+  "WAYLAND_DISPLAY=wayland-1",
+  "DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus-yGYhcfF8q7,guid=e76e947309067dc0250c8ce16ade2bdf",
+  "env",
+  "SDL_VIDEODRIVER=wayland",
+  "supertux2",
+  "--verbose",
+  "--renderer",
+  "sdl",
+  "--window",
+  "--geometry",
+  "960x540",
+  "--show-fps",
+  "/usr/share/games/supertux2/levels/world1/welcome_antarctica.stl"
+]

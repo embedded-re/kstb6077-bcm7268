@@ -1,0 +1,15 @@
+[
+  {
+    "id": 37,
+    "pid": 9582,
+    "name": "lavfi:testsrc2=size=640x360:rate=25 - mpv",
+    "app_id": "mpv",
+    "rect": {
+      "x": 0,
+      "y": 48,
+      "width": 1920,
+      "height": 1032
+    },
+    "shell": "xdg_shell"
+  }
+]

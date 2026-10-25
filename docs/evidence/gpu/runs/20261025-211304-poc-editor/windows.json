@@ -1,0 +1,15 @@
+[
+  {
+    "id": 36,
+    "pid": 9515,
+    "name": "~/POC/Welcome.txt - Mousepad",
+    "app_id": "org.xfce.mousepad",
+    "rect": {
+      "x": 0,
+      "y": 48,
+      "width": 1920,
+      "height": 1032
+    },
+    "shell": "xdg_shell"
+  }
+]

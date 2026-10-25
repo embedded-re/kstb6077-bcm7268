@@ -55,8 +55,11 @@ restart and CPU fallback pass. Package migration additionally passes GLES
 1/2/3 setup, MSAA/depth/stencil and 100 native-fence chains, with an actual
 restore of the previous installation followed by native reinstallation.
 Zero GPU faults occur in these runs. Full conformance was not repeated for
-the native-prefix/X11 frontend build. Xwayland and other larger GUI apps remain
-untested. Firefox testing is described above. Compute optimization stays
+the native-prefix/X11 frontend build. Xwayland is installed but remains untested. Thunar, Mousepad, mpv,
+LBreakoutHD, OpenTTD and native-Wayland SuperTux have bounded launch/render
+checks, including user-driven SuperTux level play with no GPU faults.
+[Apps and games evidence](../docs/evidence/gpu/runs/20261025-212359-poc-apps/README.md).
+Firefox testing is described above. Compute optimization stays
 parked after its value gate.
 [System installation, desktop and rollback evidence](../docs/evidence/gpu/runs/20261025-170246-normal-desktop-gate/README.md).
 [Earlier colour-depth evidence](../docs/evidence/gpu/runs/20261025-163524-wayland-colour8-gate/README.md).

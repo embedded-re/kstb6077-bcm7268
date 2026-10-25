@@ -1,0 +1,40 @@
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:333 PhysfsWriteDir: /home/kstb/.local/share/supertux2/
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:334 PhysfsSearchPath:
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:338   /home/kstb/.local/share/supertux2/
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:338   /usr/share/games/supertux2
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'config' finished after 0.001 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'tinygettext' finished after 0.089 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'controller' finished after 0 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'commandline' finished after 0 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/video_system.cpp:93 new SDL renderer
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_video_system.cpp:67 Creating SDLVideoSystem
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:39 SDL_Renderer: opengl
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:40 SDL_RendererFlags: 
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:42   SDL_RENDERER_ACCELERATED
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:44   SDL_RENDERER_TARGETTEXTURE
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:45 Texture Formats: 
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_ARGB8888
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_ABGR8888
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_RGB888
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_BGR888
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_INDEX8
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_YV12
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_IYUV
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_NV12
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:48   SDL_PIXELFORMAT_NV21
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:50 Max Texture Width: 2048
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/video/sdl/sdl_screen_renderer.cpp:51 Max Texture Height: 2048
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:391 window  Window: Size(960, 540) Fullscreen: Size(960, 540)@0 Area: Size(0, 0)
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'video' finished after 0.15 seconds
+[ALSOFT] (EE) Could not query RTKit: No such file or directory (2)
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'audio' finished after 0.034 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'scripting' finished after 0.003 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'resources' finished after 0.006 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'integrations' finished after 0 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/addon/addon_manager.cpp:184 repository.nfo doesn't exist, not loading
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/util/timelog.cpp:36 Component 'addons' finished after 0.054 seconds
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/debug.cpp:50 1
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/debug.cpp:50 1
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/sdk/integration.cpp:69 Setting status: Watching a cutscene
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/debug.cpp:50 1
+[INFO] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/sdk/integration.cpp:69 Setting status: Playing

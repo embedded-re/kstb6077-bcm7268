@@ -1,0 +1,8 @@
+WARNING: Glycin running without sandbox.
+WARNING: Glycin running without sandbox.
+
+(thunar:9326): thunar-WARNING **: 21:12:48.302: ThunarThumbnailer: Failed to retrieve supported types: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.thumbnails.Thumbnailer1 was not provided by any .service files
+
+(thunar:9326): thunar-WARNING **: 21:12:48.563: Thumbnailer Proxy Failed ... starting attempt to re-initialize
+
+(thunar:9326): thunar-WARNING **: 21:12:49.887: ThunarThumbnailer: Failed to retrieve supported types: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.thumbnails.Thumbnailer1 was not provided by any .service files

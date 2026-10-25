@@ -1,0 +1,15 @@
+{
+  "state": "complete",
+  "installed": [
+    "thunar",
+    "mousepad",
+    "mpv",
+    "supertux",
+    "lbreakouthd",
+    "openttd"
+  ],
+  "original_sway_pid": 5251,
+  "supertux_pid": 10728,
+  "game_left_open": true,
+  "gameplay_run": "/root/gpu-runs/20261025-212204-poc-gameplay"
+}

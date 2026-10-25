@@ -1,0 +1,10 @@
+[
+  "env",
+  "XDG_RUNTIME_DIR=/tmp/xdg-1000",
+  "WAYLAND_DISPLAY=wayland-1",
+  "DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus-yGYhcfF8q7,guid=e76e947309067dc0250c8ce16ade2bdf",
+  "mpv",
+  "--no-config",
+  "--length=12",
+  "av://lavfi:testsrc2=size=640x360:rate=25"
+]

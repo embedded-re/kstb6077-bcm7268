@@ -1,0 +1,6 @@
+{
+  "removed": "/root/gpu-system-prep/view-lib",
+  "purpose": "Obsolete native-Mesa isolation test clone; no active mappings or mount",
+  "rollback_backups": "Preserved",
+  "reclaimable_mib": 459.9
+}

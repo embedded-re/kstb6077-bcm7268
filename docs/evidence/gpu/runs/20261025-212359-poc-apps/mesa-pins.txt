@@ -1,0 +1,7 @@
+mesa=23.3.6-r34
+mesa-dev=23.3.6-r34
+mesa-egl=23.3.6-r34
+mesa-gbm=23.3.6-r34
+mesa-gl=23.3.6-r34
+mesa-gles=23.3.6-r34
+!mesa-rusticl

@@ -1,0 +1,19 @@
+{
+  "before": {
+    "490": {
+      "drm-engine-bin": 4158520,
+      "v3d-jobs-bin": 24,
+      "drm-engine-render": 57730781,
+      "v3d-jobs-render": 24,
+      "drm-engine-tfu": 0,
+      "v3d-jobs-tfu": 0,
+      "drm-engine-csd": 0,
+      "v3d-jobs-csd": 0,
+      "drm-engine-cache_clean": 0,
+      "v3d-jobs-cache_clean": 0,
+      "drm-engine-cpu": 0,
+      "v3d-jobs-cpu": 0
+    }
+  },
+  "after": {}
+}

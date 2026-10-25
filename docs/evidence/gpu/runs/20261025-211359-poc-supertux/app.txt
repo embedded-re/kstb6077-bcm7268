@@ -1,0 +1,1 @@
+[FATAL] /home/buildozer/aports/community/supertux/src/SuperTux-v0.6.3-Source/src/supertux/main.cpp:672 Unexpected exception: Couldn't initialize SDL: x11 not available

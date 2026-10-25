@@ -1,0 +1,44 @@
+[
+  {
+    "file": "/usr/share/applications/thunar.desktop",
+    "name": "Thunar File Manager",
+    "exec": "thunar %U",
+    "icon": "org.xfce.thunar",
+    "tryexec": null
+  },
+  {
+    "file": "/usr/share/applications/org.xfce.mousepad.desktop",
+    "name": "Mousepad",
+    "exec": "mousepad %U",
+    "icon": "org.xfce.mousepad",
+    "tryexec": null
+  },
+  {
+    "file": "/usr/share/applications/mpv.desktop",
+    "name": "mpv Media Player",
+    "exec": "mpv --player-operation-mode=pseudo-gui -- %U",
+    "icon": "mpv",
+    "tryexec": "mpv"
+  },
+  {
+    "file": "/usr/local/share/applications/supertux2.desktop",
+    "name": "SuperTux 2",
+    "exec": "env SDL_VIDEODRIVER=wayland supertux2 --renderer sdl",
+    "icon": "supertux2",
+    "tryexec": "supertux2"
+  },
+  {
+    "file": "/usr/share/applications/lbreakouthd.desktop",
+    "name": "LBreakoutHD",
+    "exec": "lbreakouthd",
+    "icon": "lbreakouthd",
+    "tryexec": null
+  },
+  {
+    "file": "/usr/share/applications/openttd.desktop",
+    "name": "OpenTTD",
+    "exec": "openttd",
+    "icon": "openttd",
+    "tryexec": null
+  }
+]

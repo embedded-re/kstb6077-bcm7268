@@ -1,0 +1,34 @@
+{
+  "before": {
+    "492": {
+      "drm-engine-bin": 220518,
+      "v3d-jobs-bin": 2,
+      "drm-engine-render": 3664259,
+      "v3d-jobs-render": 2,
+      "drm-engine-tfu": 0,
+      "v3d-jobs-tfu": 0,
+      "drm-engine-csd": 0,
+      "v3d-jobs-csd": 0,
+      "drm-engine-cache_clean": 0,
+      "v3d-jobs-cache_clean": 0,
+      "drm-engine-cpu": 0,
+      "v3d-jobs-cpu": 0
+    }
+  },
+  "after": {
+    "492": {
+      "drm-engine-bin": 138953745,
+      "v3d-jobs-bin": 502,
+      "drm-engine-render": 3893382541,
+      "v3d-jobs-render": 502,
+      "drm-engine-tfu": 0,
+      "v3d-jobs-tfu": 0,
+      "drm-engine-csd": 0,
+      "v3d-jobs-csd": 0,
+      "drm-engine-cache_clean": 0,
+      "v3d-jobs-cache_clean": 0,
+      "drm-engine-cpu": 0,
+      "v3d-jobs-cpu": 0
+    }
+  }
+}

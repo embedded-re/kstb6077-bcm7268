@@ -1,0 +1,28 @@
+lbreakouthd 1.2.2
+ERROR: tools.cpp:52: FileParser(): Could not open /home/kstb/.lbreakouthd/lbreakouthd.conf
+ERROR: sdl.cpp:206: load(): Texture dimensions are limited to 2048x2048
+ERROR: sdl.cpp:413: load(): Grid image /usr/share/lbreakouthd/themes/Standard/extras.png too large for hardware texture: scaled to half size 45x22
+ERROR: sdl.cpp:472: scale(): Texture dimensions are limited to 2048x2048
+Copyright 2018-2024 Michael Speck
+Published under GNU GPL
+---
+Configuration directory /home/kstb/.lbreakouthd not found, creating.
+Loading configuration /home/kstb/.lbreakouthd/lbreakouthd.conf
+Loading hiscores /var/lbreakouthd/lbreakouthd.hscr
+Initializing SDL
+Mixer opened (16 channels, 1024 buf size)
+Theme Standard has index 1
+No game controller found...
+Initializing View (Theme=Standard, Resolution=0)
+Using display 0
+Modern theme, using 16:9 layout
+Using fullscreen, resolution 1920x1080
+Scale factor x100: 225
+Brick screen size: 90x45
+Using viewport x=0,y=0,w=1920,h=1080
+Creating main window with 1920x1080, fullscreen=1
+Loading theme /usr/share/lbreakouthd/themes/Standard
+Mixer closed
+Finalizing SDL
+Hiscores saved to /var/lbreakouthd/lbreakouthd.hscr
+Configuration saved to /home/kstb/.lbreakouthd/lbreakouthd.conf
