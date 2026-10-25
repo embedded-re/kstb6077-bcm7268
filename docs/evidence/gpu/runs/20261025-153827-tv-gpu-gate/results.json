@@ -1,0 +1,42 @@
+[
+  {
+    "label": "gpu-first",
+    "selector": "--gpu",
+    "seconds": 4.338615970000319,
+    "gpu_render_jobs_delta": 30,
+    "exit": 0,
+    "console": "tty1"
+  },
+  {
+    "label": "gpu-long",
+    "selector": "--gpu",
+    "seconds": 32.818965379001384,
+    "gpu_render_jobs_delta": 300,
+    "exit": 0,
+    "console": "tty1"
+  },
+  {
+    "label": "cpu-rollback",
+    "selector": "--cpu",
+    "seconds": 4.110101571999621,
+    "gpu_render_jobs_delta": 0,
+    "exit": 0,
+    "console": "tty1"
+  },
+  {
+    "label": "default-cpu",
+    "selector": null,
+    "seconds": 4.119449154999529,
+    "gpu_render_jobs_delta": 0,
+    "exit": 0,
+    "console": "tty1"
+  },
+  {
+    "label": "gpu-restart",
+    "selector": "--gpu",
+    "seconds": 4.332727234999766,
+    "gpu_render_jobs_delta": 30,
+    "exit": 0,
+    "console": "tty1"
+  }
+]

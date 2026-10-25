@@ -1,0 +1,10 @@
+{
+  "sessions": 5,
+  "gpu_sessions": 3,
+  "cpu_sessions": 2,
+  "measured_gpu_render_jobs": 360,
+  "resets": 0,
+  "mmu_errors": 0,
+  "console_restored": true,
+  "dmabuf_objects_after_exit": 0
+}

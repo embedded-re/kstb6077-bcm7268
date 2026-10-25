@@ -1,0 +1,36 @@
+#!/bin/sh
+# tv [--gpu|--cpu] [command] - a terminal on the TV: foot (Nerd Font,
+# Catppuccin) in sway; `tv btop` runs btop in it. Leave with `exit` (or
+# Ctrl+Alt+Backspace). As root (the console shells) it runs as kstb.
+if [ "$(id -u)" = 0 ]; then
+	exec su -l kstb -c 'exec tv "$@"' -- tv "$@"
+fi
+mode=default
+case ${1:-} in
+	--gpu) mode=gpu; shift ;;
+	--cpu) mode=cpu; shift ;;
+	--help) echo 'Usage: tv [--gpu|--cpu] [command]'; exit 0 ;;
+esac
+# the locale for everything in it (btop needs a UTF-8 LANG); `su -l -c`
+# doesn't read the profile
+. /etc/profile.d/kstb-locale.sh
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp/xdg-$(id -u)}
+mkdir -p -m 700 "$XDG_RUNTIME_DIR"
+# Select Mesa only for this session. Keep the system and normal tv defaults.
+case $mode in
+	gpu)
+		mesa_id=${KSTB_TV_MESA:-23.3.6-85a951cd}
+		mesa_env=$(/usr/sbin/kstb-mesa env "$mesa_id") || exit 1
+		eval "$mesa_env"
+		export WLR_RENDERER=gles2
+		# Allocate scanout buffers on the display device; kmsro imports them
+		# into V3D.
+		export WLR_DRM_DEVICES=/dev/dri/card1
+		unset WLR_RENDER_DRM_DEVICE V3D_COMPUTE33
+		;;
+	cpu) export WLR_RENDERER=pixman ;;
+	*) export WLR_RENDERER=${WLR_RENDERER:-pixman} ;;
+esac
+export WLR_LIBINPUT_NO_DEVICES=1	# start even without a keyboard
+export TV_CMD="$*"
+exec sway -c /etc/kstb-tv/sway.conf > "$XDG_RUNTIME_DIR/tv.log" 2>&1

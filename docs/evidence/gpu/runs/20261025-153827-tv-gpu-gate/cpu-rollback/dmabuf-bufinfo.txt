@@ -1,0 +1,13 @@
+
+Dma-buf Objects:
+size    	flags   	mode    	count   	exp_name	ino     	name
+04149248	00000000	02080005	00000003	drm	00000014	<none>
+	Attached Devices:
+Total 0 devices attached
+
+04149248	00000000	02080005	00000003	drm	00000013	<none>
+	Attached Devices:
+Total 0 devices attached
+
+
+Total 2 objects, 8298496 bytes

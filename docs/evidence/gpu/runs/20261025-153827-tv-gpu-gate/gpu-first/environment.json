@@ -1,0 +1,6 @@
+{
+  "LD_LIBRARY_PATH": "/opt/mesa/23.3.6-85a951cd/lib",
+  "WLR_RENDERER": "gles2",
+  "WLR_DRM_DEVICES": "/dev/dri/card1",
+  "LIBGL_DRIVERS_PATH": "/opt/mesa/23.3.6-85a951cd/lib/dri"
+}

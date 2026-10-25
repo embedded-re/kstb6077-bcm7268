@@ -10,13 +10,16 @@ history of how each piece was found is in [`README.md`](README.md) "GPU".
 Current installed state (2026-10-25): kernel **#30**, release
 `6.18.57-kstb-hrtimer-ab`, now boots from saved KRN/DTB with high-resolution
 timers enabled. Original #29 backups and modules are retained. The selected
-Mesa remains `fe7dda5e`; experimental compute uses the separately installed
-`5a3fd8dd` package with `V3D_COMPUTE33=1`. Post-install checks pass: 55 exact
-neural runs, 100 native-fence chains and 290 CTS cases (261 Pass/29
-NotSupported), with zero GPU resets/MMU errors/oopses. The latest neural
-warm medians are 1.288 ms at batch 257 and 9.878 ms at batch 4096; CPU
-references remain faster. No system-Mesa or compositor promotion occurred.
-[Permanent installation and verification](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
+Mesa remains `fe7dda5e`; the latest separately installed package is
+**23.3.6-85a951cd** (33 patches). Compute optimization is parked after the
+GEMM/coprocessor value gate. GPU composition now works with **`tv --gpu`**:
+Sway uses V3D GLES and display-allocated RGB565 buffers shared with V3D.
+Three GPU sessions (360 render jobs), CPU fallback/default checks and
+console restoration pass with zero GPU faults. The ordinary `tv` CPU default
+and system libraries remain unchanged.
+[GPU terminal and buffer-sharing evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
+[Compute value decision](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).
+[Kernel installation and rollback](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
 
 ## Where things are
 
@@ -35,7 +38,8 @@ references remain faster. No system-Mesa or compositor promotion occurred.
 
 The system's default Mesa is still the older build in `/usr/local` (fixes
 1–11 of patch 0001): every program that doesn't set a library path, such
-as sway for `tv`, uses it. Nothing here changes it.
+as sway for ordinary `tv`, uses it. `tv --gpu` selects the tested package
+for that session only; `tv --cpu` retains the explicit CPU fallback.
 Moving the system to `/opt/mesa/current` is a separate step, only with the
 user's OK.
 

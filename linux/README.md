@@ -263,7 +263,7 @@ black. Tested: the background reads `(24, 28, 41)` from `/dev/fb0`
 (`#1e1e2e` in RGB565). btop on the console runs in its TTY mode: 16
 colours, block graphs.
 
-`tv [command]` (`/usr/bin/tv`) starts a real terminal on the TV: foot
+`tv [--gpu|--cpu] [command]` (`/usr/bin/tv`) starts a real terminal on the TV: foot
 (truecolor, JetBrains Mono Nerd Font, Catppuccin Mocha, `/etc/xdg/foot/foot.ini`)
 in sway as a kiosk (`/etc/kstb-tv/sway.conf`); `tv btop` runs btop in it,
 with btop's own `catppuccin-mocha` theme
@@ -276,10 +276,13 @@ foot, Ctrl+Alt+Backspace leaves. Started as root (the consoles), it runs as
   "Failed to pick primary buffer format for output 'HDMI-A-1'". Sway's
   `output * render_bit_depth 6` asks for RGB565 instead; the plane then
   shows `format=RG16` 1920x1080 in `/sys/kernel/debug/dri/1/state`.
-- Drawn by pixman (`WLR_RENDERER=pixman`, the CPU): sway + foot + btop
-  about 20 % of one core at btop's 100 ms. The GPU renderer is not tried
-  yet; wlroots loads our Mesa from `/usr/local/lib` before Alpine's
-  (`ldd /usr/lib/libwlroots-0.20.so`), and that one still has fixes 1-5 only.
+- Normal `tv` still uses pixman (CPU composition). `tv --gpu` or
+  `tv --gpu btop` selects tested V3D GLES composition with per-session Mesa
+  `23.3.6-85a951cd`; `tv --cpu btop` is the explicit fallback. This does
+  not change the system Mesa or `/opt/mesa/current`. Both paths retain
+  RGB565 output. Five start/exit/rollback sessions pass, including 360 GPU
+  render jobs and changing HDMI CRCs, with zero GPU faults.
+  [Rendering and rollback evidence](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).
 - `su -l kstb -c` doesn't read the profile, so `tv` loads
   `kstb-locale.sh` itself (btop otherwise: "No UTF-8 locale detected").
 

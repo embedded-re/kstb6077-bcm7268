@@ -1,0 +1,14 @@
+{
+  "3136:10": {
+    "node": "/dev/dri/card1",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3136:11": {
+    "node": "/dev/dri/card1",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  },
+  "3136:12": {
+    "node": "/dev/dri/card1",
+    "text": "pos:\t0\nflags:\t02504002\nmnt_id:\t17\nino:\t663\n"
+  }
+}

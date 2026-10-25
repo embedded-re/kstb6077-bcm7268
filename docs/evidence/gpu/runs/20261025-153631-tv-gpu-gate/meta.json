@@ -1,0 +1,9 @@
+{
+  "uname": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "selected": "23.3.6-fe7dda5e",
+  "sha256": {
+    "/usr/bin/tv": "cc4f6ac33ea1b2394e2e8269959f83ab1da1c079d110572d31f772b5eb5460bb",
+    "/etc/kstb-tv/sway.conf": "a8bfcee9f00480fbbe3e7255286e023587c35d4996856aa24279ffa5720081b5",
+    "/opt/mesa/23.3.6-85a951cd/lib/dri/v3d_dri.so": "18969788882886e842a68acba6818561eb9da09345e3586381c35d3f841f04e1"
+  }
+}

@@ -960,3 +960,8 @@ conditional instruction, active compute optimization is parked and the
 working opt-in packages/fixes retained. Rendering/compositor acceleration
 becomes the next GPU priority; Sway is not yet GPU accelerated.
 [Timings, paired trials, reproducible decision and raw evidence](../docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor/README.md).
+
+
+Subsequent rendering milestone: `tv --gpu` now provides tested V3D Sway
+composition with RGB565 shared display buffers. Ordinary `tv` retains its
+CPU default. Compute work remains parked. [GUI evidence and fallback](../docs/evidence/gpu/runs/20261025-153827-tv-gpu-gate/README.md).

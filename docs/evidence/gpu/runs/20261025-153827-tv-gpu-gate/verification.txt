@@ -1,0 +1,4 @@
+PASS: shell syntax check; tracked, tested and installed launcher bytes/hashes agree.
+PASS: final gate analysis: three GPU and two CPU sessions, 360 GPU jobs, console return, zero DMA-BUF objects.
+PASS: all six archived exploratory/final kernel logs have no GPU reset/MMU/oops patterns.
+No default Mesa/kernel promotion; no Sway/foot/userspace watchdog active.

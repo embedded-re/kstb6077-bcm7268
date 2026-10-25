@@ -1,0 +1,1 @@
+Failed to open file '/tmp/kstb-sway-gpu-probe/capture.png' for writing: Permission denied
