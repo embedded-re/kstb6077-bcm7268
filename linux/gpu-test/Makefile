@@ -29,6 +29,12 @@ $(OUT)/kstb-gles1-smoke: kstb-gles1-smoke.c $(MESA)/include/EGL/egl.h
 	@mkdir -p $(OUT)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lEGL -lGLESv1_CM -lgbm
 
+# Keep the scalar GEMM baseline scalar; the NEON path uses explicit intrinsics.
+$(OUT)/kstb-gemm-test: kstb-gemm-test.c $(MESA)/include/EGL/egl.h
+	@mkdir -p $(OUT)
+	$(CC) $(CFLAGS) -O3 -mcpu=cortex-a53 -fno-vectorize -fno-slp-vectorize \
+		-ffp-contract=fast -pthread -o $@ $< $(LDFLAGS) -lEGL -lGLESv2 -lgbm
+
 $(OUT)/%: %.c $(MESA)/include/EGL/egl.h
 	@mkdir -p $(OUT)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lEGL -lGLESv2 -lgbm

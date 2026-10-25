@@ -1,0 +1,312 @@
+
+linux/build/gpu-test/kstb-gemm-test:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000015e30 <scalar4>:
+   15e30: fc1f0fe8     	str	d8, [sp, #-0x10]!
+   15e34: f90007f3     	str	x19, [sp, #0x8]
+   15e38: 11000488     	add	w8, w4, #0x1
+   15e3c: 1100088a     	add	w10, w4, #0x2
+   15e40: 11000c8b     	add	w11, w4, #0x3
+   15e44: 9ba37c8c     	umull	x12, w4, w3
+   15e48: 9ba37d0d     	umull	x13, w8, w3
+   15e4c: d37e7cb3     	ubfiz	x19, x5, #2, #32
+   15e50: 9ba37d4e     	umull	x14, w10, w3
+   15e54: 6b0700df     	cmp	w6, w7
+   15e58: 9ba37d6f     	umull	x15, w11, w3
+   15e5c: 8b0c0849     	add	x9, x2, x12, lsl #2
+   15e60: 8b130128     	add	x8, x9, x19
+   15e64: 8b0d0849     	add	x9, x2, x13, lsl #2
+   15e68: 8b0e084a     	add	x10, x2, x14, lsl #2
+   15e6c: 8b130129     	add	x9, x9, x19
+   15e70: 8b0f084b     	add	x11, x2, x15, lsl #2
+   15e74: 8b13014a     	add	x10, x10, x19
+   15e78: 8b13016b     	add	x11, x11, x19
+   15e7c: 2d400d01     	ldp	s1, s3, [x8]
+   15e80: 2d410102     	ldp	s2, s0, [x8, #0x8]
+   15e84: 2d401526     	ldp	s6, s5, [x9]
+   15e88: 2d414d37     	ldp	s23, s19, [x9, #0x8]
+   15e8c: 2d404550     	ldp	s16, s17, [x10]
+   15e90: 2d415554     	ldp	s20, s21, [x10, #0x8]
+   15e94: 2d404976     	ldp	s22, s18, [x11]
+   15e98: 2d411167     	ldp	s7, s4, [x11, #0x8]
+   15e9c: 54000da2     	b.hs	0x16050 <scalar4+0x220>
+   15ea0: 2a0303f0     	mov	w16, w3
+   15ea4: 8b0c080c     	add	x12, x0, x12, lsl #2
+   15ea8: 8b0d080d     	add	x13, x0, x13, lsl #2
+   15eac: 8b0e080e     	add	x14, x0, x14, lsl #2
+   15eb0: 8b0f080f     	add	x15, x0, x15, lsl #2
+   15eb4: 4b0600e0     	sub	w0, w7, w6
+   15eb8: 2a0603f2     	mov	w18, w6
+   15ebc: 2a0703f1     	mov	w17, w7
+   15ec0: 370000c0     	tbnz	w0, #0x0, 0x15ed8 <scalar4+0xa8>
+   15ec4: aa1203e2     	mov	x2, x18
+   15ec8: d1000620     	sub	x0, x17, #0x1
+   15ecc: eb12001f     	cmp	x0, x18
+   15ed0: 540003e1     	b.ne	0x15f4c <scalar4+0x11c>
+   15ed4: 1400005f     	b	0x16050 <scalar4+0x220>
+   15ed8: 9bb07e40     	umull	x0, w18, w16
+   15edc: 8b130022     	add	x2, x1, x19
+   15ee0: bc727998     	ldr	s24, [x12, x18, lsl #2]
+   15ee4: bc7279bd     	ldr	s29, [x13, x18, lsl #2]
+   15ee8: 8b000840     	add	x0, x2, x0, lsl #2
+   15eec: 91000642     	add	x2, x18, #0x1
+   15ef0: 2d406819     	ldp	s25, s26, [x0]
+   15ef4: 2d41701b     	ldp	s27, s28, [x0, #0x8]
+   15ef8: 1f190701     	fmadd	s1, s24, s25, s1
+   15efc: 1f1a0f03     	fmadd	s3, s24, s26, s3
+   15f00: 1f1b0b02     	fmadd	s2, s24, s27, s2
+   15f04: 1f1c0300     	fmadd	s0, s24, s28, s0
+   15f08: bc7279d8     	ldr	s24, [x14, x18, lsl #2]
+   15f0c: 1f191ba6     	fmadd	s6, s29, s25, s6
+   15f10: 1f1a17a5     	fmadd	s5, s29, s26, s5
+   15f14: 1f1b5fb7     	fmadd	s23, s29, s27, s23
+   15f18: 1f1c4fb3     	fmadd	s19, s29, s28, s19
+   15f1c: bc7279fd     	ldr	s29, [x15, x18, lsl #2]
+   15f20: 1f194310     	fmadd	s16, s24, s25, s16
+   15f24: 1f1a4711     	fmadd	s17, s24, s26, s17
+   15f28: 1f1b5314     	fmadd	s20, s24, s27, s20
+   15f2c: 1f1c5715     	fmadd	s21, s24, s28, s21
+   15f30: 1f195bb6     	fmadd	s22, s29, s25, s22
+   15f34: 1f1a4bb2     	fmadd	s18, s29, s26, s18
+   15f38: 1f1b1fa7     	fmadd	s7, s29, s27, s7
+   15f3c: 1f1c13a4     	fmadd	s4, s29, s28, s4
+   15f40: d1000620     	sub	x0, x17, #0x1
+   15f44: eb12001f     	cmp	x0, x18
+   15f48: 54000840     	b.eq	0x16050 <scalar4+0x220>
+   15f4c: 9b107c52     	mul	x18, x2, x16
+   15f50: 2a0503e0     	mov	w0, w5
+   15f54: d37ef400     	lsl	x0, x0, #2
+   15f58: cb020231     	sub	x17, x17, x2
+   15f5c: 8b120203     	add	x3, x16, x18
+   15f60: d37df210     	lsl	x16, x16, #3
+   15f64: 8b120812     	add	x18, x0, x18, lsl #2
+   15f68: 8b030803     	add	x3, x0, x3, lsl #2
+   15f6c: 8b010060     	add	x0, x3, x1
+   15f70: 8b010241     	add	x1, x18, x1
+   15f74: 91002012     	add	x18, x0, #0x8
+   15f78: 91002020     	add	x0, x1, #0x8
+   15f7c: d37ef441     	lsl	x1, x2, #2
+   15f80: 8b010182     	add	x2, x12, x1
+   15f84: 8b0101a3     	add	x3, x13, x1
+   15f88: 2d7f6418     	ldp	s24, s25, [x0, #-0x8]
+   15f8c: 8b0101c4     	add	x4, x14, x1
+   15f90: 910021ce     	add	x14, x14, #0x8
+   15f94: 2d40785a     	ldp	s26, s30, [x2]
+   15f98: 8b0101e2     	add	x2, x15, x1
+   15f9c: 910021ef     	add	x15, x15, #0x8
+   15fa0: 2d40701b     	ldp	s27, s28, [x0]
+   15fa4: 8b100000     	add	x0, x0, x16
+   15fa8: 9100218c     	add	x12, x12, #0x8
+   15fac: 1f180741     	fmadd	s1, s26, s24, s1
+   15fb0: 910021ad     	add	x13, x13, #0x8
+   15fb4: 1f190f43     	fmadd	s3, s26, s25, s3
+   15fb8: f1000a31     	subs	x17, x17, #0x2
+   15fbc: 1f1b0b42     	fmadd	s2, s26, s27, s2
+   15fc0: 1f1c0340     	fmadd	s0, s26, s28, s0
+   15fc4: 2d40687d     	ldp	s29, s26, [x3]
+   15fc8: 1f181ba6     	fmadd	s6, s29, s24, s6
+   15fcc: 1f1917a5     	fmadd	s5, s29, s25, s5
+   15fd0: 1f1b5fb7     	fmadd	s23, s29, s27, s23
+   15fd4: 1f1c4fb3     	fmadd	s19, s29, s28, s19
+   15fd8: 2d40749f     	ldp	s31, s29, [x4]
+   15fdc: 1f1843f0     	fmadd	s16, s31, s24, s16
+   15fe0: 1f1947f1     	fmadd	s17, s31, s25, s17
+   15fe4: 1f1b53f4     	fmadd	s20, s31, s27, s20
+   15fe8: 1f1c57f5     	fmadd	s21, s31, s28, s21
+   15fec: 2d407c48     	ldp	s8, s31, [x2]
+   15ff0: 1f185916     	fmadd	s22, s8, s24, s22
+   15ff4: 1f194912     	fmadd	s18, s8, s25, s18
+   15ff8: 1f1b1d07     	fmadd	s7, s8, s27, s7
+   15ffc: 1f1c1104     	fmadd	s4, s8, s28, s4
+   16000: 2d7f6658     	ldp	s24, s25, [x18, #-0x8]
+   16004: 2d40725b     	ldp	s27, s28, [x18]
+   16008: 8b100252     	add	x18, x18, x16
+   1600c: 1f1807c1     	fmadd	s1, s30, s24, s1
+   16010: 1f190fc3     	fmadd	s3, s30, s25, s3
+   16014: 1f1b0bc2     	fmadd	s2, s30, s27, s2
+   16018: 1f1c03c0     	fmadd	s0, s30, s28, s0
+   1601c: 1f181b46     	fmadd	s6, s26, s24, s6
+   16020: 1f191745     	fmadd	s5, s26, s25, s5
+   16024: 1f1b5f57     	fmadd	s23, s26, s27, s23
+   16028: 1f1c4f53     	fmadd	s19, s26, s28, s19
+   1602c: 1f1843b0     	fmadd	s16, s29, s24, s16
+   16030: 1f1947b1     	fmadd	s17, s29, s25, s17
+   16034: 1f1b53b4     	fmadd	s20, s29, s27, s20
+   16038: 1f1c57b5     	fmadd	s21, s29, s28, s21
+   1603c: 1f185bf6     	fmadd	s22, s31, s24, s22
+   16040: 1f194bf2     	fmadd	s18, s31, s25, s18
+   16044: 1f1b1fe7     	fmadd	s7, s31, s27, s7
+   16048: 1f1c13e4     	fmadd	s4, s31, s28, s4
+   1604c: 54fff9a1     	b.ne	0x15f80 <scalar4+0x150>
+   16050: f94007f3     	ldr	x19, [sp, #0x8]
+   16054: 2d000d01     	stp	s1, s3, [x8]
+   16058: 2d010102     	stp	s2, s0, [x8, #0x8]
+   1605c: 2d001526     	stp	s6, s5, [x9]
+   16060: 2d014d37     	stp	s23, s19, [x9, #0x8]
+   16064: 2d004550     	stp	s16, s17, [x10]
+   16068: 2d015554     	stp	s20, s21, [x10, #0x8]
+   1606c: 2d004976     	stp	s22, s18, [x11]
+   16070: 2d011167     	stp	s7, s4, [x11, #0x8]
+   16074: fc4107e8     	ldr	d8, [sp], #0x10
+   16078: d65f03c0     	ret
+
+
+linux/build/gpu-test/kstb-gemm-test:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000015bd0 <neon4>:
+   15bd0: a9be57f6     	stp	x22, x21, [sp, #-0x20]!
+   15bd4: a9014ff4     	stp	x20, x19, [sp, #0x10]
+   15bd8: 1100048e     	add	w14, w4, #0x1
+   15bdc: 1100088f     	add	w15, w4, #0x2
+   15be0: 11000c90     	add	w16, w4, #0x3
+   15be4: 9ba37c96     	umull	x22, w4, w3
+   15be8: 9ba37dd3     	umull	x19, w14, w3
+   15bec: d37e7ca8     	ubfiz	x8, x5, #2, #32
+   15bf0: 9ba37df5     	umull	x21, w15, w3
+   15bf4: 6b0700df     	cmp	w6, w7
+   15bf8: 9ba37e14     	umull	x20, w16, w3
+   15bfc: 8b160849     	add	x9, x2, x22, lsl #2
+   15c00: 8b13084a     	add	x10, x2, x19, lsl #2
+   15c04: 8b15084b     	add	x11, x2, x21, lsl #2
+   15c08: 8b14084c     	add	x12, x2, x20, lsl #2
+   15c0c: 3ce86920     	ldr	q0, [x9, x8]
+   15c10: 3ce86941     	ldr	q1, [x10, x8]
+   15c14: 3ce86962     	ldr	q2, [x11, x8]
+   15c18: 3ce86983     	ldr	q3, [x12, x8]
+   15c1c: 54000f82     	b.hs	0x15e0c <neon4+0x23c>
+   15c20: 4b0600e2     	sub	w2, w7, w6
+   15c24: 2a0303f1     	mov	w17, w3
+   15c28: 8b08002d     	add	x13, x1, x8
+   15c2c: 2a0603e1     	mov	w1, w6
+   15c30: 2a0703f2     	mov	w18, w7
+   15c34: f2400446     	ands	x6, x2, #0x3
+   15c38: 540005c0     	b.eq	0x15cf0 <neon4+0x120>
+   15c3c: 9bb17c23     	umull	x3, w1, w17
+   15c40: 8b160802     	add	x2, x0, x22, lsl #2
+   15c44: 8b130813     	add	x19, x0, x19, lsl #2
+   15c48: 8b150807     	add	x7, x0, x21, lsl #2
+   15c4c: d37ef465     	lsl	x5, x3, #2
+   15c50: 8b140803     	add	x3, x0, x20, lsl #2
+   15c54: bc617844     	ldr	s4, [x2, x1, lsl #2]
+   15c58: f10004df     	cmp	x6, #0x1
+   15c5c: 3ce569a5     	ldr	q5, [x13, x5]
+   15c60: 91000425     	add	x5, x1, #0x1
+   15c64: bc617a66     	ldr	s6, [x19, x1, lsl #2]
+   15c68: bc6178e7     	ldr	s7, [x7, x1, lsl #2]
+   15c6c: bc617870     	ldr	s16, [x3, x1, lsl #2]
+   15c70: 4f8410a0     	fmla	v0.4s, v5.4s, v4.s[0]
+   15c74: 4f8610a1     	fmla	v1.4s, v5.4s, v6.s[0]
+   15c78: 4f8710a2     	fmla	v2.4s, v5.4s, v7.s[0]
+   15c7c: 4f9010a3     	fmla	v3.4s, v5.4s, v16.s[0]
+   15c80: 540003a0     	b.eq	0x15cf4 <neon4+0x124>
+   15c84: 9b117cb4     	mul	x20, x5, x17
+   15c88: bc657844     	ldr	s4, [x2, x5, lsl #2]
+   15c8c: bc657a66     	ldr	s6, [x19, x5, lsl #2]
+   15c90: f10008df     	cmp	x6, #0x2
+   15c94: d37ef694     	lsl	x20, x20, #2
+   15c98: bc6578e7     	ldr	s7, [x7, x5, lsl #2]
+   15c9c: bc657870     	ldr	s16, [x3, x5, lsl #2]
+   15ca0: 91000825     	add	x5, x1, #0x2
+   15ca4: 3cf469a5     	ldr	q5, [x13, x20]
+   15ca8: 4f8410a0     	fmla	v0.4s, v5.4s, v4.s[0]
+   15cac: 4f8610a1     	fmla	v1.4s, v5.4s, v6.s[0]
+   15cb0: 4f8710a2     	fmla	v2.4s, v5.4s, v7.s[0]
+   15cb4: 4f9010a3     	fmla	v3.4s, v5.4s, v16.s[0]
+   15cb8: 540001e0     	b.eq	0x15cf4 <neon4+0x124>
+   15cbc: 9b117ca6     	mul	x6, x5, x17
+   15cc0: bc657844     	ldr	s4, [x2, x5, lsl #2]
+   15cc4: bc657a66     	ldr	s6, [x19, x5, lsl #2]
+   15cc8: d37ef4c6     	lsl	x6, x6, #2
+   15ccc: bc6578e7     	ldr	s7, [x7, x5, lsl #2]
+   15cd0: bc657870     	ldr	s16, [x3, x5, lsl #2]
+   15cd4: 91000c25     	add	x5, x1, #0x3
+   15cd8: 3ce669a5     	ldr	q5, [x13, x6]
+   15cdc: 4f8410a0     	fmla	v0.4s, v5.4s, v4.s[0]
+   15ce0: 4f8610a1     	fmla	v1.4s, v5.4s, v6.s[0]
+   15ce4: 4f8710a2     	fmla	v2.4s, v5.4s, v7.s[0]
+   15ce8: 4f9010a3     	fmla	v3.4s, v5.4s, v16.s[0]
+   15cec: 14000002     	b	0x15cf4 <neon4+0x124>
+   15cf0: aa0103e5     	mov	x5, x1
+   15cf4: cb120021     	sub	x1, x1, x18
+   15cf8: b100103f     	cmn	x1, #0x4
+   15cfc: 54000888     	b.hi	0x15e0c <neon4+0x23c>
+   15d00: 2a0403e2     	mov	w2, w4
+   15d04: 910008a1     	add	x1, x5, #0x2
+   15d08: 9b117ca3     	mul	x3, x5, x17
+   15d0c: cb050252     	sub	x18, x18, x5
+   15d10: 9bb17c47     	umull	x7, w2, w17
+   15d14: d37cee22     	lsl	x2, x17, #4
+   15d18: 9b117c26     	mul	x6, x1, x17
+   15d1c: 8b030224     	add	x4, x17, x3
+   15d20: 9bb07e30     	umull	x16, w17, w16
+   15d24: d37ef481     	lsl	x1, x4, #2
+   15d28: d37ef4c4     	lsl	x4, x6, #2
+   15d2c: 8b070806     	add	x6, x0, x7, lsl #2
+   15d30: 9baf7e27     	umull	x7, w17, w15
+   15d34: 91000caf     	add	x15, x5, #0x3
+   15d38: 9bae7e33     	umull	x19, w17, w14
+   15d3c: 8b100810     	add	x16, x0, x16, lsl #2
+   15d40: 910020ce     	add	x14, x6, #0x8
+   15d44: 9b117de6     	mul	x6, x15, x17
+   15d48: 9100220f     	add	x15, x16, #0x8
+   15d4c: 8b070810     	add	x16, x0, x7, lsl #2
+   15d50: 8b130811     	add	x17, x0, x19, lsl #2
+   15d54: 91002210     	add	x16, x16, #0x8
+   15d58: 91002231     	add	x17, x17, #0x8
+   15d5c: d37ef463     	lsl	x3, x3, #2
+   15d60: d37ef4a0     	lsl	x0, x5, #2
+   15d64: d37ef4c5     	lsl	x5, x6, #2
+   15d68: d503201f     	nop
+   15d6c: d503201f     	nop
+   15d70: 8b0001c6     	add	x6, x14, x0
+   15d74: 3ce369a4     	ldr	q4, [x13, x3]
+   15d78: 8b000227     	add	x7, x17, x0
+   15d7c: 8b000213     	add	x19, x16, x0
+   15d80: 8b0001f4     	add	x20, x15, x0
+   15d84: 910041ce     	add	x14, x14, #0x10
+   15d88: 2d7f44c5     	ldp	s5, s17, [x6, #-0x8]
+   15d8c: 910041ef     	add	x15, x15, #0x10
+   15d90: 91004210     	add	x16, x16, #0x10
+   15d94: 91004231     	add	x17, x17, #0x10
+   15d98: f1001252     	subs	x18, x18, #0x4
+   15d9c: 4f851080     	fmla	v0.4s, v4.4s, v5.s[0]
+   15da0: 2d7f14e6     	ldp	s6, s5, [x7, #-0x8]
+   15da4: 4f861081     	fmla	v1.4s, v4.4s, v6.s[0]
+   15da8: 2d7f1a67     	ldp	s7, s6, [x19, #-0x8]
+   15dac: 4f871082     	fmla	v2.4s, v4.4s, v7.s[0]
+   15db0: 2d7f1e90     	ldp	s16, s7, [x20, #-0x8]
+   15db4: 4f901083     	fmla	v3.4s, v4.4s, v16.s[0]
+   15db8: 3ce169a4     	ldr	q4, [x13, x1]
+   15dbc: 4f911080     	fmla	v0.4s, v4.4s, v17.s[0]
+   15dc0: 4f851081     	fmla	v1.4s, v4.4s, v5.s[0]
+   15dc4: 4f861082     	fmla	v2.4s, v4.4s, v6.s[0]
+   15dc8: 2d4044c5     	ldp	s5, s17, [x6]
+   15dcc: 4f871083     	fmla	v3.4s, v4.4s, v7.s[0]
+   15dd0: 3ce469a4     	ldr	q4, [x13, x4]
+   15dd4: 4f851080     	fmla	v0.4s, v4.4s, v5.s[0]
+   15dd8: 2d4014e6     	ldp	s6, s5, [x7]
+   15ddc: 4f861081     	fmla	v1.4s, v4.4s, v6.s[0]
+   15de0: 2d401a67     	ldp	s7, s6, [x19]
+   15de4: 4f871082     	fmla	v2.4s, v4.4s, v7.s[0]
+   15de8: 2d401e90     	ldp	s16, s7, [x20]
+   15dec: 4f901083     	fmla	v3.4s, v4.4s, v16.s[0]
+   15df0: 3ce569a4     	ldr	q4, [x13, x5]
+   15df4: 8b0201ad     	add	x13, x13, x2
+   15df8: 4f911080     	fmla	v0.4s, v4.4s, v17.s[0]
+   15dfc: 4f851081     	fmla	v1.4s, v4.4s, v5.s[0]
+   15e00: 4f861082     	fmla	v2.4s, v4.4s, v6.s[0]
+   15e04: 4f871083     	fmla	v3.4s, v4.4s, v7.s[0]
+   15e08: 54fffb41     	b.ne	0x15d70 <neon4+0x1a0>
+   15e0c: a9414ff4     	ldp	x20, x19, [sp, #0x10]
+   15e10: 3ca86920     	str	q0, [x9, x8]
+   15e14: 3ca86941     	str	q1, [x10, x8]
+   15e18: 3ca86962     	str	q2, [x11, x8]
+   15e1c: 3ca86983     	str	q3, [x12, x8]
+   15e20: a8c257f6     	ldp	x22, x21, [sp], #0x20
+   15e24: d65f03c0     	ret
+   15e28: d503201f     	nop
+   15e2c: d503201f     	nop

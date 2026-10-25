@@ -1,0 +1,3 @@
+[10773.498667] kstb neural milestone start
+[10773.508655] kstb neural milestone compile-debug
+[10773.519598] drm_sched_entity_init: called with uninitialized scheduler

@@ -1,0 +1,6 @@
+reference N 1 0.003 ms; binary-fraction inputs, full exact checks
+OpenGL ES 3.1 Mesa 23.3.6 (git-e774a1202f); V3D 3.3
+round 0 cold mode naive N 1 wall_ms 7.928103 host_submit_ms 7.795992 host_finish_ms 0.132111 process_cpu_ms 7.903963 render_ms 0.020852 clean_ms 0.029445 render_jobs 1 GFLOPS 0.000000 max_error 0 errors 0 checksum 0x68bd2c6f51f8f799 PASS
+round 1 warm mode naive N 1 wall_ms 0.178630 host_submit_ms 0.118926 host_finish_ms 0.059704 process_cpu_ms 0.151926 render_ms 0.011963 clean_ms 0.025592 render_jobs 1 GFLOPS 0.000011 max_error 0 errors 0 checksum 0x6cbd2c6f58c4f799 PASS
+summary mode naive N 1 warm_rounds 1 median_ms 0.178630 GFLOPS 0.000011
+PASS: full matrix exact, guards intact

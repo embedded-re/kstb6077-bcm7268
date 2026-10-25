@@ -1,0 +1,5 @@
+[10922.361535] kstb neural milestone start
+[10922.371441] kstb neural milestone compile-debug
+[10922.382343] drm_sched_entity_init: called with uninitialized scheduler
+[10925.255586] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* Resetting GPU for hang.
+[10925.265921] v3d f1200000.gpu: [drm:v3d_reset] *ERROR* V3D_ERR_STAT: 0x00001000

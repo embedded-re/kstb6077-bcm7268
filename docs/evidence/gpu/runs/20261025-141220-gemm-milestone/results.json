@@ -1,0 +1,38 @@
+[
+  {
+    "test": "check-scalar-n1",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "scalar",
+      "1",
+      "2"
+    ],
+    "exit": 0,
+    "seconds": 0.40258184599952074,
+    "expected_resets": 0
+  },
+  {
+    "test": "check-neon4-n1",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "neon4",
+      "1",
+      "2"
+    ],
+    "exit": 0,
+    "seconds": 0.4027016239997465,
+    "expected_resets": 0
+  },
+  {
+    "test": "check-naive-n1",
+    "args": [
+      "/opt/gpu-test/kstb-gemm-test",
+      "naive",
+      "1",
+      "2"
+    ],
+    "exit": 0,
+    "seconds": 0.5036732240005222,
+    "expected_resets": 0
+  }
+]

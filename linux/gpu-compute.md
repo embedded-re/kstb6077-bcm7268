@@ -855,3 +855,26 @@ opt-in flag. Selected Mesa and `/usr/local` are unchanged. Sway GPU
 composition and the known framebuffer/large-dispatch blockers remain open.
 No tests are left running.
 [Installed-kernel evidence and rollback](../docs/evidence/gpu/runs/20261025-111823-hrtimer-installed/README.md).
+
+
+## GEMM validation hits a reliability blocker (2026-10-25)
+
+Added `kstb-gemm-test`: FP32 naive/tiled shaders and scalar/four-worker
+NEON CPU baselines, full-result reference checks, guard checks and separate
+wall/process-CPU/DRM queue accounting. The requested 1024×1024 comparison
+is **not completed**. N=1 scalar/NEON-mode/naive checks pass, but this size
+exercises CPU tails rather than the NEON microkernel.
+
+The 4×4-output tiled shader fails register allocation, including an aligned
+N=32 variant. A reduced 2×2-output shared-memory shader compiles with two
+threads and 84 spills/109 fills, then triggers one unexpected GPU hang/reset
+at N=32 (`V3D_ERR_STAT: 0x00001000`). The monitored runner stops immediately.
+No further GPU tests or post-reset correctness checks run. This does not
+isolate the cause between spilling, shared-memory/barrier handling or other
+execution-path faults. Tiled modes remain diagnostic failing probes.
+
+The board remains responsive; no GPU tasks or userspace watchdog remain.
+Installed kernel #30, selected Mesa and system libraries are unchanged.
+Eight QPUs/two TMUs are reported by the chip; clock rate is unmeasured.
+No large GEMM performance claim or Sway GPU-composition claim is established.
+[Sources, compiler logs, reset and stopped-state evidence](../docs/evidence/gpu/runs/20261025-141834-gemm-compile-debug/README.md).

@@ -1,0 +1,5 @@
+Build rule: linux/gpu-test/Makefile kstb-gemm-test explicit target.
+clang --target=aarch64-alpine-linux-musl, -O3 -mcpu=cortex-a53
+-fno-vectorize -fno-slp-vectorize -ffp-contract=fast -pthread
+Executable SHA256 436efee9f137a5da827ff3832f7d0d2ddcc56fce0c97f5bc26412a0e8dd19b14
+Source SHA256 84b20412ffa80d0bf689f369d040f902039a70dc3fc8f9347797d7a8a532eccb

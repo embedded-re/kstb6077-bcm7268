@@ -1,0 +1,7 @@
+[10548.218369] kstb neural milestone start
+[10548.228444] kstb neural milestone check-scalar-n1
+[10548.639988] kstb neural milestone check-neon4-n1
+[10549.051703] kstb neural milestone check-naive-n1
+[10549.062543] drm_sched_entity_init: called with uninitialized scheduler
+[10549.564436] kstb neural milestone check-tiled-n1
+[10549.575432] drm_sched_entity_init: called with uninitialized scheduler
