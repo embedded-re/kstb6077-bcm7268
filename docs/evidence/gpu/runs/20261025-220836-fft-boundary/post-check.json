@@ -1,0 +1,12 @@
+{
+  "uptime": "440.90 1739.83",
+  "boot_id": "3c548c6c-e2ce-4629-b9de-fc863743c1cb",
+  "watchdog_pids": [],
+  "sway_pids": [],
+  "firefox_pids": [],
+  "supertux2_pids": [],
+  "kstb-fft-test_pids": [],
+  "fftw_packages": "fftw-dev-3.3.11-r0 aarch64 {fftw} (GPL-2.0-or-later) [installed]\nfftw-double-libs-3.3.11-r0 aarch64 {fftw} (GPL-2.0-or-later) [installed]\nfftw-long-double-libs-3.3.11-r0 aarch64 {fftw} (GPL-2.0-or-later) [installed]\nfftw-single-libs-3.3.11-r0 aarch64 {fftw} (GPL-2.0-or-later) [installed]\n",
+  "driver_sha256": "ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a  /usr/lib/dri/v3d_dri.so",
+  "kernel_resets_since_boot": 0
+}

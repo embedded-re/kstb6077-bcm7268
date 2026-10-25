@@ -1,0 +1,11 @@
+renderer=V3D 3.3
+version=OpenGL ES 3.1 Mesa 23.3.6 (git-8b05308cbf)
+N=2048 batch=1 warm_rounds=5 CPU_timing_repeats=32
+round=0 cpu1_ms=0.044610 cpu4_ms=0.038436 gpu_resident_ms=21.187829 gpu_transfer_ms=23.279087 forward_relative_l2=0 inverse_max_abs=0 guards=PASS
+round=1 cpu1_ms=0.043494 cpu4_ms=0.030182 gpu_resident_ms=0.371407 gpu_transfer_ms=2.433405 forward_relative_l2=1.58041329e-07 inverse_max_abs=3.57627869e-07 guards=PASS
+round=2 cpu1_ms=0.042844 cpu4_ms=0.029176 gpu_resident_ms=0.366444 gpu_transfer_ms=2.445553 forward_relative_l2=1.18043909e-07 inverse_max_abs=4.17232513e-07 guards=PASS
+round=3 cpu1_ms=0.042440 cpu4_ms=0.046280 gpu_resident_ms=0.371295 gpu_transfer_ms=2.410405 forward_relative_l2=1.36182659e-07 inverse_max_abs=2.08616257e-07 guards=PASS
+round=4 cpu1_ms=0.042501 cpu4_ms=0.029243 gpu_resident_ms=0.357741 gpu_transfer_ms=2.392516 forward_relative_l2=0 inverse_max_abs=0 guards=PASS
+round=5 cpu1_ms=0.042562 cpu4_ms=0.028931 gpu_resident_ms=0.359110 gpu_transfer_ms=2.394997 forward_relative_l2=1.58041329e-07 inverse_max_abs=3.57627869e-07 guards=PASS
+MEDIAN cpu1_ms=0.042562 cpu4_ms=0.029243 gpu_resident_ms=0.366444 gpu_transfer_ms=2.410405
+RESULT=PASS forward_relative_l2_worst=1.58041329e-07 inverse_max_abs_worst=4.17232513e-07 dispatches=12

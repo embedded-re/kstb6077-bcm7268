@@ -2,6 +2,8 @@
 
 For current CPU/GPU mathematical operations, precision, memory limits and
 measured workload choices, see [compute-limits.md](compute-limits.md).
+The post-reboot native r34 FFT gate passed through 2048 points / 16 KiB
+shared storage; FFTW CPU was faster in all tested cases.
 
 The KSTB6077's GPU is a Broadcom V3D 3.3 (`brcm,7268-v3d`). Linux drives it
 with mainline `v3d` plus our kernel patches; userspace is Mesa 23.3.6, the

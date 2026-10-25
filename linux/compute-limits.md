@@ -1,6 +1,6 @@
 # CPU and GPU mathematics: measured limits on the KSTB6077
 
-Audit date: **2026-10-25**. The CPU can run general scientific software;
+Audit and post-reboot FFT milestone: **2026-10-25**. The CPU can run general scientific software;
 GPU compute currently provides a restricted FP32/integer shader accelerator,
 and the measured dense-matrix implementation is slower than the four-core CPU.
 An operation being possible does not mean the GPU accelerates it.
@@ -8,9 +8,10 @@ An operation being possible does not mean the GPU accelerates it.
 This is a milestone report, not a promise of optimal performance or a complete
 inventory of every mathematical algorithm. New CPU execution checks and GPU
 query/compiler checks are in the [audit evidence](../docs/evidence/gpu/runs/20261025-214500-math-capability-audit/README.md).
-Existing dispatched-GPU results are identified separately below. The user's
-Sway, Firefox and game sessions were left running; no new GPU dispatch,
-reset experiment, driver change or package installation was needed.
+The initial audit left the user's Sway, Firefox and game sessions running
+and used GPU query/compiler checks only. After the user rebooted, an isolated
+native-driver FFT execution gate added the findings below. No driver changes,
+package installs or deliberate resets were needed.
 
 ## Hardware and installed software
 
@@ -44,7 +45,7 @@ impossible. CPU feature flags describe kernel-exposed instructions; see the
 | FP128 / higher precision | Binary128 `long double` via software helper verified; arbitrary precision possible | No native format; custom multiword emulation would be new work |
 | Integer arithmetic/bit operations | Scalar 8/16/32/64-bit, NEON integer operations; compiler 128-bit arithmetic checked | 32-bit signed/unsigned shader arithmetic and bit operations; no exposed int64 |
 | FP16 / BF16 / matrix-dot accelerators | No FP16 arithmetic, BF16, I8MM or dot-product ISA features advertised; software conversion/math possible | No explicit FP16 arithmetic extension or tensor/matrix engine interface |
-| Complex numbers | C complex FFT and Python complex arithmetic executed | Represent as pairs of FP32 values; complex FFT not executed in this audit |
+| Complex numbers | C complex FFT and Python complex arithmetic executed | Pairs of FP32 values; batched complex FFT128–2048 now executed |
 | Atomics | 64-bit C atomic add/load executed, lock-free through exclusive-load/store instructions | Integer SSBO/image atomics covered by earlier tests; no float atomic-add extension |
 | Parallelism | Four CPU cores, threads, NEON; no SVE | Workgroups, shared storage, workgroup barriers; no subgroup extension |
 | sqrt / trig / exp / log / power | Software libraries plus available scalar instructions | Shader functions and compiler lowering/SFU sequences; numerical accuracy needs workload-specific checks |
@@ -88,17 +89,18 @@ and small neural networks. Practical size and runtime depend on the actual
 algorithm, conditioning, precision and memory use. Large dense problems can
 be expensive even when fully supported.
 
-**Previously executed on this GPU:** FP32 matrix multiplication, a small MLP,
+**Executed on this GPU:** the new FP32 FFT described below; previously,
+FP32 matrix multiplication, a small MLP,
 integer SSBO/image operations and atomics, shared-storage/barrier tests and
 195 selected official compute CTS cases. That subset is not full GLES 3.1
 conformance. The existing [compute history](gpu-compute.md) records dispatch,
 synchronization and recovery work.
 
 **GPU candidates requiring new kernels and validation:** FP32 convolution,
-complex FFT, reductions/scans, particle updates, finite-difference stencils,
+larger/multipass FFTs, reductions/scans, particle updates, finite-difference stencils,
 Monte Carlo and other regular independent calculations. Their feasibility
-follows from the available operations; their correctness, speed and useful
-problem sizes have not been demonstrated on this box. Use separate dispatches
+follows from the available operations; those particular implementations,
+performance and useful problem sizes have not been demonstrated on this box. Use separate dispatches
 and memory barriers for global phases. Workgroup barriers cannot synchronize
 all workgroups; global spin barriers can deadlock.
 
@@ -111,10 +113,52 @@ can be emulated and recursive algorithms can be rewritten iteratively, but
 neither has a demonstrated performance case here. Shader language constraints
 are described by the [GLSL ES 3.10 specification](https://registry.khronos.org/OpenGL/specs/es/3.1/GLSL_ES_Specification_3.10.pdf).
 
+## Post-reboot execution: complex FP32 FFT
+
+The [native r34 FFT milestone](../docs/evidence/gpu/runs/20261025-220836-fft-boundary/README.md)
+ran after the user's reboot, with the machine idle and no desktop apps running.
+A new workgroup FFT implementation passed lengths **128, 256, 512, 1024 and
+2048**, with selected batches up to 64. The 2048-point case uses exactly
+**16 KiB of shared storage**, establishing execution coverage at that limit,
+rather than shader-link acceptance alone. Larger FFTs need another layout or
+multiple passes; 2048 is this implementation's bound, not a universal FFT bound.
+
+Forward output was checked against FFTW double precision for impulse, complex
+tone, deterministic random and mixed inputs; GPU inverse output was checked
+against the original input. Worst observed forward relative L2 error was
+`1.581e-7`; worst inverse absolute error was `5.365e-7`. Twiddles are generated
+on CPU, so these results do not validate GPU trigonometric instructions.
+
+Warm elapsed medians for one batch of FP32 forward transforms:
+
+| Length × batch | Best FFTW CPU threads tested | CPU, ms | GPU excluding upload/readback, ms | GPU including upload/readback/checks, ms |
+|---|---:|---:|---:|---:|
+| 128 × 1 | 1 | 0.001384 | 0.183444 | 1.987328 |
+| 256 × 16 | 4 | 0.024822 | 0.638480 | 2.921067 |
+| 1024 × 64 | 4 | **0.547457** | **6.131504** | **16.147629** |
+| 2048 × 64 | 4 | **2.464082** | **11.066247** | **29.159080** |
+
+CPU uses existing FFTW FP32 plans with one/four threads, excluding planning.
+GPU excludes the cold compile/first round. The last column also includes
+mapping, copy-back and guard inspection; it is not pure transfer latency.
+The CPU is **11.2× faster** at 1024×64 and **4.49× faster** at 2048×64 even
+against the upload/readback-excluded GPU interval. This is much more useful
+than comparing the GPU against our initial untuned CPU correctness FFT.
+
+All **132 FFT dispatches / 2544 individual forward-or-inverse transforms**
+passed with intact buffer guards. After each of the three gates, 100 native
+fence chains and MSAA/depth/stencil pixel checks passed. No reset or MMU fault
+was observed; existing uninitialized-scheduler warnings remain. This is
+bounded reliability coverage, not a long-duration or deliberate-reset test.
+The test watchdogs/processes were stopped; the box remains at its manually
+started-desktop state. Reproduce with `make -C linux/gpu-test fft`; the
+[gate evidence](../docs/evidence/gpu/runs/20261025-220836-fft-boundary/README.md)
+contains runtime commands, environment, timing scope and offline validation.
+
 ## Reported GPU resource limits
 
 These are **current installed-driver API limits**, not a promise that maximum
-allocations or enormous grids fit or finish usefully. The new shader checks
+allocations or enormous grids fit or finish usefully. The initial shader checks
 confirmed front-end/link acceptance at the workgroup/shared-storage boundary
 and rejection immediately above it. They performed **zero dispatches**;
 acceptance is not new backend execution coverage.
@@ -203,7 +247,7 @@ advanced scientific mathematics. Keep the GPU for rendering and selectively
 validated FP32 background tasks. A particular computation may justify a new
 GPU kernel, but it needs a named workload and a measured advantage over the
 best available CPU implementation. There is no justified promise of a speedup
-for FFT, simulation or a neural network we have not implemented and measured.
+for untested FFT layouts, simulations or neural networks.
 
 ## Reproduce and extend
 
@@ -214,7 +258,7 @@ CPU build: `make -C linux/gpu-test cpu-math` from the repository root;
 copy `linux/build/gpu-test/kstb-cpu-math-test` to the board and execute it.
 The audit evidence contains native-system GL build commands, hashes and logs.
 
-The next meaningful milestone is one chosen real workload, with requested
-precision, dimensions and accuracy, compared with a library CPU baseline.
-This audit stops at the capability milestone. No ongoing benchmark or driver
+The FFT milestone supplies one such library comparison. Further useful work
+requires a chosen workload with requested precision, dimensions and accuracy.
+This investigation stops at the verified FFT milestone. No ongoing benchmark or driver
 change is needed to retain the findings.

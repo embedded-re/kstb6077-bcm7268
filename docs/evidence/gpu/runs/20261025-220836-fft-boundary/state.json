@@ -1,0 +1,20 @@
+{
+  "state": "complete",
+  "mode": "boundary",
+  "boot_id": "3c548c6c-e2ce-4629-b9de-fc863743c1cb",
+  "driver_sha256": "ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a",
+  "binary_sha256": "d2cfafbfab987dd2378c7de279a35f01f8367e112afbee4b6bef6acc16f426e1",
+  "kernel": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "completed": [
+    "fft-2048-1",
+    "fft-2048-16",
+    "fft-2048-64",
+    "fences",
+    "graphics"
+  ],
+  "fault": null,
+  "environment": {
+    "V3D_COMPUTE33": "1",
+    "MESA_SHADER_CACHE_DISABLE": "true"
+  }
+}
