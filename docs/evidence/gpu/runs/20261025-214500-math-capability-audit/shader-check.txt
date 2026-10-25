@@ -1,0 +1,30 @@
+renderer=V3D 3.3
+version=OpenGL ES 3.1 Mesa 23.3.6 (git-8b05308cbf)
+fp32_int32=accepted expected=accepted
+fp64=rejected expected=rejected
+log: 0:2(12): error: extension `GL_ARB_gpu_shader_fp64' unsupported in compute shader
+
+int64=rejected expected=rejected
+log: 0:2(12): error: extension `GL_ARB_gpu_shader_int64' unsupported in compute shader
+
+fp16_explicit=rejected expected=rejected
+log: 0:2(12): error: extension `GL_EXT_shader_explicit_arithmetic_types_float16' unsupported in compute shader
+
+float_atomic_add=rejected expected=rejected
+log: 0:2(12): error: extension `GL_EXT_shader_atomic_float' unsupported in compute shader
+
+subgroups=rejected expected=rejected
+log: 0:2(12): error: extension `GL_KHR_shader_subgroup_basic' unsupported in compute shader
+
+local_128=accepted expected=accepted
+local_129=rejected expected=rejected
+log: 0:3(1): error: local_size_x exceeds MAX_COMPUTE_WORK_GROUP_SIZE (128)
+
+shared_16384=accepted expected=accepted
+shared_16388=rejected expected=rejected
+log: error: Too much shared memory used (16388/16384)
+
+recursion=rejected expected=rejected
+log: 0:0(0): error: function `float f(float)' has static recursion
+
+RESULT=PASS checks=11 dispatches=0

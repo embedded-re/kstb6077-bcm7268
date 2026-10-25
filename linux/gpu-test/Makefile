@@ -22,12 +22,19 @@ CASES   = $(wildcard cases/*.txt)
 
 all: $(addprefix $(OUT)/,$(TESTS))
 
+cpu-math: $(OUT)/kstb-cpu-math-test
+
 $(MESA)/include/EGL/egl.h:
 	@echo "no Mesa build: make -C ../mesa" && false
 
 $(OUT)/kstb-gles1-smoke: kstb-gles1-smoke.c $(MESA)/include/EGL/egl.h
 	@mkdir -p $(OUT)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lEGL -lGLESv1_CM -lgbm
+
+# CPU math probes need neither Mesa nor a graphics-library search path.
+$(OUT)/kstb-cpu-math-test: kstb-cpu-math-test.c
+	@mkdir -p $(OUT)
+	$(CC) -O2 -Wall -Wextra -mcpu=cortex-a53 -ffp-contract=off -o $@ $< -lm
 
 # Keep the scalar GEMM baseline scalar; the NEON path uses explicit intrinsics.
 $(OUT)/kstb-gemm-test: kstb-gemm-test.c $(MESA)/include/EGL/egl.h
@@ -58,4 +65,4 @@ install: all
 	scp -q $(CASES) $(BOARD):/opt/gpu-test/cases/
 	@echo "/opt/gpu-test: $(words $(TESTS)) tests, $(words $(SCRIPTS)) scripts, $(words $(CASES)) case lists"
 
-.PHONY: all install
+.PHONY: all install cpu-math

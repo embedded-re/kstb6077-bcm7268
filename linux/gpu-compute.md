@@ -1,5 +1,8 @@
 # GPU: TMU writes, SSBOs and compute on V3D 3.3
 
+For current CPU/GPU mathematical operations, precision, memory limits and
+measured workload choices, see [compute-limits.md](compute-limits.md).
+
 Work toward GLES 3.1 (SSBOs, images, compute) on the KSTB6077's V3D 3.3.
 Only results that ran on the box are here; the stack itself is in
 [`gpu.md`](gpu.md).

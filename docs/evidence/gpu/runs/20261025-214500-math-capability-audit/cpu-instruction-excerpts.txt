@@ -1,0 +1,5 @@
+   11508: 940004f6     	bl	0x128e0 <__addtf3>
+   121ec: 4fc01081     	fmla	v1.2d, v4.2d, v0.d[0]
+   1221c: 4f801041     	fmla	v1.4s, v2.4s, v0.s[0]
+   12658: c85ffc20     	ldaxr	x0, [x1]
+   12660: c80ffc31     	stlxr	w15, x17, [x1]

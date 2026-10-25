@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-25",
+  "board": "KSTB6077 / 192.168.1.33",
+  "kernel": "#30 6.18.57-kstb-hrtimer-ab",
+  "mesa": "native /usr 23.3.6-r34 git-8b05308cbf",
+  "cpu_execution": true,
+  "gpu_queries": true,
+  "shader_frontend_link_checks": 11,
+  "new_gpu_dispatches": 0,
+  "new_reset_tests": 0,
+  "user_desktop_preserved": true,
+  "packages_installed": [],
+  "performance_reference": "../20261025-151108-gemm-coprocessor/README.md",
+  "performance_reference_mesa": "33-patch 85a951cd (not remeasured on r34)",
+  "executables_sha256": {
+    "kstb-cpu-math-test": "3f7f1e79b97db568e973d0b1f948788db6449a25e88a7033cb1e6d3abfb5fe2e",
+    "kstb-gl-caps": "3d646e2d42cbd103b202d57262a1b3c786dcc57df80429de04c90465f56479fb",
+    "kstb-math-shader-check": "6cbfd07ac7214e0193827b554c88a038d9ee9f82bf8f22dc0769071d5c126fb6"
+  }
+}

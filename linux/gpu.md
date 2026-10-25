@@ -1,5 +1,8 @@
 # GPU stack: V3D 3.3 under Linux
 
+For current CPU/GPU mathematical operations, precision, memory limits and
+measured workload choices, see [compute-limits.md](compute-limits.md).
+
 The KSTB6077's GPU is a Broadcom V3D 3.3 (`brcm,7268-v3d`). Linux drives it
 with mainline `v3d` plus our kernel patches; userspace is Mesa 23.3.6, the
 last Mesa release with V3D 3.3, plus our patch series. Upstream will never
