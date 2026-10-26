@@ -1,0 +1,3 @@
+aplay: set_params:1393: Sample format non available
+Available formats:
+- S32_LE

@@ -1,0 +1,3 @@
+irq timer off
+EL2 timer off
+kmon>

@@ -1,0 +1,3 @@
+fget backup/boot0.bin 0x02000000
+backup/boot0.bin: 4194304 bytes at 02000000, CRC 2778e541, 135 ms
+kmon>

@@ -1,0 +1,14 @@
+mmc part
+GPT: 14 entries of 128 bytes at LBA 2
+  #  first LBA   last LBA    size        name
+  1  34          34                0 KB  macadr
+  2  35          162              64 KB  nvram
+  3  163         2046            942 KB  bsu
+  4  2048        4095           1024 KB  misc
+  5  4096        6143           1024 KB  hwcfg
+  6  6144        137215           64 MB  KRN
+  7  137216      145407         4096 KB  DTB
+  8  145408      14714879       7114 MB  ROOT
+  9  14714880    15239167        256 MB  DATA
+  10 15239168    15273594         16 MB  splash
+kmon>

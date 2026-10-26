@@ -1,0 +1,12 @@
+irq
+CPU   HCR_EL2 80000012 (IMO 1), DAIF d (IRQ unmasked), VBAR_EL2 00100800
+GIC   GICD_CTLR 1, GICC_CTLR 1, PMR f0, RPR ff, HPPIR 3ff, this CPU = target 01
+  source                  ID   kmon en pend act  prio tgt  type  taken
+  EL2 timer (CNTHP)       26   on   1   0   0    a0   01   level 117
+  AON L2: SW1, IR         98   off  0   0   0    00   00   level 0
+  UART0 receive          102   off  0   0   0    00   00   level 0
+timer CNTHP_CTL 1 (b2 = condition met), period 10 ms, ticks 121
+AON   L2 STATUS 00000000 MASK 0000007f, GPIO MASK 00000000 STAT 001600d0
+UART0 IER 00, rx dropped 0, WFI sleeps 0
+other spurious 0, unknown ID 0, AON other 0
+kmon>

@@ -1,0 +1,3 @@
+fill 0x02000000 0x100000 0xa5
+filled 100000 bytes at 02000000 with a5
+kmon>

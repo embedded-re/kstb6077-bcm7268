@@ -72,6 +72,16 @@ was left running. This verifies the storage migration and a short application
 regression gate; it is not a fresh full GPU conformance or endurance campaign.
 [Execution logs and offline evidence checks](evidence/storage/20261026-migration/README.md).
 
+## Follow-up bare-metal and Linux regression
+
+The user-requested [broader platform check](evidence/storage/20261026-platform-check/README.md)
+passed after this milestone: monitor RAM/storage/network/interrupts and USB,
+bare-metal Doom launch and clean return, Linux persistent I/O, CPU math,
+repeated classifier/RAM check, actual GPU FFT, GPU desktop restart/launcher/
+fullscreen transitions, networking and native-format normal-user HDMI playback.
+The box was left in Linux with no desktop or test workload running. Physical
+sound/input and unexercised hardware remain outside that automated check.
+
 ## Recovery constraints
 
 Full-image backups were verified, but a complete rollback was **not** executed.

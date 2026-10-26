@@ -1,0 +1,3 @@
+fget scale48.wav 0x02000000
+scale48.wav: 576044 bytes at 02000000, CRC b7b109ba, 27 ms
+kmon>

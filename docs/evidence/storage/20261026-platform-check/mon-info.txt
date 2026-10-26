@@ -1,0 +1,14 @@
+info
+kmon, built Oct 17 2026 13:06:53
+chip      72680010 / 72680010
+CPU       EL2, MIDR 420f1000, MPIDR 80000000, CNTFRQ 27000000 Hz
+          SCTLR_EL2 30c51835, HCR_EL2 80000002
+temp      00000dd3    = 47.2 C
+uptime    7 s    = 0h 00m 07s since power-on
+reset     200 (BOLT's copy)    software
+WAD       not loaded
+doom.bin  in the bundle
+audio     DMA running (ring 0)
+display   surface 7db0b700, frame 5212048d
+memory    monitor 00100000, doom image 00140000, heap 00f00000, programs 01000000, WAD 10000000
+kmon>

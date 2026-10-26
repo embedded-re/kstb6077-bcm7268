@@ -1,0 +1,3 @@
+fput pcheck.bin 0x02000000 0x100000
+pcheck.bin: 1048576 bytes from 02000000, CRC bf513fe6, 897 ms
+kmon>

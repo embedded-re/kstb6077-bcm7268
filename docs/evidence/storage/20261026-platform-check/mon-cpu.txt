@@ -1,0 +1,7 @@
+cpu
+EL3 monitor: kboot's (4b423303)
+core 0: on
+core 1: off
+core 2: off
+core 3: off
+kmon>

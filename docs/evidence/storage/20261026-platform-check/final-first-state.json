@@ -1,0 +1,15 @@
+{
+  "state": "failed",
+  "passed": [
+    "ext4 fsync persistence across reboot",
+    "four CPUs online",
+    "ethernet-ping",
+    "DNS",
+    "HTTPS / CA certificates",
+    "gpt",
+    "fat",
+    "cpu-math",
+    "fences"
+  ],
+  "error": "AssertionError('closed\\n')"
+}

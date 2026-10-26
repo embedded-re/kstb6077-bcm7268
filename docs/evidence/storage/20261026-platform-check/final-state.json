@@ -1,0 +1,19 @@
+{
+  "state": "complete",
+  "passed": [
+    "ext4 fsync persistence across reboot (verified in first final pass)",
+    "four CPUs online",
+    "ethernet-ping",
+    "DNS",
+    "HTTPS / CA certificates",
+    "gpt",
+    "fat",
+    "cpu-math",
+    "fences",
+    "normal-user ALSA playback / RUNNING DMA state (audibility unconfirmed)",
+    "kernel",
+    "space",
+    "dri",
+    "processes"
+  ]
+}

@@ -1,0 +1,3 @@
+fget backup/gptbak.bin 0x02000000
+backup/gptbak.bin: 16896 bytes at 02000000, CRC 8afde2c0, 3 ms
+kmon>

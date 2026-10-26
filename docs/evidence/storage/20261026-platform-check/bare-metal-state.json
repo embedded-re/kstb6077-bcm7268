@@ -1,0 +1,16 @@
+{
+  "state": "complete",
+  "passed": [
+    "normal EL3 boot / PSCI monitor",
+    "new DATA geometry",
+    "all eight original FAT files read with matching CRC",
+    "1MiB RAM fill / copy / CRC",
+    "1MiB FAT write / read / delete",
+    "GIC / EL2 timer interrupts",
+    "bare-metal DHCP / Ethernet ping",
+    "HDMI/audio commands completed (physical output unconfirmed)",
+    "USB enumeration commands completed",
+    "installed KRN / DTB headers readable"
+  ],
+  "linux_started": true
+}

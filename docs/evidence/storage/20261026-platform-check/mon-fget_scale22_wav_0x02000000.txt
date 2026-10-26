@@ -1,0 +1,3 @@
+fget scale22.wav 0x02000000
+scale22.wav: 66188 bytes at 02000000, CRC 76de400b, 4 ms
+kmon>

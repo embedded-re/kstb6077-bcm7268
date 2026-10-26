@@ -1,0 +1,3 @@
+fs
+flash0.DATA (LBA #14714880-#15239167): FAT32, 130554 clusters of 2 KB, 229 MB free of 254 MB
+kmon>

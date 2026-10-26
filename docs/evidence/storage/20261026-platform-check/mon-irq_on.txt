@@ -1,0 +1,3 @@
+irq on
+IRQs unmasked (DAIF.I = 0), HCR_EL2.IMO = 1
+kmon>

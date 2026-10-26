@@ -1,0 +1,3 @@
+fget backup/lba0.bin 0x02000000
+backup/lba0.bin: 3145728 bytes at 02000000, CRC d8ef1f15, 103 ms
+kmon>

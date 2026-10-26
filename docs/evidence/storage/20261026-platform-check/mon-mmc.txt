@@ -1,0 +1,4 @@
+mmc
+host   present 1fff0000, control 00000f24, clock 000e0107
+card   RCA 2: status 00000900, state tran, ready for data
+kmon>

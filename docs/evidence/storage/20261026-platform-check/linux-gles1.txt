@@ -1,0 +1,4 @@
+GLES1 clear pixel: 51 102 153 255 (GL error 0x0)
+GLES1 0x MSAA scissor pixel: 255 0 0 255
+GLES1 0x MSAA outside pixel: 51 102 153 255
+GLES1 0x MSAA six clears: 0 mismatched components

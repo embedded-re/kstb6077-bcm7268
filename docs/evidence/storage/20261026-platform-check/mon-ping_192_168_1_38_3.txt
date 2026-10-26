@@ -1,0 +1,5 @@
+ping 192.168.1.38 3
+reply from 192.168.1.38: seq 1, 0.073 ms
+reply from 192.168.1.38: seq 2, 0.079 ms
+reply from 192.168.1.38: seq 3, 0.174 ms
+kmon>

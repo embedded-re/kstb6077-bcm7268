@@ -1,0 +1,1 @@
+PASS: app exit and closing all terminals leave the desktop alive; new terminal and launcher open.

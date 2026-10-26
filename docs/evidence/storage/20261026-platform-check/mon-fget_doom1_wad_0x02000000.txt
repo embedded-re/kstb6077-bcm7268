@@ -1,0 +1,3 @@
+fget doom1.wad 0x02000000
+doom1.wad: 14445628 bytes at 02000000, CRC e7b459f0, 460 ms
+kmon>

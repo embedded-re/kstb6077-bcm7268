@@ -1,0 +1,3 @@
+irq timer 10
+EL2 timer every 10 ms (GIC ID 26)
+kmon>

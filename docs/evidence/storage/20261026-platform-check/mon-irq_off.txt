@@ -1,0 +1,3 @@
+irq off
+all interrupt sources off, IRQs masked
+kmon>

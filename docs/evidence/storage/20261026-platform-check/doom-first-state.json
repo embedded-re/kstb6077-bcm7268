@@ -1,0 +1,6 @@
+{
+  "state": "failed",
+  "error": "timeout waiting for b'kmon> '; got:\n",
+  "watchdog_recovery": true,
+  "linux_started": true
+}

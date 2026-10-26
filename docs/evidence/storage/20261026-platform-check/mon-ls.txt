@@ -1,0 +1,8 @@
+ls
+  backup                                        <dir>
+  doom1.wad                                  14445628
+  kboot.bin                                     21704
+  scale22.wav                                   66188
+  scale48.wav                                  576044
+5 entries
+kmon>

@@ -1,0 +1,46 @@
+{
+  "audio": " 0 [HDMI           ]: kstb-audio - KSTB6077 HDMI\n                      KSTB6077 HDMI audio (FMM ring 0 at f0ca0800)\n",
+  "drm": "plane[33]: plane-0\n\tcrtc=crtc-0\n\tfb=38\n\t\tallocated by = [fbcon]\n\t\trefcount=2\n\t\tformat=RG16 little-endian (0x36314752)\n\t\tmodifier=0x0\n\t\tsize=1920x1080\n\t\tlayers:\n\t\t\tsize[0]=1920x1080\n\t\t\tpitch[0]=3840\n\t\t\toffset[0]=0\n\t\t\tobj[0]:\n\t\t\t\tname=0\n\t\t\t\trefcount=3\n\t\t\t\tstart=00100000\n\t\t\t\tsize=4149248\n\t\t\t\timported=no\n\t\t\t\tdma_addr=0x0000000077500000\n\t\t\t\tvaddr=00000000b637d3df\n\tcrtc-pos=1920x1080+0+0\n\tsrc-pos=1920.000000x1080.000000+0.000000+0.000000\n\trotation=1\n\tnormalized-zpos=0\n\tcolor-encoding=ITU-R BT.601 YCbCr\n\tcolor-range=YCbCr limited range\n\tcolor_mgmt_changed=0\ncrtc[35]: crtc-0\n\tenable=1\n\tactive=1\n\tself_refresh_active=0\n\tplanes_changed=1\n\tmode_changed=0\n\tactive_changed=0\n\tconnectors_changed=0\n\tcolor_mgmt_changed=0\n\tplane_mask=1\n\tconnector_mask=1\n\tencoder_mask=1\n\tmode: \"1920x1080\": 60 148352 1920 2008 2052 2200 1080 1084 1089 1125 0x48 0x5\nconnector[37]: HDMI-A-1\n\tcrtc=crtc-0\n\tself_refresh_aware=0\n\tinterlace_allowed=0\n\tycbcr_420_allowed=0\n\tmax_requested_bpc=0\n\tcolorspace=Default\n\tbroadcast_rgb=Automatic\n\tis_limited_range=n\n\toutput_bpc=0\n\toutput_format=RGB\n\ttmds_char_rate=0\n",
+  "dmabuf": "\nDma-buf Objects:\nsize    \tflags   \tmode    \tcount   \texp_name\tino     \tname\n\nTotal 0 objects, 0 bytes\n",
+  "temp": "48199\n",
+  "usb": [
+    {
+      "vendor": "1d6b",
+      "product": "0001",
+      "name": "Generic Platform OHCI controller"
+    },
+    {
+      "vendor": "1d6b",
+      "product": "0003",
+      "name": "xHCI Host Controller"
+    },
+    {
+      "vendor": "1d6b",
+      "product": "0002",
+      "name": "EHCI Host Controller"
+    },
+    {
+      "vendor": "0461",
+      "product": "0010",
+      "name": "USB Keyboard"
+    },
+    {
+      "vendor": "1d6b",
+      "product": "0001",
+      "name": "Generic Platform OHCI controller"
+    },
+    {
+      "vendor": "0a5c",
+      "product": "2045",
+      "name": "BCM2045A0"
+    },
+    {
+      "vendor": "1d6b",
+      "product": "0002",
+      "name": "EHCI Host Controller"
+    }
+  ],
+  "kernel": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux\n",
+  "df": "Filesystem     1K-blocks    Used Available Use% Mounted on\n/dev/root        7132188 3216044   3535536  48% /\n",
+  "dri": "ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a  /usr/lib/dri/v3d_dri.so\n"
+}

@@ -1,0 +1,5 @@
+usb
+OHCI1 control 00000094, frame 0121, HCCA 00600000, port 00000303 (connected, low speed)
+  device 1: 0461:0010, low speed, on the USB-A port, keyboard
+keyboard (device 1) up, 0 reports
+kmon>

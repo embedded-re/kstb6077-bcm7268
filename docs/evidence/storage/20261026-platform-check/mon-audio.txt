@@ -1,0 +1,4 @@
+audio
+audio: ready
+  ring 7dada100-7db08eff, read fdae1b00, DMA 1, N 040016c0, CTS 00022551 00022551
+kmon>

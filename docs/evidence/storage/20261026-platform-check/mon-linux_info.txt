@@ -1,0 +1,4 @@
+linux info
+KRN: seq 1792921543, 13316608 bytes, CRC 4f8a5020, "linux-hrtimer-ab 2026-10-25"
+DTB: seq 1792921543, 10829 bytes, CRC c672cba9, "kstb6077-root hrtimer-ab"
+kmon>

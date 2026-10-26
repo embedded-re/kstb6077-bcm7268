@@ -1,0 +1,3 @@
+fget kboot.bin 0x02000000
+kboot.bin: 21704 bytes at 02000000, CRC a3fce739, 6 ms
+kmon>

@@ -1,0 +1,103 @@
+{
+  "runtime": "1.24.4",
+  "numpy": "2.4.6",
+  "providers": [
+    "CPUExecutionProvider"
+  ],
+  "image": "/home/kstb/projects/image-classifier/assets/dog.jpg",
+  "preprocessing_ms": 206.5384719999912,
+  "benchmarks": [
+    {
+      "threads": 4,
+      "load_ms": 362.76876299999117,
+      "samples_ms": [
+        104.81169999999906
+      ],
+      "median_ms": 104.81169999999906,
+      "p95_ms": 104.81169999999906
+    }
+  ],
+  "top5": [
+    {
+      "index": 258,
+      "label": "n02111889 Samoyed, Samoyede",
+      "probability": 0.8303039490026909
+    },
+    {
+      "index": 259,
+      "label": "n02112018 Pomeranian",
+      "probability": 0.06988790108741527
+    },
+    {
+      "index": 261,
+      "label": "n02112350 keeshond",
+      "probability": 0.012964087003646775
+    },
+    {
+      "index": 231,
+      "label": "n02106030 collie",
+      "probability": 0.010797781990526977
+    },
+    {
+      "index": 257,
+      "label": "n02111500 Great Pyrenees",
+      "probability": 0.009886778374074038
+    }
+  ],
+  "chosen_threads": 4,
+  "soak": {
+    "seconds": 30.444105693999987,
+    "inferences": 275,
+    "memory_pattern_mib": 256,
+    "max_temp_c": 52.095,
+    "min_available_kib": 1571136,
+    "sensors": [
+      {
+        "elapsed_s": 0.10703644299999837,
+        "inferences": 1,
+        "temp_c": 50.147,
+        "available_kib": 1571136,
+        "peak_rss_kib": 359748
+      },
+      {
+        "elapsed_s": 5.170538408999988,
+        "inferences": 48,
+        "temp_c": 51.608,
+        "available_kib": 1578816,
+        "peak_rss_kib": 359748
+      },
+      {
+        "elapsed_s": 10.543669177999988,
+        "inferences": 95,
+        "temp_c": 51.121,
+        "available_kib": 1588648,
+        "peak_rss_kib": 359756
+      },
+      {
+        "elapsed_s": 15.605724550999994,
+        "inferences": 143,
+        "temp_c": 52.095,
+        "available_kib": 1598336,
+        "peak_rss_kib": 359756
+      },
+      {
+        "elapsed_s": 20.639316615,
+        "inferences": 186,
+        "temp_c": 51.608,
+        "available_kib": 1598296,
+        "peak_rss_kib": 359768
+      },
+      {
+        "elapsed_s": 25.70523811999999,
+        "inferences": 234,
+        "temp_c": 52.095,
+        "available_kib": 1601808,
+        "peak_rss_kib": 359768
+      }
+    ],
+    "memory_check": "PASS",
+    "repeatability": "PASS"
+  },
+  "peak_rss_kib": 359768,
+  "result": "PASS"
+}

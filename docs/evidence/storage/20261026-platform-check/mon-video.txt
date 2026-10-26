@@ -1,0 +1,7 @@
+video
+video: display running, frame counter 52120617
+  HDMI: TV connected (hot-plug f06fa1a8 bit 0), receiver sense 0
+  RDC descriptor 0: list 7db09c60, count 48, config 06180000
+  RDC descriptor 1: list 7db09980, count 55, config 06190000
+  display script: built in, 20528 bytes, CRC 0ed66aea (good)
+kmon>

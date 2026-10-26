@@ -1,0 +1,3 @@
+audio init
+audio: ring 7dada100-7db08eff (24000 frames, 500 ms), HDMI N/CTS set for 1080p59.94
+kmon>
