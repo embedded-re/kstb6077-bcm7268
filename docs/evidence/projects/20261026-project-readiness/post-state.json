@@ -1,0 +1,13 @@
+{
+  "kernel": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux",
+  "driver_sha256": "ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a",
+  "world": "adwaita-icon-theme\nalpine-baselayout\nalpine-keys\nalpine-release\nalsa-utils\napk-tools\navahi\navahi-tools\nbash\nbash-completion\nbison\nbluez\nbluez-btmgmt\nbluez-deprecated\nbtop\nbuild-base\nbusybox\nbusybox-extras\nbusybox-openrc\ncargo\nchrony\nclang-dev\ncoreutils\ncurl\ndbus\ndoas\ndoas-sudo-shim\ndocs\ne2fsprogs\nelfutils-dev\neudev\nevtest\nexpat-dev\nfastfetch\nffmpeg-dev\nfirefox\nflex\nfont-dejavu\nfont-jetbrains-mono-nerd\nfont-terminus\nfoot\nfoot-themes\ngdb\ngit\ngrim\nhicolor-icon-theme\nhtop\ni2c-tools\nifupdown-ng\niw\nkbd\nlbreakouthd\nless\nlibdrm-dev\nlibdrm-tests\nlibgpiod\nlibrsvg\nlinux-firmware-brcm\nman-pages\nmandoc\nmandoc-apropos\nmesa=23.3.6-r34\nmesa-dev=23.3.6-r34\nmesa-egl=23.3.6-r34\nmesa-gbm=23.3.6-r34\nmesa-gl=23.3.6-r34\nmesa-gles=23.3.6-r34\n!mesa-rusticl\nmeson\nmicro\nmousepad\nmpv\nmpv-dev\nmusl-dbg\nmusl-locales\nmusl-utils\nnano\nninja\nopenrc\nopenssh\nopenssl-dev\nopenttd\nopenttd-opengfx\npatch\npy3-mako\npy3-numpy\npy3-onnxruntime\npy3-packaging\npy3-pillow\npy3-pip\npython3\nseatd\nsupertux\nsway\nswaybg\nthunar\ntmux\ntzdata\nudev-init-scripts\nudev-init-scripts-openrc\nusbutils\nutil-linux\nvim\nwget\nwireless-regdb\nwmenu\nwofi\nwpa_supplicant\nxwayland\nzlib-dev\nzstd\nzstd-dev\n",
+  "root_free_bytes": 1002618880,
+  "kernel_resets_since_boot": 0,
+  "project_uid": 1000,
+  "test_processes": [],
+  "temp_c": 54.043,
+  "boot_id": "3c548c6c-e2ce-4629-b9de-fc863743c1cb",
+  "classifier_processes": [],
+  "workspace_restore_check": "PASS"
+}

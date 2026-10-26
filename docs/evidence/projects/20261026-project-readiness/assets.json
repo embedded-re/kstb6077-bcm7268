@@ -1,0 +1,22 @@
+{
+  "mobilenetv2-12.onnx": {
+    "url": "https://media.githubusercontent.com/media/onnx/models/main/validated/vision/classification/mobilenet/model/mobilenetv2-12.onnx",
+    "bytes": 13964571,
+    "sha256": "c0c3f76d93fa3fd6580652a45618618a220fced18babf65774ed169de0432ad5"
+  },
+  "synset.txt": {
+    "url": "https://raw.githubusercontent.com/onnx/models/main/validated/vision/classification/synset.txt",
+    "bytes": 31675,
+    "sha256": "acf75ef0abe89694b19056e0796401068b459c457baa30335f240c7692857355"
+  },
+  "dog.jpg": {
+    "url": "https://raw.githubusercontent.com/pytorch/hub/master/images/dog.jpg",
+    "bytes": 661378,
+    "sha256": "f3f87bb8ab3c26c7ecfd3ac60421d7f32b0503d1d6c5baf8bac42ed93d86351a"
+  },
+  "MODEL-LICENSE": {
+    "url": "https://raw.githubusercontent.com/onnx/models/main/LICENSE",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}

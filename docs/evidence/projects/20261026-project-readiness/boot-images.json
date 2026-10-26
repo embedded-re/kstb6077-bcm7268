@@ -1,0 +1,12 @@
+{
+  "KRN": {
+    "partition": "mmcblk0p6",
+    "bytes": 67108864,
+    "sha256": "c148cb20f623e6a21c883e20884a5560e655f0d62332848b3f90f4d19a527190"
+  },
+  "DTB": {
+    "partition": "mmcblk0p7",
+    "bytes": 4194304,
+    "sha256": "75d656166a9e34fc5923d4e9cd42db029323653c2215db1049ef90f5d7f16c80"
+  }
+}

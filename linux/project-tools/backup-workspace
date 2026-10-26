@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Copy the board's projects to this PC; preserve data, omit the reproducible venv."""
+import argparse
+import datetime
+import hashlib
+import os
+from pathlib import Path
+import subprocess
+p=argparse.ArgumentParser(description=__doc__)
+p.add_argument('--board',default='root@192.168.1.33')
+p.add_argument('--destination',type=Path,default=Path(__file__).resolve().parents[1]/'build/project-workspaces')
+a=p.parse_args();a.destination.mkdir(parents=True,exist_ok=True)
+out=a.destination/(datetime.datetime.now().strftime('%Y%m%d-%H%M%S')+'-projects.tar.gz')
+try:
+    with os.fdopen(os.open(out, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb') as f:
+        subprocess.run(['ssh',a.board,'tar -czf - --exclude=projects/.venv -C /home/kstb projects'],stdout=f,check=True)
+except BaseException:
+    out.unlink(missing_ok=True)
+    raise
+out.chmod(0o600)
+h=hashlib.sha256()
+with out.open('rb') as f:
+    for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+out.with_suffix(out.suffix+'.sha256').write_text(h.hexdigest()+'  '+out.name+'\n')
+print(out)

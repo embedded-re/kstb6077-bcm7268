@@ -5,6 +5,9 @@ Unlike the old 32-bit port ([`../docs/history/linux-port.md`](../docs/history/li
 64-bit on top of our own firmware: kboot's EL3 monitor answers PSCI, and
 the device tree is written by hand from the tested chapters in `docs/`.
 
+For the prepared Python/CPU inference environment, storage and recovery
+status, see [project-readiness.md](project-readiness.md).
+
 Tested on the modified box on 2026-10-17 unless marked otherwise.
 
 | | |

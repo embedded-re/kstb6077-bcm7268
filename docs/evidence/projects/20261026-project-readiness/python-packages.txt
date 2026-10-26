@@ -1,0 +1,15 @@
+coloredlogs==15.0.1
+flatbuffers==25.12.19
+google-re2==1.1.20251105
+humanfriendly==10.0
+Mako==1.3.12
+MarkupSafe==3.0.3
+meson==1.11.1
+mpmath==1.4.1
+numpy==2.4.6
+onnxruntime==1.24.4
+packaging==26.2
+pillow==12.2.0
+pybind11==3.0.1
+pyparsing==3.3.2
+sympy==1.14.0

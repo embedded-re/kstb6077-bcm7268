@@ -1,0 +1,28 @@
+{
+  "free_before": 677928960,
+  "free_after": 1208410112,
+  "reclaimed_bytes": 530481152,
+  "removed": [
+    "/root/gpu-runs",
+    "/root/gpu-system-prep/packages",
+    "/root/gpu-system-prep/signed-packages",
+    "/root/gpu-system-prep/signed-v2",
+    "/root/gpu-system-prep/signed-final",
+    "/root/gpu-system-prep/new-lib",
+    "/root/gpu-system-prep/stage",
+    "/root/gpu-system-prep/r34-stage",
+    "/root/gpu-system-prep/system-stage.tar",
+    "/opt/mesa/23.3.6-5a3fd8dd",
+    "/opt/mesa/23.3.6-60757ba5",
+    "/opt/mesa/23.3.6-f5f33af0",
+    "/opt/mesa/23.3.6-949e0192",
+    "/opt/mesa/23.3.6-518c06f4",
+    "/opt/mesa/23.3.6-cd573075",
+    "/opt/mesa/23.3.6-3112d69b",
+    "/opt/mesa/23.3.6-b1e71af4",
+    "/opt/mesa/23.3.6-f37c1f42",
+    "/opt/mesa/23.3.6-88b9f694",
+    "/opt/mesa/23.3.6-efbb2e70",
+    "/opt/mesa/23.3.6-40ea9bc5"
+  ]
+}
