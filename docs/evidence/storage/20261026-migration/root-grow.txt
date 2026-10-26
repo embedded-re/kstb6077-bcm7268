@@ -1,0 +1,4 @@
+Resizing the filesystem on /dev/mmcblk0p8 to 1821184 (4k) blocks.
+The filesystem on /dev/mmcblk0p8 is now 1821184 (4k) blocks long.
+
+resize2fs 1.47.4 (6-Mar-2025)

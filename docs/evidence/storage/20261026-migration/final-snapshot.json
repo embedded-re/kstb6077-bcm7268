@@ -1,0 +1,41 @@
+{
+  "protected": {
+    "splash": {
+      "sha256": "20c996bff4026af5d53f8f78a66d8a8cb0fb1b1b341dc962662d093756856de4",
+      "bytes": 17626624,
+      "unchanged": true
+    },
+    "boot0": {
+      "sha256": "cd2e859e8c74cc33f3852d5d3bf8917a962187c7a81d767f50d97525a40501fe",
+      "bytes": 4194304,
+      "unchanged": true
+    },
+    "boot1": {
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+      "bytes": 4194304,
+      "unchanged": true
+    },
+    "KRN": {
+      "sha256": "c148cb20f623e6a21c883e20884a5560e655f0d62332848b3f90f4d19a527190",
+      "bytes": 67108864,
+      "unchanged": true
+    },
+    "DTB": {
+      "sha256": "75d656166a9e34fc5923d4e9cd42db029323653c2215db1049ef90f5d7f16c80",
+      "bytes": 4194304,
+      "unchanged": true
+    },
+    "factory": {
+      "sha256": "ec29f1a743d7ac785fb389306f329992689856eb7c6b036abc682ce0003630a1",
+      "bytes": 3128320,
+      "unchanged": true
+    }
+  },
+  "layout": "label: gpt\nlabel-id: C49E0ACB-1B38-95E5-548A-2B7260E704A4\ndevice: /dev/mmcblk0\nunit: sectors\nfirst-lba: 6\nlast-lba: 15273594\ntable-length: 14\nsector-size: 512\n\n/dev/mmcblk0p1 : start=          34, size=           1, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=94CA291F-2A2B-DEFE-0D52-7D9C5C91558A, name=\"macadr\"\n/dev/mmcblk0p2 : start=          35, size=         128, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=A613896D-E6E8-A0D3-3396-30EC4838D50F, name=\"nvram\"\n/dev/mmcblk0p3 : start=         163, size=        1884, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=9E312AF1-18FE-FA41-45F3-37B3BB1D1061, name=\"bsu\"\n/dev/mmcblk0p4 : start=        2048, size=        2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=18A5D0DB-D23A-AAC1-0D4C-692C7BA9AB1C, name=\"misc\"\n/dev/mmcblk0p5 : start=        4096, size=        2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=EBCF4A1C-B9E7-8F06-9885-3BD8B4A46CFF, name=\"hwcfg\"\n/dev/mmcblk0p6 : start=        6144, size=      131072, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=39AADA87-ED4C-439F-9EC7-1F4FBFD1E2BA, name=\"KRN\"\n/dev/mmcblk0p7 : start=      137216, size=        8192, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=CFFFA043-6550-402E-B304-7D478CBEFFB1, name=\"DTB\"\n/dev/mmcblk0p8 : start=      145408, size=    14569472, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=6028A5EB-33AE-43F4-A1D5-33A895C4AF53, name=\"ROOT\"\n/dev/mmcblk0p9 : start=    14714880, size=      524288, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=B1F4C7F7-A0B8-4F4D-9983-275D1072F878, name=\"DATA\"\n/dev/mmcblk0p10 : start=    15239168, size=       34427, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=CF840152-87A6-4284-ADB2-7B667371832D, name=\"splash\"\n",
+  "verify": "/dev/mmcblk0:\nNo errors detected.\nHeader version: 1.0\nUsing 10 out of 14 partitions.\nA total of 29 free sectors is available in 2 segments (the largest is 14 KiB).\n",
+  "df": "Filesystem     1K-blocks    Used Available Use% Mounted on\n/dev/root        7132188 3213376   3538204  48% /\n",
+  "cpus": 4,
+  "kernel": "Linux kstb6077 6.18.57-kstb-hrtimer-ab #30 SMP Sun Oct 25 10:44:05 CET 2026 aarch64 GNU/Linux\n",
+  "root_uuid": "/dev/mmcblk0p8: LABEL=\"ROOT\" UUID=\"435cda17-99fa-492f-ba47-d04cc34286ea\" BLOCK_SIZE=\"4096\" TYPE=\"ext4\" PARTLABEL=\"ROOT\" PARTUUID=\"6028a5eb-33ae-43f4-a1d5-33a895c4af53\"\n",
+  "dri": "ab8e3f40c4d368bc46661342bde624de3051a249aeed1b02f220e39b6e8bcb8a  /usr/lib/dri/v3d_dri.so\n"
+}

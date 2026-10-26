@@ -99,7 +99,7 @@ The old backup-GPT CRC warning was resolved by the 2026-10-17 repartitioning.
 Read-only verification on 2026-10-26 found valid matching primary/backup GPT
 entry arrays and clean `sfdisk --verify` results. The current table has 14
 entries; preserve that geometry and the fixed splash location. See the
-[DATA shrink / ROOT expansion inspection](../docs/storage-repartition-plan.md).
+[completed DATA shrink / ROOT expansion](../docs/storage-repartition.md).
 
 ## Starting without the PC: `KRN`, `DTB` and kmon's `linux` (2026-10-17)
 
@@ -175,7 +175,8 @@ CPU hotplug uses PSCI CPU_OFF, which it has.
 
 ## Root file system on `ROOT` (2026-10-17)
 
-`ROOT` (mmcblk0p8, 1 GiB then; 5290 MiB since the repartitioning,
+`ROOT` (mmcblk0p8, 1 GiB then; 5290 MiB from October 17,
+7114 MiB since the verified October 26 migration,
 [`../docs/hardware/storage.md`](../docs/hardware/storage.md)) held no file system, only an old swap header
 labelled `SWAP`. It was installed from the initramfs Linux, on the box:
 

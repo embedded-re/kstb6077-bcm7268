@@ -1,0 +1,51 @@
+{
+  "result": "PASS",
+  "original_files": [
+    {
+      "name": "backup/boot0.bin",
+      "bytes": 4194304,
+      "sha256": "cd2e859e8c74cc33f3852d5d3bf8917a962187c7a81d767f50d97525a40501fe"
+    },
+    {
+      "name": "backup/boot1.bin",
+      "bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "name": "backup/gptbak.bin",
+      "bytes": 16896,
+      "sha256": "e15f9e77c2e08e5a0f282ec42f826ecf28cf1efa2ec2d71c132d5553876616ca"
+    },
+    {
+      "name": "backup/lba0.bin",
+      "bytes": 3145728,
+      "sha256": "3788fdea19ce91dd3ba2eeb2450f9c5fb752e0a39be5e88203459260b096ec36"
+    },
+    {
+      "name": "doom1.wad",
+      "bytes": 14445628,
+      "sha256": "42214240c0596b02045837e4a502f54035c2397c25eec519ec8004e4b7dbe197"
+    },
+    {
+      "name": "kboot.bin",
+      "bytes": 21704,
+      "sha256": "1c9e8b02e3db8927870589a49032d5f3ae6a1c39bed32265f05303482173eaf3"
+    },
+    {
+      "name": "scale22.wav",
+      "bytes": 66188,
+      "sha256": "aad6458aa776438794d12550f4004527d4cc94a55cc103b420fb655d5d047a80"
+    },
+    {
+      "name": "scale48.wav",
+      "bytes": 576044,
+      "sha256": "8756f69b104f85746631166381084fea8bd697969e8a9e7262401f816bccb1a9"
+    }
+  ],
+  "temporary_files_removed": [
+    "rscboot.bin",
+    "rscdtb.bin",
+    "rscimg.bin",
+    "rscinit.gz"
+  ]
+}

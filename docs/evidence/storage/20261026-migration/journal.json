@@ -1,0 +1,83 @@
+[
+  {
+    "stage": "preflight_passed",
+    "time": 1793016866.6784635,
+    "root_backup_sha256": "766cf3b54b1e31d7c08e290e49b12ad7a67dba4aa7c0927a761c5ce85b01f7ec",
+    "new_data_sha256": "8b7c9c07032f9ef19d554d6eda005249478d62e6d855b2fb9707ce763d50a291"
+  },
+  {
+    "stage": "new_data_write_started",
+    "time": 1793016870.1025653
+  },
+  {
+    "stage": "new_data_written_and_readback_verified",
+    "time": 1793016881.20945,
+    "bytes": 268435456
+  },
+  {
+    "stage": "gpt_six_sectors_written",
+    "time": 1793016881.241992,
+    "sectors": [
+      15273596,
+      15273597,
+      15273599,
+      3,
+      4,
+      1
+    ]
+  },
+  {
+    "stage": "kernel_partition_view_updated",
+    "time": 1793016881.3504322
+  },
+  {
+    "stage": "gpt-verify_started",
+    "time": 1793016881.351706
+  },
+  {
+    "stage": "gpt-verify_passed",
+    "time": 1793016881.3599157,
+    "returncode": 0
+  },
+  {
+    "stage": "new-data-fsck_started",
+    "time": 1793016881.3611557
+  },
+  {
+    "stage": "new-data-fsck_passed",
+    "time": 1793016881.4213123,
+    "returncode": 0
+  },
+  {
+    "stage": "root-fsck-before-grow_started",
+    "time": 1793016881.4225678
+  },
+  {
+    "stage": "root-fsck-before-grow_passed",
+    "time": 1793016883.447837,
+    "returncode": 0
+  },
+  {
+    "stage": "root-grow_started",
+    "time": 1793016883.4491465
+  },
+  {
+    "stage": "root-grow_passed",
+    "time": 1793016883.6568499,
+    "returncode": 0
+  },
+  {
+    "stage": "root-fsck-after-grow_started",
+    "time": 1793016883.6581693
+  },
+  {
+    "stage": "root-fsck-after-grow_passed",
+    "time": 1793016885.6727052,
+    "returncode": 0
+  },
+  {
+    "stage": "physical_migration_complete",
+    "time": 1793016888.3807786,
+    "protected_boot_regions_unchanged": true
+  }
+]

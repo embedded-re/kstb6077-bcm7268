@@ -1,0 +1,48 @@
+{
+  "first3MiB": {
+    "device": "/dev/mmcblk0",
+    "offset": 0,
+    "bytes": 3145728,
+    "sha256": "0745a81245a3ec541a3bb66dc04fc67aabc4fb22760d59e7dfe0a9d95997de1a"
+  },
+  "tail33": {
+    "device": "/dev/mmcblk0",
+    "offset": 7820066304,
+    "bytes": 16896,
+    "sha256": "6e5e4df9f654737bf5e0ec5f2e524f9ecacee5a5d613117e6083c5adb00fe095"
+  },
+  "splash": {
+    "device": "/dev/mmcblk0p10",
+    "offset": 0,
+    "bytes": 17626624,
+    "sha256": "20c996bff4026af5d53f8f78a66d8a8cb0fb1b1b341dc962662d093756856de4"
+  },
+  "boot0": {
+    "device": "/dev/mmcblk0boot0",
+    "offset": 0,
+    "bytes": 4194304,
+    "sha256": "cd2e859e8c74cc33f3852d5d3bf8917a962187c7a81d767f50d97525a40501fe"
+  },
+  "boot1": {
+    "device": "/dev/mmcblk0boot1",
+    "offset": 0,
+    "bytes": 4194304,
+    "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+  },
+  "KRN": {
+    "device": "/dev/mmcblk0p6",
+    "bytes": 67108864,
+    "sha256": "c148cb20f623e6a21c883e20884a5560e655f0d62332848b3f90f4d19a527190"
+  },
+  "DTB": {
+    "device": "/dev/mmcblk0p7",
+    "bytes": 4194304,
+    "sha256": "75d656166a9e34fc5923d4e9cd42db029323653c2215db1049ef90f5d7f16c80"
+  },
+  "factory": {
+    "device": "/dev/mmcblk0",
+    "offset": 17408,
+    "bytes": 3128320,
+    "sha256": "ec29f1a743d7ac785fb389306f329992689856eb7c6b036abc682ce0003630a1"
+  }
+}

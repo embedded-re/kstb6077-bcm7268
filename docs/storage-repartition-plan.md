@@ -1,15 +1,20 @@
 # Reclaiming unused DATA space for Linux — inspected 2026-10-26
 
-**Inspection and PC-image tests complete; no physical partition changes.**
+**Completed:** the recommended 256MiB layout was applied and verified. See the
+[completion report](storage-repartition.md). The inspection below records the
+pre-migration state and reviewed alternatives.
+
+**State at inspection, before the authorized migration:** inspection and
+PC-image tests complete; no physical partition changes at that stage.
 The user's recollection is correct: bare-metal `DATA` reserves 2080MiB but
 currently allocates only 25.56MiB. A 256MiB DATA partition is a practical
 candidate, returning 1824MiB to Linux. A 512MiB alternative is also prepared.
 Both passed PC GPT/FAT checks and the shared bare-metal FAT driver tests.
-This is not a completed device migration or a verified boot of the new layout.
+Physical migration and boot testing followed later, as recorded in the completion report.
 
 [Recorded inspection/tests](evidence/storage/20261026-inspection/README.md).
 
-## Actual current layout
+## Actual pre-migration layout
 
 eMMC user area: **7,820,083,200 bytes / 15,273,600 sectors / 7.28GiB**.
 No large unpartitioned area exists. The apparent extra space is inside DATA.

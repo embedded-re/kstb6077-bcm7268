@@ -1,0 +1,10 @@
+{
+  "state": "complete",
+  "tests": [
+    "classifier",
+    "fences",
+    "graphics",
+    "caps"
+  ],
+  "fault": null
+}

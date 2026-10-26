@@ -13,18 +13,18 @@ in the DTB and Linux registers it as `mmc0`.
 | SDHCI 0 | `0xf0200000`, removable-slot type, no card, no slot on the case |
 | Card set-up | **own** since 2026-10-16: kboot resets the host and card and sets them up at every boot; kmon `mmc init` does the same ("Our own eMMC init") |
 | From bare metal | **own driver** in kmon ([`../../mon/mmc.c`](../../mon/mmc.c)): read ~33 MB/s, write ~9 MB/s, PIO; or BOLT copies data into RAM before `go` (~15 MB/s) |
-| Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header ([`tools/make-wad-image`](../../tools/make-wad-image)) |
+| Data area | `flash0.DATA`, 256MiB FAT32; legacy `KWAD` data in protected `flash0.splash` remains preserved |
 | Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT; reading and writing from bare metal (kmon, 2026-10-15) |
 
-## Current capacity review (2026-10-26)
+## Current capacity (2026-10-26)
 
-Read-only inspection found DATA still 2080MiB but only 25.56MiB allocated.
-Eight files include the normal EL3 boot loader `kboot.bin`, WAD/audio data
-and old boot/factory backups. Primary/backup GPT and the reconstructed original
-FAT filesystem checked clean. The [repartitioning proposal](../storage-repartition-plan.md)
-records both 256MiB and 512MiB alternatives, offline image/shared-FAT-driver
-checks, protected offsets, recovery prerequisites and exact sector geometry.
-No physical repartition or ROOT resize has been performed.
+The [completed migration](../storage-repartition.md) expanded ROOT to
+**7114MiB** and relocated DATA as **256MiB FAT32**, returning 1824MiB to Linux.
+Its eight original files (about 25.4MiB payload) were preserved. Two normal
+EL3 boots, a bare-metal FAT write/read/delete, offline filesystem checks,
+file-manifest comparisons and CPU/GPU regression checks passed. Linux now has
+about **3.4GiB available, 48% used**. Full offline ROOT/DATA backups remain
+private on the PC. Preserve the 14-entry GPT and fixed splash location.
 
 ## The two SDHCI controllers (tested)
 
@@ -108,7 +108,8 @@ EXT_CSD, read from the card with CMD8:
 GPT read with the driver (`mmc part`, entries at LBA 2): 14 entries, first
 usable LBA 6, last usable LBA 15273594. Since 2026-10-17 most of the space is
 Linux's `ROOT` ("Repartitioned for Linux" below; before that, 2026-10-15,
-a 1 GB `ROOT` and a 6346 MB `DATA`, "The `DATA` partition" below):
+a 1 GB `ROOT` and a 6346 MB `DATA`, "The `DATA` partition" below).
+The table reflects the completed 2026-10-26 expansion:
 
 | # | First LBA | Last LBA | Name |
 |---|---|---|---|
@@ -119,8 +120,8 @@ a 1 GB `ROOT` and a 6346 MB `DATA`, "The `DATA` partition" below):
 | 5 | 4096 | 6143 | hwcfg |
 | 6 | 6144 | 137215 | KRN (arm64 kernel Image behind a `KSLT` header sector, kmon `linux`) |
 | 7 | 137216 | 145407 | DTB (`kstb6077-root.dtb` behind a `KSLT` header sector) |
-| 8 | 145408 | 10979327 | **ROOT** (5290 MiB, ext4: Alpine for [`../../linux/`](../../linux/README.md)) |
-| 9 | 10979328 | 15239167 | **DATA** (2080 MiB, FAT32) |
+| 8 | 145408 | 14714879 | **ROOT** (7114 MiB, ext4: Alpine for [`../../linux/`](../../linux/README.md)) |
+| 9 | 14714880 | 15239167 | **DATA** (256 MiB, FAT32) |
 | 10 | 15239168 | 15273594 | splash |
 
 Safety rules in the driver: it sends CMD6 (SWITCH, which could change the

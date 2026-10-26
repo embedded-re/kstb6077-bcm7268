@@ -1,0 +1,4 @@
+onnxruntime cpuid_info warning: Unknown CPU vendor. cpuinfo_vendor value: 13
+2026-10-26 13:31:00.971463838 [W:onnxruntime:Default, device_discovery.cc:325 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:92 ReadFileContents Failed to open file: "/sys/class/drm/card1/device/vendor"
+{"benchmark": {"threads": 4, "load_ms": 355.9955549999927, "samples_ms": [102.74863899999787], "median_ms": 102.74863899999787, "p95_ms": 102.74863899999787}}
+{"result": "PASS", "chosen_threads": 4, "top5": [{"index": 258, "label": "n02111889 Samoyed, Samoyede", "probability": 0.8303039490026909}, {"index": 259, "label": "n02112018 Pomeranian", "probability": 0.06988790108741527}, {"index": 261, "label": "n02112350 keeshond", "probability": 0.012964087003646775}, {"index": 231, "label": "n02106030 collie", "probability": 0.010797781990526977}, {"index": 257, "label": "n02111500 Great Pyrenees", "probability": 0.009886778374074038}], "peak_rss_kib": 95288}
