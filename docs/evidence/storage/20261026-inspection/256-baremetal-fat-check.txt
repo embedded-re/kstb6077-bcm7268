@@ -1,0 +1,10 @@
+cluster_bytes=2048 clusters=130554 free_clusters=117531
+read_compare=PASS file=backup/boot0.bin bytes=4194304
+read_compare=PASS file=backup/boot1.bin bytes=4194304
+read_compare=PASS file=backup/gptbak.bin bytes=16896
+read_compare=PASS file=backup/lba0.bin bytes=3145728
+read_compare=PASS file=doom1.wad bytes=14445628
+read_compare=PASS file=kboot.bin bytes=21704
+read_compare=PASS file=scale22.wav bytes=66188
+read_compare=PASS file=scale48.wav bytes=576044
+RESULT=PASS all source files exact; multi-cluster write/read/delete exact

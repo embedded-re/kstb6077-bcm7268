@@ -16,6 +16,16 @@ in the DTB and Linux registers it as `mmc0`.
 | Data area | `flash0.splash` from offset 1 MB, with a `KWAD` header ([`tools/make-wad-image`](../../tools/make-wad-image)) |
 | Tested | SDHCI register reads, writing and loading a 14.4 MB file through BOLT; reading and writing from bare metal (kmon, 2026-10-15) |
 
+## Current capacity review (2026-10-26)
+
+Read-only inspection found DATA still 2080MiB but only 25.56MiB allocated.
+Eight files include the normal EL3 boot loader `kboot.bin`, WAD/audio data
+and old boot/factory backups. Primary/backup GPT and the reconstructed original
+FAT filesystem checked clean. The [repartitioning proposal](../storage-repartition-plan.md)
+records both 256MiB and 512MiB alternatives, offline image/shared-FAT-driver
+checks, protected offsets, recovery prerequisites and exact sector geometry.
+No physical repartition or ROOT resize has been performed.
+
 ## The two SDHCI controllers (tested)
 
 Read on the stock box on 2026-10-04 at `BOLT>` after a power-on

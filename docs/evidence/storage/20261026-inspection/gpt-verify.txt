@@ -1,0 +1,5 @@
+/dev/mmcblk0:
+No errors detected.
+Header version: 1.0
+Using 10 out of 14 partitions.
+A total of 29 free sectors is available in 2 segments (the largest is 14 KiB).

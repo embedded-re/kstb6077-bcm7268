@@ -1,0 +1,5 @@
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/512/disk.sparse.img:
+No errors detected.
+Header version: 1.0
+Using 10 out of 14 partitions.
+A total of 29 free sectors is available in 2 segments (the largest is 14 KiB).

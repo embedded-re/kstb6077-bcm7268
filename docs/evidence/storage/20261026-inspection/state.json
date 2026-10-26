@@ -1,0 +1,18 @@
+{
+  "physical_partition_changes": false,
+  "filesystem_format_on_device": false,
+  "reboots": false,
+  "data_mounted_read_only_and_unmounted": true,
+  "current_gpt_both_headers_and_entry_crc_valid": true,
+  "entry_count": 14,
+  "kboot_data_and_splash_loader_identical": true,
+  "fat_source_sha256": "b5153e6c4f0bf772f6e79adb8c43087a74fe01ef22e44232e6553da7f8d594b2",
+  "fat_header_sha256": "feb8f6fd7d780807a846b3a235f8686a5e35f6822f5c2c2da13523ef754ea8be",
+  "private_artifacts": "linux/build/storage-inspect/20261026/",
+  "private_data_tar_sha256": "dac93f24ab2004a42f9b3698da15d9e001106f64cb8eb7206b36f9b8677efe43",
+  "allocated_snapshot_bytes": 27426816,
+  "allocated_snapshot_omits_unallocated_sectors": true,
+  "resize2fs_installed_on_box": false,
+  "rescue_image_boot_tested_this_session": false,
+  "offline_root_image_created": false
+}

@@ -95,10 +95,11 @@ cleaned, at EL2, as the arm64 boot protocol asks; only the registers differ
 | GISB arbiter | `gisb-arb@f0400000` (`brcm,gisb-arb`, mainline `brcmstb_gisb`) on the sys L2 `interrupt-controller@f0403000` (`brcm,l2-intc`, SPI 59) bits 0 and 2 | a read of an abort hole is reported: `kstb-reg f04d150c` gave `GISB: target abort at 0xf04d150c [R ], core: cpu_0` and one TEA interrupt (and the program's `Bus error`) |
 | HDMI display (KMS) | `display@f0603484` (`kaon,kstb6077-display`, our own driver [`drivers/kstb-drm.c`](drivers/kstb-drm.c), a module), vblank on the BVNF_0 L2 `interrupt-controller@f0606000` (`brcm,l2-intc`, SPI 17) bit 0; until it loads, `chosen/framebuffer@7db0b700` (`simple-framebuffer`) | `/dev/dri/card1` `kstb-drm`: 1920 × 1080 at 59.94 Hz, RGB565 (also BGR565, ARGB8888, ABGR8888, checked by the HDMI CRC), page flips at vsync (59.94 per second, none missed), the console on its fbdev emulation, scanout buffers from CMA; Mesa renders straight into them (kmsro). Seen on the TV by the user ("Display" below). Before it loads, simplefb shows the boot log on BOLT's buffer; the console and the USB keyboard on `tty1` work on both |
 
-Linux reports `GPT:partition_entry_array_crc32 values don't match`: the
-backup GPT at the end of the eMMC still describes the old layout
-([`../docs/hardware/display.md`](../docs/hardware/display.md)). The partitions come from the primary
-table (p10 = `splash` is there).
+The old backup-GPT CRC warning was resolved by the 2026-10-17 repartitioning.
+Read-only verification on 2026-10-26 found valid matching primary/backup GPT
+entry arrays and clean `sfdisk --verify` results. The current table has 14
+entries; preserve that geometry and the fixed splash location. See the
+[DATA shrink / ROOT expansion inspection](../docs/storage-repartition-plan.md).
 
 ## Starting without the PC: `KRN`, `DTB` and kmon's `linux` (2026-10-17)
 

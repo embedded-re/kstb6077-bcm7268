@@ -1,0 +1,9 @@
+{
+  "block_size": 4096,
+  "blocks": 1354240,
+  "filesystem_bytes": 5546967040,
+  "uuid": "435cda17-99fa-492f-ba47-d04cc34286ea",
+  "label": "ROOT",
+  "features_compat": "0x103c",
+  "features_incompat": "0x22c6"
+}

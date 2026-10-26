@@ -1,0 +1,46 @@
+[
+  {
+    "data_mib": 256,
+    "cluster_bytes": 2048,
+    "data_first_lba": 14714880,
+    "data_last_lba": 15239167,
+    "root_first_lba": 145408,
+    "root_last_lba": 14714879,
+    "root_mib": 7114,
+    "linux_gain_mib": 1824,
+    "clusters": 130554,
+    "changed_primary_sectors": [
+      1,
+      3,
+      4
+    ],
+    "changed_backup_sectors": [
+      15273596,
+      15273597,
+      15273599
+    ],
+    "all_eight_file_hashes_match": true
+  },
+  {
+    "data_mib": 512,
+    "cluster_bytes": 4096,
+    "data_first_lba": 14190592,
+    "data_last_lba": 15239167,
+    "root_first_lba": 145408,
+    "root_last_lba": 14190591,
+    "root_mib": 6858,
+    "linux_gain_mib": 1568,
+    "clusters": 130811,
+    "changed_primary_sectors": [
+      1,
+      3,
+      4
+    ],
+    "changed_backup_sectors": [
+      15273596,
+      15273597,
+      15273599
+    ],
+    "all_eight_file_hashes_match": true
+  }
+]

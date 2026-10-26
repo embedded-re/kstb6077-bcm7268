@@ -1,0 +1,19 @@
+label: gpt
+label-id: C49E0ACB-1B38-95E5-548A-2B7260E704A4
+device: /home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img
+unit: sectors
+first-lba: 6
+last-lba: 15273594
+table-length: 14
+sector-size: 512
+
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img1 : start=          34, size=           1, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=94CA291F-2A2B-DEFE-0D52-7D9C5C91558A, name="macadr"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img2 : start=          35, size=         128, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=A613896D-E6E8-A0D3-3396-30EC4838D50F, name="nvram"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img3 : start=         163, size=        1884, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=9E312AF1-18FE-FA41-45F3-37B3BB1D1061, name="bsu"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img4 : start=        2048, size=        2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=18A5D0DB-D23A-AAC1-0D4C-692C7BA9AB1C, name="misc"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img5 : start=        4096, size=        2048, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=EBCF4A1C-B9E7-8F06-9885-3BD8B4A46CFF, name="hwcfg"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img6 : start=        6144, size=      131072, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=39AADA87-ED4C-439F-9EC7-1F4FBFD1E2BA, name="KRN"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img7 : start=      137216, size=        8192, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=CFFFA043-6550-402E-B304-7D478CBEFFB1, name="DTB"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img8 : start=      145408, size=    14569472, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=6028A5EB-33AE-43F4-A1D5-33A895C4AF53, name="ROOT"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img9 : start=    14714880, size=      524288, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=B1F4C7F7-A0B8-4F4D-9983-275D1072F878, name="DATA"
+/home/arch/projects/RE/KAON-kstb6077/KAON-KSTB6077/linux/build/storage-inspect/20261026/256/disk.sparse.img10 : start=    15239168, size=       34427, type=EBD0A0A2-B9E5-4433-87C0-68B6B72699C7, uuid=CF840152-87A6-4284-ADB2-7B667371832D, name="splash"
