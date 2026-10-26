@@ -1,0 +1,20 @@
+{
+  "removed": [
+    "/home/kstb/.mozilla/firefox/demo-native-201713",
+    "/home/kstb/.mozilla/firefox/isolate-wr-single-vs-200324",
+    "/home/kstb/.mozilla/firefox/isolate-wr-single-200137",
+    "/home/kstb/.mozilla/firefox/isolate-wr-candidate-200706",
+    "/home/kstb/.mozilla/firefox/isolate-cpu-195813",
+    "/home/kstb/.mozilla/firefox/kstb-browser-test",
+    "/home/kstb/.mozilla/firefox/isolate-wr-single-bin-200415",
+    "/home/kstb/.mozilla/firefox/isolate-webgl-candidate-200815",
+    "/home/kstb/.mozilla/firefox/demo-candidate-201535",
+    "/home/kstb/.mozilla/firefox/isolate-wr-195859",
+    "/home/kstb/.cache/mozilla/firefox",
+    "/.cargo/registry"
+  ],
+  "free_before": 1002598400,
+  "free_after": 1836474368,
+  "reclaimed_bytes": 833875968,
+  "registered_profiles_unchanged": true
+}

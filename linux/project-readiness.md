@@ -35,7 +35,9 @@ obsolete staging trees and historical debug builds. It reclaimed
 profiles and caches were preserved. No protected eMMC partition was changed.
 
 Root free space increased from about 648MiB to about 957MiB **after** installing
-the new packages and model. This remains a small root filesystem. Large
+the new packages and model. A subsequently authorized [browser/Cargo cleanup](../docs/evidence/projects/20261026-cache-cleanup/README.md)
+reclaimed another **795MiB**, reducing usage to **65%**, with about **1.8GB**
+available. Both registered Firefox profiles were hash-checked unchanged. This remains a small root filesystem. Large
 training datasets/builds belong on the PC or future external storage; no
 external disk or network mount was available/configured. The tested
 [`backup-workspace`](project-tools/backup-workspace) tool copies normal project
