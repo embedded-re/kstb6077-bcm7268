@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A small TFTP server for the board: serves files and receives BOLT's `save`.
 
-    sudo tools/tftpd --ip 192.168.1.38 --root doom/build --save ~/kstb-backup
+    sudo tools/tftpd --ip 192.168.1.38 --root extras/doom/build --save ~/kstb-backup
 
 Read requests (BOLT `load -tftp`, `boot -tftp`) are served from --root; write
 requests (BOLT `save host:file addr len`) go into --save. dnsmasq's TFTP

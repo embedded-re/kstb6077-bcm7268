@@ -45,7 +45,7 @@ state are preserved.
 
 ## Independent abort guard
 
-`linux/gpu-test/kstb_fault_guard.py` now watches the kernel-log file on its
+`port/gpu-test/kstb_fault_guard.py` now watches the kernel-log file on its
 own thread and immediately kills only explicitly attached test process
 groups when it sees a fault. Processes must have been launched in a new
 session; it never attaches to or signals the user's desktop. A blocked

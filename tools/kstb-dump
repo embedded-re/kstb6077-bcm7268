@@ -4,7 +4,7 @@
     kstb-dump START END out.bin       e.g. kstb-dump 0x07008000 0x0706c000 bolt_ram.bin
 
 Reads 1 KB per command (about 2.3 KB/s). Stops if BOLT reports a CPU exception.
-Only dump addresses known to be mapped and readable (docs/hardware/memory-map.md):
+Only dump addresses known to be mapped and readable (hardware/memory-map.md):
 some peripheral offsets abort even inside the mapped window.
 Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
 """

@@ -6,7 +6,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "AON control: external abort on read (hangs the board)",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -15,7 +15,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "OTP fuses: read only; never write",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -24,7 +24,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "OTP fuses: read only; never write",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -33,7 +33,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "OTP fuses: read only; never write",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -42,7 +42,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "display GFD: external abort on read",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -51,7 +51,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "display lists in RAM: overwriting them blanks the screen until reboot",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -60,7 +60,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "HDMI audio packet set-up: writing them broke the picture",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -69,7 +69,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "HDMI audio packet set-up: writing them broke the picture",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -78,7 +78,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "HDMI audio packet set-up: writing them broke the picture",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -87,7 +87,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "HDMI audio packet set-up: writing them broke the picture",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -96,7 +96,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "external abort on read while in reset / off (peripherals.md)",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -105,7 +105,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "external abort on read while in reset / off (peripherals.md)",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -114,7 +114,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "external abort on read while in reset / off (peripherals.md)",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -123,7 +123,7 @@ window.KSTB_REGS = [
 "name": "do not touch",
 "desc": "external abort on read while in reset / off (peripherals.md)",
 "section": "Do not touch",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": true
 },
 {
@@ -132,7 +132,7 @@ window.KSTB_REGS = [
 "name": "BOLT's flash staging buffer (only while flash runs)",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -141,7 +141,7 @@ window.KSTB_REGS = [
 "name": "where kstb-run loads your program (go -64 entry)",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -150,7 +150,7 @@ window.KSTB_REGS = [
 "name": "PSCI monitor smm64 (EL3): don't overwrite. smc #0 calls it: version, CPU_ON (cpu-cores.md)",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -159,7 +159,7 @@ window.KSTB_REGS = [
 "name": "BOLT (page table 0x07000000, code, heap, stack). Free after go -64",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -168,7 +168,7 @@ window.KSTB_REGS = [
 "name": "second framebuffer for double buffering (free rmem)",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -177,7 +177,7 @@ window.KSTB_REGS = [
 "name": "display lists: never write",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -186,7 +186,7 @@ window.KSTB_REGS = [
 "name": "framebuffer: pixel(x, y) = 0x7db0b700 + y × 3840 + x × 2, RGB565",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -195,7 +195,7 @@ window.KSTB_REGS = [
 "name": "BL31 (secure firmware): don't touch",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -204,7 +204,7 @@ window.KSTB_REGS = [
 "name": "SRR (secure): don't touch",
 "desc": "",
 "section": "RAM (memory-map.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -213,7 +213,7 @@ window.KSTB_REGS = [
 "name": "RBR / THR",
 "desc": "the oldest received byte (removes it) · a byte to send",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -222,7 +222,7 @@ window.KSTB_REGS = [
 "name": "IER",
 "desc": "which events interrupt (BOLT: 0, polled) · same",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -231,7 +231,7 @@ window.KSTB_REGS = [
 "name": "IIR / FCR",
 "desc": "interrupt ID, FIFO state (c1) · FIFO control",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -240,7 +240,7 @@ window.KSTB_REGS = [
 "name": "LCR",
 "desc": "frame format: 03 = 8N1; bit 7 = DLAB (divisor access) · same. Caution: Setting DLAB on UART0 garbles the console",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -249,7 +249,7 @@ window.KSTB_REGS = [
 "name": "MCR",
 "desc": "bit 4 = internal loopback (tested on UART1/2) · same",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -258,7 +258,7 @@ window.KSTB_REGS = [
 "name": "LSR",
 "desc": "bit 0 = byte received, bit 5 = room to send, bit 6 = all sent",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -267,7 +267,7 @@ window.KSTB_REGS = [
 "name": "MSR",
 "desc": "bit 4 = CTS (10)",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -276,7 +276,7 @@ window.KSTB_REGS = [
 "name": "UART clock gate",
 "desc": "bits 4/5/6 = UART0/1/2, 1 = off; reads 0",
 "section": "UART0, the console: 0xf040c000 (uart.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -285,7 +285,7 @@ window.KSTB_REGS = [
 "name": "ODEN",
 "desc": "1 = open-drain output. BOLT: 00060000",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -294,7 +294,7 @@ window.KSTB_REGS = [
 "name": "DATA",
 "desc": "read: pin levels. Write: output values. BOLT: 001340b8",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -303,7 +303,7 @@ window.KSTB_REGS = [
 "name": "IODIR",
 "desc": "1 = input, 0 = output. BOLT: 0ff9ffff",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -312,7 +312,7 @@ window.KSTB_REGS = [
 "name": "EC / EI / LEVEL",
 "desc": "interrupt trigger type (not tested)",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -321,7 +321,7 @@ window.KSTB_REGS = [
 "name": "EC / EI / LEVEL",
 "desc": "interrupt trigger type (not tested)",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -330,7 +330,7 @@ window.KSTB_REGS = [
 "name": "EC / EI / LEVEL",
 "desc": "interrupt trigger type (not tested)",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -339,7 +339,7 @@ window.KSTB_REGS = [
 "name": "MASK",
 "desc": "interrupt enable (bit 14 set for SW1)",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -348,7 +348,7 @@ window.KSTB_REGS = [
 "name": "STAT",
 "desc": "changes latched even while masked; write 1 to clear",
 "section": "AON GPIO, LEDs and buttons: 0xf0419c80 (gpio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -357,7 +357,7 @@ window.KSTB_REGS = [
 "name": "chip family ID",
 "desc": "72680010 = BCM7268 B0",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -366,7 +366,7 @@ window.KSTB_REGS = [
 "name": "chip product ID",
 "desc": "72680010",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -375,7 +375,7 @@ window.KSTB_REGS = [
 "name": "straps",
 "desc": "00000f1e / 0: bits 0–4 = boot device (0x1e = eMMC), bit 9 = SATA off / PCIe on",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -384,7 +384,7 @@ window.KSTB_REGS = [
 "name": "straps",
 "desc": "00000f1e / 0: bits 0–4 = boot device (0x1e = eMMC), bit 9 = SATA off / PCIe on",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -393,7 +393,7 @@ window.KSTB_REGS = [
 "name": "OTP fuses: read only, never write",
 "desc": "40 / 00a02000 / 0; field names in system-blocks.md",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -402,7 +402,7 @@ window.KSTB_REGS = [
 "name": "OTP fuses: read only, never write",
 "desc": "40 / 00a02000 / 0; field names in system-blocks.md",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -411,7 +411,7 @@ window.KSTB_REGS = [
 "name": "OTP fuses: read only, never write",
 "desc": "40 / 00a02000 / 0; field names in system-blocks.md",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -420,7 +420,7 @@ window.KSTB_REGS = [
 "name": "reset history (RR:)",
 "desc": "bit 0 power-on, 6 watchdog, 9 software; BOLT clears it at boot",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -429,7 +429,7 @@ window.KSTB_REGS = [
 "name": "BOLT's copy of the reset history (RAM)",
 "desc": "d -w 0x07069844 1 at BOLT> = last reset reason",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -438,7 +438,7 @@ window.KSTB_REGS = [
 "name": "reset source enable",
 "desc": "write 1 first",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -447,7 +447,7 @@ window.KSTB_REGS = [
 "name": "software reset",
 "desc": "write 1 → the board reboots at once (RR:00000200)",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -456,7 +456,7 @@ window.KSTB_REGS = [
 "name": "watchdog TIMEOUT",
 "desc": "27 MHz ticks: 0x30479e80 = 30 s, 0x202fbf00 = 20 s, 0x1017df80 = 10 s",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -465,7 +465,7 @@ window.KSTB_REGS = [
 "name": "watchdog CMD",
 "desc": "start: ff00 then 00ff. Stop: ee00 then 00ee. Read: ticks left",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -474,7 +474,7 @@ window.KSTB_REGS = [
 "name": "wake timer EVENT",
 "desc": "bit 0 = 1 when COUNTER reaches ALARM; write 1 to clear",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -483,7 +483,7 @@ window.KSTB_REGS = [
 "name": "wake timer COUNTER",
 "desc": "seconds since power-on",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -492,7 +492,7 @@ window.KSTB_REGS = [
 "name": "wake timer ALARM",
 "desc": "seconds value that sets EVENT",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -501,7 +501,7 @@ window.KSTB_REGS = [
 "name": "wake timer PRESCALER",
 "desc": "019bfcc0 = 27 MHz",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -510,7 +510,7 @@ window.KSTB_REGS = [
 "name": "wake timer PRESCALER_VAL",
 "desc": "sub-second countdown",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -519,7 +519,7 @@ window.KSTB_REGS = [
 "name": "temperature",
 "desc": "bit 11 = valid, bits 10:1 = code; m°C = 410040 − code × 487",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -528,7 +528,7 @@ window.KSTB_REGS = [
 "name": "AON control",
 "desc": "readable (0x2c aborts)",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -537,7 +537,7 @@ window.KSTB_REGS = [
 "name": "AON SRAM, 1 KB",
 "desc": "survives software and watchdog resets (use the end; Linux uses the start)",
 "section": "System blocks (system-blocks.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -546,7 +546,7 @@ window.KSTB_REGS = [
 "name": "error capture address",
 "desc": "address of the last failed (aborted) access; survives at BOLT>",
 "section": "GISB bus arbiter (peripherals.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -555,7 +555,7 @@ window.KSTB_REGS = [
 "name": "error capture master",
 "desc": "one bit per master: 40 = bit 6 = the CPU",
 "section": "GISB bus arbiter (peripherals.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -564,7 +564,7 @@ window.KSTB_REGS = [
 "name": "error capture status",
 "desc": "0000083d after a failed read",
 "section": "GISB bus arbiter (peripherals.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -573,7 +573,7 @@ window.KSTB_REGS = [
 "name": "V3D power island control",
 "desc": "write 1d00 → wait (v & 0x74000000) == 0x34000000 (1.6 ms) = on; write b00 → wait (v & 0x72000000) == 0x42000000 = off. After BOLT: 424e0908 (off)",
 "section": "V3D GPU power (gpu.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -582,7 +582,7 @@ window.KSTB_REGS = [
 "name": "V3D hub IDENT1",
 "desc": "000e1133 = V3D 3.3 (only while powered)",
 "section": "V3D GPU power (gpu.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -591,7 +591,7 @@ window.KSTB_REGS = [
 "name": "list control",
 "desc": "6 = start the list at +0x14 (first list after a reset); 3 = continue with packets linked onto the last one",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -600,7 +600,7 @@ window.KSTB_REGS = [
 "name": "list status",
 "desc": "2 when the list is done",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -609,7 +609,7 @@ window.KSTB_REGS = [
 "name": "first packet address",
 "desc": "physical address of the first packet",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -618,7 +618,7 @@ window.KSTB_REGS = [
 "name": "current packet address",
 "desc": "the last packet's address when done",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -627,7 +627,7 @@ window.KSTB_REGS = [
 "name": "blit status",
 "desc": "0 when idle",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -636,7 +636,7 @@ window.KSTB_REGS = [
 "name": "reset (no name)",
 "desc": "reset sequence in 2d-blitter.md",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -645,7 +645,7 @@ window.KSTB_REGS = [
 "name": "reset (no name)",
 "desc": "reset sequence in 2d-blitter.md",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -654,7 +654,7 @@ window.KSTB_REGS = [
 "name": "palette",
 "desc": "entries 0–127 of the last palette loaded by a packet",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -663,7 +663,7 @@ window.KSTB_REGS = [
 "name": "M2MC0 clocks",
 "desc": "7 = all on (after BOLT)",
 "section": "M2MC 2D blitter: 0xf09b0000 (2d-blitter.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -672,7 +672,7 @@ window.KSTB_REGS = [
 "name": "STATUS",
 "desc": "bit 0 = code ready; clear by writing it back with bit 0 = 0. 55 first frame, 37 repeat",
 "section": "IR receiver kbd1: 0xf0419900 (ir.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -681,7 +681,7 @@ window.KSTB_REGS = [
 "name": "DATA0",
 "desc": "received code, e.g. ea150820 = OK",
 "section": "IR receiver kbd1: 0xf0419900 (ir.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -690,7 +690,7 @@ window.KSTB_REGS = [
 "name": "CMD",
 "desc": "BOLT: 7. bit 4 CIR on, bit 5 interrupt enable; NEC on = 37",
 "section": "IR receiver kbd1: 0xf0419900 (ir.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -699,7 +699,7 @@ window.KSTB_REGS = [
 "name": "CIR_ADDR / CIR_DATA",
 "desc": "timing parameter index / value (27 written for NEC)",
 "section": "IR receiver kbd1: 0xf0419900 (ir.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -708,7 +708,7 @@ window.KSTB_REGS = [
 "name": "CIR_ADDR / CIR_DATA",
 "desc": "timing parameter index / value (27 written for NEC)",
 "section": "IR receiver kbd1: 0xf0419900 (ir.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -717,7 +717,7 @@ window.KSTB_REGS = [
 "name": "AON L2 STATUS",
 "desc": "raw sources: bit 0 IR kbd1, bits 1–2 IR kbd2–3, bit 3 AON GPIO, 4 LED/keypad",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -726,7 +726,7 @@ window.KSTB_REGS = [
 "name": "AON L2 MASK_STATUS",
 "desc": "BOLT: 7f (all masked)",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -735,7 +735,7 @@ window.KSTB_REGS = [
 "name": "AON L2 MASK_SET / MASK_CLEAR",
 "desc": "from Linux, not written (not tested)",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -744,7 +744,7 @@ window.KSTB_REGS = [
 "name": "AON L2 MASK_SET / MASK_CLEAR",
 "desc": "from Linux, not written (not tested)",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -753,7 +753,7 @@ window.KSTB_REGS = [
 "name": "GIC-400 distributor",
 "desc": "readable from AArch64 EL2/EL3 only. GICD_CTLR +0x000, TYPER +0x004",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -762,7 +762,7 @@ window.KSTB_REGS = [
 "name": "GIC CPU interface",
 "desc": "GICC_CTLR +0x000",
 "section": "Interrupts (interrupts.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -771,7 +771,7 @@ window.KSTB_REGS = [
 "name": "GFD source width",
 "desc": "780 = 1920. 960 → only the left half is sent, the rest shows the background. Keeps a direct write",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -780,7 +780,7 @@ window.KSTB_REGS = [
 "name": "GFD surface address",
 "desc": "where the visible picture is: 7db0b700 (read it, don't hard-code)",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -789,7 +789,7 @@ window.KSTB_REGS = [
 "name": "GFD pitch",
 "desc": "f00 = 3840 bytes (written by the display lists)",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -798,7 +798,7 @@ window.KSTB_REGS = [
 "name": "GFD height",
 "desc": "438 = 1080 (written by the display lists)",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -807,7 +807,7 @@ window.KSTB_REGS = [
 "name": "frame counter",
 "desc": "counts up once per frame, 59.94 Hz",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -816,7 +816,7 @@ window.KSTB_REGS = [
 "name": "flip",
 "desc": "write a buffer address to both → it's shown from the next frame, tear-free",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -825,7 +825,7 @@ window.KSTB_REGS = [
 "name": "flip",
 "desc": "write a buffer address to both → it's shown from the next frame, tear-free",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -834,7 +834,7 @@ window.KSTB_REGS = [
 "name": "RDC descriptor 0 list address",
 "desc": "runs BOLT's 73-word list 0x7db09ae0 every frame. Reads back the previous written value. Switch: 0xf0605000=0, address, 0xf0605000=1",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -843,7 +843,7 @@ window.KSTB_REGS = [
 "name": "CMP0 background colour",
 "desc": "00 Y Cb Cr, BOLT 0018b87b (blue). Rewritten every frame: change it through an own list",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -852,7 +852,7 @@ window.KSTB_REGS = [
 "name": "CMP0 graphics window size",
 "desc": "w << 16 | h, BOLT 07800438. Own list only",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -861,7 +861,7 @@ window.KSTB_REGS = [
 "name": "CMP0 graphics window position",
 "desc": "x << 16 | y, BOLT 0. Own list only",
 "section": "Display (display.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -870,7 +870,7 @@ window.KSTB_REGS = [
 "name": "DMA run",
 "desc": "1 = play, 0 = stop",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -879,7 +879,7 @@ window.KSTB_REGS = [
 "name": "ring 0 read pointer",
 "desc": "",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -888,7 +888,7 @@ window.KSTB_REGS = [
 "name": "ring 0 write pointer",
 "desc": "",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -897,7 +897,7 @@ window.KSTB_REGS = [
 "name": "ring 0 start",
 "desc": "",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -906,7 +906,7 @@ window.KSTB_REGS = [
 "name": "ring 0 end (= start + length − 1)",
 "desc": "can be changed live",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -915,7 +915,7 @@ window.KSTB_REGS = [
 "name": "HDMI audio N",
 "desc": "0x040016c0 (N = 5824; keep the top bits)",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -924,7 +924,7 @@ window.KSTB_REGS = [
 "name": "HDMI audio CTS",
 "desc": "0x00022551 (140625)",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -933,7 +933,7 @@ window.KSTB_REGS = [
 "name": "HDMI audio CTS",
 "desc": "0x00022551 (140625)",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -942,7 +942,7 @@ window.KSTB_REGS = [
 "name": "HDMI audio output port",
 "desc": "bit 31 cleared = TV goes silent",
 "section": "Audio, HDMI (audio.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -951,7 +951,7 @@ window.KSTB_REGS = [
 "name": "EHCI0 / EHCI1 capabilities",
 "desc": "01000010: v1.0, op regs at +0x10",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -960,7 +960,7 @@ window.KSTB_REGS = [
 "name": "EHCI0 / EHCI1 capabilities",
 "desc": "01000010: v1.0, op regs at +0x10",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -969,7 +969,7 @@ window.KSTB_REGS = [
 "name": "EHCI USBCMD",
 "desc": "bit 0 = run",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -978,7 +978,7 @@ window.KSTB_REGS = [
 "name": "EHCI USBCMD",
 "desc": "bit 0 = run",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -987,7 +987,7 @@ window.KSTB_REGS = [
 "name": "OHCI0 / OHCI1 HcRevision",
 "desc": "110",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -996,7 +996,7 @@ window.KSTB_REGS = [
 "name": "OHCI0 / OHCI1 HcRevision",
 "desc": "110",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1005,7 +1005,7 @@ window.KSTB_REGS = [
 "name": "xHCI capabilities",
 "desc": "01000020: v1.0, op regs at +0x20, 2 ports",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1014,7 +1014,7 @@ window.KSTB_REGS = [
 "name": "xHCI USBCMD / USBSTS",
 "desc": "",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1023,7 +1023,7 @@ window.KSTB_REGS = [
 "name": "xHCI USBCMD / USBSTS",
 "desc": "",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1032,7 +1032,7 @@ window.KSTB_REGS = [
 "name": "xHCI PORTSC 1 / 2",
 "desc": "(no device seen on either yet)",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1041,7 +1041,7 @@ window.KSTB_REGS = [
 "name": "xHCI PORTSC 1 / 2",
 "desc": "(no device seen on either yet)",
 "section": "USB (usb.md)",
-"doc": "hardware/registers.md",
+"doc": "../hardware/registers.md",
 "danger": false
 },
 {
@@ -1050,7 +1050,7 @@ window.KSTB_REGS = [
 "name": "M2MC0 clocks: bit 0 SYSTEM_M2MC0, bits 1–2 HW_M2MC0, all on",
 "desc": "value 00000007",
 "section": "Registers, reset and a solid fill",
-"doc": "hardware/2d-blitter.md",
+"doc": "../hardware/2d-blitter.md",
 "danger": false
 },
 {
@@ -1059,7 +1059,7 @@ window.KSTB_REGS = [
 "name": "M2MC0 clock mux select",
 "desc": "value 00000000",
 "section": "Registers, reset and a solid fill",
-"doc": "hardware/2d-blitter.md",
+"doc": "../hardware/2d-blitter.md",
 "danger": false
 },
 {
@@ -1068,7 +1068,7 @@ window.KSTB_REGS = [
 "name": "M2MC0 SRAM power: bit 0 = 0 is on, bit 1 = 0 is not busy",
 "desc": "value 00000000",
 "section": "Registers, reset and a solid fill",
-"doc": "hardware/2d-blitter.md",
+"doc": "../hardware/2d-blitter.md",
 "danger": false
 },
 {
@@ -1077,7 +1077,7 @@ window.KSTB_REGS = [
 "name": "(old & 0xff0ffc00) | 0x90000100",
 "desc": "read back 0x81084100 · bit 31 cleared (tested) TV sound and optical light unchanged",
 "section": "The three output ports in 0xf0cb…",
-"doc": "hardware/audio.md",
+"doc": "../hardware/audio.md",
 "danger": false
 },
 {
@@ -1086,7 +1086,7 @@ window.KSTB_REGS = [
 "name": "(old & ~0x3ff) | 0x80f00102",
 "desc": "read back 0x81f84102 · bit 31 cleared (tested) TV goes silent, optical light stays on",
 "section": "The three output ports in 0xf0cb…",
-"doc": "hardware/audio.md",
+"doc": "../hardware/audio.md",
 "danger": false
 },
 {
@@ -1095,7 +1095,7 @@ window.KSTB_REGS = [
 "name": "(old & 0xff0ffc00) | 0x80400108, then | 0x400108",
 "desc": "read back 0x81484108 · bit 31 cleared (tested) TV sound and optical light unchanged",
 "section": "The three output ports in 0xf0cb…",
-"doc": "hardware/audio.md",
+"doc": "../hardware/audio.md",
 "danger": false
 },
 {
@@ -1104,7 +1104,7 @@ window.KSTB_REGS = [
 "name": "source width, 1920 (see \"Graphics feeder\" below)",
 "desc": "value 00000780",
 "section": "Display registers (read-only knowledge)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1113,7 +1113,7 @@ window.KSTB_REGS = [
 "name": "surface address: where the pixels are",
 "desc": "value 7db0b700",
 "section": "Display registers (read-only knowledge)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1122,7 +1122,7 @@ window.KSTB_REGS = [
 "name": "pitch, 3840 bytes",
 "desc": "value 00000f00 (written by the display lists)",
 "section": "Display registers (read-only knowledge)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1131,7 +1131,7 @@ window.KSTB_REGS = [
 "name": "height, 1080",
 "desc": "value 00000438 (written by the display lists)",
 "section": "Display registers (read-only knowledge)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1140,7 +1140,7 @@ window.KSTB_REGS = [
 "name": "frame counter: one step every 16,683 µs = 59.94 Hz (timed over 60 steps by vsync_probe.s)",
 "desc": "value 5000xxxx, low bits count up",
 "section": "Vsync and double buffering (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1149,7 +1149,7 @@ window.KSTB_REGS = [
 "name": "surface address the RDC copies into 0xf0641048",
 "desc": "value 7db0b700",
 "section": "Vsync and double buffering (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1158,7 +1158,7 @@ window.KSTB_REGS = [
 "name": "same value; written together with +0x488",
 "desc": "value 7db0b700",
 "section": "Vsync and double buffering (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1167,7 +1167,7 @@ window.KSTB_REGS = [
 "name": "didn't change between reads; unknown",
 "desc": "value 60845e89",
 "section": "Vsync and double buffering (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1176,7 +1176,7 @@ window.KSTB_REGS = [
 "name": "background colour, 00 Y Cb Cr. Visible wherever no window covers the canvas. 0018b87b shows blue, 00515af0 shows red. Nexus: BVDC_Compositor_SetBackgroundColor(r, g, b) turns RGB into this through a colour matrix.",
 "desc": "bolt 0018b87b",
 "section": "Compositor CMP0 (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1185,7 +1185,7 @@ window.KSTB_REGS = [
 "name": "graphics window size, width << 16 | height. 03c0021c (960 × 540): only the top-left 960 × 540 of the picture shows, at 1:1, and the rest is background.",
 "desc": "bolt 07800438",
 "section": "Compositor CMP0 (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1194,7 +1194,7 @@ window.KSTB_REGS = [
 "name": "graphics window position, x << 16 | y. With size 960 × 540, 01e0010e placed the window in the centre of the screen (x 480, y 270), stable.",
 "desc": "bolt 00000000",
 "section": "Compositor CMP0 (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1203,7 +1203,7 @@ window.KSTB_REGS = [
 "name": "960 × 540 here showed the top-left 960 × 540 of the picture in the top-left corner and black everywhere else, not background. It limits something after the background is drawn; the exact role is open.",
 "desc": "bolt 07800438",
 "section": "Compositor CMP0 (tested)",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1212,7 +1212,7 @@ window.KSTB_REGS = [
 "name": "00000780",
 "desc": "from nexus source width (pixels) · tested 960: the feeder sends only the left 960 pixels of each line; the right half of the screen shows the compositor background. Keeps a direct write",
 "section": "Graphics feeder GFD0: source width and scaler",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1221,7 +1221,7 @@ window.KSTB_REGS = [
 "name": "00100000",
 "desc": "from nexus horizontal step, (step & 0x3ffff) << 3, 1.0 = 00100000 · tested 00080000 (0.5) kept its value but didn't scale the picture",
 "section": "Graphics feeder GFD0: source width and scaler",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1230,7 +1230,7 @@ window.KSTB_REGS = [
 "name": "00100000",
 "desc": "from nexus vertical step, same format · tested not changed",
 "section": "Graphics feeder GFD0: source width and scaler",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1239,7 +1239,7 @@ window.KSTB_REGS = [
 "name": "00000031",
 "desc": "from nexus scaler control; Nexus sets bit 3 when the horizontal step is below 1.0 · tested 00000039 kept its value, no visible effect with the step above",
 "section": "Graphics feeder GFD0: source width and scaler",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1248,7 +1248,7 @@ window.KSTB_REGS = [
 "name": "07800438",
 "desc": "from nexus output size, width << 16 | height · tested not changed",
 "section": "Graphics feeder GFD0: source width and scaler",
-"doc": "hardware/display.md",
+"doc": "../hardware/display.md",
 "danger": false
 },
 {
@@ -1257,7 +1257,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 42554856 · ASCII \"VHUB\"",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1266,7 +1266,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 000e1133 · V3D 3.3; 1 core, 1 host; has TFU, TSY, MSO; no L3 cache",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1275,7 +1275,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 00000100 · has an MMU",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1284,7 +1284,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 00000100 · IP revision 1",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1293,7 +1293,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 03443356 · ASCII \"V3D\", version 3",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1302,7 +1302,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 41101423 · 2 slices × 4 QPUs = 8 QPUs, 1 TMU, 16 semaphores, VPM 4 KB, revision 3",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1311,7 +1311,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 40078121 · not decoded (Linux names only bit 28)",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1320,7 +1320,7 @@ window.KSTB_REGS = [
 "name": "bridge",
 "desc": "value 00000200 · bridge major version 2",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1329,7 +1329,7 @@ window.KSTB_REGS = [
 "name": "Linux's fields: PA width 10, VA width 10, MMU version 0",
 "desc": "value 00000aa0",
 "section": "Configuration (tested, from the ID registers)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1338,7 +1338,7 @@ window.KSTB_REGS = [
 "name": "power island control (outside the GPU)",
 "desc": "status tested: up 1d00, down b00",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1347,7 +1347,7 @@ window.KSTB_REGS = [
 "name": "hub: AXICFG, UIFCFG, IDENT0–3, hub interrupts +0x50–0x64",
 "desc": "status tested: AXICFG, IDENT, INT_STS bit 1 = TFU done",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1356,7 +1356,7 @@ window.KSTB_REGS = [
 "name": "TFU (texture formatting unit)",
 "desc": "status tested: one raster → lineartile job",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1365,7 +1365,7 @@ window.KSTB_REGS = [
 "name": "MMUC_CONTROL",
 "desc": "status written by the Nexus defaults (1)",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1374,7 +1374,7 @@ window.KSTB_REGS = [
 "name": "GPU MMU (MMU_CTL, page table base, hit/miss counters, violation capture)",
 "desc": "status read only; off after reset, so the GPU uses physical addresses (tested)",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1383,7 +1383,7 @@ window.KSTB_REGS = [
 "name": "bridge: REVISION, SW_INIT_0 (+0x08), SW_INIT_1 (+0x0c)",
 "desc": "status tested: SW_INIT_0 pulse resets the GPU",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1392,7 +1392,7 @@ window.KSTB_REGS = [
 "name": "GCA: CACHE_CTRL (+0x0c), SAFE_SHUTDOWN (+0xb0) / _ACK (+0xb4), Nexus defaults at +0x00 and +0x20",
 "desc": "status tested: safe shutdown before reset",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1401,7 +1401,7 @@ window.KSTB_REGS = [
 "name": "core control: IDENT0–2, MISCCFG, L2C/SLC/L2T cache control, core interrupts +0x50–0x64",
 "desc": "status tested: cache flushes before jobs; INT_STS bit 0 = render done, bit 1 = binner done",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1410,7 +1410,7 @@ window.KSTB_REGS = [
 "name": "CLE (control list executor): thread 0 = binner, thread 1 = renderer; status, current/end address, job queue +0x15c–0x178",
 "desc": "status tested: both threads, started through the queue registers",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1419,7 +1419,7 @@ window.KSTB_REGS = [
 "name": "PTB (primitive tile binner): current pointer, overflow memory, BXCF",
 "desc": "status tested: BPOS = 0; BPCA shows tile memory use",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1428,7 +1428,7 @@ window.KSTB_REGS = [
 "name": "GMP (GPU memory protection)",
 "desc": "status read only",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1437,7 +1437,7 @@ window.KSTB_REGS = [
 "name": "CSD (compute shader dispatch) in Linux, but only on V3D 4.1+",
 "desc": "status read only, reads 0",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1446,7 +1446,7 @@ window.KSTB_REGS = [
 "name": "error/debug status (FDBGO/B/R/S, ERR_STAT)",
 "desc": "status read only",
 "section": "Address map",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1455,7 +1455,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 0000000f (written by the reset sequence)",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1464,7 +1464,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 00000045",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1473,7 +1473,7 @@ window.KSTB_REGS = [
 "name": "00002000",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1482,7 +1482,7 @@ window.KSTB_REGS = [
 "name": "00000fff",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1491,7 +1491,7 @@ window.KSTB_REGS = [
 "name": "00000fff",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1500,7 +1500,7 @@ window.KSTB_REGS = [
 "name": "bridge",
 "desc": "value 00000001",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1509,7 +1509,7 @@ window.KSTB_REGS = [
 "name": "00111400",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1518,7 +1518,7 @@ window.KSTB_REGS = [
 "name": "00000006",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1527,7 +1527,7 @@ window.KSTB_REGS = [
 "name": "00000001 (L2 cache enabled)",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1536,7 +1536,7 @@ window.KSTB_REGS = [
 "name": "ffffffff",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1545,7 +1545,7 @@ window.KSTB_REGS = [
 "name": "V3.x",
 "desc": "value 80000000",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1554,7 +1554,7 @@ window.KSTB_REGS = [
 "name": "00000030",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1563,7 +1563,7 @@ window.KSTB_REGS = [
 "name": "00000007",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1572,7 +1572,7 @@ window.KSTB_REGS = [
 "name": "00001000",
 "desc": "",
 "section": "Reset values (tested)",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1581,7 +1581,7 @@ window.KSTB_REGS = [
 "name": "bridge",
 "desc": "value 00000200 · revision 2.0",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1590,7 +1590,7 @@ window.KSTB_REGS = [
 "name": "hub IDENT0",
 "desc": "value 42554856 · ASCII \"VHUB\"",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1599,7 +1599,7 @@ window.KSTB_REGS = [
 "name": "hub IDENT1",
 "desc": "value 000e1133 · version 3, revision 3 = V3D 3.3; 1 core, 1 host; bits 17–19 set (TFU, TSY, MSO)",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1608,7 +1608,7 @@ window.KSTB_REGS = [
 "name": "hub IDENT2",
 "desc": "value 00000100 · bit 8: has an MMU",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1617,7 +1617,7 @@ window.KSTB_REGS = [
 "name": "hub IDENT3",
 "desc": "value 00000100 · IP revision 1",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1626,7 +1626,7 @@ window.KSTB_REGS = [
 "name": "core0 IDENT0",
 "desc": "value 03443356 · ASCII \"V3D\" + version 3",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1635,7 +1635,7 @@ window.KSTB_REGS = [
 "name": "core0 IDENT1",
 "desc": "value 41101423 · VPM 4 KB, 16 semaphores, 1 TMU, 4 QPUs per slice, 2 slices, revision 3",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1644,7 +1644,7 @@ window.KSTB_REGS = [
 "name": "core0 IDENT2",
 "desc": "value 40078121 · not decoded",
 "section": "Power island",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1653,7 +1653,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "GCA SAFE_SHUTDOWN enable · result 0xf12041b4 (SAFE_SHUTDOWN_ACK) read 3 within the 100 ms timeout",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1662,7 +1662,7 @@ window.KSTB_REGS = [
 "name": "= , then",
 "desc": "bridge SW_INIT_0 (bit 0: V3D_CLK_108_SW_INIT) · result 0xf12041b0 and …b4 read 0 again: the GCA was reset too",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1671,7 +1671,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "hub AXICFG (MAX_LEN 15)",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1680,7 +1680,7 @@ window.KSTB_REGS = [
 "name": "GCA",
 "desc": "value 00010002 / 00111400 / 00100000 · +0x0c is CACHE_CTRL; the others have no Linux name",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1689,7 +1689,7 @@ window.KSTB_REGS = [
 "name": "GCA",
 "desc": "value 00010002 / 00111400 / 00100000 · +0x0c is CACHE_CTRL; the others have no Linux name",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1698,7 +1698,7 @@ window.KSTB_REGS = [
 "name": "GCA",
 "desc": "value 00010002 / 00111400 / 00100000 · +0x0c is CACHE_CTRL; the others have no Linux name",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1707,7 +1707,7 @@ window.KSTB_REGS = [
 "name": "GCA",
 "desc": "value 00000001 / 00000000 · Nexus writes them from its settings (values not known)",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1716,7 +1716,7 @@ window.KSTB_REGS = [
 "name": "GCA",
 "desc": "value 00000001 / 00000000 · Nexus writes them from its settings (values not known)",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1725,7 +1725,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 0000000f",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1734,7 +1734,7 @@ window.KSTB_REGS = [
 "name": "hub",
 "desc": "value 0 / 0 · no hub interrupt pending, none masked",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1743,7 +1743,7 @@ window.KSTB_REGS = [
 "name": "NFREE = 32, CVTCT = 0, not busy",
 "desc": "value 00002000",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1752,7 +1752,7 @@ window.KSTB_REGS = [
 "name": "0",
 "desc": "",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1761,7 +1761,7 @@ window.KSTB_REGS = [
 "name": "MMU cache off",
 "desc": "value 0",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1770,7 +1770,7 @@ window.KSTB_REGS = [
 "name": "GPU MMU off, no page table",
 "desc": "value 0",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1779,7 +1779,7 @@ window.KSTB_REGS = [
 "name": "GPU MMU off, no page table",
 "desc": "value 0",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1788,7 +1788,7 @@ window.KSTB_REGS = [
 "name": "GPU MMU off, no page table",
 "desc": "value 0",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1797,7 +1797,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 00000006 · QRMAXCNT = 3",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1806,7 +1806,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 0 / ffffffff",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1815,7 +1815,7 @@ window.KSTB_REGS = [
 "name": "core",
 "desc": "value 0 / 0",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1824,7 +1824,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "core INT_MSK_SET (mask all), INT_CLR, INT_MSK_CLR (unmask bits 0–2) · reads back INT_MSK_STS = 00ff0038: the core has interrupt bits 0–5 and 16–23, and bits 0–2 are unmasked",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1833,7 +1833,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "core INT_MSK_SET (mask all), INT_CLR, INT_MSK_CLR (unmask bits 0–2) · reads back INT_MSK_STS = 00ff0038: the core has interrupt bits 0–5 and 16–23, and bits 0–2 are unmasked",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1842,7 +1842,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "core INT_MSK_SET (mask all), INT_CLR, INT_MSK_CLR (unmask bits 0–2) · reads back INT_MSK_STS = 00ff0038: the core has interrupt bits 0–5 and 16–23, and bits 0–2 are unmasked",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1851,7 +1851,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "GCA +0x00 · reads back 000e0000",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1860,7 +1860,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "GCA +0x20 · reads back 000f0002",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1869,7 +1869,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "core MISCCFG: OVRTMUOUT, QRMAXCNT 0 · reads back 00000001",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1878,7 +1878,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "hub AXICFG · reads back 0000000f",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1887,7 +1887,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "MMUC_CONTROL: ENABLE · reads back 00000001",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1896,7 +1896,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "core CLE_RFC · reads back 00000000",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1905,7 +1905,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "core +0x1b0 (no Linux name) · reads back 00000001",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1914,7 +1914,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "hub +0x470 (no Linux name) · reads back 00000001",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1923,7 +1923,7 @@ window.KSTB_REGS = [
 "name": "= ,  =",
 "desc": "core L2TFLSTA, L2TFLEND · reads back unchanged",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1932,7 +1932,7 @@ window.KSTB_REGS = [
 "name": "= ,  =",
 "desc": "core L2TFLSTA, L2TFLEND · reads back unchanged",
 "section": "Reset and default registers",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1941,7 +1941,7 @@ window.KSTB_REGS = [
 "name": "input",
 "desc": "value 16×16 pixels, 32 bits each, pixel (x, y) = 0xaa00yyxx",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1950,7 +1950,7 @@ window.KSTB_REGS = [
 "name": "output",
 "desc": "value 64 KB filled with 0xdeadbeef",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1959,7 +1959,7 @@ window.KSTB_REGS = [
 "name": "0",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1968,7 +1968,7 @@ window.KSTB_REGS = [
 "name": "00100010 (height 16 << 16, width 16)",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1977,7 +1977,7 @@ window.KSTB_REGS = [
 "name": "02100018 (address, output format 3)",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1986,7 +1986,7 @@ window.KSTB_REGS = [
 "name": "00000010 (stride 16 pixels)",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -1995,7 +1995,7 @@ window.KSTB_REGS = [
 "name": "0",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2004,7 +2004,7 @@ window.KSTB_REGS = [
 "name": "0",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2013,7 +2013,7 @@ window.KSTB_REGS = [
 "name": "02000000",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2022,7 +2022,7 @@ window.KSTB_REGS = [
 "name": "00000801 (IOC, type 4, input format 0): this write starts the job",
 "desc": "",
 "section": "TFU job: a format conversion",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2031,7 +2031,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "L2TCACTL: flush the L2T cache",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2040,7 +2040,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "SLCACTL: flush the slice caches",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2049,7 +2049,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "core INT_CLR",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2058,7 +2058,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "CT1QCFG (Nexus writes 1 when no binner output is used)",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2067,7 +2067,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "CT1QBA: control list start",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2076,7 +2076,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "CT1QEA: control list end; this write starts the job",
 "section": "Render job: a clear with no shaders",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2085,7 +2085,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "cache flushes, INT_CLR, as for the render job",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2094,7 +2094,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "cache flushes, INT_CLR, as for the render job",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2103,7 +2103,7 @@ window.KSTB_REGS = [
 "name": "= ,  = ,  =",
 "desc": "cache flushes, INT_CLR, as for the render job",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2112,7 +2112,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "PTB_BPOS: no overflow memory",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2121,7 +2121,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "CT0QMA: tile allocation memory",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2130,7 +2130,7 @@ window.KSTB_REGS = [
 "name": "=",
 "desc": "CT0QMS: its size, 1 MB",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2139,7 +2139,7 @@ window.KSTB_REGS = [
 "name": "= binning list start",
 "desc": "CT0QBA",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2148,7 +2148,7 @@ window.KSTB_REGS = [
 "name": "= binning list end",
 "desc": "CT0QEA: starts the binner",
 "section": "A triangle: binner and render jobs",
-"doc": "hardware/gpu.md",
+"doc": "../hardware/gpu.md",
 "danger": false
 },
 {
@@ -2157,7 +2157,7 @@ window.KSTB_REGS = [
 "name": "sys",
 "desc": "bit 0 · GISB timeout",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2166,7 +2166,7 @@ window.KSTB_REGS = [
 "name": "HIF",
 "desc": "bit 4, 24 · NAND flash_dma_done, nand_ctlrdy (no NAND fitted; bits 24–25 read set)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2175,7 +2175,7 @@ window.KSTB_REGS = [
 "name": "HIF SPI",
 "desc": "bit 0–6 · QSPI (disabled): spi_lr_, mspi_done (5), mspi_halted (6)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2184,7 +2184,7 @@ window.KSTB_REGS = [
 "name": "AON",
 "desc": "bit 1, 2, 3 · wake-ups: cec, irr, kpd",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2193,7 +2193,7 @@ window.KSTB_REGS = [
 "name": "AVS",
 "desc": "bit 6 · temperature monitor (tmon)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2202,7 +2202,7 @@ window.KSTB_REGS = [
 "name": "UPG main",
 "desc": "bit 0, 1, 2 · main GPIO (gio), irb, spare",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2211,7 +2211,7 @@ window.KSTB_REGS = [
 "name": "UPG main AON",
 "desc": "bit 0–6 · see \"AON L2 controller\" below",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2220,7 +2220,7 @@ window.KSTB_REGS = [
 "name": "UPG BSC",
 "desc": "bit 0, 1, 2 · I2C iica (ch0, HDMI DDC), iice (ch4), spare (i2c.md)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2229,7 +2229,7 @@ window.KSTB_REGS = [
 "name": "UPG BSC AON",
 "desc": "bit 0, 1, 2, 3 · I2C iicb (ch1), iicc (ch2), iicd (ch3, device at 0x67), spare (i2c.md)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2238,7 +2238,7 @@ window.KSTB_REGS = [
 "name": "UPG SPI AON",
 "desc": "bit 0, 1 · MSPI spi (mspi_done), spare",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2247,7 +2247,7 @@ window.KSTB_REGS = [
 "name": "sys  0, 2",
 "desc": "kernel handler f0400000.gisb-arb",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2256,7 +2256,7 @@ window.KSTB_REGS = [
 "name": "AON  1, 2, 3, 11",
 "desc": "kernel handler droid_pm (CEC, IR, keypad, XPT wake-ups)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2265,7 +2265,7 @@ window.KSTB_REGS = [
 "name": "AON  4",
 "desc": "kernel handler brcm-waketimer",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2274,7 +2274,7 @@ window.KSTB_REGS = [
 "name": "AON  6",
 "desc": "kernel handler brcmstb-gpio-wake (main and AON GPIO)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2283,7 +2283,7 @@ window.KSTB_REGS = [
 "name": "AON  18",
 "desc": "kernel handler eth0 (Wake-on-LAN)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2292,7 +2292,7 @@ window.KSTB_REGS = [
 "name": "AVS  6",
 "desc": "kernel handler brcmstb_thermal / sw_intr · fired 26: yes",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2301,7 +2301,7 @@ window.KSTB_REGS = [
 "name": "AVS  6",
 "desc": "kernel handler brcmstb_thermal / sw_intr · fired 26: yes",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2310,7 +2310,7 @@ window.KSTB_REGS = [
 "name": "UPG SPI AON  0",
 "desc": "kernel handler spi",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2319,7 +2319,7 @@ window.KSTB_REGS = [
 "name": "UPG main  1",
 "desc": "kernel handler irb",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2328,7 +2328,7 @@ window.KSTB_REGS = [
 "name": "UPG main AON  0",
 "desc": "kernel handler kbd1: the remote (ir.md) · fired yes (410)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2337,7 +2337,7 @@ window.KSTB_REGS = [
 "name": "UPG main AON  1, 2, 4, 5",
 "desc": "kernel handler kbd2, kbd3, ldk, icap",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2346,7 +2346,7 @@ window.KSTB_REGS = [
 "name": "UPG BSC  0, 1",
 "desc": "kernel handler I2C iica, iice",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2355,7 +2355,7 @@ window.KSTB_REGS = [
 "name": "UPG BSC AON  0, 1",
 "desc": "kernel handler I2C iicb, iicc",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2364,7 +2364,7 @@ window.KSTB_REGS = [
 "name": "UPG BSC AON  2",
 "desc": "kernel handler I2C iicd: the busy bus · fired yes (8024)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2373,7 +2373,7 @@ window.KSTB_REGS = [
 "name": "AON GPIO  pins 4, 5, 14",
 "desc": "kernel handler nexus gpio (14 = SW1, gpio.md) · fired pin 4: yes (6)",
 "section": "Through an L2 controller",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2382,7 +2382,7 @@ window.KSTB_REGS = [
 "name": "AON BSC  bit 2",
 "desc": "rate ~10 per second",
 "section": "What each action fires (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2391,7 +2391,7 @@ window.KSTB_REGS = [
 "name": "sys",
 "desc": "status 0, then 4 (gisb_tea, after the probe's aborts) · mask ffffffff",
 "section": "L2 controller registers (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2400,7 +2400,7 @@ window.KSTB_REGS = [
 "name": "HIF",
 "desc": "status 03000000 (bits 24, 25) · mask ffffffff",
 "section": "L2 controller registers (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2409,7 +2409,7 @@ window.KSTB_REGS = [
 "name": "HIF SPI",
 "desc": "status 0 · mask 7f",
 "section": "L2 controller registers (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2418,7 +2418,7 @@ window.KSTB_REGS = [
 "name": "AON",
 "desc": "status 0 · mask 007fffff",
 "section": "L2 controller registers (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2427,7 +2427,7 @@ window.KSTB_REGS = [
 "name": "AVS",
 "desc": "status 04000000 (bit 26) · mask 07ffffff",
 "section": "L2 controller registers (tested)",
-"doc": "hardware/interrupts.md",
+"doc": "../hardware/interrupts.md",
 "danger": false
 },
 {
@@ -2436,7 +2436,7 @@ window.KSTB_REGS = [
 "name": "reserved, no DMA (DTB reserved-nodma). Unmapped in BOLT's MMU (NULL guard)",
 "desc": "",
 "section": "RAM (2 GB LPDDR4 at address 0)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2445,7 +2445,7 @@ window.KSTB_REGS = [
 "name": "zImage load address used by boot/sysinit.txt",
 "desc": "",
 "section": "RAM (2 GB LPDDR4 at address 0)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2454,7 +2454,7 @@ window.KSTB_REGS = [
 "name": "PSCI secure monitor (smm64), reserved",
 "desc": "",
 "section": "RAM (2 GB LPDDR4 at address 0)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2463,7 +2463,7 @@ window.KSTB_REGS = [
 "name": "DTB that BOLT passes on go (DT_ADDRESS, size 0xa53e)",
 "desc": "",
 "section": "RAM (2 GB LPDDR4 at address 0)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2472,7 +2472,7 @@ window.KSTB_REGS = [
 "name": "DTB load address used by boot/sysinit.txt",
 "desc": "",
 "section": "RAM (2 GB LPDDR4 at address 0)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2481,7 +2481,7 @@ window.KSTB_REGS = [
 "name": "4 KB",
 "desc": "after go -64 leave alone: DTB reserved-nodma",
 "section": "RAM for a bare-metal program after go -64 (tested)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2490,7 +2490,7 @@ window.KSTB_REGS = [
 "name": "64 KB",
 "desc": "after go -64 PSCI monitor: keep (needed for smc, e.g. starting other cores)",
 "section": "RAM for a bare-metal program after go -64 (tested)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2499,7 +2499,7 @@ window.KSTB_REGS = [
 "name": "14 KB",
 "desc": "after go -64 display lists: never write",
 "section": "RAM for a bare-metal program after go -64 (tested)",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2508,7 +2508,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 0 (SD slot) / SDHCI 1 (eMMC) host registers; config blocks at +0x100",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2517,7 +2517,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 0 (SD slot) / SDHCI 1 (eMMC) host registers; config blocks at +0x100",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2526,7 +2526,7 @@ window.KSTB_REGS = [
 "name": "system L2 interrupt controller",
 "desc": "doc interrupts.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2535,7 +2535,7 @@ window.KSTB_REGS = [
 "name": "SUN_TOP_CTRL: chip ID, straps, software reset, pin mux",
 "desc": "doc system-blocks.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2544,7 +2544,7 @@ window.KSTB_REGS = [
 "name": "PWM blocks",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2553,7 +2553,7 @@ window.KSTB_REGS = [
 "name": "PWM blocks",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2562,7 +2562,7 @@ window.KSTB_REGS = [
 "name": "main GPIO (4 banks)",
 "desc": "doc gpio.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2571,7 +2571,7 @@ window.KSTB_REGS = [
 "name": "watchdog",
 "desc": "doc system-blocks.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2580,7 +2580,7 @@ window.KSTB_REGS = [
 "name": "UART0: console, 16550, 115200 8N1",
 "desc": "doc uart.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2589,7 +2589,7 @@ window.KSTB_REGS = [
 "name": "UART1 / UART2, 16550",
 "desc": "doc uart.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2598,7 +2598,7 @@ window.KSTB_REGS = [
 "name": "UART1 / UART2, 16550",
 "desc": "doc uart.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2607,7 +2607,7 @@ window.KSTB_REGS = [
 "name": "AON control (0x00–0x27 readable; 0x2c gives an external abort); AON SRAM 0xf0410200–0xf04105ff",
 "desc": "doc system-blocks.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2616,7 +2616,7 @@ window.KSTB_REGS = [
 "name": "AON pin mux",
 "desc": "doc gpio.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2625,7 +2625,7 @@ window.KSTB_REGS = [
 "name": "MSPI (SPI controller)",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2634,7 +2634,7 @@ window.KSTB_REGS = [
 "name": "AON L2 interrupt controller (upg_main_aon)",
 "desc": "doc interrupts.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2643,7 +2643,7 @@ window.KSTB_REGS = [
 "name": "AON GPIO (2 banks)",
 "desc": "doc gpio.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2652,7 +2652,7 @@ window.KSTB_REGS = [
 "name": "wake timer (seconds counter, 27 MHz)",
 "desc": "doc system-blocks.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2661,7 +2661,7 @@ window.KSTB_REGS = [
 "name": "PCIe (Wi-Fi BCM43570)",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2670,7 +2670,7 @@ window.KSTB_REGS = [
 "name": "GENET v5 Ethernet; UMAC +0x800, MDIO +0xe14",
 "desc": "doc ethernet.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2679,7 +2679,7 @@ window.KSTB_REGS = [
 "name": "AVS temperature sensor",
 "desc": "doc system-blocks.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2688,7 +2688,7 @@ window.KSTB_REGS = [
 "name": "UART clock gate and clock muxes",
 "desc": "doc uart.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2697,7 +2697,7 @@ window.KSTB_REGS = [
 "name": "display RDC (register DMA) list pointers",
 "desc": "doc display.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2706,7 +2706,7 @@ window.KSTB_REGS = [
 "name": "display graphics feeder (GFD): width +0x44, surface address +0x48; +0x5c aborts",
 "desc": "doc display.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2715,7 +2715,7 @@ window.KSTB_REGS = [
 "name": "GIC distributor / CPU interface",
 "desc": "doc interrupts.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2724,7 +2724,7 @@ window.KSTB_REGS = [
 "name": "GIC distributor / CPU interface",
 "desc": "doc interrupts.md",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2733,7 +2733,7 @@ window.KSTB_REGS = [
 "name": "boot SRAM (128 KB): see below",
 "desc": "",
 "section": "Peripherals",
-"doc": "hardware/memory-map.md",
+"doc": "../hardware/memory-map.md",
 "danger": false
 },
 {
@@ -2742,7 +2742,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 0 host (removable-slot type; no card, no slot on the case; storage.md)",
 "desc": "DTB sdhci-brcmstb · first word 00000000; +0xfc = 10020000 · notes +0xfe = 1002: SD host spec 3.00 (ID match)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2751,7 +2751,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 0 config",
 "desc": "DTB · first word 40003c03",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2760,7 +2760,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 1 host (eMMC)",
 "desc": "DTB · first word 076a3018; +0xfc = 10020000 · notes SD host spec 3.00 (ID match); BOLT reads flash0 through it; 8-bit, 50 MHz (storage.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2769,7 +2769,7 @@ window.KSTB_REGS = [
 "name": "SDHCI 1 config",
 "desc": "DTB · first word 40003c03",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2778,7 +2778,7 @@ window.KSTB_REGS = [
 "name": "SDIO pin select / boot control (syscon)",
 "desc": "DTB · first word 2 / 1 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2787,7 +2787,7 @@ window.KSTB_REGS = [
 "name": "SDIO pin select / boot control (syscon)",
 "desc": "DTB · first word 2 / 1 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2796,7 +2796,7 @@ window.KSTB_REGS = [
 "name": "SDIO pin select / boot control (syscon)",
 "desc": "DTB · first word 2 / 1 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2805,7 +2805,7 @@ window.KSTB_REGS = [
 "name": "HIF L2 interrupt controller",
 "desc": "DTB brcm,l2-intc · first word 03000000 · notes status bits 24–25 set",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2814,7 +2814,7 @@ window.KSTB_REGS = [
 "name": "HIF SPI L2 interrupt controller",
 "desc": "DTB · first word 00000000",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2823,7 +2823,7 @@ window.KSTB_REGS = [
 "name": "NAND controller (disabled in DTB)",
 "desc": "DTB brcmnand-v7.2 · first word 00000702 · notes revision 7.2 (ID match). The box has no NAND",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2832,7 +2832,7 @@ window.KSTB_REGS = [
 "name": "BSPI / QSPI (disabled)",
 "desc": "DTB spi-bcm-qspi · first word 00000402 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2841,7 +2841,7 @@ window.KSTB_REGS = [
 "name": "BSPI / QSPI (disabled)",
 "desc": "DTB spi-bcm-qspi · first word 00000402 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2850,7 +2850,7 @@ window.KSTB_REGS = [
 "name": "CPU BIU control",
 "desc": "DTB brcmstb-cpu-biu-ctrl · first word 00fffff2 · notes PSCI powers cores on via +0x8c (cpu-cores.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2859,7 +2859,7 @@ window.KSTB_REGS = [
 "name": "BSP (security processor interface)",
 "desc": "DTB brcm,bsp-v4.2.5 · first word 00000000",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2868,7 +2868,7 @@ window.KSTB_REGS = [
 "name": "XPT security / SHA",
 "desc": "BOLT (XPTDMA: SHA !RDY) · first word +0x88 = 0 · notes used to hash images",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2877,7 +2877,7 @@ window.KSTB_REGS = [
 "name": "GISB arbiter (register bus)",
 "desc": "DTB brcm,gisb-arb · first word 00000502 · notes error capture: see below",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2886,7 +2886,7 @@ window.KSTB_REGS = [
 "name": "nothing: a false hit in BOLT's code (see \"The four switched-off blocks\")",
 "desc": "first word abort · notes not a BOLT address",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2895,7 +2895,7 @@ window.KSTB_REGS = [
 "name": "system L2 interrupt controller",
 "desc": "DTB · first word 0 · notes interrupts.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2904,7 +2904,7 @@ window.KSTB_REGS = [
 "name": "SUN_TOP_CTRL (chip ID, reset, pin mux)",
 "desc": "DTB · first word 72680010 · notes system-blocks.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2913,7 +2913,7 @@ window.KSTB_REGS = [
 "name": "PWM 0 / 1",
 "desc": "DTB bcm7038-pwm · first word 00000022",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2922,7 +2922,7 @@ window.KSTB_REGS = [
 "name": "PWM 0 / 1",
 "desc": "DTB bcm7038-pwm · first word 00000022",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2931,7 +2931,7 @@ window.KSTB_REGS = [
 "name": "I2C (BSC) ch0 = HDMI DDC / ch4",
 "desc": "Nexus BI2C_ · first word 0 · notes i2c.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2940,7 +2940,7 @@ window.KSTB_REGS = [
 "name": "I2C (BSC) ch0 = HDMI DDC / ch4",
 "desc": "Nexus BI2C_ · first word 0 · notes i2c.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2949,7 +2949,7 @@ window.KSTB_REGS = [
 "name": "main GPIO",
 "desc": "DTB · notes gpio.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2958,7 +2958,7 @@ window.KSTB_REGS = [
 "name": "UPG L2 interrupt controllers",
 "desc": "DTB · first word 0 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2967,7 +2967,7 @@ window.KSTB_REGS = [
 "name": "UPG L2 interrupt controllers",
 "desc": "DTB · first word 0 / 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2976,7 +2976,7 @@ window.KSTB_REGS = [
 "name": "watchdog",
 "desc": "DTB · notes system-blocks.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2985,7 +2985,7 @@ window.KSTB_REGS = [
 "name": "UART0 / 1 / 2",
 "desc": "DTB · notes uart.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -2994,7 +2994,7 @@ window.KSTB_REGS = [
 "name": "UART0 / 1 / 2",
 "desc": "DTB · notes uart.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3003,7 +3003,7 @@ window.KSTB_REGS = [
 "name": "UART0 / 1 / 2",
 "desc": "DTB · notes uart.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3012,7 +3012,7 @@ window.KSTB_REGS = [
 "name": "AON control + AON SRAM 0xf0410200",
 "desc": "DTB · notes system-blocks.md (+0x2c aborts)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3021,7 +3021,7 @@ window.KSTB_REGS = [
 "name": "AON L2 interrupt controller",
 "desc": "DTB · first word 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3030,7 +3030,7 @@ window.KSTB_REGS = [
 "name": "AON pin mux / pad control",
 "desc": "DTB · notes gpio.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3039,7 +3039,7 @@ window.KSTB_REGS = [
 "name": "AON pin mux / pad control",
 "desc": "DTB · notes gpio.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3048,7 +3048,7 @@ window.KSTB_REGS = [
 "name": "MSPI (SPI master)",
 "desc": "DTB · first word 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3057,7 +3057,7 @@ window.KSTB_REGS = [
 "name": "AON UPG L2 interrupt controllers",
 "desc": "DTB · first word 0 · notes c00 = buttons/IR (interrupts.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3066,7 +3066,7 @@ window.KSTB_REGS = [
 "name": "AON UPG L2 interrupt controllers",
 "desc": "DTB · first word 0 · notes c00 = buttons/IR (interrupts.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3075,7 +3075,7 @@ window.KSTB_REGS = [
 "name": "AON UPG L2 interrupt controllers",
 "desc": "DTB · first word 0 · notes c00 = buttons/IR (interrupts.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3084,7 +3084,7 @@ window.KSTB_REGS = [
 "name": "IR receiver (KBD) channels kbd1–3",
 "desc": "Nexus BKIR_ · first word 0 · notes kbd1 = the remote (ir.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3093,7 +3093,7 @@ window.KSTB_REGS = [
 "name": "IR receiver (KBD) channels kbd1–3",
 "desc": "Nexus BKIR_ · first word 0 · notes kbd1 = the remote (ir.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3102,7 +3102,7 @@ window.KSTB_REGS = [
 "name": "IR receiver (KBD) channels kbd1–3",
 "desc": "Nexus BKIR_ · first word 0 · notes kbd1 = the remote (ir.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3111,7 +3111,7 @@ window.KSTB_REGS = [
 "name": "I2C (BSC) ch1–3; ch3 has a device at 0x67 (Si2168C demodulator per Nexus)",
 "desc": "Nexus BI2C_ · first word 0 · notes i2c.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3120,7 +3120,7 @@ window.KSTB_REGS = [
 "name": "I2C (BSC) ch1–3; ch3 has a device at 0x67 (Si2168C demodulator per Nexus)",
 "desc": "Nexus BI2C_ · first word 0 · notes i2c.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3129,7 +3129,7 @@ window.KSTB_REGS = [
 "name": "I2C (BSC) ch1–3; ch3 has a device at 0x67 (Si2168C demodulator per Nexus)",
 "desc": "Nexus BI2C_ · first word 0 · notes i2c.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3138,7 +3138,7 @@ window.KSTB_REGS = [
 "name": "AON GPIO",
 "desc": "DTB · notes gpio.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3147,7 +3147,7 @@ window.KSTB_REGS = [
 "name": "wake timer",
 "desc": "DTB · notes system-blocks.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3156,7 +3156,7 @@ window.KSTB_REGS = [
 "name": "HIF continuation (CPU boot addresses)",
 "desc": "DTB brcmstb-hif-continuation · first word 0 · notes PSCI writes each core's start address at +0x8/+0x10/+0x18 (cpu-cores.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3165,7 +3165,7 @@ window.KSTB_REGS = [
 "name": "PCIe (Wi-Fi BCM43570)",
 "desc": "DTB bcm7268-pcie · first word abort · notes held in reset by +0x9210 bit 1; released: 726814e4 (PCI ID 14e4:7268)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3174,7 +3174,7 @@ window.KSTB_REGS = [
 "name": "GENET 0 Ethernet",
 "desc": "DTB genet-v5 · first word 06000000 · notes major 6 = GENET v5 (ID match) (Linux numbering); ethernet.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3183,7 +3183,7 @@ window.KSTB_REGS = [
 "name": "GENET 1 (disabled)",
 "desc": "DTB · first word 06000000 · notes clocked, unused",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3192,7 +3192,7 @@ window.KSTB_REGS = [
 "name": "AVS CPU data memory",
 "desc": "DTB · first word 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3201,7 +3201,7 @@ window.KSTB_REGS = [
 "name": "AVS L2 interrupt / L2 controller",
 "desc": "DTB · first word 0 / 04000000",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3210,7 +3210,7 @@ window.KSTB_REGS = [
 "name": "AVS L2 interrupt / L2 controller",
 "desc": "DTB · first word 0 / 04000000",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3219,7 +3219,7 @@ window.KSTB_REGS = [
 "name": "temperature sensor",
 "desc": "DTB · notes system-blocks.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3228,7 +3228,7 @@ window.KSTB_REGS = [
 "name": "clock generator (PLLs, dividers, gates, muxes)",
 "desc": "DTB (≈100 clock nodes), Nexus · first word +0 = 00000016 · notes full read: clkgen_dump_output.txt (418 words answer, 7,774 abort)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3237,7 +3237,7 @@ window.KSTB_REGS = [
 "name": "display RDC (register DMA)",
 "desc": "BOLT · notes display.md (frame counter, flip)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3246,7 +3246,7 @@ window.KSTB_REGS = [
 "name": "display RDC (register DMA)",
 "desc": "BOLT · notes display.md (frame counter, flip)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3255,7 +3255,7 @@ window.KSTB_REGS = [
 "name": "display GFD (graphics feeder)",
 "desc": "BOLT · notes display.md (+0x5c aborts)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3264,7 +3264,7 @@ window.KSTB_REGS = [
 "name": "display pipeline (compositor/encoder, inferred)",
 "desc": "BOLT's splash script · first word not read · notes written by the display set-up",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3273,7 +3273,7 @@ window.KSTB_REGS = [
 "name": "display pipeline (compositor/encoder, inferred)",
 "desc": "BOLT's splash script · first word not read · notes written by the display set-up",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3282,7 +3282,7 @@ window.KSTB_REGS = [
 "name": "display pipeline (compositor/encoder, inferred)",
 "desc": "BOLT's splash script · first word not read · notes written by the display set-up",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3291,7 +3291,7 @@ window.KSTB_REGS = [
 "name": "HDMI transmitter",
 "desc": "BOLT · notes audio.md (N/CTS; 0x828/0x884… break the picture)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3300,7 +3300,7 @@ window.KSTB_REGS = [
 "name": "M2MC 2D blitter",
 "desc": "Nexus BGRC_ (bus 0x209b0000) · first word +0x0c = 0 · notes powered and clocked after BOLT; 2d-blitter.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3309,7 +3309,7 @@ window.KSTB_REGS = [
 "name": "XPT (transport) control",
 "desc": "BOLT (0x0700ede0, called by the XPT DMA and SHA code) · first word +0x21c = 1f · notes before XPT DMA, BOLT writes 1 to +0xc0 and +0xb4, waits for +0xbc bit 0 to clear, then writes 1 to +0xb8",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3318,7 +3318,7 @@ window.KSTB_REGS = [
 "name": "XPT DMA (transport DMA)",
 "desc": "BOLT (XPTDMA: DMA !DONE) · first word 0 · notes BOLT's memory-to-memory DMA for SHA",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3327,7 +3327,7 @@ window.KSTB_REGS = [
 "name": "USB control / PHY",
 "desc": "DTB · first word 00022033 · notes usb.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3336,7 +3336,7 @@ window.KSTB_REGS = [
 "name": "EHCI/OHCI/xHCI",
 "desc": "DTB · notes usb.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3345,7 +3345,7 @@ window.KSTB_REGS = [
 "name": "USB device controller BDC (disabled)",
 "desc": "DTB · first word abort · notes held in reset by 0xf0b00234 bit 23; released: 00100a05",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3354,7 +3354,7 @@ window.KSTB_REGS = [
 "name": "SATA PHY (original DTB only)",
 "desc": "DTB · first word 0",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3363,7 +3363,7 @@ window.KSTB_REGS = [
 "name": "SATA AHCI (original DTB only)",
 "desc": "DTB sata3-ahci · first word e9327f00 · notes AHCI CAP: 1 port, 64-bit, NCQ. BOLT has a SATA driver. Caution: No SATA connector seen on the board",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3372,7 +3372,7 @@ window.KSTB_REGS = [
 "name": "audio (FMM, ring buffers, output ports)",
 "desc": "BOLT · first word 0xf0ca0048 = 2800, 0xf0cb0200 = 010843ff · notes readable even without pcm0 (audio.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3381,7 +3381,7 @@ window.KSTB_REGS = [
 "name": "audio (FMM, ring buffers, output ports)",
 "desc": "BOLT · first word 0xf0ca0048 = 2800, 0xf0cb0200 = 010843ff · notes readable even without pcm0 (audio.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3390,7 +3390,7 @@ window.KSTB_REGS = [
 "name": "memory controller: general",
 "desc": "DTB memc-gen-rev-b.2.2 · first word 0000b220 · notes revision B.2.2 (ID match)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3399,7 +3399,7 @@ window.KSTB_REGS = [
 "name": "memory controller: arbiter",
 "desc": "DTB · first word 00000148 · notes client list in the DTB",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3408,7 +3408,7 @@ window.KSTB_REGS = [
 "name": "memory controller: DDR",
 "desc": "DTB memc-ddr-rev-b.2.2 · first word 0000aa65",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3417,7 +3417,7 @@ window.KSTB_REGS = [
 "name": "DDR shim PHY",
 "desc": "DTB · first word 4024201f",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3426,7 +3426,7 @@ window.KSTB_REGS = [
 "name": "memory controller DTU config / map",
 "desc": "DTB memc-dtu-config-v1.1.0.0 · first word 00001100 / 80000000 · notes config 1.1 (ID match)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3435,7 +3435,7 @@ window.KSTB_REGS = [
 "name": "memory controller DTU config / map",
 "desc": "DTB memc-dtu-config-v1.1.0.0 · first word 00001100 / 80000000 · notes config 1.1 (ID match)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3444,7 +3444,7 @@ window.KSTB_REGS = [
 "name": "DDR PHY",
 "desc": "DTB ddr-phy-v72.0 · first word 00004800 · notes 0x48 = 72 (ID match)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3453,7 +3453,7 @@ window.KSTB_REGS = [
 "name": "V3D GPU (VideoCore 3D, v3.3): hub 0xf1200000, bridge 0xf1204000, GCA 0xf1204100, core0 0xf1208000",
 "desc": "DTB bcm7268-v3d (no reg) · first word abort everywhere · notes power island off; powered up via 0xf041d020: hub IDENT1 000e1133 = V3D 3.3",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3462,7 +3462,7 @@ window.KSTB_REGS = [
 "name": "GIC-400",
 "desc": "DTB · notes interrupts.md",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3471,7 +3471,7 @@ window.KSTB_REGS = [
 "name": "boot SRAM, 128 KB",
 "desc": "DTB · first word 00000000 · notes all readable from EL2, almost all zero (memory-map.md)",
 "section": "The blocks",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3480,7 +3480,7 @@ window.KSTB_REGS = [
 "name": "for comparison: , , GENET",
 "desc": "value 7, 3, 000fffff · state on (these blocks work)",
 "section": "Clocks are not the reason (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3489,7 +3489,7 @@ window.KSTB_REGS = [
 "name": "PCIe  (\"RGR1_SW_INIT_1\"",
 "desc": "before 3 · bit released 1 (bit 1 cleared) · bit restored 3",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3498,7 +3498,7 @@ window.KSTB_REGS = [
 "name": "\"MISC_REVISION\"",
 "desc": "before abort · bit released 00000304 · bit restored abort",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3507,7 +3507,7 @@ window.KSTB_REGS = [
 "name": "abort",
 "desc": "bit released 726814e4 · bit restored abort",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3516,7 +3516,7 @@ window.KSTB_REGS = [
 "name": "USB control  (\"USB_PM\"",
 "desc": "before 00700000 · bit released 00f00000 (bit 23 set) · bit restored 00700000",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3525,7 +3525,7 @@ window.KSTB_REGS = [
 "name": "BDC  (\"BDCCFG0\"",
 "desc": "before abort · bit released 00100a05 · bit restored abort",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3534,7 +3534,7 @@ window.KSTB_REGS = [
 "name": "BDC",
 "desc": "before abort · bit released 00000000 · bit restored abort",
 "section": "PCIe and the USB device controller: held in reset (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3543,7 +3543,7 @@ window.KSTB_REGS = [
 "name": "the address of the last failed access",
 "desc": "value f0402800",
 "section": "GISB arbiter error capture (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3552,7 +3552,7 @@ window.KSTB_REGS = [
 "name": "the bus master that did it, one bit per master: bit 6 = cpu_0 (below)",
 "desc": "value 00000040",
 "section": "GISB arbiter error capture (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3561,7 +3561,7 @@ window.KSTB_REGS = [
 "name": "00000000",
 "desc": "",
 "section": "GISB arbiter error capture (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3570,7 +3570,7 @@ window.KSTB_REGS = [
 "name": "probably the GISB timeout",
 "desc": "value 000278d0",
 "section": "GISB arbiter error capture (tested)",
-"doc": "hardware/peripherals.md",
+"doc": "../hardware/peripherals.md",
 "danger": false
 },
 {
@@ -3579,7 +3579,7 @@ window.KSTB_REGS = [
 "name": "Bits of",
 "desc": "BOLT's use (0x0701238c, 0x070123bc) · This board",
 "section": "Straps (tested)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3588,7 +3588,7 @@ window.KSTB_REGS = [
 "name": "00000040",
 "desc": "set fields en_cr (mask 0x60)",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3597,7 +3597,7 @@ window.KSTB_REGS = [
 "name": "00a02000",
 "desc": "set fields macrovision_disable (23), rv9_disable (21), mtsif_enc_ctl_disable (13)",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3606,7 +3606,7 @@ window.KSTB_REGS = [
 "name": "00000000",
 "desc": "set fields none (the banner skips a zero word)",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3615,7 +3615,7 @@ window.KSTB_REGS = [
 "name": "rave_verify_enable",
 "desc": "bit(s) 4",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3624,7 +3624,7 @@ window.KSTB_REGS = [
 "name": "cpu_clk_lock_enable",
 "desc": "bit(s) 0",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3633,7 +3633,7 @@ window.KSTB_REGS = [
 "name": "tc_hdr_disable",
 "desc": "bit(s) 0",
 "section": "OTP fuses (read only; never write)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3642,7 +3642,7 @@ window.KSTB_REGS = [
 "name": "sun-top-ctrl-general-ctrl-1",
 "desc": "value (probe, at go -64) 00004000",
 "section": "General control registers (values only)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3651,7 +3651,7 @@ window.KSTB_REGS = [
 "name": "sun-top-ctrl-general-ctrl-no-scan-0",
 "desc": "value (probe, at go -64) 00d9b7df",
 "section": "General control registers (values only)",
-"doc": "hardware/system-blocks.md",
+"doc": "../hardware/system-blocks.md",
 "danger": false
 },
 {
@@ -3660,7 +3660,7 @@ window.KSTB_REGS = [
 "name": "Broadcom USB control / PHY block",
 "desc": "dtb node usb-phy@f0b00200 (brcm,usb-phy, ipp/ioc = 1, has_xhci) · size 0x100 · capability registers read in full (peripherals.md, \"PCIe and the USB device controller\")",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3669,7 +3669,7 @@ window.KSTB_REGS = [
 "name": "EHCI0: v1.0, op regs at +0x10, 1 port, 1 companion, 64-bit",
 "desc": "dtb node ehci_v2 (IRQ SPI 0x5a) · size 0xa8 · capability registers 01000010 00001111 0000a027",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3678,7 +3678,7 @@ window.KSTB_REGS = [
 "name": "OHCI0: v1.0, 1 port, per-port power, POTPGT 2 (4 ms)",
 "desc": "dtb node ohci_v2 (SPI 0x5b) · size 0x58 · capability registers 00000110, RhDescA 02000901",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3687,7 +3687,7 @@ window.KSTB_REGS = [
 "name": "EHCI1",
 "desc": "dtb node ehci_v2 (SPI 0x5e) · size 0xa8 · capability registers same as EHCI0",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3696,7 +3696,7 @@ window.KSTB_REGS = [
 "name": "OHCI1",
 "desc": "dtb node ohci_v2 (SPI 0x5f) · size 0x58 · capability registers same as OHCI0",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3705,7 +3705,7 @@ window.KSTB_REGS = [
 "name": "xHCI v1.0, op regs at +0x20, 2 ports, 31 slots, 64-byte contexts, 2 scratchpad pages, ext. caps at +0x940",
 "desc": "dtb node xhci_v2 (SPI 0x5c) · size 0x1000 · capability registers 01000020 0200021f 14000052 07ff0002 0250f17d, DBOFF 8c0, RTSOFF 4a0",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3714,7 +3714,7 @@ window.KSTB_REGS = [
 "name": "device-mode controller",
 "desc": "dtb node bdc_v2 (status = \"disabled\") · size 0xfc4 · capability registers not read",
 "section": "Blocks (stock DTB boot/stock_dtb.dts, capability registers read)",
-"doc": "hardware/usb.md",
+"doc": "../hardware/usb.md",
 "danger": false
 },
 {
@@ -3723,7 +3723,7 @@ window.KSTB_REGS = [
 "name": "boot splash main (NO_SPLASH/SPLASH env, \"SPLASH: starting\" … \"load failed\")",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3732,7 +3732,7 @@ window.KSTB_REGS = [
 "name": "returns SplashData (built-in table at 0x07056f30)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3741,7 +3741,7 @@ window.KSTB_REGS = [
 "name": "splash memory \"glue\" (\"SPLASH BMEM init\")",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3750,7 +3750,7 @@ window.KSTB_REGS = [
 "name": "read and decode the flash0.splash container (GZBR, 512 KB, inflate, CRC)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3759,7 +3759,7 @@ window.KSTB_REGS = [
 "name": "look up bmp0..3 / pcm0..3 in the BRCM payload",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3768,7 +3768,7 @@ window.KSTB_REGS = [
 "name": "run the display script and draw (Loaded BMP: W=%d H=%d)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3777,7 +3777,7 @@ window.KSTB_REGS = [
 "name": "draw a BMP into every set-up surface (centred, background fill, cache flush)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3786,7 +3786,7 @@ window.KSTB_REGS = [
 "name": "return surface i from the array at 0x0706ae20 (0 if not set up)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3795,7 +3795,7 @@ window.KSTB_REGS = [
 "name": "flash command (-offset = destination, mem0 staging copy at 0x00040000, ../hardware/storage.md)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3804,7 +3804,7 @@ window.KSTB_REGS = [
 "name": "usb init: DTB → controller table 0x0706b010, env XHCIOFF/EHCIOFF/OHCIOFF/BDCOFF/USBDBG (../hardware/usb.md)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3813,7 +3813,7 @@ window.KSTB_REGS = [
 "name": "stop every USB controller; called by usb exit and before go/boot (via 0x07011d5e)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3822,7 +3822,7 @@ window.KSTB_REGS = [
 "name": "load command: after loading, -splash → calls 0x070108e4",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3831,7 +3831,7 @@ window.KSTB_REGS = [
 "name": "\"splash-feedback\": draw media n from the container",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3840,7 +3840,7 @@ window.KSTB_REGS = [
 "name": "\"splash-feedback\": draw media n from the container",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 },
 {
@@ -3849,7 +3849,7 @@ window.KSTB_REGS = [
 "name": "startup banner (BOLT v%d.%02d, Board:, strap=, otp @ … from the fuse table at 0x070472a8, bond option:), see ../hardware/audio.md (S/PDIF)",
 "desc": "",
 "section": "Functions identified",
-"doc": "bolt/bolt.md",
+"doc": "02-bolt.md",
 "danger": false
 }
 ];

@@ -32,8 +32,8 @@ The separate native build enables Wayland and X11/GLX, prefix `/usr`, libdir
 package metadata, public signing key, package hashes and library ownership
 are preserved here. The private signing key is outside git.
 
-`make -C linux/mesa system` reproduces the native payload;
-`linux/mesa/system/package.py` creates the six APKs with dependency and
+`make -C port/mesa system` reproduces the native payload;
+`port/mesa/system/package.py` creates the six APKs with dependency and
 SONAME/pkg-config metadata. DRI aliases retain their hardlinks. The bundled
 Wayland protocol XML/pkg-config file is excluded so Alpine's own protocol
 package remains installed. Development dependencies are retained.

@@ -4,8 +4,8 @@ zImage
 *.ko
 *.o
 *.elf
-!assembly/bootstrap.bin
-!assembly/bootstrap.elf
+!bootloader/assembly/bootstrap.bin
+!bootloader/assembly/bootstrap.elf
 # local agent notes: CLAUDE.md and session handoffs (handoff-*.md)
 CLAUDE.md
 handoff-*.md
@@ -19,5 +19,5 @@ __pycache__/
 docs/todo.md
 # editor settings
 .vscode/
-# Linux: kernel source, Alpine tarball and build output (linux/Makefile)
-/linux/build/
+# Linux: kernel source, Alpine tarball and build output (port/Makefile)
+/port/build/

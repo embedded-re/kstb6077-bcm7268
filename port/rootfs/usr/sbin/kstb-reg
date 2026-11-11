@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""Read and write 32-bit registers through /dev/mem, like kmon's d -w / e -w.
+
+    kstb-reg ADDR [COUNT]      read COUNT words (default 1) from ADDR
+    kstb-reg -w ADDR VALUE     write one word, then read it back
+
+Addresses and values are hex. Only MMIO outside Linux's RAM is allowed
+(CONFIG_STRICT_DEVMEM). A register in an abort hole takes Linux down with
+an SError: check hardware/peripherals.md first.
+"""
+import mmap, os, struct, sys
+
+PAGE = mmap.PAGESIZE
+
+
+def mapped(addr, size):
+    base = addr & ~(PAGE - 1)
+    fd = os.open("/dev/mem", os.O_RDWR | os.O_SYNC)
+    try:
+        m = mmap.mmap(fd, addr - base + size, mmap.MAP_SHARED,
+                      mmap.PROT_READ | mmap.PROT_WRITE, offset=base)
+    finally:
+        os.close(fd)
+    return m, addr - base
+
+
+def main(argv):
+    if len(argv) >= 3 and argv[0] == "-w":
+        addr, value = int(argv[1], 16), int(argv[2], 16)
+        m, off = mapped(addr, 4)
+        mv = memoryview(m).cast("I")
+        mv[off // 4] = value
+        print("%08x: %08x" % (addr, mv[off // 4]))
+        mv.release()
+        return
+    if not argv or argv[0].startswith("-"):
+        sys.exit(__doc__.strip())
+    addr = int(argv[0], 16) & ~3
+    count = int(argv[1], 0) if len(argv) > 1 else 1
+    m, off = mapped(addr, count * 4)
+    mv = memoryview(m).cast("I")
+    for row in range(0, count, 4):
+        words = [mv[off // 4 + i] for i in range(row, min(row + 4, count))]
+        print("%08x: %s" % (addr + row * 4, " ".join("%08x" % w for w in words)))
+    mv.release()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

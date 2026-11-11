@@ -1,7 +1,7 @@
 # CPU/GPU mathematical capability audit — 2026-10-25
 
 Current installed native Mesa **23.3.6-r34**, inner `8b05308`, kernel #30.
-The [report](../../../../../linux/compute-limits.md) interprets these results.
+The [report](../../../../../port/compute-limits.md) interprets these results.
 CPU execution plus GPU queries and shader front-end/link checks only:
 **zero new draws/dispatches**, no new reset test, no installs or driver edits.
 The user's Sway/Firefox/game sessions were preserved. Existing kernel
@@ -31,18 +31,18 @@ observed; these checks do not establish a warning-free kernel.
 
 ## Reproduction
 
-Archived C sources match the tracked `linux/gpu-test/` versions at this
+Archived C sources match the tracked `port/gpu-test/` versions at this
 milestone. Native-system GL binaries have no `/opt` RPATH. From repo root:
 
 ```sh
-make -C linux/gpu-test cpu-math
+make -C port/gpu-test cpu-math
 clang --target=aarch64-alpine-linux-musl \
   --sysroot="$PWD/linux/build/sysroot" -fuse-ld=lld -O2 -Wall \
-  -o linux/build/math-audit/kstb-gl-caps linux/gpu-test/kstb-gl-caps.c \
+  -o port/build/math-audit/kstb-gl-caps port/gpu-test/kstb-gl-caps.c \
   -Llinux/build/mesa-system-prep/stage/usr/lib -lEGL -lGLESv2 -lgbm
 clang --target=aarch64-alpine-linux-musl \
   --sysroot="$PWD/linux/build/sysroot" -fuse-ld=lld -O2 -Wall \
-  -o linux/build/math-audit/kstb-math-shader-check linux/gpu-test/kstb-math-shader-check.c \
+  -o port/build/math-audit/kstb-math-shader-check port/gpu-test/kstb-math-shader-check.c \
   -Llinux/build/mesa-system-prep/stage/usr/lib -lEGL -lGLESv2 -lgbm
 ```
 

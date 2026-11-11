@@ -3,7 +3,7 @@
 **Both completed successfully.** The box is back in normal Linux with all four
 CPUs, kernel #30, native Mesa r34 and about 3.37GiB free (48% used). No desktop,
 benchmark or userspace watchdog was left running. This follows the
-[storage migration](../../../storage-repartition.md).
+[storage migration](../../../05-storage-repartition.md).
 
 ## Bare metal
 
@@ -84,7 +84,7 @@ return. `linux-*` cover numerical/graphics/compute checks. `desktop-*` cover the
 three sessions; `classifier-report.json` includes the repeated inference/RAM
 check. `final-*` cover the post-Doom Linux gate, device state and preservation.
 First attempts are retained separately. Raw serial logs and screenshots remain
-in ignored `linux/build/platform-check/20261026/` on the development PC.
+in ignored `port/build/platform-check/20261026/` on the development PC.
 
 Scripts are the actual session harnesses and depend on installed board tools,
 private preflight inputs and the serial bridge; they are audit artifacts,

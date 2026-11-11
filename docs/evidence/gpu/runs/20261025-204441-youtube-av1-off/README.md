@@ -18,7 +18,7 @@ It remains open after the 180-second independent fault guard finishes.
 | Buffer at endpoints | 85.65–110.77 s | 107.76–120.65 s |
 
 Counts are transcribed from YouTube Stats for nerds; full video screenshots
-remain private on the board and under ignored `linux/build/browser/`.
+remain private on the board and under ignored `port/build/browser/`.
 The earlier cumulative counters included startup drops and sometimes reset;
 they must not be used as steady playback rates. The two selected intervals
 have stable counters but different scenes and occur sequentially. This is a

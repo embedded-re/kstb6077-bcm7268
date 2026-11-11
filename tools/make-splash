@@ -10,10 +10,10 @@ entry {size, offset 0x3c} + the BMP. BOLT reads only the first 512 KB of the
 partition, so the compressed result must fit in 524288 bytes. BOLT draws the
 image unscaled and centred, so use 1920x1080 for a full screen.
 --pcm adds the file's bytes unchanged as 'pcm0' (BOLT plays raw samples, no WAV
-header; see docs/hardware/audio.md).
+header; see hardware/audio.md).
 Write it with BOLT: upload to RAM (tools/kstb-run --no-go --addr 0x02500000 splash.bin),
 then  flash -noerase -mem=0x02500000 -memsize=<size, hex> mem0 flash0.splash
-(see docs/hardware/display.md). Needs Pillow.
+(see hardware/display.md). Needs Pillow.
 """
 import io, struct, sys, zlib
 from PIL import Image

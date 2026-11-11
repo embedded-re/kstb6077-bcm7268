@@ -1,7 +1,7 @@
 # Timer A/B/A: high-resolution timers remove the compute cache-clean delay
 
 The tested change is **`CONFIG_HIGH_RES_TIMERS=y`**, now present in
-`linux/kstb.config`. All V3D cache flushing, MMU flushing and synchronization
+`port/kstb.config`. All V3D cache flushing, MMU flushing and synchronization
 remain enabled. No Mesa driver source, V3D IRQ code or GPU clock settings
 changed. The candidate is kernel **#30**, release
 `6.18.57-kstb-hrtimer-ab`, built from kernel #29's exact config with the
@@ -89,21 +89,21 @@ kernel is usable and independently reproduces the slow timing again.
 
 ## Build, boot and rollback
 
-The running #29 config was byte-identical to `linux/build/kernel/.config`.
+The running #29 config was byte-identical to `port/build/kernel/.config`.
 An isolated output directory was copied from that baseline. The candidate
 was built with:
 
 ```sh
-linux/build/linux-6.18.57/scripts/config --file "$candidate_build/.config" \
+port/build/linux-6.18.57/scripts/config --file "$candidate_build/.config" \
   --enable HIGH_RES_TIMERS --set-str LOCALVERSION '-kstb-hrtimer-ab'
-make -C linux/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 olddefconfig
-make -C linux/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 -j6 Image modules
-make -C linux/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 \
+make -C port/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 olddefconfig
+make -C port/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 -j6 Image modules
+make -C port/build/linux-6.18.57 O="$candidate_build" ARCH=arm64 LLVM=1 \
   M="$PWD/linux/drivers" MO="$candidate_drivers" -j6 modules
 ```
 
 Here `candidate_build` is the absolute path to
-`linux/build/gpu-timer-ab/kernel`, and `candidate_drivers` the sibling
+`port/build/gpu-timer-ab/kernel`, and `candidate_drivers` the sibling
 `drivers` directory. All 30 modules were installed into an isolated
 modroot and packaged. Every module's vermagic matches the candidate release;
 its unique module directory was installed alongside #29's directory before
@@ -129,7 +129,7 @@ board and host, described by `kernel29-backup-manifest.json`.
 
 Candidate artifacts are retained, without flashing:
 
-- Host: `linux/build/gpu-timer-ab/out/{Image,krn.img,dtb.img,modules.tar}`.
+- Host: `port/build/gpu-timer-ab/out/{Image,krn.img,dtb.img,modules.tar}`.
 - Board: `/root/gpu-kernel-ab/hrtimer/` (same package files).
 - Matching modules: `/lib/modules/6.18.57-kstb-hrtimer-ab/`.
 - Rollback images/modules: `/root/gpu-backups/kernel29-before-hrtimer-ab/`.

@@ -6,7 +6,7 @@ fell from 81% to 65%, with `df -h` reporting 1.8G available afterward.
 
 Ten explicitly identified demo/isolation/test profiles were archived first to
 private ignored PC storage at
-`linux/build/cache-cleanup/20261026/private-test-profiles.tar.gz` (directory
+`port/build/cache-cleanup/20261026/private-test-profiles.tar.gz` (directory
 mode 0700, archive 0600). Full gzip integrity passed. The archive is private
 browser data and must not be committed or published. Its checksum is retained.
 

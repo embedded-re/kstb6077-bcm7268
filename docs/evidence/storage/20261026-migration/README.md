@@ -1,7 +1,7 @@
 # Physical storage migration — 2026-10-26
 
 Actual on-device execution of the reviewed 256MiB DATA proposal. See the
-[completion report](../../../storage-repartition.md) for the resulting layout,
+[completion report](../../../05-storage-repartition.md) for the resulting layout,
 recovery precautions and scope of validation.
 
 - `before.sfdisk` / `after.sfdisk`: physical partition table before and after.

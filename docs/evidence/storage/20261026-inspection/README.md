@@ -3,7 +3,7 @@
 Current device inspection was read-only on the affected block devices. DATA
 was temporarily mounted with `ro,nodev,nosuid,noexec`, inventoried and
 unmounted. No partition-table/boot-file changes or reboots were performed.
-See [the full proposal](../../../storage-repartition-plan.md).
+See [the full proposal](../../../appendix-storage-repartition-plan.md).
 
 - `layout.sfdisk`, `gpt-verify.txt`: current layout, sfdisk verification.
 - `data-inventory.json`: all eight regular files, hashes/sizes, BPB fields,
@@ -16,7 +16,7 @@ See [the full proposal](../../../storage-repartition-plan.md).
 - `plans.json`, `256-*`, `512-*`: exact alternative layouts, valid GPT CRCs,
   FAT32 creation/restoration, and fsck results before/after shared-driver tests.
 - `fat-image-check.c`, `kstb.h`: harness compiled with the unchanged repository
-  `fat/fat.c`. It uses regular PC files as block devices at the proposed
+  `extras/fat/fat.c`. It uses regular PC files as block devices at the proposed
   absolute partition LBAs, reads/compares all files, writes/reads/deletes a
   153619-byte test file, then fsck checks the image. It performs no MMIO or
   actual board I/O. Compiler warned about existing fat.c initializers; the
@@ -25,7 +25,7 @@ See [the full proposal](../../../storage-repartition-plan.md).
   All images it writes are regular files on the PC, not physical devices.
 - `state.json`: boundaries, artifact locations and shared-driver source hashes.
 
-Private, ignored artifacts in `linux/build/storage-inspect/20261026/` include
+Private, ignored artifacts in `port/build/storage-inspect/20261026/` include
 first 3MiB/tail33 sector captures, the DATA tar/allocated-cluster snapshot,
 sparse original DATA, proposed sparse disk images and proposed FAT images.
 They contain raw factory/boot backups and must not be published. The eight

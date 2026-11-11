@@ -23,7 +23,7 @@ and no watchdog/test/desktop processes remaining.
 ## Implementation and correctness
 
 Source [`kstb-fft-test.c`](kstb-fft-test.c) is also tracked in
-[`linux/gpu-test`](../../../../../linux/gpu-test/kstb-fft-test.c).
+[`port/gpu-test`](../../../../../port/gpu-test/kstb-fft-test.c).
 One 128-invocation workgroup per transform; complex values are pairs of FP32.
 Radix-2 butterflies use bit-reversed input and workgroup barriers. Twiddles
 are computed on the CPU and uploaded once. This does **not** test GPU trig
@@ -81,7 +81,7 @@ No CPU/GPU overlap or energy measurements were made.
 
 ## Reproduction and safety
 
-`make -C linux/gpu-test fft` from repo root; requires the existing cross
+`make -C port/gpu-test fft` from repo root; requires the existing cross
 sysroot FFTW headers/libraries and staged system Mesa link libraries. Binary
 has no RPATH/RUNPATH (`elf-dynamic.txt`); runtime is the installed system Mesa.
 FFTW installed-package versions are in `post-check.json`. `state.json` records

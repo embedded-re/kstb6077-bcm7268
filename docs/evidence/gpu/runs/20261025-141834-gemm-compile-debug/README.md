@@ -29,7 +29,7 @@ measurement of arithmetic throughput.
 
 ## Benchmark implementation
 
-`linux/gpu-test/kstb-gemm-test.c` provides naive FP32 GEMM, aligned shared-
+`port/gpu-test/kstb-gemm-test.c` provides naive FP32 GEMM, aligned shared-
 memory tiled 4×4 and 2×2 output blocks per invocation, scalar blocked 4×4
 CPU GEMM and four persistent NEON workers. `tiled` aliases `tiled4`.
 **Tiled modes are failing diagnostic probes on this stack; do not run them

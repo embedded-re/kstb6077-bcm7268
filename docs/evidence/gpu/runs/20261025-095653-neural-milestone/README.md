@@ -64,7 +64,7 @@ scheduler` open warning remains visible in the complete kernel log.
 
 ## Reproduction and boundary
 
-Build `kstb-neural-test` with `make -C linux/gpu-test`. On the board, after
+Build `kstb-neural-test` with `make -C port/gpu-test`. On the board, after
 selecting this package's environment with `kstb-mesa env`, the optimized
 workload command is:
 

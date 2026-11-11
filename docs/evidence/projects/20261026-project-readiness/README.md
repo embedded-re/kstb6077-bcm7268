@@ -8,7 +8,7 @@ recovery files and public model binaries are stored outside Git.
 ## Recovery/storage evidence
 
 - `recovery-archive.sha 256`: checksum of private `working-state.tar.gz` on
-  the development PC under `linux/build/project-prep/20261026-005000/recovery/`.
+  the development PC under `port/build/project-prep/20261026-005000/recovery/`.
 - `boot-images.json`: exact KRN/p6 and DTB/p7 partition readbacks, with hashes
   independently calculated on the board and PC. No flash operation occurred.
 - `cleanup-result.json`: verified files moved off-board, actual space reclaimed.
@@ -58,7 +58,7 @@ were recorded during the gate. Warm full still-image pipeline median 261.54ms.
 `post-state.json` confirms custom Mesa/kernel preserved and tests stopped;
 `workspace-backup.json` records a PC backup whose scripts and completed reports
 were read/extracted and checked. No external disk or network filesystem was
-mounted. Private recovery/configuration archives are not committed. See [the preparation report](../../../../linux/project-readiness.md)
-and [project usage](../../../../linux/project-tools/image-classifier/README.md).
+mounted. Private recovery/configuration archives are not committed. See [the preparation report](../../../../port/project-readiness.md)
+and [project usage](../../../../port/project-tools/image-classifier/README.md).
 
 GPU capability lines have trailing whitespace trimmed; values are unchanged.

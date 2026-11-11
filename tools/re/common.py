@@ -1,4 +1,4 @@
-"""Shared helpers for analysing a BOLT RAM dump (see docs/bolt/bolt.md §11)."""
+"""Shared helpers for analysing a BOLT RAM dump (see docs/02-bolt.md §11)."""
 import bisect, re, struct
 
 BASE = 0x07008000          # load address of the dump made with tools/kstb-dump 0x07008000 ...

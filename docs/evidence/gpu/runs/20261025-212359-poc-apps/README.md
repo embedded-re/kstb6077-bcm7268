@@ -35,7 +35,7 @@ The SuperTux launcher overlay keeps the package's metadata and uses
 `env SDL_VIDEODRIVER=wayland supertux2 --renderer sdl`. This selects a game
 frontend/backend; there are no Mesa library or driver path overrides. It is
 installed at `/usr/local/share/applications/supertux2.desktop` and tracked in
-`linux/rootfs` under the same path. `TryExec` hides the entry if the optional
+`port/rootfs` under the same path. `TryExec` hides the entry if the optional
 game package is absent. Desktop-file validation passes. The normal package
 file under `/usr/share/applications` is untouched. Remove the local override
 to restore the package's default launcher.

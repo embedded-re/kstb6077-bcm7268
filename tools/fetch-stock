@@ -4,7 +4,7 @@
 #
 #   tools/fetch-stock            -> stock/release/... (README.txt, modules/, libs/, hal/, ...)
 #
-# Needs the GitHub CLI (gh). See docs/stock-drivers.md for what is inside.
+# Needs the GitHub CLI (gh). See docs/04-stock-drivers.md for what is inside.
 set -e
 cd "$(dirname "$0")/.."
 mkdir -p stock

@@ -1,0 +1,139 @@
+#!/usr/bin/python3
+# kstb-v3d-test - run the bare-metal V3D jobs (hardware/gpu.md) through
+# the mainline v3d driver: raw DRM ioctls on /dev/dri/renderD128, buffers
+# from v3d (GPU MMU addresses), a binner + render job drawing a blue
+# triangle (8,8) (56,8) (32,56) on a red 64x64 tile, stored as rgba8.
+#
+#   kstb-v3d-test            ID registers, then the clear job, then the triangle
+#   kstb-v3d-test -n 100     the triangle job 100 times, timed
+#   V3D_TEST=clear / rt0     ... the render job alone / libGLES's 0 render targets
+import fcntl, mmap, os, struct, sys, time
+
+def iowr(nr, size):
+    return (3 << 30) | (size << 16) | (ord('d') << 8) | (0x40 + nr)
+
+SUBMIT_CL, WAIT_BO, CREATE_BO, MMAP_BO, GET_PARAM = (
+    iowr(0, 72), iowr(1, 16), iowr(2, 16), iowr(3, 16), iowr(4, 16))
+
+fd = os.open('/dev/dri/renderD128', os.O_RDWR)
+
+def ioctl(req, fmt, *args):
+    return struct.unpack(fmt, fcntl.ioctl(fd, req, struct.pack(fmt, *args)))
+
+def param(p):
+    return ioctl(GET_PARAM, '<IIQ', p, 0, 0)[2]
+
+class BO:
+    def __init__(self, size):
+        self.size = size
+        _, _, self.handle, self.va = ioctl(CREATE_BO, '<IIII', size, 0, 0, 0)
+        off = ioctl(MMAP_BO, '<IIQ', self.handle, 0, 0)[2]
+        self.m = mmap.mmap(fd, size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=off)
+
+    def put(self, off, data):
+        self.m[off:off + len(data)] = data
+
+    def words(self, off, n):
+        return struct.unpack_from('<%dI' % n, self.m, off)
+
+def u32(v):
+    return struct.pack('<I', v)
+
+# buffers; the CPU writes go through v3d's write-combined mapping
+cl = BO(64 * 1024)          # control lists, shader record, shader, uniforms, vertices
+color = BO(64 * 1024)       # 64x64 rgba8
+zbuf = BO(64 * 1024)
+tile_alloc = BO(1024 * 1024)
+tile_state = BO(4096)
+bos = [cl, color, zbuf, tile_alloc, tile_state]
+RCL, GTL, BCL, SHREC, DEFS, FS, UNIF, VERTS = 0x000, 0x100, 0x200, 0x400, 0x480, 0x500, 0x580, 0x600
+
+def rcl(triangle, clear):
+    b = bytes.fromhex('79 00 40 00 40 00 40 00 0e')                     # common: 64x64, 32 bpp
+    b += bytes.fromhex('79 02 08 1b f0') + u32(color.va)                 # colour: rgba8, raster
+    b += bytes.fromhex('79 01 00 00 00') + u32(zbuf.va)                  # Z/stencil
+    b += bytes.fromhex('79 04') + u32(clear) + bytes(3)                  # clear colour
+    b += bytes.fromhex('79 06 00 00 40 00 00 00 00')                     # raster stride 64
+    b += bytes.fromhex('79 03 00 00 00 80 3f 00 00')                     # depth 1.0
+    b += bytes.fromhex('7c 00 00 00 1d 08 02 00 00 00 00 13 7e 04')      # dummy tile, VCD, block size
+    if triangle:
+        b += bytes.fromhex('7b') + u32(tile_alloc.va)                    # tile list base, set 0
+    b += bytes.fromhex('7a 00 00 01 01 01 10 00 10')                     # supertiles 1x1
+    gtl = bytes.fromhex('7d 15 00 18 12' if triangle else '7d 18 12')
+    b += bytes.fromhex('14') + u32(cl.va + GTL) + u32(cl.va + GTL + len(gtl))
+    b += bytes.fromhex('17 00 00 0d')
+    cl.put(RCL, b + bytes(32))
+    cl.put(GTL, gtl + bytes(32))
+    return cl.va + RCL, cl.va + RCL + len(b)
+
+def bcl():
+    # Part1: 1x1 tiles, 1 render target. With 0 render targets (libGLES's bytes,
+    # V3D_TEST=rt0) the binner writes to GPU address 0: an MMU error in dmesg
+    rts = '00' if 'rt0' in TEST else '01'
+    b = bytes.fromhex('78') + u32(tile_state.va | 0x12) + bytes.fromhex('01 10 00 ' + rts)
+    b += bytes.fromhex('13 06 0e 00 5c 00 00 00 00')
+    b += bytes.fromhex('6b 00 00 00 00 40 00 40 00')                     # clip window 64x64
+    b += bytes.fromhex('6d 00 00 00 00 00 00 80 3f')                     # clip Z 0..1
+    b += bytes.fromhex('60 03 70 00 57 00 00 00 00 6c') + bytes(8)
+    b += bytes.fromhex('49 44 44') + u32((cl.va + SHREC) | 2)            # nv_shader, 2 attributes
+    b += bytes.fromhex('24 04') + u32(3) + u32(0) + bytes.fromhex('04')  # 3 vertices, flush
+    cl.put(BCL, b + bytes(32))
+    rec = [0, 0x00010001, cl.va + DEFS, cl.va + FS, cl.va + UNIF, 0, 0, 0, 0,
+           cl.va + DEFS, 0x408, 0, cl.va + VERTS, 0x440b, 12]
+    cl.put(SHREC, struct.pack('<15I', *rec))
+    cl.put(DEFS, struct.pack('<8f', 0, 0, 0, 0, 0, 0, 0, 1.0))
+    fs = ['3c403186bb800000', '3c003188b682d000', '3c403186bb800000',
+          '3c203187b682d000', '3c003186bb800000', '3c003186bb800000']
+    cl.put(FS, b''.join(struct.pack('<Q', int(i, 16)) for i in fs))
+    cl.put(UNIF, struct.pack('<3I', 0, 0xffffffff, 0x3c003c00))          # blue, alpha 1
+    cl.put(VERTS, struct.pack('<9I', 8 << 8, 8 << 8, 0, 56 << 8, 8 << 8, 0, 32 << 8, 56 << 8, 0))
+    return cl.va + BCL, cl.va + BCL + len(b)
+
+def submit(bstart, bend, rstart, rend):
+    handles = struct.pack('<%dI' % len(bos), *[b.handle for b in bos])
+    hbuf = mmap.mmap(-1, 4096)
+    hbuf[:len(handles)] = handles
+    import ctypes
+    hptr = ctypes.addressof(ctypes.c_char.from_buffer(hbuf))
+    ioctl(SUBMIT_CL, '<10IQ4IQ', bstart, bend, rstart, rend, 0, 0, 0,
+          tile_alloc.va, tile_alloc.size, 0, hptr, len(bos), 0, 0, 0, 0)
+    ioctl(WAIT_BO, '<IIQ', color.handle, 0, 2 * 10**9)
+
+def check(name, want):
+    px = color.words(0, 4096)
+    got = {}
+    for v in px:
+        got[v] = got.get(v, 0) + 1
+    print('%s: %s' % (name, ', '.join('%08x x %d' % kv for kv in sorted(got.items(), key=lambda kv: -kv[1]))))
+    return got == want
+
+TEST = os.environ.get('V3D_TEST', '')
+RED, BLUE, GREEN = 0xff0000ff, 0xffff0000, 0xff00ff00
+ok = True
+if '-n' in sys.argv:
+    n = int(sys.argv[sys.argv.index('-n') + 1])
+    tri = 'clear' not in TEST                                            # V3D_TEST=clear: render job only
+    b = bcl() if tri else (0, 0); r = rcl(tri, RED)
+    t = time.monotonic()
+    for i in range(n):
+        submit(*b, *r)
+    dt = time.monotonic() - t
+    print('%d triangle jobs in %.3f s, %.2f ms each' % (n, dt, dt * 1000 / n))
+    ok = check('last', {RED: 4096 - 1152, BLUE: 1152} if tri else {RED: 4096})
+else:
+    print('hub IDENT1 %08x IDENT2 %08x IDENT3 %08x, core IDENT0 %08x IDENT1 %08x IDENT2 %08x, TFU %d'
+          % tuple(param(p) for p in (1, 2, 3, 4, 5, 6, 7)))
+    print('buffers (GPU addresses): cl %08x color %08x z %08x tile alloc %08x tile state %08x'
+          % tuple(b.va for b in bos))
+    color.put(0, b'\xef\xbe\xad\xde' * 16384)
+    submit(0, 0, *rcl(False, GREEN))
+    ok &= check('clear', {GREEN: 4096})
+    ok &= color.words(16384, 1) == (0xdeadbeef,)
+    submit(*bcl(), *rcl(True, RED))
+    ok &= check('triangle', {RED: 4096 - 1152, BLUE: 1152})
+    px = color.words(0, 4096)
+    for y in (8, 20, 54, 55):
+        row = [x for x in range(64) if px[y * 64 + x] == BLUE]
+        print('row %d: blue x %s' % (y, '%d-%d' % (row[0], row[-1]) if row else 'none'))
+print('OK' if ok else 'FAIL')
+sys.exit(0 if ok else 1)

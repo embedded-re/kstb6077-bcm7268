@@ -601,7 +601,7 @@ a.doc:hover { text-decoration: underline; }
     });
     hits.sort(function (p, q) { return (p.hi - p.lo) - (q.hi - q.lo); });
     var regs = (window.KSTB_REGS || []).filter(function (r) { return a >= r.lo && a <= r.hi; });
-    var SHEET = "hardware/registers.md";
+    var SHEET = "../hardware/registers.md";
     regs.sort(function (p, q) { return (q.danger - p.danger) || ((q.doc === SHEET) - (p.doc === SHEET)) || ((p.hi - p.lo) - (q.hi - q.lo)); });
     var seenDoc = {}, chapters = 0;
     regs = regs.filter(function (r) {
@@ -615,7 +615,7 @@ a.doc:hover { text-decoration: underline; }
       var out = "";
       regs.forEach(function (r) {
         if (r.danger) out += " <b>Do not touch:</b> " + esc(r.desc) + ".";
-        else out += "<br>" + (r.doc === SHEET ? "Register sheet" : esc(r.doc.replace("hardware/", "")) + " (" + esc(r.section) + ")") + ": <b>" + esc(r.name) + "</b>" + (r.desc ? " · " + esc(r.desc) : "");
+        else out += "<br>" + (r.doc === SHEET ? "Register sheet" : esc(r.doc.replace("../hardware/", "")) + " (" + esc(r.section) + ")") + ": <b>" + esc(r.name) + "</b>" + (r.desc ? " · " + esc(r.desc) : "");
       });
       return out;
     }

@@ -111,7 +111,7 @@ scheduler warning remains logged on context creation.
 
 `run.py` is the exact watchdog-monitored, fault-stopping board runner;
 `meta.json` records driver/executable hashes. Build with
-`make -C linux/gpu-test`; after setting the numbered Mesa environment:
+`make -C port/gpu-test`; after setting the numbered Mesa environment:
 
 ```sh
 V3D_COMPUTE33=1 /opt/gpu-test/kstb-compute-latency-test 1 0 1001 1 empty

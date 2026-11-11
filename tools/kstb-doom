@@ -7,13 +7,13 @@
 
 Steps (all RAM loads, nothing is written to flash):
   1. ifconfig eth0 -auto
-  2. load the KWAD image from flash0.splash +0x100000 to 0x10000000 (docs/hardware/storage.md)
-  3. load doom.bin by TFTP to 0x01000000 and compare its CRC with doom/build/doom.bin
-     (dnsmasq can return the previous file: docs/booting.md)
+  2. load the KWAD image from flash0.splash +0x100000 to 0x10000000 (hardware/storage.md)
+  3. load doom.bin by TFTP to 0x01000000 and compare its CRC with extras/doom/build/doom.bin
+     (dnsmasq can return the previous file: docs/03-running-code.md)
   4. go -64 0x01000000, then print the console for --listen seconds
 
-Needs a TFTP server serving doom/build (docs/booting.md), the kstb-bridge service
-and the board at BOLT>. Sound needs a boot whose splash has a pcm0 (doom/README.md).
+Needs a TFTP server serving extras/doom/build (docs/03-running-code.md), the kstb-bridge service
+and the board at BOLT>. Sound needs a boot whose splash has a pcm0 (extras/doom/README.md).
 """
 import argparse, importlib.machinery, importlib.util, os, re, zlib
 
@@ -22,7 +22,7 @@ _loader = importlib.machinery.SourceFileLoader("kstb_run", os.path.join(here, "k
 kstb_run = importlib.util.module_from_spec(importlib.util.spec_from_loader("kstb_run", _loader))
 _loader.exec_module(kstb_run)
 
-BIN = os.path.join(here, "..", "doom", "build", "doom.bin")
+BIN = os.path.join(here, "..", "extras", "doom", "build", "doom.bin")
 WAD_LOAD = "load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=0xdc7000 flash0.splash"
 
 

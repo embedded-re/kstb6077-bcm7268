@@ -5,7 +5,7 @@ BOLT checks the console for boot keys right after its banner; Ctrl-S prints
 "Splash screen disabled via Ctrl-S" and skips the splash for this boot only
 (nothing is stored, the next boot has the splash again). Autostart still runs,
 so kmon starts with no display and no audio DMA from BOLT, and sets both up
-itself (mon/README.md, "Video").
+itself (extras/mon/README.md, "Video").
 
     kstb-nosplash              wait for a boot (power-cycle the board now)
     kstb-nosplash --reset      board is at kmon>: reset it first

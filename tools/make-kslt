@@ -3,11 +3,11 @@
 
     make-kslt NAME IN OUT
 
-The header is kboot's (kboot/slot.h): 'KSLT', version 1, size, CRC32 (zlib)
+The header is kboot's (bootloader/kboot/slot.h): 'KSLT', version 1, size, CRC32 (zlib)
 of the data, a sequence number (here the Unix time, to tell builds apart),
 a 40-byte name, the CRC32 of the 60 bytes before it; the rest of the sector
 is zeros. The data follows from the second sector, padded to 512 bytes.
-kmon's `linux` reads these partitions (linux/README.md).
+kmon's `linux` reads these partitions (port/README.md).
 """
 import struct, sys, time, zlib
 

@@ -41,7 +41,7 @@ transform-feedback component limit would be unjustified.
 Regenerate from the repository root:
 
 ```sh
-python3 linux/gpu-test/deqp/result-reasons.py \
+python3 port/gpu-test/deqp/result-reasons.py \
   docs/evidence/gpu/runs/20261022-220306-gles3-848c-krn29-full/results-gles3.txt \
   docs/evidence/gpu/runs/20261022-225849-gles2-848c-krn29-full/results-gles2.txt \
   docs/evidence/gpu/runs/20261022-231119-egl-848c-krn29-full/results-egl.txt

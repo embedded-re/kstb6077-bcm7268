@@ -19,7 +19,7 @@ theme index was absent; installing hicolor-icon-theme resolves that. The
 final screenshot shows the actual app icons. `kstb-setup` now includes the
 launcher, wallpaper, icon and font dependencies for future provisioning.
 
-Configuration lives in `linux/rootfs/etc/wofi/{config,style.css}`. The Sway
+Configuration lives in `port/rootfs/etc/wofi/{config,style.css}`. The Sway
 drop-in sets `$menu` and explicitly rebinds Win+D after the default config's
 binding. The current user-owned Sway session was reloaded successfully and
 kept its original PID **5251**. This work did not close/restart the user's

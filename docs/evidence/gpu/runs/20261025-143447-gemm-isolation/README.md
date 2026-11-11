@@ -30,7 +30,7 @@ check **did not run**, because the forced-spill result failed first.
 
 ## Shared-memory control
 
-Added `shared1` mode to `linux/gpu-test/kstb-gemm-test.c`: local 8×8,
+Added `shared1` mode to `port/gpu-test/kstb-gemm-test.c`: local 8×8,
 one output per invocation, 8×8 A/B tiles (512 bytes shared total), K block 8,
 two workgroup barriers per block. It checks cross-invocation shared values
 through complete GEMM results, including reuse across K blocks and multiple

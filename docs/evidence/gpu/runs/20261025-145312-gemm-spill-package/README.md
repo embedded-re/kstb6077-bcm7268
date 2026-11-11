@@ -62,7 +62,7 @@ output, not a measurement of a new large-matrix throughput ceiling.
 
 `BUILD-ID` and `meta.json` identify the packaged DRI:
 `18969788882886e842a68acba6818561eb9da09345e3586381c35d3f841f04e1`.
-The inner Mesa commit is `3263da5`; `make -C linux/mesa check` and the full
+The inner Mesa commit is `3263da5`; `make -C port/mesa check` and the full
 package build pass. Production source contains no compile-only or forced-
 spill instrumentation. Existing patch files 1–32 only gain the updated
 series length in their subject headers when patch 33 is exported.

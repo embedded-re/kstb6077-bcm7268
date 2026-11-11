@@ -56,7 +56,7 @@ No GPU tests, queues or userspace watchdog remain running.
 
 Original #29 backups remain on board at
 `/root/gpu-backups/kernel29-before-hrtimer-ab/{krn.img,dtb.img,modules.tar}`
-and on the host under `linux/build/gpu-timer-ab/kernel29-before-hrtimer-ab/`.
+and on the host under `port/build/gpu-timer-ab/kernel29-before-hrtimer-ab/`.
 The prior A/B/A milestone actually booted #29 and exercised GPU checks,
 so the rollback kernel is tested. If restoring becomes necessary, flash
 the backed-up krn.img/dtb.img with `kstb-flash-kernel` and reboot through

@@ -20,7 +20,7 @@ buffer at 0x00040000 + size):
     flash -noerase -offset=0x100000 -mem=0x10000000 -memsize=<img size> mem0 flash0.splash
 Load it before `go`:
     load -raw -rawfs -offset=0x100000 -addr=0x10000000 -max=<img size> flash0.splash
-See docs/hardware/storage.md.
+See hardware/storage.md.
 """
 import os, struct, sys, zlib
 

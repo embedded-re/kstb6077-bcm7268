@@ -10,7 +10,7 @@
 The board must be at the `kmon>` prompt with the network up, and the TFTP
 root must hold linux-Image, linux-initramfs.cpio.gz, linux-kstb6077.dtb and
 linux-boot.bin (`make -C linux tftp`). The load addresses come from
-linux/layout.h. Each `tftp get` waits for the prompt before the next: kmon
+port/layout.h. Each `tftp get` waits for the prompt before the next: kmon
 polls the UART, and a line sent while it is busy gets mixed up.
 Needs the kstb-bridge service (socket /tmp/kstb.sock, override with KSTB_SOCK).
 """
@@ -18,8 +18,8 @@ import argparse, os, re, socket, sys, time, zlib
 
 SOCK = os.environ.get("KSTB_SOCK", "/tmp/kstb.sock")
 here = os.path.dirname(os.path.abspath(__file__))
-LINUX = os.path.join(here, "..", "linux")
-TFTP_ROOT = os.path.join(here, "..", "doom", "build")
+LINUX = os.path.join(here, "..", "port")
+TFTP_ROOT = os.path.join(here, "..", "extras", "doom", "build")
 FILES = [("Image", "KERNEL_ADDR"), ("initramfs.cpio.gz", "INITRD_ADDR"),
          ("kstb6077.dtb", "DTB_ADDR"), ("boot.bin", "BOOT_ADDR")]
 FILES_ROOT = [("Image", "KERNEL_ADDR"), ("kstb6077-root.dtb", "DTB_ADDR"), ("boot.bin", "BOOT_ADDR")]

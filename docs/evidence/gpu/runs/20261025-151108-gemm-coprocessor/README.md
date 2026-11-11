@@ -93,7 +93,7 @@ GPU work and scheduling; final waits are not treated as pure overhead.
 Run the decision analysis without GPU work:
 
 ```
-linux/gpu-test/kstb-compute-value \
+port/gpu-test/kstb-compute-value \
   docs/evidence/gpu/runs/20261025-150359-gemm-value \
   docs/evidence/gpu/runs/20261025-150652-gemm-value-packed \
   docs/evidence/gpu/runs/20261025-151108-gemm-coprocessor \

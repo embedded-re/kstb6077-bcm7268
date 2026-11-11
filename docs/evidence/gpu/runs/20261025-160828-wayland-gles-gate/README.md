@@ -26,7 +26,7 @@ binary is byte-identical to 85a951cd:
 `18969788882886e842a68acba6818561eb9da09345e3586381c35d3f841f04e1`.
 The changed EGL build supplies the native Wayland client platform.
 
-`linux/mesa/Makefile` now hashes the patch series **and Meson options** into
+`port/mesa/Makefile` now hashes the patch series **and Meson options** into
 the package ID, so changing window-system support cannot silently overwrite
 a same-series package. The recipe applies those options to an existing build
 directory before Ninja. `build-verification.txt` records the identity check;
@@ -103,7 +103,7 @@ visible gradient quantization. No output-format/kernel change was made.
 
 ## Test and evidence
 
-`linux/gpu-test/kstb-wayland-gles-test.c` binds xdg-shell, creates an EGL
+`port/gpu-test/kstb-wayland-gles-test.c` binds xdg-shell, creates an EGL
 Wayland window and a GLES2 context, verifies the V3D renderer, animates a
 triangle/bar, resizes the EGL native window on configure events and checks
 red/green/blue marker pixels every sixty frames. It uses frame callbacks
